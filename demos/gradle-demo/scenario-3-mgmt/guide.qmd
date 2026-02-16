@@ -1,0 +1,47 @@
+# Scenario 3: Dependency Management (Platform/BOM) (What to Do When a Platform Aligns Versions — Until Something Overrides It)
+
+## What This Scenario Demonstrates
+This scenario demonstrates how to use Maven BOMs in Gradle using `platform()`.
+
+## Dependency Graph
+```{mermaid}
+graph LR
+    Root[Project Root] -- platform --> BOM[demo-bom:1.0.0]
+    Root --> LibA[lib-a]
+    Root --> LibB[lib-b]
+```
+
+### Gradle (Groovy DSL)
+
+```{.groovy include="/demos/gradle-demo/scenario-3-mgmt/build.gradle" snippet="s3-deps"}
+```
+
+## Expected Intuition
+"I import the BOM, so I don't need versions."
+
+## Actual Resolution Results
+*   **Gradle**: Resolves versions from the BOM.
+
+## Classpath Reality
+Versions match the BOM.
+
+## Why This Happens
+`platform()` imports the BOM as a set of dependency constraints.
+
+## How Developers Commonly "Fix" This
+N/A
+
+## Safer Ways to Take Control
+Use `enforcedPlatform()` if you want to force these versions (like `<dependencyManagement>` in Maven) rather than just recommend them.
+
+## Signals to Watch For
+N/A
+
+## How This Scales in Real Systems
+Standard practice for Spring Boot and other large ecosystems.
+
+## Key Takeaway
+Gradle treats BOMs as platforms.
+
+## Related Scenarios
+*   [Scenario 4: Override](../scenario-4-override/guide.qmd)

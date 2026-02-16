@@ -1,0 +1,16 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    maven {
+        url = uri("../../../target/local-repo")
+    }
+}
+
+// tag::s9-deps[]
+dependencies {
+    // Request any version >= 1.0.0 and < 2.0.0
+    implementation 'com.demo:lib-a:[1.0.0, 2.0.0)'
+}
+// end::s9-deps[]

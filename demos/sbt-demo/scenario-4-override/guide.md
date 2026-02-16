@@ -1,0 +1,42 @@
+# Scenario 4: Hardcoded Version vs Overrides
+
+## What This Scenario Demonstrates
+This scenario demonstrates that `dependencyOverrides` wins over `libraryDependencies`.
+
+## Dependency Graph
+Dep: 1.0.0, Override: 2.0.0.
+
+### SBT (build.sbt)
+
+```{.scala include="/demos/sbt-demo/scenario-4-override/build.sbt" snippet="s4-deps"}
+```
+
+## Expected Intuition
+"Override wins."
+
+## Actual Resolution Results
+*   **SBT**: Resolves 2.0.0.
+
+## Classpath Reality
+2.0.0.
+
+## Why This Happens
+Overrides are stronger.
+
+## How Developers Commonly "Fix" This
+N/A
+
+## Safer Ways to Take Control
+N/A
+
+## Signals to Watch For
+N/A
+
+## How This Scales in Real Systems
+N/A
+
+## Key Takeaway
+Overrides win.
+
+## Related Scenarios
+*   [Scenario 3: Mgmt](../scenario-3-mgmt/guide.md)

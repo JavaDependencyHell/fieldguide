@@ -1,0 +1,42 @@
+# Scenario 3: Dependency Overrides (What to Do When Overrides Fix the Problem — and Create the Next One)
+
+## What This Scenario Demonstrates
+This scenario demonstrates `dependencyOverrides` in SBT.
+
+## Dependency Graph
+Force `1.0.0`.
+
+### SBT (build.sbt)
+
+```{.scala include="/demos/sbt-demo/scenario-3-mgmt/build.sbt" snippet="s3-deps"}
+```
+
+## Expected Intuition
+"I force 1.0.0."
+
+## Actual Resolution Results
+*   **SBT**: Resolves 1.0.0.
+
+## Classpath Reality
+1.0.0.
+
+## Why This Happens
+Overrides take precedence.
+
+## How Developers Commonly "Fix" This
+N/A
+
+## Safer Ways to Take Control
+Use overrides.
+
+## Signals to Watch For
+N/A
+
+## How This Scales in Real Systems
+Standard way to fix conflicts.
+
+## Key Takeaway
+Overrides force versions.
+
+## Related Scenarios
+*   [Scenario 4: Override](../scenario-4-override/guide.md)

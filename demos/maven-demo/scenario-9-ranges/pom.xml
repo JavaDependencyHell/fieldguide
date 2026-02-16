@@ -1,0 +1,31 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.example.demo</groupId>
+    <artifactId>maven-ranges</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <repositories>
+        <repository>
+            <id>local-demo-repo</id>
+            <url>file://${project.basedir}/../../../target/local-repo</url>
+        </repository>
+    </repositories>
+
+    <!-- tag::s9-deps[] -->
+    <dependencies>
+        <!--
+          Request any version of lib-a between 1.0.0 (inclusive) and 2.0.0 (exclusive).
+          Since our repo has 1.0.0 and 2.0.0, and 2.0.0 is exclusive, it should pick 1.0.0.
+          (Note: Behavior depends on available metadata and Maven version).
+        -->
+        <dependency>
+            <groupId>com.demo</groupId>
+            <artifactId>lib-a</artifactId>
+            <version>[1.0.0,2.0.0)</version>
+        </dependency>
+    </dependencies>
+    <!-- end::s9-deps[] -->
+</project>

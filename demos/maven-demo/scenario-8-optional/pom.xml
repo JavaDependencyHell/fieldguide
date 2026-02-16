@@ -1,0 +1,32 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.example.demo</groupId>
+    <artifactId>maven-optional</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <repositories>
+        <repository>
+            <id>local-demo-repo</id>
+            <url>file://${project.basedir}/../../../target/local-repo</url>
+        </repository>
+    </repositories>
+
+    <!-- tag::s8-deps[] -->
+    <dependencies>
+        <!--
+          We are simulating a library that has an optional dependency.
+          In a real-world scenario, you would look at the POM of the dependency itself.
+          Here, we are just showing the syntax.
+        -->
+        <dependency>
+            <groupId>com.demo</groupId>
+            <artifactId>lib-a</artifactId>
+            <version>1.0.0</version>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+    <!-- end::s8-deps[] -->
+</project>

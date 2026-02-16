@@ -1,0 +1,42 @@
+# Scenario 11: Dependency Locking (What to Do When Today’s Build Doesn’t Match Yesterday’s)
+
+## What This Scenario Demonstrates
+This scenario demonstrates Gradle's Dependency Locking feature.
+
+## Dependency Graph
+Dynamic version `1.+`.
+
+### Gradle (Groovy DSL)
+
+```{.groovy include="/demos/gradle-demo/scenario-11-locking/build.gradle" snippet="s11-deps"}
+```
+
+## Expected Intuition
+"It should stay the same."
+
+## Actual Resolution Results
+*   **Gradle**: Uses `gradle.lockfile`.
+
+## Classpath Reality
+Locked version.
+
+## Why This Happens
+Locking freezes dynamic versions.
+
+## How Developers Commonly "Fix" This
+N/A
+
+## Safer Ways to Take Control
+Use locking for reproducibility.
+
+## Signals to Watch For
+N/A
+
+## How This Scales in Real Systems
+Vital for CI/CD.
+
+## Key Takeaway
+Locking ensures reproducibility.
+
+## Related Scenarios
+*   [Scenario 9: Ranges](../scenario-9-ranges/guide.md)

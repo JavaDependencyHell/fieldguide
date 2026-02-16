@@ -1,0 +1,7 @@
+target/
+demo-dependencies/
+demo-utils/
+build/
+.git/
+.gradle/
+.m2/

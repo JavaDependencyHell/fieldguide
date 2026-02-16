@@ -1,0 +1,52 @@
+# Scenario 4: Hardcoded Version vs Dependency Management (What to Do When One Hardcoded Version Overrides Everything Else)
+
+## What This Scenario Demonstrates
+This scenario shows what happens when you have a conflict between a version defined in a BOM (Dependency Management) and a version explicitly declared in your dependencies.
+
+## Dependency Graph
+```{mermaid}
+graph LR
+    Root[Project Root] -- imports --> BOM[demo-bom:1.0.0]
+    Root --> LibA[lib-a:2.0.0]
+    Root --> LibB[lib-b]
+    BOM -. suggests .-> LibA_BOM[lib-a:1.0.0]
+    BOM -. suggests .-> LibB_BOM[lib-b:1.0.0]
+```
+
+### Maven (pom.xml)
+
+```{.xml include="/demos/maven-demo/scenario-4-override/pom.xml" snippet="s4-deps"}
+```
+
+## Expected Intuition
+Developers often assume that "explicit wins". If I type `2.0.0` right next to the dependency, I expect `2.0.0`, even if the BOM says `1.0.0`.
+
+## Actual Resolution Results
+*   **Maven**: Resolves `lib-a:2.0.0`. Explicit declaration in `<dependencies>` overrides `<dependencyManagement>`.
+*   **Gradle**: Resolves `lib-a:2.0.0`. "Newest wins" logic applies, and `2.0.0` > `1.0.0`.
+*   **SBT**: Resolves `lib-a:2.0.0`. Explicit override works.
+
+## Classpath Reality
+`lib-a-2.0.0.jar` is on the classpath. `lib-b-1.0.0.jar` is on the classpath (from BOM).
+
+## Why This Happens
+*   **Maven**: The `<dependencies>` section is the final authority for the current project. Management is just a suggestion/default.
+*   **Gradle**: The BOM is treated as a constraint or recommendation. An explicit version is a stronger signal (or simply a newer version).
+
+## How Developers Commonly "Fix" This
+They might try to change the BOM version, which affects everything. Or they use exclusions.
+
+## Safer Ways to Take Control
+Be careful when overriding BOMs. You might break compatibility with other libraries managed by that BOM. If you must override, ensure you test thoroughly.
+
+## Signals to Watch For
+*   Runtime errors if the overridden library is incompatible with other BOM-managed libraries.
+
+## How This Scales in Real Systems
+Overriding BOMs is common when patching a vulnerability before the BOM maintainers release an update.
+
+## Key Takeaway
+Explicit declarations generally trump managed recommendations, allowing for targeted overrides.
+
+## Related Scenarios
+*   [Scenario 6: Forcing Transitive Versions via Dependency Management](../scenario-6-forcing/guide.qmd) - How to force a version even against explicit declarations.

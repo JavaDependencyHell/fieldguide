@@ -1,0 +1,42 @@
+# Scenario 15: Dependency Substitution
+
+## What This Scenario Demonstrates
+This scenario demonstrates substitution in SBT.
+
+## Dependency Graph
+N/A
+
+### SBT (build.sbt)
+
+```{.scala include="/demos/sbt-demo/scenario-15-substitution/build.sbt" snippet="s15-deps"}
+```
+
+## Expected Intuition
+N/A
+
+## Actual Resolution Results
+*   **SBT**: N/A
+
+## Classpath Reality
+N/A
+
+## Why This Happens
+N/A
+
+## How Developers Commonly "Fix" This
+N/A
+
+## Safer Ways to Take Control
+N/A
+
+## Signals to Watch For
+N/A
+
+## How This Scales in Real Systems
+N/A
+
+## Key Takeaway
+Substitution via exclude/add.
+
+## Related Scenarios
+N/A

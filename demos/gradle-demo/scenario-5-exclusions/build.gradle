@@ -1,0 +1,18 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    maven {
+        url = uri("../../../target/local-repo")
+    }
+}
+
+// tag::s5-deps[]
+dependencies {
+    implementation('com.demo:lib-a:1.0.0') {
+        // Exclude transitive dependency lib-c
+        exclude group: 'com.demo', module: 'lib-c'
+    }
+}
+// end::s5-deps[]

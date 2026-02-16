@@ -1,0 +1,1 @@
+/Users/spoole/GitHub/BuildManagerDemo/target/local-repo/com/demo/lib-a/1.0.0/lib-a-1.0.0.jar:/Users/spoole/GitHub/BuildManagerDemo/target/local-repo/com/demo/lib-b/1.0.0/lib-b-1.0.0.jar:/Users/spoole/GitHub/BuildManagerDemo/target/local-repo/com/demo/lib-c/2.0.0/lib-c-2.0.0.jar

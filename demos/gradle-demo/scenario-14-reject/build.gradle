@@ -1,0 +1,23 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    maven {
+        url = uri("../../../target/local-repo")
+    }
+}
+
+// tag::s14-deps[]
+dependencies {
+    implementation 'com.demo:lib-a:1.0.0'
+    
+    // We can explicitly reject a version.
+    // If dynamic resolution or conflict resolution tries to pick 2.0.0, it will fail or choose another.
+    implementation('com.demo:lib-a') {
+        version {
+            reject '2.0.0'
+        }
+    }
+}
+// end::s14-deps[]

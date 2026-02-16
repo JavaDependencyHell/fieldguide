@@ -1,0 +1,42 @@
+# Scenario 12: Component Metadata Rules (What to Do When Metadata Changes the Outcome of Resolution)
+
+## What This Scenario Demonstrates
+This scenario demonstrates fixing bad metadata with Gradle rules.
+
+## Dependency Graph
+`lib-a:1.0.0` -> `lib-b:1.0.0` (wrong) -> `lib-b:2.0.0` (fixed)
+
+### Gradle (Groovy DSL)
+
+```{.groovy include="/demos/gradle-demo/scenario-12-metadata/build.gradle" snippet="s12-deps"}
+```
+
+## Expected Intuition
+"I can fix it without waiting for upstream."
+
+## Actual Resolution Results
+*   **Gradle**: `lib-b` becomes `2.0.0`.
+
+## Classpath Reality
+`2.0.0`.
+
+## Why This Happens
+Rule modifies metadata in-memory.
+
+## How Developers Commonly "Fix" This
+Exclusions + explicit dependency.
+
+## Safer Ways to Take Control
+Metadata rules are safer as they apply globally.
+
+## Signals to Watch For
+N/A
+
+## How This Scales in Real Systems
+Powerful for patching ecosystem issues.
+
+## Key Takeaway
+You can patch metadata on the fly.
+
+## Related Scenarios
+N/A

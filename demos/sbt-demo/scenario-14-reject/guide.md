@@ -1,0 +1,42 @@
+# Scenario 14: Rejecting Versions
+
+## What This Scenario Demonstrates
+This scenario demonstrates rejecting versions in SBT.
+
+## Dependency Graph
+N/A
+
+### SBT (build.sbt)
+
+```{.scala include="/demos/sbt-demo/scenario-14-reject/build.sbt" snippet="s14-deps"}
+```
+
+## Expected Intuition
+N/A
+
+## Actual Resolution Results
+*   **SBT**: N/A
+
+## Classpath Reality
+N/A
+
+## Why This Happens
+N/A
+
+## How Developers Commonly "Fix" This
+N/A
+
+## Safer Ways to Take Control
+N/A
+
+## Signals to Watch For
+N/A
+
+## How This Scales in Real Systems
+N/A
+
+## Key Takeaway
+Rejection via overrides/exclusions.
+
+## Related Scenarios
+N/A

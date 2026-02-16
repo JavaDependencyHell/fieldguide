@@ -1,0 +1,26 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    maven {
+        url = uri("../../../target/local-repo")
+        metadataSources {
+            mavenPom()
+            artifact()
+        }
+    }
+}
+
+// tag::s11-deps[]
+dependencyLocking {
+    lockAllConfigurations()
+}
+
+dependencies {
+    // Dynamic version
+    implementation 'com.demo:lib-a:1.+'
+}
+// end::s11-deps[]
+
+// To generate lock file: ./gradlew dependencies --write-locks

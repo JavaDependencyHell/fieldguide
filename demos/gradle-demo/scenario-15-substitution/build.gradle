@@ -1,0 +1,23 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    maven {
+        url = uri("../../../target/local-repo")
+    }
+}
+
+// tag::s15-deps[]
+dependencies {
+    implementation 'com.demo:lib-a:1.0.0'
+}
+
+configurations.all {
+    resolutionStrategy.dependencySubstitution {
+        // Substitute one module for another (or a version for another)
+        // Here we substitute lib-a:1.0.0 with lib-a:2.0.0
+        substitute module('com.demo:lib-a:1.0.0') using module('com.demo:lib-a:2.0.0')
+    }
+}
+// end::s15-deps[]

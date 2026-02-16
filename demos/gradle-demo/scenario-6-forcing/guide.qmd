@@ -1,0 +1,47 @@
+# Scenario 6: Strict Constraints (What to Do When Constraints Stop Resolution Completely)
+
+## What This Scenario Demonstrates
+This scenario demonstrates Gradle's `strictly` keyword to force a version, even downgrading if necessary.
+
+## Dependency Graph
+```{mermaid}
+graph LR
+    Root[Project Root] --> LibA[lib-a:2.0.0]
+    LibA --> LibC[lib-c:2.0.0]
+    Root -- strictly --> LibC_Forced[lib-c:1.0.0]
+```
+
+### Gradle (Groovy DSL)
+
+```{.groovy include="/demos/gradle-demo/scenario-6-forcing/build.gradle" snippet="s6-deps"}
+```
+
+## Expected Intuition
+"I want 1.0.0, period."
+
+## Actual Resolution Results
+*   **Gradle**: Resolves `1.0.0`. It downgrades `2.0.0` to `1.0.0`.
+
+## Classpath Reality
+`1.0.0`.
+
+## Why This Happens
+`strictly` is a strong constraint that overrides conflict resolution.
+
+## How Developers Commonly "Fix" This
+This is the fix for unwanted upgrades.
+
+## Safer Ways to Take Control
+Use `strictly` in `constraints` blocks.
+
+## Signals to Watch For
+"Downgrading..." messages in build scan or debug output.
+
+## How This Scales in Real Systems
+Essential for locking down versions in enterprise environments.
+
+## Key Takeaway
+`strictly` enforces a version, even if it means a downgrade.
+
+## Related Scenarios
+*   [Scenario 14: Reject](../scenario-14-reject/guide.qmd)

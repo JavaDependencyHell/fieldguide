@@ -1,0 +1,42 @@
+# Scenario 11: Dependency Locking
+
+## What This Scenario Demonstrates
+This scenario demonstrates SBT locking.
+
+## Dependency Graph
+Dynamic.
+
+### SBT (build.sbt)
+
+```{.scala include="/demos/sbt-demo/scenario-11-locking/build.sbt" snippet="s11-deps"}
+```
+
+## Expected Intuition
+Locked.
+
+## Actual Resolution Results
+*   **SBT**: Uses lock file.
+
+## Classpath Reality
+Locked.
+
+## Why This Happens
+Locking.
+
+## How Developers Commonly "Fix" This
+N/A
+
+## Safer Ways to Take Control
+Locking.
+
+## Signals to Watch For
+N/A
+
+## How This Scales in Real Systems
+N/A
+
+## Key Takeaway
+Locking ensures reproducibility.
+
+## Related Scenarios
+*   [Scenario 9: Ranges](../scenario-9-ranges/guide.md)

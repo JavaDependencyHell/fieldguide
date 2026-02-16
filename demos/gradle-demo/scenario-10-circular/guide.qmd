@@ -1,0 +1,42 @@
+# Scenario 10: Circular Dependencies (What to Do When Gradle Can’t Untangle the Graph)
+
+## What This Scenario Demonstrates
+This scenario demonstrates Gradle's handling of circular dependencies.
+
+## Dependency Graph
+A -> B -> A
+
+### Gradle (Groovy DSL)
+
+```{.groovy include="/demos/gradle-demo/scenario-10-circular/build.gradle" snippet="s10-deps"}
+```
+
+## Expected Intuition
+"It should work."
+
+## Actual Resolution Results
+*   **Gradle**: Resolves successfully.
+
+## Classpath Reality
+Both jars present.
+
+## Why This Happens
+Gradle handles cycles gracefully.
+
+## How Developers Commonly "Fix" This
+N/A
+
+## Safer Ways to Take Control
+Avoid cycles.
+
+## Signals to Watch For
+N/A
+
+## How This Scales in Real Systems
+N/A
+
+## Key Takeaway
+Gradle tolerates cycles.
+
+## Related Scenarios
+N/A

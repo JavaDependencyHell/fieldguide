@@ -1,0 +1,42 @@
+# Scenario 9: Version Ranges (What to Do When Gradle Chooses a Version You Didn’t Intend)
+
+## What This Scenario Demonstrates
+This scenario demonstrates Gradle's support for version ranges.
+
+## Dependency Graph
+`[1.0.0, 2.0.0)`
+
+### Gradle (Groovy DSL)
+
+```{.groovy include="/demos/gradle-demo/scenario-9-ranges/build.gradle" snippet="s9-deps"}
+```
+
+## Expected Intuition
+`1.0.0`.
+
+## Actual Resolution Results
+*   **Gradle**: Resolves `1.0.0`.
+
+## Classpath Reality
+`1.0.0`.
+
+## Why This Happens
+Gradle supports Maven-style ranges.
+
+## How Developers Commonly "Fix" This
+N/A
+
+## Safer Ways to Take Control
+Locking.
+
+## Signals to Watch For
+N/A
+
+## How This Scales in Real Systems
+N/A
+
+## Key Takeaway
+Ranges work but are dynamic.
+
+## Related Scenarios
+*   [Scenario 11: Locking](../scenario-11-locking/guide.md)

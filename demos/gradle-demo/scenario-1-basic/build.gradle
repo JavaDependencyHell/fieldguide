@@ -1,0 +1,17 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    maven {
+        url = uri("../../../target/local-repo")
+    }
+}
+
+// lib-a:1.0.0 depends on lib-b:1.0.0, which depends on lib-c:1.0.0
+
+// tag::s1-deps[]
+dependencies {
+    implementation 'com.demo:lib-a:1.0.0'
+}
+// end::s1-deps[]

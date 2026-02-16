@@ -1,0 +1,42 @@
+# Scenario 13: Variant Selection (What to Do When the “Correct” Dependency Is Rejected)
+
+## What This Scenario Demonstrates
+This scenario demonstrates Gradle's attribute-based matching.
+
+## Dependency Graph
+N/A
+
+### Gradle (Groovy DSL)
+
+```{.groovy include="/demos/gradle-demo/scenario-13-variants/build.gradle" snippet="s13-deps"}
+```
+
+## Expected Intuition
+"I get the right variant (Java 11, Debug, etc)."
+
+## Actual Resolution Results
+*   **Gradle**: Matches attributes.
+
+## Classpath Reality
+Correct variant.
+
+## Why This Happens
+Attributes.
+
+## How Developers Commonly "Fix" This
+Classifiers (Maven style).
+
+## Safer Ways to Take Control
+Use attributes.
+
+## Signals to Watch For
+"Cannot choose between..."
+
+## How This Scales in Real Systems
+The future of dependency management.
+
+## Key Takeaway
+Attributes > Classifiers.
+
+## Related Scenarios
+N/A

@@ -1,0 +1,42 @@
+# Scenario 1: Basic Transitive Resolution (What to Do When SBT Pulls in More Than You Declared)
+
+## What This Scenario Demonstrates
+This scenario demonstrates the fundamental concept of transitive dependency resolution in SBT.
+
+## Dependency Graph
+A -> B -> C
+
+### SBT (build.sbt)
+
+```{.scala include="/demos/sbt-demo/scenario-1-basic/build.sbt" snippet="s1-deps"}
+```
+
+## Expected Intuition
+All present.
+
+## Actual Resolution Results
+*   **SBT**: Resolves all.
+
+## Classpath Reality
+All present.
+
+## Why This Happens
+Standard resolution.
+
+## How Developers Commonly "Fix" This
+N/A
+
+## Safer Ways to Take Control
+N/A
+
+## Signals to Watch For
+N/A
+
+## How This Scales in Real Systems
+N/A
+
+## Key Takeaway
+SBT resolves transitively.
+
+## Related Scenarios
+*   [Scenario 2: Conflict](../scenario-2-conflict/guide.md)

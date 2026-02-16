@@ -1,0 +1,47 @@
+# Scenario 2: Version Conflict Resolution (Newest Wins) (What to Do When Gradle Picks a Newer Version Than Maven Would)
+
+## What This Scenario Demonstrates
+This scenario demonstrates Gradle's default "Newest Wins" conflict resolution strategy.
+
+## Dependency Graph
+```{mermaid}
+graph LR
+    Root[Project Root] --> LibA[lib-a:2.0.0]
+    Root --> LibB_Direct[lib-b:1.0.0]
+    LibA --> LibB_Transitive[lib-b:2.0.0]
+```
+
+### Gradle (Groovy DSL)
+
+```{.groovy include="/demos/gradle-demo/scenario-2-conflict/build.gradle" snippet="s2-deps"}
+```
+
+## Expected Intuition
+A Maven user might expect `1.0.0` (nearest). A Gradle user expects `2.0.0` (newest).
+
+## Actual Resolution Results
+*   **Gradle**: Resolves `lib-b:2.0.0`.
+
+## Classpath Reality
+`lib-b-2.0.0.jar`.
+
+## Why This Happens
+Gradle assumes semantic versioning: newer versions are backward compatible and include fixes. Therefore, it picks the highest version in the graph to satisfy all consumers.
+
+## How Developers Commonly "Fix" This
+If `2.0.0` is actually incompatible, they use `strictly` or `force`.
+
+## Safer Ways to Take Control
+Use `constraints` to define the version policy.
+
+## Signals to Watch For
+*   `-> 2.0.0` in the dependency tree output, indicating an upgrade.
+
+## How This Scales in Real Systems
+"Newest Wins" generally leads to fewer duplicate classes but higher risk of runtime incompatibility if SemVer is violated.
+
+## Key Takeaway
+Gradle upgrades you to the newest version found in the graph.
+
+## Related Scenarios
+*   [Scenario 6: Strict](../scenario-6-forcing/guide.qmd)

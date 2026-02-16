@@ -1,0 +1,42 @@
+# Scenario 15: Dependency Substitution (What to Do When One Component Quietly Replaces Another)
+
+## What This Scenario Demonstrates
+This scenario demonstrates swapping dependencies.
+
+## Dependency Graph
+Swap `lib-a:1.0.0` -> `lib-a:2.0.0`.
+
+### Gradle (Groovy DSL)
+
+```{.groovy include="/demos/gradle-demo/scenario-15-substitution/build.gradle" snippet="s15-deps"}
+```
+
+## Expected Intuition
+"Replace it."
+
+## Actual Resolution Results
+*   **Gradle**: Swaps it.
+
+## Classpath Reality
+`2.0.0`.
+
+## Why This Happens
+Substitution rule.
+
+## How Developers Commonly "Fix" This
+Exclusions.
+
+## Safer Ways to Take Control
+Substitution is cleaner.
+
+## Signals to Watch For
+N/A
+
+## How This Scales in Real Systems
+Great for local development (substitute module for project).
+
+## Key Takeaway
+Swap dependencies easily.
+
+## Related Scenarios
+*   [Scenario 5: Exclusions](../scenario-5-exclusions/guide.md)

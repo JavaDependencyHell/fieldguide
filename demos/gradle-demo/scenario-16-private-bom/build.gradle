@@ -1,0 +1,20 @@
+plugins {
+    id 'java'
+}
+
+group 'com.example.scenario'
+version '1.0-SNAPSHOT'
+
+// snippet: repo-and-deps
+repositories {
+    maven {
+        url = uri("../../../demo-dependencies/private-repo")
+    }
+    mavenCentral()
+}
+
+dependencies {
+    implementation platform('com.thirdparty.springboot:patched-bom:1.0.0')
+    implementation 'org.springframework.boot:spring-boot-starter'
+}
+// snippet: end

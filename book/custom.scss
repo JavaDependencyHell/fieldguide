@@ -1,0 +1,31 @@
+/* custom.scss */
+.case-file-sidebar {
+  float: right;
+  width: 25%;
+  background-color: #f8f9fa;
+  border-left: 4px solid #007bff;
+  padding: 10px;
+  font-size: 0.8em;
+}
+
+.antidote-box {
+  background-color: #e6ffed;
+  border: 2px solid #28a745;
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 20px;
+}
+
+/* Watermark for HTML output */
+body::after {
+  content: "DRAFT";
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-45deg);
+  font-size: 10rem;
+  color: #d9534f;
+  opacity: 0.05;
+  z-index: -1;
+  pointer-events: none;
+}

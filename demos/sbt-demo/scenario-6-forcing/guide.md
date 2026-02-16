@@ -1,0 +1,42 @@
+# Scenario 6: Strict Constraints
+
+## What This Scenario Demonstrates
+This scenario demonstrates forcing a version via overrides.
+
+## Dependency Graph
+Force 2.0.0.
+
+### SBT (build.sbt)
+
+```{.scala include="/demos/sbt-demo/scenario-6-forcing/build.sbt" snippet="s6-deps"}
+```
+
+## Expected Intuition
+2.0.0.
+
+## Actual Resolution Results
+*   **SBT**: 2.0.0.
+
+## Classpath Reality
+2.0.0.
+
+## Why This Happens
+Overrides.
+
+## How Developers Commonly "Fix" This
+N/A
+
+## Safer Ways to Take Control
+N/A
+
+## Signals to Watch For
+N/A
+
+## How This Scales in Real Systems
+N/A
+
+## Key Takeaway
+Overrides force versions.
+
+## Related Scenarios
+N/A

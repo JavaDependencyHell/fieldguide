@@ -1,0 +1,42 @@
+# Scenario 2: Version Conflict Resolution (Latest Wins) (What to Do When SBT Always Picks the Latest Version)
+
+## What This Scenario Demonstrates
+This scenario demonstrates SBT's "Latest Wins" strategy.
+
+## Dependency Graph
+A -> B:2.0.0, Root -> B:1.0.0
+
+### SBT (build.sbt)
+
+```{.scala include="/demos/sbt-demo/scenario-2-conflict/build.sbt" snippet="s2-deps"}
+```
+
+## Expected Intuition
+Maven users expect 1.0.0. SBT users expect 2.0.0.
+
+## Actual Resolution Results
+*   **SBT**: Resolves 2.0.0.
+
+## Classpath Reality
+2.0.0.
+
+## Why This Happens
+Ivy/SBT defaults to latest revision.
+
+## How Developers Commonly "Fix" This
+Overrides.
+
+## Safer Ways to Take Control
+`dependencyOverrides`.
+
+## Signals to Watch For
+Eviction warnings.
+
+## How This Scales in Real Systems
+Similar to Gradle.
+
+## Key Takeaway
+SBT picks the latest version.
+
+## Related Scenarios
+*   [Scenario 3: Mgmt](../scenario-3-mgmt/guide.md)

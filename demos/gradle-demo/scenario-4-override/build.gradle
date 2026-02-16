@@ -1,0 +1,23 @@
+plugins {
+    id 'java'
+    id 'java-library'
+}
+
+repositories {
+    maven {
+        url = uri("../../../target/local-repo")
+    }
+}
+
+// tag::s4-deps[]
+dependencies {
+    // Import the BOM
+    implementation platform('com.demo:demo-bom:1.0.0')
+    
+    // Override the BOM version (1.0.0) with a specific version (2.0.0)
+    implementation 'com.demo:lib-a:2.0.0'
+    
+    // Use the BOM version for this one
+    implementation 'com.demo:lib-b'
+}
+// end::s4-deps[]

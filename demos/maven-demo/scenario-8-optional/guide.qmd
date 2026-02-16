@@ -1,0 +1,46 @@
+# Scenario 8: Optional Dependencies (What to Do When “Optional” Dependencies Don’t Show Up)
+
+## What This Scenario Demonstrates
+This scenario demonstrates the `<optional>true</optional>` flag in Maven.
+
+## Dependency Graph
+```{mermaid}
+graph LR
+    Root["Project Root"] --> LibA["lib-a:1.0.0 (optional)"]
+```
+
+### Maven (pom.xml)
+
+```{.xml include="/demos/maven-demo/scenario-8-optional/pom.xml" snippet="s8-deps"}
+```
+
+## Expected Intuition
+"I use this library, but my consumers don't need it unless they use a specific feature."
+
+## Actual Resolution Results
+*   **Maven**: `lib-a` is included in *this* project's classpath. But if another project depends on *this* project, `lib-a` is excluded.
+*   **Gradle/SBT**: Respect this flag when consuming Maven dependencies.
+
+## Classpath Reality
+Present for the producer, absent for the consumer.
+
+## Why This Happens
+It prevents "pollution" of the consumer's classpath with libraries they might not need (e.g., a database driver for a DB they don't use).
+
+## How Developers Commonly "Fix" This
+If a consumer *does* need the optional feature, they must explicitly declare the dependency themselves.
+
+## Safer Ways to Take Control
+Document optional dependencies clearly so consumers know what to add.
+
+## Signals to Watch For
+*   `ClassNotFoundException` when using a specific feature of a library.
+
+## How This Scales in Real Systems
+Used heavily by large frameworks (Spring, Hibernate) to support many integrations without forcing all of them on everyone.
+
+## Key Takeaway
+Optional dependencies shift the burden of declaration to the consumer.
+
+## Related Scenarios
+*   [Scenario 7: Scopes](../scenario-7-scopes/guide.qmd) - `provided` scope is similar but semantically different.

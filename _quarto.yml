@@ -1,0 +1,94 @@
+project:
+  type: book
+  output-dir: build/book
+
+filters:
+  - include-code.lua
+
+format:
+  html:
+    toc-depth: 1
+    mermaid:
+      theme: neutral
+    number-sections: true
+  pdf:
+    number-sections: true
+    toc-depth: 1
+    papersize: statement
+    theme: [default, custom.scss]
+    keep-tex: true
+    mermaid:
+      theme: neutral
+    include-in-header:
+      text: |
+        \usepackage{draftwatermark}
+        \SetWatermarkText{DRAFT}
+        \SetWatermarkScale{2}
+        \SetWatermarkColor[gray]{0.95}
+        \makeatletter
+        \@addtoreset{chapter}{part}
+        \makeatother
+
+book:
+  title: "Dependency Hell"
+  chapters:
+    - index.md
+    - book/content/intro.md
+    - book/content/how-to-use.md
+    - book/content/authors.md
+    - book/content/sponsors.md
+    - part: "Maven Scenarios"
+      chapters:
+        - demos/maven-demo/scenario-1-basic/guide.qmd
+        - demos/maven-demo/scenario-2-conflict/guide.qmd
+        - demos/maven-demo/scenario-3-mgmt/guide.qmd
+        - demos/maven-demo/scenario-4-override/guide.qmd
+        - demos/maven-demo/scenario-5-exclusions/guide.qmd
+        - demos/maven-demo/scenario-6-forcing/guide.qmd
+        - demos/maven-demo/scenario-7-scopes/guide.qmd
+        - demos/maven-demo/scenario-8-optional/guide.qmd
+        - demos/maven-demo/scenario-9-ranges/guide.qmd
+        - demos/maven-demo/scenario-10-circular/guide.qmd
+        - demos/maven-demo/scenario-16-private-bom/guide.qmd
+        - demos/maven-demo/scenario-17-private-patch/guide.qmd
+    - part: "Gradle Scenarios"
+      chapters:
+        - demos/gradle-demo/scenario-1-basic/guide.qmd
+        - demos/gradle-demo/scenario-2-conflict/guide.qmd
+        - demos/gradle-demo/scenario-3-mgmt/guide.qmd
+        - demos/gradle-demo/scenario-4-override/guide.qmd
+        - demos/gradle-demo/scenario-5-exclusions/guide.qmd
+        - demos/gradle-demo/scenario-6-forcing/guide.qmd
+        - demos/gradle-demo/scenario-7-scopes/guide.qmd
+        - demos/gradle-demo/scenario-8-optional/guide.qmd
+        - demos/gradle-demo/scenario-9-ranges/guide.qmd
+        - demos/gradle-demo/scenario-10-circular/guide.qmd
+        - demos/gradle-demo/scenario-11-locking/guide.qmd
+        - demos/gradle-demo/scenario-12-metadata/guide.qmd
+        - demos/gradle-demo/scenario-13-variants/guide.qmd
+        - demos/gradle-demo/scenario-14-reject/guide.qmd
+        - demos/gradle-demo/scenario-15-substitution/guide.qmd
+        - demos/gradle-demo/scenario-16-private-bom/guide.qmd
+        - demos/gradle-demo/scenario-17-private-patch/guide.qmd
+    - part: "SBT Scenarios"
+      chapters:
+        - demos/sbt-demo/scenario-1-basic/guide.qmd
+        - demos/sbt-demo/scenario-2-conflict/guide.md
+        - demos/sbt-demo/scenario-3-mgmt/guide.md
+        - demos/sbt-demo/scenario-4-override/guide.md
+        - demos/sbt-demo/scenario-5-exclusions/guide.md
+        - demos/sbt-demo/scenario-6-forcing/guide.md
+        - demos/sbt-demo/scenario-7-scopes/guide.md
+        - demos/sbt-demo/scenario-8-optional/guide.md
+        - demos/sbt-demo/scenario-9-ranges/guide.md
+        - demos/sbt-demo/scenario-10-circular/guide.md
+        - demos/sbt-demo/scenario-11-locking/guide.md
+        - demos/sbt-demo/scenario-12-metadata/guide.md
+        - demos/sbt-demo/scenario-13-variants/guide.md
+        - demos/sbt-demo/scenario-14-reject/guide.md
+        - demos/sbt-demo/scenario-15-substitution/guide.md
+        - demos/sbt-demo/scenario-16-private-bom/guide.qmd
+        - demos/sbt-demo/scenario-17-private-patch/guide.qmd
+  navbar:
+    page-footer:
+      left: "© 2024 Dependency Hell Authors"

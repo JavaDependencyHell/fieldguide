@@ -1,0 +1,21 @@
+plugins {
+    id 'java'
+    id 'java-library'
+}
+
+repositories {
+    maven {
+        url = uri("../../../target/local-repo")
+    }
+}
+
+// tag::s3-deps[]
+dependencies {
+    // Import the BOM to manage versions
+    implementation platform('com.demo:demo-bom:1.0.0')
+    
+    // Declare dependencies without versions
+    implementation 'com.demo:lib-a'
+    implementation 'com.demo:lib-b'
+}
+// end::s3-deps[]

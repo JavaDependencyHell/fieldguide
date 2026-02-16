@@ -1,0 +1,52 @@
+# Scenario 3: Dependency Management (BOM) (What to Do When Your BOM Isn’t Actually in Control)
+
+## What This Scenario Demonstrates
+This scenario demonstrates how to use a Bill of Materials (BOM) or `<dependencyManagement>` block to centralize version definitions. This decouples "what I need" from "which version I need".
+
+## Dependency Graph
+```{mermaid}
+graph LR
+    Root[Project Root] -- imports --> BOM[demo-bom:1.0.0]
+    Root --> LibA[lib-a:?]
+    Root --> LibB[lib-b:?]
+    BOM -. defines .-> LibA_Ver[lib-a:1.0.0]
+    BOM -. defines .-> LibB_Ver[lib-b:1.0.0]
+```
+
+### Maven (pom.xml)
+
+```{.xml include="/demos/maven-demo/scenario-3-mgmt/pom.xml" snippet="s3-deps"}
+```
+
+## Expected Intuition
+Developers expect that by importing a BOM, they don't need to specify versions for every library, and that all libraries will be consistent with each other (e.g., Spring Boot starters).
+
+## Actual Resolution Results
+*   **Maven**: Resolves `lib-a:1.0.0` and `lib-b:1.0.0`.
+*   **Gradle**: Resolves `lib-a:1.0.0` and `lib-b:1.0.0` (using `platform()`).
+*   **SBT**: Resolves `lib-a:1.0.0` and `lib-b:1.0.0` (using variables or plugins, as native BOM support is different).
+
+## Classpath Reality
+The classpath contains the versions specified in the BOM.
+
+## Why This Happens
+`<dependencyManagement>` serves two functions: it provides default versions for dependencies declared without an explicit version, and it overrides the version of any matching artifact encountered anywhere in the transitive dependency tree. It is not merely a lookup table — it is an active version-enforcement mechanism.
+
+## How Developers Commonly "Fix" This
+Without BOMs, developers copy-paste version numbers across multiple modules, leading to drift and inconsistency.
+
+## Safer Ways to Take Control
+This *is* the safer way. Always prefer BOMs or centralized version catalogs (Gradle) over scattered version numbers.
+
+## Signals to Watch For
+*   "Missing version" errors if the BOM is not imported correctly.
+*   Unexpected versions if a direct version declaration in `<dependencies>` overrides the BOM (see Scenario 4), or if multiple BOMs define the same artifact and the import ordering produces an unexpected winner.
+
+## How This Scales in Real Systems
+Essential for multi-module projects and microservices to ensure all services use the same library versions.
+
+## Key Takeaway
+Centralized dependency management is the single most effective tool for preventing dependency drift.
+
+## Related Scenarios
+*   [Scenario 4: Overriding Management](../scenario-4-override/guide.qmd) - What if I want a different version?

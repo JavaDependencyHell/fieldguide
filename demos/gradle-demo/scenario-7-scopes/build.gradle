@@ -1,0 +1,22 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    maven {
+        url = uri("../../../target/local-repo")
+    }
+}
+
+// tag::s7-deps[]
+dependencies {
+    // Compile scope (default implementation)
+    implementation 'com.demo:lib-a:1.0.0'
+    
+    // Provided scope (compileOnly)
+    compileOnly 'com.demo:lib-b:1.0.0'
+    
+    // Test scope (testImplementation)
+    testImplementation 'com.demo:lib-c:1.0.0'
+}
+// end::s7-deps[]

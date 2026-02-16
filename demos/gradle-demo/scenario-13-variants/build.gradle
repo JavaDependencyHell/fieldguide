@@ -1,0 +1,28 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    maven {
+        url = uri("../../../target/local-repo")
+    }
+}
+
+// Gradle supports "Attributes" to select different variants (e.g., debug vs release, java8 vs java11).
+// This is a powerful feature not present in standard Maven.
+// Since our dummy repo doesn't have variants published with Gradle Module Metadata,
+// we will just show the configuration block.
+
+// tag::s13-deps[]
+dependencies {
+    implementation 'com.demo:lib-a:1.0.0'
+    
+    // Example of requesting a specific attribute (if the library supported it)
+    // implementation('com.demo:lib-a:1.0.0') {
+    //     attributes {
+    //         attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
+    //         attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
+    //     }
+    // }
+}
+// end::s13-deps[]

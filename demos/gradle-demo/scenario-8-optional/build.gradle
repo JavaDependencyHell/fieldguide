@@ -1,0 +1,20 @@
+plugins {
+    id 'java'
+    id 'java-library' // Needed for 'api' vs 'implementation' distinction, but optionality is tricky in Gradle
+}
+
+repositories {
+    maven {
+        url = uri("../../../target/local-repo")
+    }
+}
+
+// tag::s8-deps[]
+dependencies {
+    // Gradle doesn't have a direct "optional" flag like Maven.
+    // The common pattern is to use 'compileOnly' (if it's needed for compilation but not runtime)
+    // or to use a feature variant.
+    // For this demo, we'll use compileOnly to simulate "optional" (not transitive to consumers).
+    compileOnly 'com.demo:lib-a:1.0.0'
+}
+// end::s8-deps[]

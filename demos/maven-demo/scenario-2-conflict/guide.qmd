@@ -1,0 +1,62 @@
+# Version Conflict Resolution or what to Do When the Version You Get Isn’t the One You Chose
+
+**Maven Scenario 2**
+
+This scenario demonstrates the "Diamond Dependency" problem where two different versions of the same library are requested.
+It highlights the fundamental difference in resolution strategies between Maven ("Nearest Wins") and Gradle/SBT ("Newest Wins").
+
+## Dependency Graph
+```{mermaid}
+graph LR
+    Root[Project Root] --> LibA[lib-a:2.0.0]
+    Root --> LibB_Direct[lib-b:1.0.0]
+    LibA --> LibB_Transitive[lib-b:2.0.0]
+```
+
+### Maven (pom.xml)
+
+```{.xml include="/demos/maven-demo/scenario-2-conflict/pom.xml" snippet="s2-deps"}
+```
+
+## Expected Intuition
+A developer might expect the "newer" version (`2.0.0`) to be chosen because it likely contains bug fixes or features required by `lib-a`. Or they might expect the "direct" dependency (`1.0.0`) to win because they explicitly asked for it.
+
+## Actual Resolution Results
+*   **Maven**: Resolves `lib-b:1.0.0`.
+    *   *Reason*: "Nearest Wins". `lib-b:1.0.0` is at depth 1 (direct). `lib-b:2.0.0` is at depth 2 (transitive via `lib-a`). Depth 1 < Depth 2.
+*   **Gradle**: Resolves `lib-b:2.0.0`.
+    *   *Reason*: "Newest Wins". Gradle sees both `1.0.0` and `2.0.0` in the graph and selects the highest version by default.
+*   **SBT**: Resolves `lib-b:2.0.0`.
+    *   *Reason*: "Latest Wins". Similar to Gradle, Ivy/SBT defaults to the latest revision.
+
+## Classpath Reality
+*   **Maven Classpath**: Contains `lib-b-1.0.0.jar`. `lib-a` might crash at runtime if it relies on API only present in `2.0.0`.
+*   **Gradle/SBT Classpath**: Contains `lib-b-2.0.0.jar`. The project code might crash if it relies on API removed in `2.0.0` (though `1.0.0` was explicitly requested).
+
+## Why This Happens
+*   **Maven**: Prioritizes predictability and control based on the POM structure. The assumption is "if you declared it closer, you meant it."
+*   **Gradle/SBT**: Prioritize semantic versioning assumptions (newer is better/compatible). The assumption is "you want the latest compatible version to satisfy all consumers."
+
+### What About Conflicts at the Same Depth?
+When two dependencies at the same depth in the dependency graph bring in conflicting versions of a transitive dependency, Maven's "nearest wins" rule doesn't apply directly. In this case, the tie-breaker is **declaration order** in the `pom.xml`. The version pulled in by the dependency that is declared *first* in the POM will be the one that is chosen. This makes the order of dependencies in your POM significant, which can be a source of fragility and unexpected behavior.
+
+## How Developers Commonly "Fix" This
+*   **Maven**: Reordering dependencies (fragile), adding explicit exclusions (verbose), or managing versions in a parent POM.
+*   **Gradle**: Forcing versions or using strict constraints.
+
+## Safer Ways to Take Control
+*   **Maven**: Use `<dependencyManagement>` to define the version of `lib-b` explicitly, regardless of depth.
+*   **Gradle**: Use `constraints` or `platform` (BOM) to align versions.
+
+## Signals to Watch For
+*   `NoSuchMethodError` or `ClassNotFoundException` at runtime.
+*   "Downgrade" warnings in build logs (if enabled).
+
+## How This Scales in Real Systems
+This is the most common cause of "Dependency Hell". As graphs grow, "nearest" becomes arbitrary and "newest" can trigger unexpected upgrades.
+
+## Key Takeaway
+Maven optimizes for "distance", while Gradle and SBT optimize for "freshness" — knowing which strategy your tool uses is critical for stability.
+
+## Related Scenarios
+*   [Scenario 3: Dependency Management](../scenario-3-mgmt/guide.qmd) - How to fix this centrally.
