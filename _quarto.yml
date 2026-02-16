@@ -32,7 +32,7 @@ format:
 book:
   title: "Dependency Hell"
   chapters:
-    - index.md
+    - book/content/index.md
     - book/content/intro.md
     - book/content/how-to-use.md
     - book/content/authors.md
