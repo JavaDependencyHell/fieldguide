@@ -1,6 +1,13 @@
 # Makefile for Dependency Hell Fieldguide
 
-.PHONY: all init utils book verify verify-maven verify-gradle verify-sbt clean help
+# Define variables for reuse
+BUILD_DIR = build/book
+PDF_OUTPUT = $(BUILD_DIR)/Dependency-Hell.pdf
+FINAL_PDF = $(BUILD_DIR)/book.pdf
+SAMPLE_PDF = $(BUILD_DIR)/sample.pdf
+FRONT_IMAGE = book/content/front-image.pdf
+
+.PHONY: all init utils book book-html book-pdf sample verify verify-maven verify-gradle verify-sbt clean help check-quarto check-qpdf
 
 # Default target
 all: init book verify
@@ -12,8 +19,9 @@ help:
 	@echo "  all            - Initialize, build book, and verify all demos (default)"
 	@echo "  init           - Build utilities and install demo dependencies to local repo"
 	@echo "  utils          - Build demo-utils"
-	@echo "  book           - Render the Quarto book (HTML)"
-	@echo "  book-pdf       - Render the Quarto book (PDF)"
+	@echo "  book-html      - Render the Quarto book (HTML)"
+	@echo "  book           - Render the Quarto book (PDF)"
+	@echo "  sample         - Generate a sample PDF from the book"
 	@echo "  verify         - Run all verification scripts"
 	@echo "  verify-maven   - Run Maven-specific verification"
 	@echo "  verify-gradle  - Run Gradle-specific verification"
@@ -28,12 +36,41 @@ init: utils
 utils:
 	cd demo-utils && mvn clean package -DskipTests
 
-# Render the book
-book:
-	quarto render --to html
+# Render the book (HTML and PDF) and apply post-processing
+book: check-quarto check-qpdf
+	@echo "Generating Book (HTML, PDF)..."
+	quarto render --to html --to pdf --output-dir $(BUILD_DIR)
+	@if [ -f $(FRONT_IMAGE) ] && [ -f $(PDF_OUTPUT) ]; then \
+		echo "Adding front image to PDF..."; \
+		qpdf --linearize --empty --pages $(FRONT_IMAGE) 1-z $(PDF_OUTPUT) 1-z -- $(FINAL_PDF); \
+	fi
+	@echo "Cleaning up intermediate files..."
+	find -L demos -name "guide_files" -type d -exec rm -rf {} +
+	@echo "Book generation complete. Output in $(BUILD_DIR)/"
 
-book-pdf:
-	quarto render --to pdf
+book-html: check-quarto
+	quarto render --to html --output-dir $(BUILD_DIR)
+
+book-pdf: book
+
+# Generate a sample PDF
+sample: book
+	@echo "Generating Sample PDF..."
+	@if [ -f $(FINAL_PDF) ]; then \
+		qpdf $(FINAL_PDF) --pages . 1,7,8-18,29-31,38-40,44-47,48,60-63,84-87,89-92 -- $(SAMPLE_PDF); \
+		echo "Sample generation complete. Output in $(SAMPLE_PDF)"; \
+	else \
+		echo "Error: $(FINAL_PDF) not found. Run 'make book' first."; \
+		exit 1; \
+	fi
+
+# Helper to check for quarto
+check-quarto:
+	@command -v quarto >/dev/null 2>&1 || { echo >&2 "Quarto not found. Visit https://quarto.org/docs/get-started/"; exit 1; }
+
+# Helper to check for qpdf
+check-qpdf:
+	@command -v qpdf >/dev/null 2>&1 || { echo >&2 "qpdf not found. Please install qpdf (e.g., brew install qpdf)."; exit 1; }
 
 # Verification targets
 verify: init

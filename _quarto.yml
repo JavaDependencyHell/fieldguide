@@ -32,7 +32,7 @@ format:
 book:
   title: "Dependency Hell"
   chapters:
-    - book/content/index.md
+    - index.md
     - book/content/intro.md
     - book/content/how-to-use.md
     - book/content/authors.md
@@ -91,4 +91,4 @@ book:
         - demos/sbt-demo/scenario-17-private-patch/guide.qmd
   navbar:
     page-footer:
-      left: "© 2024 Dependency Hell Authors"
+      left: "© 2026 Dependency Hell Authors"
