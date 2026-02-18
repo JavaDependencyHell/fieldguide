@@ -4,7 +4,13 @@
 This scenario demonstrates fixing bad metadata with Gradle rules.
 
 ## Dependency Graph
-`lib-a:1.0.0` -> `lib-b:1.0.0` (wrong) -> `lib-b:2.0.0` (fixed)
+```{mermaid}
+%%| fig-width: 4.4
+graph LR
+    Root[Project Root] --> LibA[lib-a:1.0.0]
+    LibA --> LibB[lib-b:1.0.0]
+    LibB -.-> LibB_Fixed[lib-b:2.0.0]
+```
 
 ### Gradle (Groovy DSL)
 

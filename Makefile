@@ -40,10 +40,8 @@ utils:
 book: check-quarto check-qpdf
 	@echo "Generating Book (HTML, PDF)..."
 	quarto render --to html --to pdf --output-dir $(BUILD_DIR)
-	@if [ -f $(FRONT_IMAGE) ] && [ -f $(PDF_OUTPUT) ]; then \
-		echo "Adding front image to PDF..."; \
-		qpdf --linearize --empty --pages $(FRONT_IMAGE) 1-z $(PDF_OUTPUT) 1-z -- $(FINAL_PDF); \
-	fi
+	@echo "Removing first blank page from PDF..."
+	qpdf $(PDF_OUTPUT) --pages . 2-z -- $(PDF_OUTPUT).tmp && mv $(PDF_OUTPUT).tmp $(PDF_OUTPUT)
 	@echo "Cleaning up intermediate files..."
 	find -L demos -name "guide_files" -type d -exec rm -rf {} +
 	@echo "Book generation complete. Output in $(BUILD_DIR)/"

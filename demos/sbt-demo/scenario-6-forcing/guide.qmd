@@ -4,7 +4,13 @@
 This scenario demonstrates forcing a version via overrides.
 
 ## Dependency Graph
-Force 2.0.0.
+```{mermaid}
+%%| fig-width: 4.4
+graph LR
+    Root[Project Root] --> LibA[lib-a:1.0.0]
+    LibA --> LibB[lib-b:1.0.0]
+    Root -- override --> LibB_Forced[lib-b:2.0.0]
+```
 
 ### SBT (build.sbt)
 

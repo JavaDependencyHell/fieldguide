@@ -4,7 +4,13 @@
 This scenario demonstrates Gradle configurations (`implementation`, `compileOnly`, `testImplementation`).
 
 ## Dependency Graph
-Standard scopes.
+```{mermaid}
+%%| fig-width: 4.4
+graph LR
+    Root[Project Root] --> LibA[lib-a:1.0.0 (implementation)]
+    Root --> LibB[lib-b:1.0.0 (compileOnly)]
+    Root --> LibC[lib-c:1.0.0 (testImplementation)]
+```
 
 ### Gradle (Groovy DSL)
 

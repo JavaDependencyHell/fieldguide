@@ -5,6 +5,7 @@ This scenario demonstrates how to surgically remove a transitive dependency from
 
 ## Dependency Graph
 ```{mermaid}
+%%| fig-width: 4.4
 graph LR
     Root[Project Root] --> LibA[lib-a:1.0.0]
     LibA -.-> LibC[lib-c:1.0.0]

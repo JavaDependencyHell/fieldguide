@@ -38,4 +38,4 @@ guide_files/
 
 /.quarto/
 **/*.quarto_ipynb
-*.tex
+

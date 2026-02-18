@@ -1,1 +1,0 @@
-/Users/spoole/GitHub/BuildManagerDemo/target/local-repo/com/demo/lib-circle-a/1.0.0/lib-circle-a-1.0.0.jar:/Users/spoole/GitHub/BuildManagerDemo/target/local-repo/com/demo/lib-circle-b/1.0.0/lib-circle-b-1.0.0.jar

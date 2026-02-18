@@ -4,7 +4,13 @@
 This scenario demonstrates SBT's "Latest Wins" strategy.
 
 ## Dependency Graph
-A -> B:2.0.0, Root -> B:1.0.0
+```{mermaid}
+%%| fig-width: 4.4
+graph LR
+    Root[Project Root] --> LibA[lib-a:2.0.0]
+    Root --> LibB_Direct[lib-b:1.0.0]
+    LibA --> LibB_Transitive[lib-b:2.0.0]
+```
 
 ### SBT (build.sbt)
 

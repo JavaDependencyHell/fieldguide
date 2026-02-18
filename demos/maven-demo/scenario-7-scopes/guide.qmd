@@ -5,6 +5,7 @@ This scenario demonstrates how scopes (`compile`, `provided`, `test`, `runtime`)
 
 ## Dependency Graph
 ```{mermaid}
+%%| fig-width: 4.4
 graph LR
     Root[Project Root] --> LibA["lib-a:1.0.0 (compile)"]
     Root --> LibB["lib-b:1.0.0 (provided)"]

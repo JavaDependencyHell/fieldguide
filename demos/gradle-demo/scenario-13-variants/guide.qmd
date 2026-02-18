@@ -4,7 +4,12 @@
 This scenario demonstrates Gradle's attribute-based matching.
 
 ## Dependency Graph
-N/A
+```{mermaid}
+%%| fig-width: 4.4
+graph LR
+    Root[Project Root] --> LibA[lib-a:1.0.0]
+    LibA -- variant --> LibA_Java11[lib-a:1.0.0 (Java 11)]
+```
 
 ### Gradle (Groovy DSL)
 

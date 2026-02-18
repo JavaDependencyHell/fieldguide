@@ -4,7 +4,13 @@
 This scenario demonstrates the fundamental concept of transitive dependency resolution in SBT.
 
 ## Dependency Graph
-A -> B -> C
+```{mermaid}
+%%| fig-width: 4.4
+graph LR
+    Root[Project Root] --> LibA[lib-a:1.0.0]
+    LibA --> LibB[lib-b:1.0.0]
+    LibB --> LibC[lib-c:1.0.0]
+```
 
 ### SBT (build.sbt)
 

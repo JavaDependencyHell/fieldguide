@@ -1,7 +1,7 @@
 # About the Authors {.unnumbered}
 
 
-    ### Hervé Boutemy
+### Hervé Boutemy
 
 [LinkedIn](https://www.linkedin.com/in/hboutemy/)       
 

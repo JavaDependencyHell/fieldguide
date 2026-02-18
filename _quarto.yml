@@ -1,11 +1,16 @@
 project:
   type: book
   output-dir: build/book
+  resources:
+    - book/content/cover.png
 
 filters:
   - include-code.lua
 
+
+
 format:
+
   html:
     toc-depth: 1
     mermaid:
@@ -14,9 +19,23 @@ format:
   pdf:
     number-sections: true
     toc-depth: 1
-    papersize: statement
+    fontsize: 11.5pt
+    documentclass: scrbook
     theme: [default, custom.scss]
-    keep-tex: true
+    keep-tex: false
+    papersize: A5
+    fig-width: 4.4
+    fig-height: 3.0
+    mermaid-format: png
+
+    classoption:
+      - DIV=12
+      - openany
+    geometry:
+      - top=18mm
+      - bottom=20mm
+      - left=18mm
+      - right=18mm
     mermaid:
       theme: neutral
     include-in-header:
@@ -28,6 +47,30 @@ format:
         \makeatletter
         \@addtoreset{chapter}{part}
         \makeatother
+        \RedeclareSectionCommand[
+          font=\Large\bfseries
+        ]{chapter}
+        \KOMAoptions{chapterprefix=false}
+        \renewcommand{\maketitle}{}
+        \renewcommand{\frontmatter}{}
+        \AtBeginDocument{
+          \begin{titlepage}
+            \newgeometry{top=0cm,bottom=0cm,right=0cm,left=0cm}
+            \thispagestyle{empty}
+            \includegraphics[width=\paperwidth,height=\paperheight]{book/content/cover.png}
+            \restoregeometry
+          \end{titlepage}
+          \pagenumbering{roman}
+        }
+        \usepackage{graphicx}
+        \makeatletter
+        \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+        \def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+        \makeatother
+        % Scale images if necessary, so that they will not overflow the page
+        % margins by default, and it is still possible to overwrite the defaults
+        % using explicit options in \includegraphics[width, height, ...]{}
+        \setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
 
 book:
   title: "Dependency Hell"
@@ -73,20 +116,20 @@ book:
     - part: "SBT Scenarios"
       chapters:
         - demos/sbt-demo/scenario-1-basic/guide.qmd
-        - demos/sbt-demo/scenario-2-conflict/guide.md
-        - demos/sbt-demo/scenario-3-mgmt/guide.md
-        - demos/sbt-demo/scenario-4-override/guide.md
-        - demos/sbt-demo/scenario-5-exclusions/guide.md
-        - demos/sbt-demo/scenario-6-forcing/guide.md
-        - demos/sbt-demo/scenario-7-scopes/guide.md
-        - demos/sbt-demo/scenario-8-optional/guide.md
-        - demos/sbt-demo/scenario-9-ranges/guide.md
-        - demos/sbt-demo/scenario-10-circular/guide.md
-        - demos/sbt-demo/scenario-11-locking/guide.md
-        - demos/sbt-demo/scenario-12-metadata/guide.md
-        - demos/sbt-demo/scenario-13-variants/guide.md
-        - demos/sbt-demo/scenario-14-reject/guide.md
-        - demos/sbt-demo/scenario-15-substitution/guide.md
+        - demos/sbt-demo/scenario-2-conflict/guide.qmd
+        - demos/sbt-demo/scenario-3-mgmt/guide.qmd
+        - demos/sbt-demo/scenario-4-override/guide.qmd
+        - demos/sbt-demo/scenario-5-exclusions/guide.qmd
+        - demos/sbt-demo/scenario-6-forcing/guide.qmd
+        - demos/sbt-demo/scenario-7-scopes/guide.qmd
+        - demos/sbt-demo/scenario-8-optional/guide.qmd
+        - demos/sbt-demo/scenario-9-ranges/guide.qmd
+        - demos/sbt-demo/scenario-10-circular/guide.qmd
+        - demos/sbt-demo/scenario-11-locking/guide.qmd
+        - demos/sbt-demo/scenario-12-metadata/guide.qmd
+        - demos/sbt-demo/scenario-13-variants/guide.qmd
+        - demos/sbt-demo/scenario-14-reject/guide.qmd
+        - demos/sbt-demo/scenario-15-substitution/guide.qmd
         - demos/sbt-demo/scenario-16-private-bom/guide.qmd
         - demos/sbt-demo/scenario-17-private-patch/guide.qmd
   navbar:

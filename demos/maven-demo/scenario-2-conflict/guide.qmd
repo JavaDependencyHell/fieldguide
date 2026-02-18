@@ -7,6 +7,7 @@ It highlights the fundamental difference in resolution strategies between Maven 
 
 ## Dependency Graph
 ```{mermaid}
+%%| fig-width: 4.4
 graph LR
     Root[Project Root] --> LibA[lib-a:2.0.0]
     Root --> LibB_Direct[lib-b:1.0.0]

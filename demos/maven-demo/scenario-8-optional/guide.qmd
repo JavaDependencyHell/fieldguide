@@ -5,6 +5,7 @@ This scenario demonstrates the `<optional>true</optional>` flag in Maven.
 
 ## Dependency Graph
 ```{mermaid}
+%%| fig-width: 4.4
 graph LR
     Root["Project Root"] --> LibA["lib-a:1.0.0 (optional)"]
 ```

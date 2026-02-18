@@ -5,6 +5,7 @@ This scenario demonstrates excluding transitive dependencies in Gradle.
 
 ## Dependency Graph
 ```{mermaid}
+%%| fig-width: 4.4
 graph LR
     Root[Project Root] --> LibA[lib-a:1.0.0]
     LibA -.-> LibC[lib-c:1.0.0]

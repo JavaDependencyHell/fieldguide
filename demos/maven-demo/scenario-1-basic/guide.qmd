@@ -6,6 +6,7 @@ This scenario demonstrates the fundamental concept of transitive dependency reso
 
 ### Dependency Graph
 ```{mermaid}
+%%| fig-width: 4.4
 graph LR
     Root(Project Root) --> LibA(lib-a:1.0.0)
     LibA --> LibB(lib-b:1.0.0)

@@ -4,7 +4,13 @@
 This scenario demonstrates Gradle's handling of circular dependencies.
 
 ## Dependency Graph
-A -> B -> A
+```{mermaid}
+%%| fig-width: 4.4
+graph LR
+    Root[Project Root] --> LibA[lib-a:1.0.0]
+    LibA --> LibB[lib-b:1.0.0]
+    LibB --> LibA
+```
 
 ### Gradle (Groovy DSL)
 

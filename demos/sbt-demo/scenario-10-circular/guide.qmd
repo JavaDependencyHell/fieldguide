@@ -4,7 +4,13 @@
 This scenario demonstrates SBT cycles.
 
 ## Dependency Graph
-Cycle.
+```{mermaid}
+%%| fig-width: 4.4
+graph LR
+    Root[Project Root] --> LibA[lib-circle-a:1.0.0]
+    LibA --> LibB[lib-circle-b:1.0.0]
+    LibB --> LibA
+```
 
 ### SBT (build.sbt)
 

@@ -5,6 +5,7 @@ This scenario demonstrates that an explicit version in Gradle overrides a `platf
 
 ## Dependency Graph
 ```{mermaid}
+%%| fig-width: 4.4
 graph LR
     Root[Project Root] -- platform --> BOM[demo-bom:1.0.0]
     Root --> LibA[lib-a:2.0.0]

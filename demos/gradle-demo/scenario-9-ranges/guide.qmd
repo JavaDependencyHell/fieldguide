@@ -4,7 +4,11 @@
 This scenario demonstrates Gradle's support for version ranges.
 
 ## Dependency Graph
-`[1.0.0, 2.0.0)`
+```{mermaid}
+%%| fig-width: 4.4
+graph LR
+    Root[Project Root] --> LibA[lib-a:1.+]
+```
 
 ### Gradle (Groovy DSL)
 

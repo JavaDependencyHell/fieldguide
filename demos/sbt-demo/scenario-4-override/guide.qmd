@@ -4,7 +4,12 @@
 This scenario demonstrates that `dependencyOverrides` wins over `libraryDependencies`.
 
 ## Dependency Graph
-Dep: 1.0.0, Override: 2.0.0.
+```{mermaid}
+%%| fig-width: 4.4
+graph LR
+    Root[Project Root] --> LibA[lib-a:1.0.0]
+    Root -- override --> LibA_Forced[lib-a:2.0.0]
+```
 
 ### SBT (build.sbt)
 
