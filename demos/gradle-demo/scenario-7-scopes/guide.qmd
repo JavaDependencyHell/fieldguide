@@ -1,10 +1,9 @@
 # Dependency Configurations
 *or what to Do When a Dependency Exists — But Not Where You Expect It*
 
-## What This Scenario Demonstrates
 This scenario demonstrates Gradle configurations (`implementation`, `compileOnly`, `testImplementation`).
 
-## Dependency Graph
+#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
@@ -13,37 +12,37 @@ graph LR
     Root --> LibC["lib-c:1.0.0 (testImplementation)"]
 ```
 
-### Gradle (Groovy DSL)
+#### Gradle (Groovy DSL)
 
 ```{.groovy include="/demos/gradle-demo/scenario-7-scopes/build.gradle" snippet="s7-deps"}
 ```
 
-## Expected Intuition
+#### Expected Intuition
 `compileOnly` is not in runtime.
 
-## Actual Resolution Results
+#### Actual Resolution Results
 *   **Gradle**: Respects configurations.
 
-## Classpath Reality
+#### Classpath Reality
 `lib-b` (compileOnly) is not in runtime classpath.
 
-## Why This Happens
+#### Why This Happens
 Configurations define visibility.
 
-## How Developers Commonly "Fix" This
+#### How Developers Commonly "Fix" This
 N/A
 
-## Safer Ways to Take Control
+#### Safer Ways to Take Control
 Use `api` vs `implementation` correctly in libraries.
 
-## Signals to Watch For
+#### Signals to Watch For
 N/A
 
-## How This Scales in Real Systems
+#### How This Scales in Real Systems
 Critical for build performance (ABI compatibility).
 
-## Key Takeaway
+#### Key Takeaway
 Configurations control transitivity and packaging.
 
-## Related Scenarios
+#### Related Scenarios
 *   [Scenario 8: Optional](../scenario-8-optional/guide.md)

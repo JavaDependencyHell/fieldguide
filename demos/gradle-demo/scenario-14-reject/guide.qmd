@@ -1,10 +1,9 @@
 # Rejecting Versions
 *or what to Do When Gradle Refuses a Version on Purpose*
 
-## What This Scenario Demonstrates
 This scenario demonstrates rejecting a specific version.
 
-## Dependency Graph
+#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
@@ -12,37 +11,37 @@ graph LR
     Root -- reject --> LibA_Bad[lib-a:2.0.0]
 ```
 
-### Gradle (Groovy DSL)
+#### Gradle (Groovy DSL)
 
 ```{.groovy include="/demos/gradle-demo/scenario-14-reject/build.gradle" snippet="s14-deps"}
 ```
 
-## Expected Intuition
+#### Expected Intuition
 "Don't use 2.0.0."
 
-## Actual Resolution Results
+#### Actual Resolution Results
 *   **Gradle**: Avoids `2.0.0`.
 
-## Classpath Reality
+#### Classpath Reality
 `1.0.0`.
 
-## Why This Happens
+#### Why This Happens
 Rejection constraint.
 
-## How Developers Commonly "Fix" This
+#### How Developers Commonly "Fix" This
 N/A
 
-## Safer Ways to Take Control
+#### Safer Ways to Take Control
 Use `reject`.
 
-## Signals to Watch For
+#### Signals to Watch For
 Build failure if no other version exists.
 
-## How This Scales in Real Systems
+#### How This Scales in Real Systems
 Good for blacklisting bad releases.
 
-## Key Takeaway
+#### Key Takeaway
 You can blacklist versions.
 
-## Related Scenarios
+#### Related Scenarios
 *   [Scenario 6: Strict](../scenario-6-forcing/guide.md)

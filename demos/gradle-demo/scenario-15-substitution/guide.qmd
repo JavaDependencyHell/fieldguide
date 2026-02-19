@@ -1,10 +1,9 @@
 # Dependency Substitution
 *or what to Do When One Component Quietly Replaces Another*
 
-## What This Scenario Demonstrates
 This scenario demonstrates swapping dependencies.
 
-## Dependency Graph
+#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
@@ -13,37 +12,37 @@ graph LR
     Root -- substitute --> LibB_New[lib-b-new:1.0.0]
 ```
 
-### Gradle (Groovy DSL)
+#### Gradle (Groovy DSL)
 
 ```{.groovy include="/demos/gradle-demo/scenario-15-substitution/build.gradle" snippet="s15-deps"}
 ```
 
-## Expected Intuition
+#### Expected Intuition
 "Replace it."
 
-## Actual Resolution Results
+#### Actual Resolution Results
 *   **Gradle**: Swaps it.
 
-## Classpath Reality
+#### Classpath Reality
 `2.0.0`.
 
-## Why This Happens
+#### Why This Happens
 Substitution rule.
 
-## How Developers Commonly "Fix" This
+#### How Developers Commonly "Fix" This
 Exclusions.
 
-## Safer Ways to Take Control
+#### Safer Ways to Take Control
 Substitution is cleaner.
 
-## Signals to Watch For
+#### Signals to Watch For
 N/A
 
-## How This Scales in Real Systems
+#### How This Scales in Real Systems
 Great for local development (substitute module for project).
 
-## Key Takeaway
+#### Key Takeaway
 Swap dependencies easily.
 
-## Related Scenarios
+#### Related Scenarios
 *   [Scenario 5: Exclusions](../scenario-5-exclusions/guide.md)

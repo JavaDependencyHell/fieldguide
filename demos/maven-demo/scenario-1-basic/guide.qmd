@@ -12,7 +12,7 @@ graph LR
     LibB --> LibC(lib-c:1.0.0)
 ```
 
-##### Maven (pom.xml)
+#### Maven (pom.xml)
 
 ```{.xml include="/demos/maven-demo/scenario-1-basic/pom.xml" snippet="s1-deps"}
 ```

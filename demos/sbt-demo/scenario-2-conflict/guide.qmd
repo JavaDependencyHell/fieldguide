@@ -1,10 +1,9 @@
 # Version Conflict Resolution (Latest Wins)
 *or what to Do When SBT Always Picks the Latest Version*
 
-## What This Scenario Demonstrates
 This scenario demonstrates SBT's "Latest Wins" strategy.
 
-## Dependency Graph
+#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
@@ -13,37 +12,37 @@ graph LR
     LibA --> LibB_Transitive[lib-b:2.0.0]
 ```
 
-### SBT (build.sbt)
+#### SBT (build.sbt)
 
 ```{.scala include="/demos/sbt-demo/scenario-2-conflict/build.sbt" snippet="s2-deps"}
 ```
 
-## Expected Intuition
+#### Expected Intuition
 Maven users expect 1.0.0. SBT users expect 2.0.0.
 
-## Actual Resolution Results
+#### Actual Resolution Results
 *   **SBT**: Resolves 2.0.0.
 
-## Classpath Reality
+#### Classpath Reality
 2.0.0.
 
-## Why This Happens
+#### Why This Happens
 Ivy/SBT defaults to latest revision.
 
-## How Developers Commonly "Fix" This
+#### How Developers Commonly "Fix" This
 Overrides.
 
-## Safer Ways to Take Control
+#### Safer Ways to Take Control
 `dependencyOverrides`.
 
-## Signals to Watch For
+#### Signals to Watch For
 Eviction warnings.
 
-## How This Scales in Real Systems
+#### How This Scales in Real Systems
 Similar to Gradle.
 
-## Key Takeaway
+#### Key Takeaway
 SBT picks the latest version.
 
-## Related Scenarios
+#### Related Scenarios
 *   [Scenario 3: Mgmt](../scenario-3-mgmt/guide.md)

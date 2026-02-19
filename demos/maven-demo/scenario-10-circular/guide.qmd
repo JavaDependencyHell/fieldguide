@@ -1,10 +1,9 @@
 # Circular Dependencies
 *or what to Do When Your Dependency Graph Turns into a Cycle*
 
-## What This Scenario Demonstrates
 This scenario demonstrates how build tools handle cycles in the dependency graph (A -> B -> A).
 
-## Dependency Graph
+#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
@@ -13,42 +12,42 @@ graph LR
     LibB --> LibA
 ```
 
-### Maven (pom.xml)
+#### Maven (pom.xml)
 
 ```{.xml include="/demos/maven-demo/scenario-10-circular/pom.xml" snippet="s10-deps"}
 ```
 
-## Expected Intuition
+#### Expected Intuition
 "Infinite loop! StackOverflowError!"
 
-## Actual Resolution Results
+#### Actual Resolution Results
 *   **Maven**:
     *   **Build Time (Reactor)**: Fails immediately.
     *   **Resolution Time (Repo)**: Tolerates it by stopping recursion when it sees a visited node.
 *   **Gradle**: Tolerates it.
 *   **SBT**: Tolerates it.
 
-## Classpath Reality
+#### Classpath Reality
 Both `lib-circle-a` and `lib-circle-b` end up on the classpath.
 
-## Why This Happens
+#### Why This Happens
 Build tools maintain a "visited" set during graph traversal to prevent infinite recursion.
 
-## How Developers Commonly "Fix" This
+#### How Developers Commonly "Fix" This
 Refactoring code to break the cycle (e.g., extracting a common interface to `lib-c`).
 
-## Safer Ways to Take Control
+#### Safer Ways to Take Control
 Avoid cycles. They are a design smell.
 
-## Signals to Watch For
+#### Signals to Watch For
 *   `StackOverflowError` in some older tools or plugins.
 *   Weird build order issues.
 
-## How This Scales in Real Systems
+#### How This Scales in Real Systems
 Cycles make it impossible to build modules in a linear order, forcing them to be built together or released in lockstep.
 
-## Key Takeaway
+#### Key Takeaway
 Circular dependencies are technically resolvable but architecturally disastrous.
 
-## Related Scenarios
+#### Related Scenarios
 *   [Scenario 1: Basic](../scenario-1-basic/guide.qmd) - The ideal acyclic graph.

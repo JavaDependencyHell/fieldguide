@@ -1,46 +1,45 @@
 # Dependency Locking
 
-## What This Scenario Demonstrates
 This scenario demonstrates SBT locking.
 
-## Dependency Graph
+#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
     Root[Project Root] --> LibA[lib-a:1.+]
 ```
 
-### SBT (build.sbt)
+#### SBT (build.sbt)
 
 ```{.scala include="/demos/sbt-demo/scenario-11-locking/build.sbt" snippet="s11-deps"}
 ```
 
-## Expected Intuition
+#### Expected Intuition
 Locked.
 
-## Actual Resolution Results
+#### Actual Resolution Results
 *   **SBT**: Uses lock file.
 
-## Classpath Reality
+#### Classpath Reality
 Locked.
 
-## Why This Happens
+#### Why This Happens
 Locking.
 
-## How Developers Commonly "Fix" This
+#### How Developers Commonly "Fix" This
 N/A
 
-## Safer Ways to Take Control
+#### Safer Ways to Take Control
 Locking.
 
-## Signals to Watch For
+#### Signals to Watch For
 N/A
 
-## How This Scales in Real Systems
+#### How This Scales in Real Systems
 N/A
 
-## Key Takeaway
+#### Key Takeaway
 Locking ensures reproducibility.
 
-## Related Scenarios
+#### Related Scenarios
 *   [Scenario 9: Ranges](../scenario-9-ranges/guide.md)

@@ -1,9 +1,8 @@
 # Strict Constraints
 
-## What This Scenario Demonstrates
 This scenario demonstrates forcing a version via overrides.
 
-## Dependency Graph
+#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
@@ -12,37 +11,37 @@ graph LR
     Root -- override --> LibB_Forced[lib-b:2.0.0]
 ```
 
-### SBT (build.sbt)
+#### SBT (build.sbt)
 
 ```{.scala include="/demos/sbt-demo/scenario-6-forcing/build.sbt" snippet="s6-deps"}
 ```
 
-## Expected Intuition
+#### Expected Intuition
 2.0.0.
 
-## Actual Resolution Results
+#### Actual Resolution Results
 *   **SBT**: 2.0.0.
 
-## Classpath Reality
+#### Classpath Reality
 2.0.0.
 
-## Why This Happens
+#### Why This Happens
 Overrides.
 
-## How Developers Commonly "Fix" This
+#### How Developers Commonly "Fix" This
 N/A
 
-## Safer Ways to Take Control
+#### Safer Ways to Take Control
 N/A
 
-## Signals to Watch For
+#### Signals to Watch For
 N/A
 
-## How This Scales in Real Systems
+#### How This Scales in Real Systems
 N/A
 
-## Key Takeaway
+#### Key Takeaway
 Overrides force versions.
 
-## Related Scenarios
+#### Related Scenarios
 N/A

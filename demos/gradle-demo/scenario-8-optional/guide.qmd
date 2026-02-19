@@ -1,47 +1,46 @@
 # Optional Dependencies
 *or what to Do When Optional Dependencies Don’t Arrive*
 
-## What This Scenario Demonstrates
 This scenario demonstrates how Gradle handles optional dependencies (usually via `compileOnly` or feature variants).
 
-## Dependency Graph
+#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
     Root[Project Root] --> LibA["lib-a:1.0.0 (compileOnly)"]
 ```
 
-### Gradle (Groovy DSL)
+#### Gradle (Groovy DSL)
 
 ```{.groovy include="/demos/gradle-demo/scenario-8-optional/build.gradle" snippet="s8-deps"}
 ```
 
-## Expected Intuition
+#### Expected Intuition
 "I don't want to force this on consumers."
 
-## Actual Resolution Results
+#### Actual Resolution Results
 *   **Gradle**: `compileOnly` dependencies are not transitive.
 
-## Classpath Reality
+#### Classpath Reality
 Not transitive.
 
-## Why This Happens
+#### Why This Happens
 Configuration inheritance.
 
-## How Developers Commonly "Fix" This
+#### How Developers Commonly "Fix" This
 N/A
 
-## Safer Ways to Take Control
+#### Safer Ways to Take Control
 Use Feature Variants for true optionality (e.g., `capabilities`).
 
-## Signals to Watch For
+#### Signals to Watch For
 N/A
 
-## How This Scales in Real Systems
+#### How This Scales in Real Systems
 Feature variants are the modern way.
 
-## Key Takeaway
+#### Key Takeaway
 `compileOnly` simulates optionality.
 
-## Related Scenarios
+#### Related Scenarios
 *   [Scenario 7: Scopes](../scenario-7-scopes/guide.qmd)

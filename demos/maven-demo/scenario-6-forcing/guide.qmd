@@ -1,10 +1,9 @@
 # Forcing Transitive Versions via Dependency Management
 *or what to Do When a Transitive Dependency is the Wrong Version*
 
-## What This Scenario Demonstrates
 This scenario demonstrates how to force a specific version of a transitive dependency, overriding what the intermediate libraries request.
 
-## Dependency Graph
+#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
@@ -14,41 +13,41 @@ graph LR
     Root -- forces --> LibC_Forced[lib-c:2.0.0]
 ```
 
-### Maven (pom.xml)
+#### Maven (pom.xml)
 
 ```{.xml include="/demos/maven-demo/scenario-6-forcing/pom.xml" snippet="s6-deps"}
 ```
 
-## Expected Intuition
+#### Expected Intuition
 "I said use 2.0.0, so use 2.0.0."
 
-## Actual Resolution Results
+#### Actual Resolution Results
 *   **Maven**: Using `<dependencyManagement>`, `lib-c` becomes `2.0.0`.
 *   **Gradle**: Using `strictly` or `force`, `lib-c` becomes `2.0.0`.
 *   **SBT**: Using `dependencyOverrides`, `lib-c` becomes `2.0.0`.
 
-## Classpath Reality
+#### Classpath Reality
 `lib-c-2.0.0.jar` is on the classpath.
 
-## Why This Happens
+#### Why This Happens
 This scenario uses the exact same `<dependencyManagement>` mechanism as Scenario 3, but applies it to a *transitive* dependency instead of a direct one. There is no special "forcing" keyword in Maven; it's all handled by `<dependencyManagement>`. It works because Maven evaluates the `<dependencyManagement>` section after building the complete dependency graph but *before* selecting the final versions. This allows the managed versions to override any version chosen by the "nearest-wins" algorithm.
 
-## How Developers Commonly "Fix" This
+#### How Developers Commonly "Fix" This
 This is often the fix for "Nearest Wins" picking an old version, or to patch a vulnerability deep in the graph.
 
-## Safer Ways to Take Control
+#### Safer Ways to Take Control
 This is a safe and recommended pattern for enforcing policy.
 
-## Signals to Watch For
+#### Signals to Watch For
 *   If you force a version that is too new, `lib-b` might break (binary incompatibility).
 
-## How This Scales in Real Systems
+#### How This Scales in Real Systems
 Strict constraints are vital for security compliance (e.g., "Must use OpenSSL >= 3.0").
 
-## Key Takeaway
+#### Key Takeaway
 `<dependencyManagement>` overrides transitive version resolution (nearest-wins), making it the primary tool for enforcing version policy across the dependency tree. Note that a direct version in `<dependencies>` will still take precedence (see Scenario 4).
 
-## Related Scenarios
+#### Related Scenarios
 *   [Scenario 3: Dependency Management (BOM)](../scenario-3-mgmt/guide.qmd) - The core mechanism used here.
 *   [Scenario 4: Hardcoded Version vs Dependency Management](../scenario-4-override/guide.qmd) - Understanding the precedence of direct declarations.
 *   [Scenario 14: Reject](../scenario-14-reject/guide.qmd) - Forcing *away* from a version.

@@ -1,10 +1,9 @@
 # Hardcoded Version vs Platform
 *or what to Do When a Single Declaration Escapes the Platform*
 
-## What This Scenario Demonstrates
 This scenario demonstrates that an explicit version in Gradle overrides a `platform()` recommendation.
 
-## Dependency Graph
+#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
@@ -12,37 +11,37 @@ graph LR
     Root --> LibA[lib-a:2.0.0]
 ```
 
-### Gradle (Groovy DSL)
+#### Gradle (Groovy DSL)
 
 ```{.groovy include="/demos/gradle-demo/scenario-4-override/build.gradle" snippet="s4-deps"}
 ```
 
-## Expected Intuition
+#### Expected Intuition
 "I typed 2.0.0, so I get 2.0.0."
 
-## Actual Resolution Results
+#### Actual Resolution Results
 *   **Gradle**: Resolves `2.0.0`.
 
-## Classpath Reality
+#### Classpath Reality
 `2.0.0`.
 
-## Why This Happens
+#### Why This Happens
 An explicit version is a stronger constraint than a platform recommendation (unless `enforcedPlatform` is used).
 
-## How Developers Commonly "Fix" This
+#### How Developers Commonly "Fix" This
 N/A
 
-## Safer Ways to Take Control
+#### Safer Ways to Take Control
 Use `enforcedPlatform` if you want the BOM to win.
 
-## Signals to Watch For
+#### Signals to Watch For
 N/A
 
-## How This Scales in Real Systems
+#### How This Scales in Real Systems
 Allows local overrides of global defaults.
 
-## Key Takeaway
+#### Key Takeaway
 Explicit versions override standard platforms.
 
-## Related Scenarios
+#### Related Scenarios
 *   [Scenario 3: Mgmt](../scenario-3-mgmt/guide.qmd)

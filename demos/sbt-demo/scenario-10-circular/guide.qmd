@@ -1,9 +1,8 @@
 # Circular Dependencies
 
-## What This Scenario Demonstrates
 This scenario demonstrates SBT cycles.
 
-## Dependency Graph
+#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
@@ -12,37 +11,37 @@ graph LR
     LibB --> LibA
 ```
 
-### SBT (build.sbt)
+#### SBT (build.sbt)
 
 ```{.scala include="/demos/sbt-demo/scenario-10-circular/build.sbt" snippet="s10-deps"}
 ```
 
-## Expected Intuition
+#### Expected Intuition
 Works.
 
-## Actual Resolution Results
+#### Actual Resolution Results
 *   **SBT**: Tolerates.
 
-## Classpath Reality
+#### Classpath Reality
 Both present.
 
-## Why This Happens
+#### Why This Happens
 Visited set.
 
-## How Developers Commonly "Fix" This
+#### How Developers Commonly "Fix" This
 N/A
 
-## Safer Ways to Take Control
+#### Safer Ways to Take Control
 N/A
 
-## Signals to Watch For
+#### Signals to Watch For
 N/A
 
-## How This Scales in Real Systems
+#### How This Scales in Real Systems
 N/A
 
-## Key Takeaway
+#### Key Takeaway
 Cycles tolerated.
 
-## Related Scenarios
+#### Related Scenarios
 N/A

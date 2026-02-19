@@ -1,10 +1,9 @@
 # Circular Dependencies
 *or what to Do When Gradle Can’t Untangle the Graph*
 
-## What This Scenario Demonstrates
 This scenario demonstrates Gradle's handling of circular dependencies.
 
-## Dependency Graph
+#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
@@ -13,37 +12,37 @@ graph LR
     LibB --> LibA
 ```
 
-### Gradle (Groovy DSL)
+#### Gradle (Groovy DSL)
 
 ```{.groovy include="/demos/gradle-demo/scenario-10-circular/build.gradle" snippet="s10-deps"}
 ```
 
-## Expected Intuition
+#### Expected Intuition
 "It should work."
 
-## Actual Resolution Results
+#### Actual Resolution Results
 *   **Gradle**: Resolves successfully.
 
-## Classpath Reality
+#### Classpath Reality
 Both jars present.
 
-## Why This Happens
+#### Why This Happens
 Gradle handles cycles gracefully.
 
-## How Developers Commonly "Fix" This
+#### How Developers Commonly "Fix" This
 N/A
 
-## Safer Ways to Take Control
+#### Safer Ways to Take Control
 Avoid cycles.
 
-## Signals to Watch For
+#### Signals to Watch For
 N/A
 
-## How This Scales in Real Systems
+#### How This Scales in Real Systems
 N/A
 
-## Key Takeaway
+#### Key Takeaway
 Gradle tolerates cycles.
 
-## Related Scenarios
+#### Related Scenarios
 N/A

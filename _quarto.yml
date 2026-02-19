@@ -20,6 +20,7 @@ format:
     toc-depth: 1
     fontsize: 11.5pt
     documentclass: scrbook
+
     theme: [default, custom.scss]
     keep-tex: false
     papersize: A5
@@ -47,7 +48,7 @@ book:
   title: "Dependency Hell"
   chapters:
     - index.md
-    - book/content/how-to-use.md
+    - book/content/scenarios.md
     - book/content/authors.md
     - book/content/sponsors.md
     - part: "Maven Scenarios"

@@ -1,10 +1,9 @@
 # Dependency Exclusions
 *or what to Do When an Exclusion Reshapes the Dependency Graph*
 
-## What This Scenario Demonstrates
 This scenario demonstrates excluding transitive dependencies in Gradle.
 
-## Dependency Graph
+#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
@@ -13,37 +12,37 @@ graph LR
     Root -- exclude --> LibC
 ```
 
-### Gradle (Groovy DSL)
+#### Gradle (Groovy DSL)
 
 ```{.groovy include="/demos/gradle-demo/scenario-5-exclusions/build.gradle" snippet="s5-deps"}
 ```
 
-## Expected Intuition
+#### Expected Intuition
 `lib-c` is gone.
 
-## Actual Resolution Results
+#### Actual Resolution Results
 *   **Gradle**: `lib-c` is excluded.
 
-## Classpath Reality
+#### Classpath Reality
 `lib-c` is missing.
 
-## Why This Happens
+#### Why This Happens
 Gradle prunes the graph.
 
-## How Developers Commonly "Fix" This
+#### How Developers Commonly "Fix" This
 N/A
 
-## Safer Ways to Take Control
+#### Safer Ways to Take Control
 Ensure `lib-a` doesn't need `lib-c`.
 
-## Signals to Watch For
+#### Signals to Watch For
 `NoClassDefFoundError`.
 
-## How This Scales in Real Systems
+#### How This Scales in Real Systems
 Common for removing logging frameworks.
 
-## Key Takeaway
+#### Key Takeaway
 Exclusions work as expected.
 
-## Related Scenarios
+#### Related Scenarios
 *   [Scenario 15: Substitution](../scenario-15-substitution/guide.qmd)

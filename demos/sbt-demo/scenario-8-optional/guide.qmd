@@ -1,46 +1,45 @@
 # Optional Dependencies
 
-## What This Scenario Demonstrates
 This scenario demonstrates optional dependencies in SBT.
 
-## Dependency Graph
+#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
     Root[Project Root] --> LibA["lib-a:1.0.0 (Optional)"]
 ```
 
-### SBT (build.sbt)
+#### SBT (build.sbt)
 
 ```{.scala include="/demos/sbt-demo/scenario-8-optional/build.sbt" snippet="s8-deps"}
 ```
 
-## Expected Intuition
+#### Expected Intuition
 Not transitive.
 
-## Actual Resolution Results
+#### Actual Resolution Results
 *   **SBT**: Respects optional.
 
-## Classpath Reality
+#### Classpath Reality
 Not transitive.
 
-## Why This Happens
+#### Why This Happens
 Ivy metadata.
 
-## How Developers Commonly "Fix" This
+#### How Developers Commonly "Fix" This
 N/A
 
-## Safer Ways to Take Control
+#### Safer Ways to Take Control
 N/A
 
-## Signals to Watch For
+#### Signals to Watch For
 N/A
 
-## How This Scales in Real Systems
+#### How This Scales in Real Systems
 N/A
 
-## Key Takeaway
+#### Key Takeaway
 Optional works.
 
-## Related Scenarios
+#### Related Scenarios
 N/A

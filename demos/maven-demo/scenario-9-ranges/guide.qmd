@@ -1,52 +1,51 @@
 # Version Ranges
 *or what to Do When a Version Range Picks Something You Never Tested*
 
-## What This Scenario Demonstrates
 This scenario demonstrates dynamic version resolution using ranges (e.g., `[1.0, 2.0)`).
 
-## Dependency Graph
+#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
     Root["Project Root"] --> LibA["lib-a:[1.0.0,2.0.0)"]
 ```
 
-### Maven (pom.xml)
+#### Maven (pom.xml)
 
 ```{.xml include="/demos/maven-demo/scenario-9-ranges/pom.xml" snippet="s9-deps"}
 ```
 
-## Expected Intuition
+#### Expected Intuition
 "Give me the latest version that is at least 1.0.0 but less than 2.0.0."
 
-## Actual Resolution Results
+#### Actual Resolution Results
 *   **Maven/Gradle/SBT**: All will query the repository metadata to find available versions and pick the highest one matching the criteria.
 *   In our demo repo, `1.0.0` and `2.0.0` exist. The range excludes `2.0.0`, so `1.0.0` is chosen.
 
-## Classpath Reality
+#### Classpath Reality
 `lib-a-1.0.0.jar`.
 
-## Why This Happens
+#### Why This Happens
 The build tool performs a "select" operation against the available versions in the repo.
 
-### What About Hard Version Ranges?
+#### What About Hard Version Ranges?
 A version declared as `[1.0.0]` (with brackets) is a hard requirement. Unlike a plain `1.0.0`, which Maven treats as a soft preference that can be overridden by the "nearest-wins" rule, a bracketed version will cause the build to fail if a different version is selected anywhere in the dependency graph. This is Maven’s mechanism for expressing ‘this exact version must be used, or the build breaks.’ It is the strictest way to declare a dependency version.
 
-## How Developers Commonly "Fix" This
+#### How Developers Commonly "Fix" This
 Ranges are controversial because they make builds non-deterministic (a new release of `lib-a` can change your build without you touching it). Many teams ban them.
 
-## Safer Ways to Take Control
+#### Safer Ways to Take Control
 Use Dependency Locking (Scenario 11) if you use ranges.
 
-## Signals to Watch For
+#### Signals to Watch For
 *   "It worked yesterday."
 *   Builds failing on CI but passing locally (due to repo cache differences).
 
-## How This Scales in Real Systems
+#### How This Scales in Real Systems
 Ranges are common in NPM/pip but less so in Java/Maven ecosystems due to the desire for reproducibility.
 
-## Key Takeaway
+#### Key Takeaway
 Ranges trade reproducibility for freshness; use with caution (and locking).
 
-## Related Scenarios
+#### Related Scenarios
 *   [Scenario 11: Locking](../scenario-11-locking/guide.qmd) - How to tame ranges.

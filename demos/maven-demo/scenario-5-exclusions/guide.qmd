@@ -1,10 +1,9 @@
 # Dependency Exclusions
 *or what to Do When Excluding a Dependency Fixes the Build but Breaks Runtime*
 
-## What This Scenario Demonstrates
 This scenario demonstrates how to surgically remove a transitive dependency from the graph. This is a common "sledgehammer" fix for conflicts.
 
-## Dependency Graph
+#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
@@ -13,40 +12,40 @@ graph LR
     Root -- excludes --> LibC
 ```
 
-### Maven (pom.xml)
+#### Maven (pom.xml)
 
 ```{.xml include="/demos/maven-demo/scenario-5-exclusions/pom.xml" snippet="s5-deps"}
 ```
 
-## Expected Intuition
+#### Expected Intuition
 I don't want `lib-c`. I exclude it. It should be gone.
 
-## Actual Resolution Results
+#### Actual Resolution Results
 *   **Maven**: `lib-c` is removed from the tree under `lib-a`.
 *   **Gradle**: `lib-c` is removed.
 *   **SBT**: `lib-c` is removed.
 
-## Classpath Reality
+#### Classpath Reality
 `lib-c` is NOT on the classpath. `lib-a` is on the classpath.
 
-## Why This Happens
+#### Why This Happens
 The build tool respects the exclusion metadata and prunes that branch of the graph during traversal.
 
-## How Developers Commonly "Fix" This
+#### How Developers Commonly "Fix" This
 This *is* the fix for many problems (e.g., excluding `log4j` to use `slf4j`).
 
-## Safer Ways to Take Control
+#### Safer Ways to Take Control
 Exclusions are risky because `lib-a` might actually *need* `lib-c` to run. If you exclude it, you might get `NoClassDefFoundError` at runtime. A safer alternative is often to force a compatible version rather than removing it entirely, unless you are replacing it with an equivalent (e.g., a bridge library).
 
-## Signals to Watch For
+#### Signals to Watch For
 *   `NoClassDefFoundError` at runtime.
 *   "Why is this library missing?" confusion.
 
-## How This Scales in Real Systems
+#### How This Scales in Real Systems
 Overuse of exclusions leads to "Swiss cheese" dependency graphs that are hard to reason about.
 
-## Key Takeaway
+#### Key Takeaway
 Exclusions are powerful but dangerous; use them only when you know the dependent library can function without the excluded artifact (or you are providing a replacement).
 
-## Related Scenarios
+#### Related Scenarios
 *   [Scenario 15: Substitution](../scenario-15-substitution/guide.qmd) - Replacing a library instead of just removing it.

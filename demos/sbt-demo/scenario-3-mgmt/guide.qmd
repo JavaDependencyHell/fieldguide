@@ -1,10 +1,9 @@
 # Dependency Overrides
 *or what to Do When Overrides Fix the Problem — and Create the Next One*
 
-## What This Scenario Demonstrates
 This scenario demonstrates `dependencyOverrides` in SBT.
 
-## Dependency Graph
+#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
@@ -12,37 +11,37 @@ graph LR
     Root -- override --> LibA_Forced[lib-a:1.0.0]
 ```
 
-### SBT (build.sbt)
+#### SBT (build.sbt)
 
 ```{.scala include="/demos/sbt-demo/scenario-3-mgmt/build.sbt" snippet="s3-deps"}
 ```
 
-## Expected Intuition
+#### Expected Intuition
 "I force 1.0.0."
 
-## Actual Resolution Results
+#### Actual Resolution Results
 *   **SBT**: Resolves 1.0.0.
 
-## Classpath Reality
+#### Classpath Reality
 1.0.0.
 
-## Why This Happens
+#### Why This Happens
 Overrides take precedence.
 
-## How Developers Commonly "Fix" This
+#### How Developers Commonly "Fix" This
 N/A
 
-## Safer Ways to Take Control
+#### Safer Ways to Take Control
 Use overrides.
 
-## Signals to Watch For
+#### Signals to Watch For
 N/A
 
-## How This Scales in Real Systems
+#### How This Scales in Real Systems
 Standard way to fix conflicts.
 
-## Key Takeaway
+#### Key Takeaway
 Overrides force versions.
 
-## Related Scenarios
+#### Related Scenarios
 *   [Scenario 4: Override](../scenario-4-override/guide.md)

@@ -1,46 +1,45 @@
 # Version Ranges
 
-## What This Scenario Demonstrates
 This scenario demonstrates SBT ranges.
 
-## Dependency Graph
+#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
     Root[Project Root] --> LibA[lib-a:1.+]
 ```
 
-### SBT (build.sbt)
+#### SBT (build.sbt)
 
 ```{.scala include="/demos/sbt-demo/scenario-9-ranges/build.sbt" snippet="s9-deps"}
 ```
 
-## Expected Intuition
+#### Expected Intuition
 Highest match.
 
-## Actual Resolution Results
+#### Actual Resolution Results
 *   **SBT**: Resolves highest.
 
-## Classpath Reality
+#### Classpath Reality
 Highest.
 
-## Why This Happens
+#### Why This Happens
 Ivy ranges.
 
-## How Developers Commonly "Fix" This
+#### How Developers Commonly "Fix" This
 N/A
 
-## Safer Ways to Take Control
+#### Safer Ways to Take Control
 Locking.
 
-## Signals to Watch For
+#### Signals to Watch For
 N/A
 
-## How This Scales in Real Systems
+#### How This Scales in Real Systems
 N/A
 
-## Key Takeaway
+#### Key Takeaway
 Ranges work.
 
-## Related Scenarios
+#### Related Scenarios
 *   [Scenario 11: Locking](../scenario-11-locking/guide.md)

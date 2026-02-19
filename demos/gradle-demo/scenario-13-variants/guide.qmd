@@ -1,10 +1,9 @@
 # Variant Selection
 *or what to Do When the “Correct” Dependency Is Rejected*
 
-## What This Scenario Demonstrates
 This scenario demonstrates Gradle's attribute-based matching.
 
-## Dependency Graph
+#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
@@ -12,37 +11,37 @@ graph LR
     LibA -- variant --> LibA_Java11["lib-a:1.0.0 (Java 11)"]
 ```
 
-### Gradle (Groovy DSL)
+#### Gradle (Groovy DSL)
 
 ```{.groovy include="/demos/gradle-demo/scenario-13-variants/build.gradle" snippet="s13-deps"}
 ```
 
-## Expected Intuition
+#### Expected Intuition
 "I get the right variant (Java 11, Debug, etc)."
 
-## Actual Resolution Results
+#### Actual Resolution Results
 *   **Gradle**: Matches attributes.
 
-## Classpath Reality
+#### Classpath Reality
 Correct variant.
 
-## Why This Happens
+#### Why This Happens
 Attributes.
 
-## How Developers Commonly "Fix" This
+#### How Developers Commonly "Fix" This
 Classifiers (Maven style).
 
-## Safer Ways to Take Control
+#### Safer Ways to Take Control
 Use attributes.
 
-## Signals to Watch For
+#### Signals to Watch For
 "Cannot choose between..."
 
-## How This Scales in Real Systems
+#### How This Scales in Real Systems
 The future of dependency management.
 
-## Key Takeaway
+#### Key Takeaway
 Attributes > Classifiers.
 
-## Related Scenarios
+#### Related Scenarios
 N/A

@@ -1,9 +1,8 @@
 # Hardcoded Version vs Overrides
 
-## What This Scenario Demonstrates
 This scenario demonstrates that `dependencyOverrides` wins over `libraryDependencies`.
 
-## Dependency Graph
+#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
@@ -11,37 +10,37 @@ graph LR
     Root -- override --> LibA_Forced[lib-a:2.0.0]
 ```
 
-### SBT (build.sbt)
+#### SBT (build.sbt)
 
 ```{.scala include="/demos/sbt-demo/scenario-4-override/build.sbt" snippet="s4-deps"}
 ```
 
-## Expected Intuition
+#### Expected Intuition
 "Override wins."
 
-## Actual Resolution Results
+#### Actual Resolution Results
 *   **SBT**: Resolves 2.0.0.
 
-## Classpath Reality
+#### Classpath Reality
 2.0.0.
 
-## Why This Happens
+#### Why This Happens
 Overrides are stronger.
 
-## How Developers Commonly "Fix" This
+#### How Developers Commonly "Fix" This
 N/A
 
-## Safer Ways to Take Control
+#### Safer Ways to Take Control
 N/A
 
-## Signals to Watch For
+#### Signals to Watch For
 N/A
 
-## How This Scales in Real Systems
+#### How This Scales in Real Systems
 N/A
 
-## Key Takeaway
+#### Key Takeaway
 Overrides win.
 
-## Related Scenarios
+#### Related Scenarios
 *   [Scenario 3: Mgmt](../scenario-3-mgmt/guide.md)

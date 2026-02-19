@@ -1,9 +1,8 @@
 # Dependency Exclusions
 
-## What This Scenario Demonstrates
 This scenario demonstrates exclusions in SBT.
 
-## Dependency Graph
+#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
@@ -12,37 +11,37 @@ graph LR
     Root -- exclude --> LibC
 ```
 
-### SBT (build.sbt)
+#### SBT (build.sbt)
 
 ```{.scala include="/demos/sbt-demo/scenario-5-exclusions/build.sbt" snippet="s5-deps"}
 ```
 
-## Expected Intuition
+#### Expected Intuition
 `lib-c` gone.
 
-## Actual Resolution Results
+#### Actual Resolution Results
 *   **SBT**: Excluded.
 
-## Classpath Reality
+#### Classpath Reality
 Missing.
 
-## Why This Happens
+#### Why This Happens
 Exclusion metadata.
 
-## How Developers Commonly "Fix" This
+#### How Developers Commonly "Fix" This
 N/A
 
-## Safer Ways to Take Control
+#### Safer Ways to Take Control
 N/A
 
-## Signals to Watch For
+#### Signals to Watch For
 N/A
 
-## How This Scales in Real Systems
+#### How This Scales in Real Systems
 N/A
 
-## Key Takeaway
+#### Key Takeaway
 Exclusions work.
 
-## Related Scenarios
+#### Related Scenarios
 N/A
