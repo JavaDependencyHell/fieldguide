@@ -17,12 +17,13 @@ repositories {
 dependencies {
     implementation 'com.demo:lib-a:1.0.0'
     
-    // Example of requesting a specific attribute (if the library supported it)
-    // implementation('com.demo:lib-a:1.0.0') {
-    //     attributes {
-    //         attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
-    //         attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
-    //     }
-    // }
+    // Example of requesting a specific attribute
+    // (if the library supported it)
+    implementation('com.demo:lib-a:1.0.0') {
+         attributes {
+             attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
+             attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
+         }
+     }
 }
 // end::s13-deps[]

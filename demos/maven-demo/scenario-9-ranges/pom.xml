@@ -16,11 +16,12 @@
 
     <!-- tag::s9-deps[] -->
     <dependencies>
-        <!--
-          Request any version of lib-a between 1.0.0 (inclusive) and 2.0.0 (exclusive).
-          Since our repo has 1.0.0 and 2.0.0, and 2.0.0 is exclusive, it should pick 1.0.0.
-          (Note: Behavior depends on available metadata and Maven version).
-        -->
+<!--
+Request any version of lib-a between 1.0.0 (inclusive)
+and 2.0.0 (exclusive). Since our repo has 1.0.0 and 2.0.0,
+and 2.0.0 is exclusive, it should pick 1.0.0.
+(Note: Behavior depends on available metadata and Maven version).
+-->
         <dependency>
             <groupId>com.demo</groupId>
             <artifactId>lib-a</artifactId>

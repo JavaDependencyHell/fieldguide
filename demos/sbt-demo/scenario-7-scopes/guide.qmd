@@ -7,9 +7,9 @@ This scenario demonstrates SBT configurations (`Compile`, `Test`, `Provided`).
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
-    Root[Project Root] --> LibA[lib-a:1.0.0 (Compile)]
-    Root --> LibB[lib-b:1.0.0 (Provided)]
-    Root --> LibC[lib-c:1.0.0 (Test)]
+    Root[Project Root] --> LibA["lib-a:1.0.0 (Compile)"]
+    Root --> LibB["lib-b:1.0.0 (Provided)"]
+    Root --> LibC["lib-c:1.0.0 (Test)"]
 ```
 
 ### SBT (build.sbt)

@@ -16,11 +16,11 @@
 
     <!-- tag::s8-deps[] -->
     <dependencies>
-        <!--
-          We are simulating a library that has an optional dependency.
-          In a real-world scenario, you would look at the POM of the dependency itself.
-          Here, we are just showing the syntax.
-        -->
+<!--
+We are simulating a library that has an optional dependency.
+In a real-world scenario, you would look at the POM of the
+dependency itself. Here, we are just showing the syntax.
+-->
         <dependency>
             <groupId>com.demo</groupId>
             <artifactId>lib-a</artifactId>

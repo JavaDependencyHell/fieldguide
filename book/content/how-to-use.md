@@ -1,4 +1,4 @@
-# How to Use This Book
+# How to Use This Book {.unnumbered}
 
 This book is structured as a series of scenarios, each demonstrating a specific dependency management challenge. Most scenarios are implemented for Maven, Gradle, and SBT to allow for a direct comparison of how each tool handles the same problem.
 

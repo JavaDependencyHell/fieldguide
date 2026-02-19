@@ -7,7 +7,7 @@ This scenario demonstrates optional dependencies in SBT.
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
-    Root[Project Root] --> LibA[lib-a:1.0.0 (Optional)]
+    Root[Project Root] --> LibA["lib-a:1.0.0 (Optional)"]
 ```
 
 ### SBT (build.sbt)

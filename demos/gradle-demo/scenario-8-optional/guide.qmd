@@ -7,7 +7,7 @@ This scenario demonstrates how Gradle handles optional dependencies (usually via
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
-    Root[Project Root] --> LibA[lib-a:1.0.0 (compileOnly)]
+    Root[Project Root] --> LibA["lib-a:1.0.0 (compileOnly)"]
 ```
 
 ### Gradle (Groovy DSL)

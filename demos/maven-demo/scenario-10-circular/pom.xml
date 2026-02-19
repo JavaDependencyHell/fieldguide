@@ -16,11 +16,12 @@
 
     <!-- tag::s10-deps[] -->
     <dependencies>
-        <!--
-           lib-circle-a depends on lib-circle-b
-           lib-circle-b depends on lib-circle-a
-           Maven handles this by detecting the cycle and stopping recursion.
-        -->
+ <!--
+lib-circle-a depends on lib-circle-b
+lib-circle-b depends on lib-circle-a
+Maven handles this by detecting the cycle
+and stopping recursion.
+-->
         <dependency>
             <groupId>com.demo</groupId>
             <artifactId>lib-circle-a</artifactId>

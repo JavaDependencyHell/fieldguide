@@ -16,14 +16,16 @@
 
     <!-- tag::s7-deps[] -->
     <dependencies>
-        <!-- Compile scope (default): Available everywhere -->
+<!-- Compile scope (default): Available everywhere -->
         <dependency>
             <groupId>com.demo</groupId>
             <artifactId>lib-a</artifactId>
             <version>1.0.0</version>
         </dependency>
 
-        <!-- Provided scope: Available at compile time, but not packaged (expected to be provided by runtime) -->
+<!-- Provided scope: Available at compile time,
+     but not packaged (expected to be provided by runtime)
+-->
         <dependency>
             <groupId>com.demo</groupId>
             <artifactId>lib-b</artifactId>
@@ -31,7 +33,7 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Test scope: Only available during tests -->
+<!-- Test scope: Only available during tests -->
         <dependency>
             <groupId>com.demo</groupId>
             <artifactId>lib-c</artifactId>

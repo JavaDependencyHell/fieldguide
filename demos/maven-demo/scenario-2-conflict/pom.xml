@@ -14,16 +14,18 @@
         </repository>
     </repositories>
 
+    <!--
+          Demonstrating Maven's "Nearest Wins" strategy.
+
+          lib-a:2.0.0 depends on lib-b:2.0.0 (Distance 2)
+          We explicitly declare lib-b:1.0.0 (Distance 1)
+
+          Maven will choose lib-b:1.0.0 because it is "nearer" to the project root.
+       -->
+
     <!-- tag::s2-deps[] -->
     <dependencies>
-        <!--
-           Demonstrating Maven's "Nearest Wins" strategy.
 
-           lib-a:2.0.0 depends on lib-b:2.0.0 (Distance 2)
-           We explicitly declare lib-b:1.0.0 (Distance 1)
-
-           Maven will choose lib-b:1.0.0 because it is "nearer" to the project root.
-        -->
         <dependency>
             <groupId>com.demo</groupId>
             <artifactId>lib-a</artifactId>

@@ -17,7 +17,8 @@
     <!-- tag::s6-deps[] -->
     <dependencyManagement>
         <dependencies>
-            <!-- Force lib-c to be 2.0.0, overriding transitive 1.0.0 -->
+    <!-- Force lib-c to be 2.0.0,
+         overriding transitive 1.0.0 -->
             <dependency>
                 <groupId>com.demo</groupId>
                 <artifactId>lib-c</artifactId>
@@ -27,7 +28,7 @@
     </dependencyManagement>
 
     <dependencies>
-        <!-- lib-a:1.0.0 -> lib-b:1.0.0 -> lib-c:1.0.0 -->
+<!-- lib-a:1.0.0 -> lib-b:1.0.0 -> lib-c:1.0.0 -->
         <dependency>
             <groupId>com.demo</groupId>
             <artifactId>lib-a</artifactId>

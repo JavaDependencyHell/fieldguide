@@ -12,7 +12,8 @@ repositories {
 dependencies {
     // lib-circle-a depends on lib-circle-b
     // lib-circle-b depends on lib-circle-a
-    // Gradle handles this gracefully by caching the resolved state and stopping recursion.
+    // Gradle handles this gracefully by caching
+    // the resolved state and stopping recursion.
     implementation 'com.demo:lib-circle-a:1.0.0'
 }
 // end::s10-deps[]

@@ -10,12 +10,14 @@ repositories {
 
 // tag::s6-deps[]
 dependencies {
-    implementation 'com.demo:lib-a:1.0.0' // transitively brings lib-c:1.0.0
+    // transitively brings lib-c:1.0.0
+    implementation 'com.demo:lib-a:1.0.0'
 }
 
 configurations.all {
     resolutionStrategy {
-        // Force version 2.0.0 of lib-c, overriding the transitive 1.0.0
+        // Force version 2.0.0 of lib-c,
+        // overriding the transitive 1.0.0
         force 'com.demo:lib-c:2.0.0'
     }
 }

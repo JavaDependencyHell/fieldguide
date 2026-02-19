@@ -23,8 +23,8 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
-    
-    <!-- snippet: repo-and-deps -->
+
+    <!-- tag::s16-deps[] -->
     <repositories>
         <repository>
             <id>third-party-repo</id>
@@ -43,6 +43,6 @@
             <version>2.5.14.ACME</version>
         </dependency>
     </dependencies>
-    <!-- snippet: end -->
+    <!-- end::s17-deps[] -->
 
 </project>

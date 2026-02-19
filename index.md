@@ -1,4 +1,4 @@
-# Who This Book Is For — and How to Use It {.unnumbered}
+# Who This Book Is For, and How to Use It {.unnumbered}
 
 This book exists because dependency management has a habit of behaving just well enough to lull you into trusting it. Right up until it doesn’t.
 
@@ -10,11 +10,11 @@ It isn’t a reference manual. It isn’t a checklist.  And it definitely isn’
 
 We've called it the field guide to dependency management. Something you reach for when the system surprises you, or when you want to stop being surprised in the first place.
 
-### Who this book is really for
+### Who should read this book?
 
-If you’ve been writing Java long enough to have said “that doesn’t make any sense” while staring at a dependency tree, this book is for you.
+If you’ve been writing Java, or Kotlin, or Scala  long enough to have said “that doesn’t make any sense” while staring at a dependency tree, this book is for you.
 
-It’s written for experienced developers who already know how to “fix” dependency problems — exclusions, overrides, forced versions, BOMs — but have learned the hard way that today’s fix can easily become tomorrow’s mystery.
+It’s written for experienced developers who already know how to “fix” dependency problems:  exclusions, overrides, forced versions, BOMs — but have learned the hard way that today’s fix can easily become tomorrow’s mystery.
 
 It’s also written for tech leads and build owners who are responsible for keeping builds stable over time. If you’ve ever had to explain why a version changed, why a build suddenly broke, or why “just upgrade it” isn’t a plan, you’ll find the mental models here useful.
 

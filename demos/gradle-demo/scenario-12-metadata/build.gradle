@@ -13,17 +13,20 @@ dependencies {
     implementation 'com.demo:lib-a:1.0.0'
 }
 
-// Gradle allows fixing bad metadata via Component Metadata Rules
+// Gradle allows fixing bad metadata via
+// Component Metadata Rules
 dependencies {
     components {
         withModule('com.demo:lib-a') {
             allVariants {
                 withDependencies {
-                    // Let's pretend lib-a:1.0.0 declared a dependency on lib-b:1.0.0
-                    // but we know it actually needs 2.0.0 to work correctly.
-                    // We can patch this metadata on the fly.
-                    removeAll { it.group == 'com.demo' && it.name == 'lib-b' }
-                    add('com.demo:lib-b:2.0.0')
+
+// Let's pretend lib-a:1.0.0 declared a dependency on lib-b:1.0.0
+// but we know it actually needs 2.0.0 to work correctly.
+// We can patch this metadata on the fly.
+
+                removeAll { it.group == 'com.demo' && it.name == 'lib-b' }
+                add('com.demo:lib-b:2.0.0')
                 }
             }
         }

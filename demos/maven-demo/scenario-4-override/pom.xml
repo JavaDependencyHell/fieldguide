@@ -28,14 +28,14 @@
     </dependencyManagement>
 
     <dependencies>
-        <!-- Explicit version overrides managed version -->
+    <!-- Explicit version overrides managed version -->
         <dependency>
             <groupId>com.demo</groupId>
             <artifactId>lib-a</artifactId>
             <version>2.0.0</version>
         </dependency>
 
-        <!-- Uses managed version (1.0.0) -->
+    <!-- Uses managed version (1.0.0) -->
         <dependency>
             <groupId>com.demo</groupId>
             <artifactId>lib-b</artifactId>
