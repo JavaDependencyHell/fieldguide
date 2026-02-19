@@ -7,8 +7,8 @@ This scenario demonstrates how build tools handle cycles in the dependency graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
-    Root[Project Root] --> LibA[lib-circle-a:1.0.0]
-    LibA --> LibB[lib-circle-b:1.0.0]
+    Root[Project Root] --> LibA['lib-circle-a:1.0.0']
+    LibA --> LibB['lib-circle-b:1.0.0']
     LibB --> LibA
 ```
 
