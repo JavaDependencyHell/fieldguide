@@ -1,4 +1,5 @@
-# Scenario 11: Dependency Locking (What to Do When Today’s Build Doesn’t Match Yesterday’s)
+# Dependency Locking
+*or what to Do When Today’s Build Doesn’t Match Yesterday’s*
 
 ## What This Scenario Demonstrates
 This scenario demonstrates Gradle's Dependency Locking feature.

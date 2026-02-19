@@ -1,4 +1,4 @@
-# Scenario 11: Dependency Locking
+# Dependency Locking
 
 ## What This Scenario Demonstrates
 This scenario demonstrates SBT locking.

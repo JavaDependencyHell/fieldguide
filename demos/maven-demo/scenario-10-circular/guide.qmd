@@ -1,4 +1,5 @@
-# Scenario 10: Circular Dependencies (What to Do When Your Dependency Graph Turns into a Cycle)
+# Circular Dependencies
+*or what to Do When Your Dependency Graph Turns into a Cycle*
 
 ## What This Scenario Demonstrates
 This scenario demonstrates how build tools handle cycles in the dependency graph (A -> B -> A).

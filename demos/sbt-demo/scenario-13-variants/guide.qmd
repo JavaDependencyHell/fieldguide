@@ -1,4 +1,4 @@
-# Scenario 13: Variants and Configurations
+# Variants and Configurations
 
 ## What This Scenario Demonstrates
 This scenario demonstrates SBT configurations.

@@ -1,4 +1,4 @@
-# Scenario 6: Strict Constraints
+# Strict Constraints
 
 ## What This Scenario Demonstrates
 This scenario demonstrates forcing a version via overrides.

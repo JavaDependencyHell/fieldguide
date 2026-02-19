@@ -1,4 +1,5 @@
-# Scenario 7: Dependency Scopes (What to Do When a Dependency Exists at Compile Time but Not at Runtime)
+# Dependency Scopes
+*or what to Do When a Dependency Exists at Compile Time but Not at Runtime*
 
 ## What This Scenario Demonstrates
 This scenario demonstrates how scopes (`compile`, `provided`, `test`, `runtime`) affect transitivity and the final classpath.

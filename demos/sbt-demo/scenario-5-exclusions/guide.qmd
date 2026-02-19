@@ -1,4 +1,4 @@
-# Scenario 5: Dependency Exclusions
+# Dependency Exclusions
 
 ## What This Scenario Demonstrates
 This scenario demonstrates exclusions in SBT.

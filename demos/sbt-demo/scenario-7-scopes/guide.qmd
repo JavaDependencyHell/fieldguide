@@ -1,4 +1,4 @@
-# Scenario 7: Dependency Configurations
+# Dependency Configurations
 
 ## What This Scenario Demonstrates
 This scenario demonstrates SBT configurations (`Compile`, `Test`, `Provided`).

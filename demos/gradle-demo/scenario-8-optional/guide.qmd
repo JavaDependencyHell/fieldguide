@@ -1,4 +1,5 @@
-# Scenario 8: Optional Dependencies (What to Do When Optional Dependencies Don’t Arrive)
+# Optional Dependencies
+*or what to Do When Optional Dependencies Don’t Arrive*
 
 ## What This Scenario Demonstrates
 This scenario demonstrates how Gradle handles optional dependencies (usually via `compileOnly` or feature variants).

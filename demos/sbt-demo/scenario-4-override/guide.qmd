@@ -1,4 +1,4 @@
-# Scenario 4: Hardcoded Version vs Overrides
+# Hardcoded Version vs Overrides
 
 ## What This Scenario Demonstrates
 This scenario demonstrates that `dependencyOverrides` wins over `libraryDependencies`.

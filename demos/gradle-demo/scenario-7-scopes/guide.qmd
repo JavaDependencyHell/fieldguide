@@ -1,4 +1,5 @@
-# Scenario 7: Dependency Configurations (What to Do When a Dependency Exists — But Not Where You Expect It)
+# Dependency Configurations
+*or what to Do When a Dependency Exists — But Not Where You Expect It*
 
 ## What This Scenario Demonstrates
 This scenario demonstrates Gradle configurations (`implementation`, `compileOnly`, `testImplementation`).

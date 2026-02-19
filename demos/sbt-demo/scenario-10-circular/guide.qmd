@@ -1,4 +1,4 @@
-# Scenario 10: Circular Dependencies
+# Circular Dependencies
 
 ## What This Scenario Demonstrates
 This scenario demonstrates SBT cycles.

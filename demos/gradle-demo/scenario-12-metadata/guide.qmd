@@ -1,4 +1,5 @@
-# Scenario 12: Component Metadata Rules (What to Do When Metadata Changes the Outcome of Resolution)
+# Component Metadata Rules
+*or what to Do When Metadata Changes the Outcome of Resolution*
 
 ## What This Scenario Demonstrates
 This scenario demonstrates fixing bad metadata with Gradle rules.

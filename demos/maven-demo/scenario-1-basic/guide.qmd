@@ -1,10 +1,9 @@
-## Basic Transitive Resolution or what to Do When a Dependency Brings in Versions You Didn’t Ask For
+# Basic Transitive Resolution
+*or what to Do When a Dependency Brings in Versions You Didn’t Ask For*
 
-
-**Maven Scenario 1**
 This scenario demonstrates the fundamental concept of transitive dependency resolution. It shows how a build tool automatically discovers and includes dependencies of your direct dependencies, forming a dependency graph. This is the "happy path" where no conflicts exist.
 
-### Dependency Graph
+#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
@@ -13,39 +12,39 @@ graph LR
     LibB --> LibC(lib-c:1.0.0)
 ```
 
-#### Maven (pom.xml)
+##### Maven (pom.xml)
 
 ```{.xml include="/demos/maven-demo/scenario-1-basic/pom.xml" snippet="s1-deps"}
 ```
 
-### Expected Intuition
+#### Expected Intuition
 Most developers expect that if they depend on `lib-a`, they will also get `lib-b` and `lib-c` automatically, and that all versions will match what is declared in the POMs of those libraries.
 
-### Actual Resolution Results
+#### Actual Resolution Results
 *   **Maven**: Resolves `lib-a:1.0.0`, `lib-b:1.0.0`, and `lib-c:1.0.0`.
 *   **Gradle**: Resolves `lib-a:1.0.0`, `lib-b:1.0.0`, and `lib-c:1.0.0`.
 *   **SBT**: Resolves `lib-a:1.0.0`, `lib-b:1.0.0`, and `lib-c:1.0.0`.
 
-### Classpath Reality
+#### Classpath Reality
 The runtime classpath contains exactly one JAR for each library:
 *   `lib-a-1.0.0.jar`
 *   `lib-b-1.0.0.jar`
 *   `lib-c-1.0.0.jar`
 
-### Why This Happens
+#### Why This Happens
 Build tools traverse the dependency graph. Since there are no conflicting versions for any library, the resolution is straightforward. The tool simply collects all unique nodes in the graph.
 
-### How Developers Commonly "Fix" This
+#### How Developers Commonly "Fix" This
 No fix is needed here. This is the desired behavior.
 
-### Safer Ways to Take Control
+#### Safer Ways to Take Control
 Even in simple scenarios, using a BOM (Bill of Materials) or dependency constraints can prevent future surprises if new dependencies are added.
 
-### Signals to Watch For
+#### Signals to Watch For
 If you see `ClassNotFoundException` for a class that should be in a transitive dependency, it might mean the graph is not resolving as expected (e.g., due to exclusions or scope issues).
 
-### How This Scales in Real Systems
+#### How This Scales in Real Systems
 In large systems, this simple chain `A -> B -> C` is repeated thousands of times, creating a complex web. The "happy path" becomes rare as diamond dependencies emerge.
 
-### Key Takeaway
+#### Key Takeaway
 Transitive dependency resolution is the mechanism that allows us to build on top of giants without manually managing every single library.

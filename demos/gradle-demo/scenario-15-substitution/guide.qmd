@@ -1,4 +1,5 @@
-# Scenario 15: Dependency Substitution (What to Do When One Component Quietly Replaces Another)
+# Dependency Substitution
+*or what to Do When One Component Quietly Replaces Another*
 
 ## What This Scenario Demonstrates
 This scenario demonstrates swapping dependencies.

@@ -1,4 +1,5 @@
-# Scenario 4: Hardcoded Version vs Platform (What to Do When a Single Declaration Escapes the Platform)
+# Hardcoded Version vs Platform
+*or what to Do When a Single Declaration Escapes the Platform*
 
 ## What This Scenario Demonstrates
 This scenario demonstrates that an explicit version in Gradle overrides a `platform()` recommendation.

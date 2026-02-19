@@ -1,4 +1,4 @@
-# Scenario 8: Optional Dependencies
+# Optional Dependencies
 
 ## What This Scenario Demonstrates
 This scenario demonstrates optional dependencies in SBT.

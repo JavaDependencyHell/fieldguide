@@ -1,4 +1,4 @@
-# Scenario 17: Private Repository & Direct Patch Override
+# Private Repository & Direct Patch Override
 
 ## What This Scenario Demonstrates
 This scenario shows a more direct way to use a private, third-party repository. Instead of using a vendor-supplied BOM, we explicitly request the patched version of a dependency in our project's `dependencies` block.

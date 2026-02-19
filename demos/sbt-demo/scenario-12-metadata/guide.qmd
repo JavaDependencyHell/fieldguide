@@ -1,4 +1,4 @@
-# Scenario 12: Customizing Metadata
+# Customizing Metadata
 
 ## What This Scenario Demonstrates
 This scenario demonstrates SBT metadata customization.

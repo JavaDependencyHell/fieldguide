@@ -1,4 +1,5 @@
-# Scenario 3: Dependency Overrides (What to Do When Overrides Fix the Problem — and Create the Next One)
+# Dependency Overrides
+*or what to Do When Overrides Fix the Problem — and Create the Next One*
 
 ## What This Scenario Demonstrates
 This scenario demonstrates `dependencyOverrides` in SBT.

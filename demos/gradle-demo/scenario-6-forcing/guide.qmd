@@ -1,4 +1,5 @@
-# Scenario 6: Strict Constraints (What to Do When Constraints Stop Resolution Completely)
+# Strict Constraints
+*or what to Do When Constraints Stop Resolution Completely*
 
 ## What This Scenario Demonstrates
 This scenario demonstrates Gradle's `strictly` keyword to force a version, even downgrading if necessary.

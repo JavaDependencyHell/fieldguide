@@ -1,4 +1,5 @@
-# Scenario 9: Version Ranges (What to Do When a Version Range Picks Something You Never Tested)
+# Version Ranges
+*or what to Do When a Version Range Picks Something You Never Tested*
 
 ## What This Scenario Demonstrates
 This scenario demonstrates dynamic version resolution using ranges (e.g., `[1.0, 2.0)`).

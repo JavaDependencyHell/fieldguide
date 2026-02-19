@@ -1,5 +1,5 @@
-# Scenario 1: Basic Transitive Resolution
-## (What to Do When Gradle Resolves More Than You Declared)
+# Basic Transitive Resolution
+*or what to Do When Gradle Resolves More Than You Declared*
 
 ## What This Scenario Demonstrates
 This scenario demonstrates the fundamental concept of transitive dependency resolution in Gradle. It shows how Gradle automatically discovers and includes dependencies of your direct dependencies.

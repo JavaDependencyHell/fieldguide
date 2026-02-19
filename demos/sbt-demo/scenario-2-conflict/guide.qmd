@@ -1,4 +1,5 @@
-# Scenario 2: Version Conflict Resolution (Latest Wins) (What to Do When SBT Always Picks the Latest Version)
+# Version Conflict Resolution (Latest Wins)
+*or what to Do When SBT Always Picks the Latest Version*
 
 ## What This Scenario Demonstrates
 This scenario demonstrates SBT's "Latest Wins" strategy.

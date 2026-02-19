@@ -1,4 +1,5 @@
-# Scenario 2: Version Conflict Resolution (Newest Wins) (What to Do When Gradle Picks a Newer Version Than Maven Would)
+# Version Conflict Resolution (Newest Wins)
+*or what to Do When Gradle Picks a Newer Version Than Maven Would*
 
 ## What This Scenario Demonstrates
 This scenario demonstrates Gradle's default "Newest Wins" conflict resolution strategy.

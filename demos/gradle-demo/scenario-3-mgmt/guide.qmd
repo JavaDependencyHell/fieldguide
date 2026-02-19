@@ -1,4 +1,5 @@
-# Scenario 3: Dependency Management (Platform/BOM) (What to Do When a Platform Aligns Versions — Until Something Overrides It)
+# Dependency Management (Platform/BOM)
+*or what to Do When a Platform Aligns Versions — Until Something Overrides It*
 
 ## What This Scenario Demonstrates
 This scenario demonstrates how to use Maven BOMs in Gradle using `platform()`.

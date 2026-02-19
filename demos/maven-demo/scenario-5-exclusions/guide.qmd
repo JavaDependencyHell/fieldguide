@@ -1,4 +1,5 @@
-# Scenario 5: Dependency Exclusions (What to Do When Excluding a Dependency Fixes the Build but Breaks Runtime)
+# Dependency Exclusions
+*or what to Do When Excluding a Dependency Fixes the Build but Breaks Runtime*
 
 ## What This Scenario Demonstrates
 This scenario demonstrates how to surgically remove a transitive dependency from the graph. This is a common "sledgehammer" fix for conflicts.

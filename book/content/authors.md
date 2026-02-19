@@ -15,10 +15,11 @@ On the OSS front, Hervé is an Apache Software Foundation member and Apache Mave
 
 [LinkedIn](https://www.linkedin.com/in/noregressions/)
 
-Developer Advocate, Java Champion, Oracle Ace, Security Champion, DevOps Lead. A thoroughly seasoned engineer, leader and strategist from operating systems to JVMs to Chat GPT.
+Developer Advocate @ HeroDevs. Java Champion, Oracle ACE, Security Champion, DevOps lead.
 
-Working at HeroDevs as a Developer Advocate.
+Long-time engineer and pragmatic strategist working across the stack. From operating systems and JVMs to modern AI.
+I help teams ship faster, safer, and with fewer supply-chain surprises.
 
-Open source committer and contributor,  Apache, Eclipse, OpenJDK, OpenSSF, OWASP member, Mad Scientist and usergroup leader: A seasoned speaker and regular presenter at international conferences on technical and software engineering topics. Ex IBM, Ex Redhat, Ex Sonatype.
+Open source contributor (Apache, Eclipse, OpenJDK, OpenSSF), OWASP member, user group organiser, and frequent international conference speaker. and occasional Mad scientist.
 
-Greybeards rule!
+Previously: IBM, Red Hat, Sonatype.

@@ -1,4 +1,5 @@
-# Scenario 6: Forcing Transitive Versions via Dependency Management (What to Do When a Transitive Dependency is the Wrong Version)
+# Forcing Transitive Versions via Dependency Management
+*or what to Do When a Transitive Dependency is the Wrong Version*
 
 ## What This Scenario Demonstrates
 This scenario demonstrates how to force a specific version of a transitive dependency, overriding what the intermediate libraries request.

@@ -1,4 +1,4 @@
-# Scenario 15: Dependency Substitution
+# Dependency Substitution
 
 ## What This Scenario Demonstrates
 This scenario demonstrates substitution in SBT.

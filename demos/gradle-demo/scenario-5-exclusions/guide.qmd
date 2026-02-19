@@ -1,4 +1,5 @@
-# Scenario 5: Dependency Exclusions (What to Do When an Exclusion Reshapes the Dependency Graph)
+# Dependency Exclusions
+*or what to Do When an Exclusion Reshapes the Dependency Graph*
 
 ## What This Scenario Demonstrates
 This scenario demonstrates excluding transitive dependencies in Gradle.

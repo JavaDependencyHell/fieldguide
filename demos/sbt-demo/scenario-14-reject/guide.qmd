@@ -1,4 +1,4 @@
-# Scenario 14: Rejecting Versions
+# Rejecting Versions
 
 ## What This Scenario Demonstrates
 This scenario demonstrates rejecting versions in SBT.
