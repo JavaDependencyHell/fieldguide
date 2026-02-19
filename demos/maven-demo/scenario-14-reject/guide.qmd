@@ -4,35 +4,9 @@
 
 This scenario demonstrates how to prevent a specific version of a dependency from appearing anywhere in your build. Maven has no native "reject" keyword, but the Maven Enforcer Plugin provides an effective workaround.
 
-### Dependency Graph
+#### Maven (pom.xml)
 
-Maven (pom.xml)
-
-```xml
-<build>
-    <plugins>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-enforcer-plugin</artifactId>
-            <version>3.5.0</version>
-            <executions>
-                <execution>
-                    <id>ban-bad-versions</id>
-                    <goals><goal>enforce</goal></goals>
-                    <configuration>
-                        <rules>
-                            <bannedDependencies>
-                                <excludes>
-                                    <exclude>com.demo:lib-a:2.0.0</exclude>
-                                </excludes>
-                            </bannedDependencies>
-                        </rules>
-                    </configuration>
-                </execution>
-            </executions>
-        </plugin>
-    </plugins>
-</build>
+```{.xml include="/demos/maven-demo/scenario-14-reject/pom.xml" snippet="s14-enforcer"}
 ```
 
 ### Expected Intuition

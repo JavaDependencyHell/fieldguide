@@ -4,32 +4,9 @@
 
 This scenario demonstrates how to replace one dependency with another in Maven. Maven has no native substitution mechanism, but exclusions combined with explicit declarations achieve the same result.
 
-### Dependency Graph
+#### Maven (pom.xml)
 
-Maven (pom.xml)
-
-```xml
-<dependencies>
-    <dependency>
-        <groupId>com.demo</groupId>
-        <artifactId>lib-a</artifactId>
-        <version>1.0.0</version>
-        <exclusions>
-            <exclusion>
-                <!-- Remove the old logging library -->
-                <groupId>log4j</groupId>
-                <artifactId>log4j</artifactId>
-            </exclusion>
-        </exclusions>
-    </dependency>
-
-    <!-- Replace with the SLF4J bridge -->
-    <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>log4j-over-slf4j</artifactId>
-        <version>1.7.36</version>
-    </dependency>
-</dependencies>
+```{.xml include="/demos/maven-demo/scenario-15-substitution/pom.xml" snippet="s15-deps"}
 ```
 
 ### Expected Intuition

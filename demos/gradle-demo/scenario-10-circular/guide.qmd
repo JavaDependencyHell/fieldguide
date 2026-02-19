@@ -1,5 +1,5 @@
 # Circular Dependencies
-*or what to Do When It Can’t Untangle the Graph*
+*or what to Do When Gradle Can’t Untangle the Graph*
 
 This scenario demonstrates Gradle's handling of circular dependencies.
 

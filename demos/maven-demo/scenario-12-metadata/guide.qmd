@@ -4,18 +4,9 @@
 
 This scenario demonstrates a fundamental limitation of Maven's dependency model: the POM format has no way to express rich version constraints like "prefer 1.5 but accept anything in [1.0, 2.0)" or "strictly require exactly 1.3.0."
 
-### Dependency Graph
+#### Maven (pom.xml)
 
-Maven (pom.xml)
-
-```xml
-<dependencies>
-    <dependency>
-        <groupId>com.demo</groupId>
-        <artifactId>lib-a</artifactId>
-        <version>1.0.0</version>
-    </dependency>
-</dependencies>
+```{.xml include="/demos/maven-demo/scenario-12-metadata/pom.xml" snippet="s12-deps"}
 ```
 
 ### Expected Intuition

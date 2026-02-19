@@ -29,7 +29,7 @@ graph LR
 The build tool performs a "select" operation against the available versions in the repo.
 
 #### What About Hard Version Ranges?
-A version declared as `[1.0.0]` (with brackets) is a hard requirement. Unlike a plain `1.0.0`, which It treats as a soft preference that can be overridden by the "nearest-wins" rule, a bracketed version will cause the build to fail if a different version is selected anywhere in the dependency graph. This is Maven’s mechanism for expressing ‘this exact version must be used, or the build breaks.’ It is the strictest way to declare a dependency version.
+A version declared as `[1.0.0]` (with brackets) is a hard requirement. Unlike a plain `1.0.0`, which Maven treats as a soft preference that can be overridden by the "nearest-wins" rule, a bracketed version will cause the build to fail if a different version is selected anywhere in the dependency graph. This is Maven’s mechanism for expressing ‘this exact version must be used, or the build breaks.’ It is the strictest way to declare a dependency version.
 
 #### How Developers Commonly "Fix" This
 Ranges are controversial because they make builds non-deterministic (a new release of `lib-a` can change your build without you touching it). Many teams ban them.

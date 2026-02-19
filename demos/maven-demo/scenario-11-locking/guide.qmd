@@ -4,18 +4,9 @@
 
 This scenario demonstrates how Maven approaches (or rather, does not approach) dependency locking. Unlike Gradle and SBT, Maven has no native locking mechanism. Instead, Maven's philosophy assumes that all versions are declared explicitly and fixed, making locking unnecessary in theory—but not always in practice.
 
-### Dependency Graph
+#### Maven (pom.xml)
 
-Maven (pom.xml)
-
-```xml
-<dependencies>
-    <dependency>
-        <groupId>com.demo</groupId>
-        <artifactId>lib-a</artifactId>
-        <version>[1.0.0,2.0.0)</version>
-    </dependency>
-</dependencies>
+```{.xml include="/demos/maven-demo/scenario-11-locking/pom.xml" snippet="s11-deps"}
 ```
 
 ### Expected Intuition

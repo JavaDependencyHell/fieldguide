@@ -1,5 +1,5 @@
 # Version Conflict Resolution (Newest Wins)
-*or what to Do When It Picks a Newer Version Than Maven Would*
+*or what to Do When Gradle Picks a Newer Version Than Maven Would*
 
 This scenario demonstrates its default "Newest Wins" conflict resolution strategy.
 

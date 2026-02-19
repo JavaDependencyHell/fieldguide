@@ -4,19 +4,9 @@
 
 This scenario demonstrates how Maven handles (and cannot handle) the concept of library variants—where a single library publishes multiple artifacts for different contexts (e.g., Java 8 vs Java 11 builds, debug vs release, different database drivers).
 
-### Dependency Graph
+#### Maven (pom.xml)
 
-Maven (pom.xml)
-
-```xml
-<dependencies>
-    <dependency>
-        <groupId>com.demo</groupId>
-        <artifactId>lib-a</artifactId>
-        <version>1.0.0</version>
-        <classifier>jdk11</classifier>
-    </dependency>
-</dependencies>
+```{.xml include="/demos/maven-demo/scenario-13-variants/pom.xml" snippet="s13-deps"}
 ```
 
 ### Expected Intuition

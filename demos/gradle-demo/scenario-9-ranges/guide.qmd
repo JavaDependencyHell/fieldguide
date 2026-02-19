@@ -1,5 +1,5 @@
 # Version Ranges
-*or what to Do When It Chooses a Version You Didn’t Intend*
+*or what to Do When Gradle Chooses a Version You Didn’t Intend*
 
 This scenario demonstrates Gradle's support for version ranges.
 
