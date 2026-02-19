@@ -64,6 +64,11 @@ book:
         - demos/maven-demo/scenario-8-optional/guide.qmd
         - demos/maven-demo/scenario-9-ranges/guide.qmd
         - demos/maven-demo/scenario-10-circular/guide.qmd
+        - demos/maven-demo/scenario-11-locking/guide.qmd
+        - demos/maven-demo/scenario-12-metadata/guide.qmd
+        - demos/maven-demo/scenario-13-variants/guide.qmd
+        - demos/maven-demo/scenario-14-reject/guide.qmd
+        - demos/maven-demo/scenario-15-substitution/guide.qmd
         - demos/maven-demo/scenario-16-private-bom/guide.qmd
         - demos/maven-demo/scenario-17-private-patch/guide.qmd
     - part: "Gradle Scenarios"
@@ -104,6 +109,12 @@ book:
         - demos/sbt-demo/scenario-15-substitution/guide.qmd
         - demos/sbt-demo/scenario-16-private-bom/guide.qmd
         - demos/sbt-demo/scenario-17-private-patch/guide.qmd
+    - book/content/conclusion.md
+    - part: "Appendices"
+      chapters:
+        - book/content/comparison-table.md
+        - book/content/cheat-sheet.md
+        - book/content/glossary.md
   navbar:
     page-footer:
       left: "© 2026 Dependency Hell Authors"

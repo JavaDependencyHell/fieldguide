@@ -1,4 +1,4 @@
-// snippet: repo-and-deps
+// tag::repo-and-deps[]
 ThisBuild / version := "0.1.0-SNAPSHOT"
 
 ThisBuild / scalaVersion := "2.13.8"
@@ -15,4 +15,4 @@ lazy val root = (project in file("."))
     ),
     mavenBomImport := "com.thirdparty.springboot" % "patched-bom" % "1.0.0"
   )
-// snippet: end
+// end::repo-and-deps[]

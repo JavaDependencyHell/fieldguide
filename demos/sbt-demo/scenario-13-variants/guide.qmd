@@ -1,6 +1,7 @@
 # Variants and Configurations
+*or what to Do When You Need a Specific Flavor of a Library*
 
-This scenario demonstrates its configurations.
+This scenario demonstrates how SBT handles variant selection using configurations and classifiers.
 
 #### Dependency Graph
 N/A
@@ -11,31 +12,33 @@ N/A
 ```
 
 #### Expected Intuition
-N/A
+"I want the 'native' version of `lib-a` for Linux, or I want the 'sources' jar for debugging."
 
 #### Actual Resolution Results
-N/A
+Resolves the artifact with the specified classifier (e.g., `lib-a-1.0.0-linux.jar`).
 
 #### Classpath Reality
-N/A
+The classpath contains the specific artifact requested.
 
 #### Why This Happens
-N/A
+SBT uses Ivy configurations (`Compile`, `Test`, `Runtime`, `Provided`, `Optional`) to manage different classpaths, but does not have Gradle's attribute-based variant selection system. When you need a specific variant of a library (e.g., a native build for a particular OS, or a sources/javadoc artifact), SBT uses **classifiers**—the same mechanism as Maven.
 
 #### How Developers Commonly "Fix" This
-N/A
-
-#### Safer Ways to Take Control
-N/A
+*   **Classifiers:** Use the `classifier` method on a dependency:
+    ```scala
+    "com.demo" % "lib-a" % "1.0.0" classifier "native-linux"
+    ```
+*   **`updateClassifiers`:** For sources and javadoc, SBT provides built-in support via the `updateClassifiers` task.
 
 #### Signals to Watch For
-N/A
+*   **"Artifact not found":** If you request a classifier that doesn't exist, resolution will fail.
+*   **Platform Mismatches:** If you hardcode a classifier like `linux-x86_64` in your build, it will fail on macOS or Windows.
 
 #### How This Scales in Real Systems
-N/A
+Classifier-based variant selection is more limited than Gradle's attribute matching because classifiers are opaque strings with no formal compatibility rules. In the Scala ecosystem, the most important "variant" is the Scala version suffix (e.g., `_2.13` or `_3`). SBT handles this automatically via the `%%` operator, which appends the correct Scala version suffix. This is a form of variant selection that is unique to the Scala ecosystem and handles one of its biggest dependency management challenges.
 
 #### Key Takeaway
-Configurations are powerful.
+SBT uses classifiers and the `%%` operator to handle variants.
 
 #### Related Scenarios
 N/A

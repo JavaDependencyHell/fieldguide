@@ -1,0 +1,81 @@
+## 15. Version Substitution
+
+*or what to Do When You Need to Swap One Library for Another*
+
+This scenario demonstrates how to replace one dependency with another in Maven. Maven has no native substitution mechanism, but exclusions combined with explicit declarations achieve the same result.
+
+### Dependency Graph
+
+Maven (pom.xml)
+
+```xml
+<dependencies>
+    <dependency>
+        <groupId>com.demo</groupId>
+        <artifactId>lib-a</artifactId>
+        <version>1.0.0</version>
+        <exclusions>
+            <exclusion>
+                <!-- Remove the old logging library -->
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+            </exclusion>
+        </exclusions>
+    </dependency>
+
+    <!-- Replace with the SLF4J bridge -->
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>log4j-over-slf4j</artifactId>
+        <version>1.7.36</version>
+    </dependency>
+</dependencies>
+```
+
+### Expected Intuition
+
+"I want to replace log4j with SLF4J everywhere in my build. I don't want to hunt down every path that pulls in log4j and exclude it one by one."
+
+### Actual Resolution Results
+
+Maven resolves the dependency graph, applies the exclusion to the specified dependency, and adds the replacement. However, the exclusion only applies to the single `<dependency>` declaration where it is specified. If another dependency also pulls in log4j transitively, it will still appear on the classpath unless you add exclusions there too.
+
+### Classpath Reality
+
+The classpath contains `log4j-over-slf4j-1.7.36.jar` instead of `log4j.jar`—but only if all transitive paths to log4j have been excluded. Missing even one path means both JARs end up on the classpath, which can cause unpredictable behaviour.
+
+### Why This Happens
+
+Maven's exclusion mechanism is declaration-scoped, not graph-scoped. An exclusion on one `<dependency>` element only affects the transitive tree under that specific dependency. There is no way to say "exclude `log4j:log4j` from the entire graph." This is fundamentally different from Gradle's `dependencySubstitution`, which intercepts resolution globally and swaps the dependency wherever it appears.
+
+### How Developers Commonly "Fix" This
+
+- **Exclusion on every path:** The brute-force approach. Add `<exclusion>` blocks to every direct dependency that transitively pulls in the unwanted library. This works but is verbose, fragile, and must be maintained as the dependency graph evolves.
+- **Global exclusion via `<dependencyManagement>`:** While `<dependencyManagement>` cannot exclude a dependency outright, you can declare the unwanted artifact with `<scope>provided</scope>` to remove it from the runtime classpath. This is not a true exclusion but achieves a similar practical effect.
+- **Maven Shade Plugin:** For substitutions where the replacement has a different package structure, the Shade Plugin can relocate classes at build time. This is a heavy-handed solution but is used in practice for complex migrations.
+
+### Safer Ways to Take Control
+
+- Combine exclusions with the Enforcer Plugin: After adding exclusions, use `bannedDependencies` (Scenario 14) to ensure the old library never creeps back in through a new transitive path.
+- Document every substitution: Add a comment next to each exclusion explaining what it replaces and why. Future developers (including you in six months) will thank you.
+- Run `mvn dependency:tree` after every substitution to verify that the old library is truly gone from the entire graph.
+
+### Signals to Watch For
+
+- `NoClassDefFoundError` or `ClassNotFoundException`: The exclusion removed the old library, but the replacement doesn't provide all the same classes.
+- Both old and new libraries on the classpath: A missed transitive path is still pulling in the original. This often manifests as non-deterministic behaviour depending on classloader ordering.
+- Gradual classpath creep: A new dependency added weeks later reintroduces the excluded library via a different transitive path. This is why the Enforcer Plugin safety net matters.
+
+### How This Scales in Real Systems
+
+The logging framework swap (log4j → SLF4J + Logback) is the canonical example, but the pattern applies to any library migration: moving from `javax.*` to `jakarta.*`, replacing a community library with an internal fork, or swapping an abandoned library for a maintained alternative. In large multi-module Maven projects, the exclusion-based approach becomes a maintenance burden. Some teams centralise substitutions in a parent POM's `<dependencyManagement>`, combining scope overrides and exclusions to approximate what Gradle achieves with a single substitution rule.
+
+### Key Takeaway
+
+Maven has no graph-wide substitution mechanism. Use exclusions on each path plus an explicit replacement declaration. Always verify with `dependency:tree` and guard with the Enforcer Plugin.
+
+### Related Scenarios
+
+- Scenario 5: Dependency Exclusions — The underlying mechanism used for substitution.
+- Scenario 14: Rejecting a Version — Using the Enforcer Plugin to prevent the old library from returning.
+- Scenario 6: Forcing Transitive Versions — An alternative when only the version (not the artifact) needs to change.

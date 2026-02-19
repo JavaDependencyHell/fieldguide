@@ -1,7 +1,7 @@
 # Hardcoded Version vs Platform
 *or what to Do When a Single Declaration Escapes the Platform*
 
-This scenario demonstrates that an explicit version overrides a `platform()` recommendation.
+This scenario demonstrates how an explicit version declaration overrides a `platform()` recommendation.
 
 #### Dependency Graph
 ```{mermaid}
@@ -17,31 +17,34 @@ graph LR
 ```
 
 #### Expected Intuition
-"I typed 2.0.0, so I get 2.0.0."
+"I imported the BOM, but I also explicitly requested version `2.0.0` for `lib-a`. I expect my explicit request to be honored."
 
 #### Actual Resolution Results
-Resolves `2.0.0`.
+Resolves `lib-a:2.0.0`.
+    *   *Reason*: The `platform()` dependency provides a *recommendation* for `lib-a:1.0.0`. However, the direct dependency declaration `implementation 'com.demo:lib-a:2.0.0'` is a stronger constraint, so Gradle selects `2.0.0`.
 
 #### Classpath Reality
-`2.0.0`.
+The classpath contains `lib-a-2.0.0.jar`.
 
 #### Why This Happens
-An explicit version is a stronger constraint than a platform recommendation (unless `enforcedPlatform` is used).
+In Gradle, a `platform()` dependency adds version constraints to the graph, but these constraints are treated as recommendations unless they are enforced. A direct version declaration on a dependency is considered a stronger signal than a recommendation from a platform, so it takes precedence.
 
 #### How Developers Commonly "Fix" This
-N/A
+*   **Removing the Version:** If the developer *wanted* the BOM version but accidentally left a hardcoded version in, the fix is simply to remove the version from the `implementation` line.
+*   **Using `enforcedPlatform`:** If the goal is to *prevent* developers from overriding the BOM version, the platform should be imported using `enforcedPlatform()`.
 
 #### Safer Ways to Take Control
-Use `enforcedPlatform` if you want the BOM to win.
+*   **Check for Overrides:** Be mindful of where you are declaring versions. If you are using a BOM, try to avoid declaring versions for managed dependencies unless you intentionally want to override them.
 
 #### Signals to Watch For
-N/A
+*   **Inconsistent Versions:** If you see different versions of libraries that should be managed by the same BOM, check for hardcoded version overrides in your build files.
+*   **Dependency Insight:** Use `./gradlew dependencyInsight --dependency lib-a` to see exactly why a specific version was chosen. It will show you if a version was selected due to a direct declaration or a platform constraint.
 
 #### How This Scales in Real Systems
-Allows local overrides of global defaults.
+Allowing local overrides of global defaults is a powerful feature. It lets teams use a standard platform (like Spring Boot) but still upgrade or downgrade individual libraries as needed for bug fixes or compatibility. However, it requires discipline to avoid "drift" where many libraries are manually versioned instead of being managed by the platform.
 
 #### Key Takeaway
-Explicit versions override standard platforms.
+Explicit versions override standard platforms. Use `enforcedPlatform` if you want the platform to win.
 
 #### Related Scenarios
-*   [Scenario 3: Mgmt](../scenario-3-mgmt/guide.qmd)
+*   [Scenario 3: Mgmt](../scenario-3-mgmt/guide.qmd) - How platforms work.

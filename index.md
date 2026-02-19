@@ -24,7 +24,7 @@ And if you’re earlier in your career, this book will likely save you from form
 
 ### How this book is meant to be used
 
-The most common way this book gets used is reactively. Something breaks. A version changes that nobody asked for. A class disappears at runtime. An upgrade ripples further than expected. In that moment, hopedully, this book has the answer.
+The most common way this book gets used is reactively. Something breaks. A version changes that nobody asked for. A class disappears at runtime. An upgrade ripples further than expected. In that moment, hopefully, this book has the answer.
 
 Scan the scenario titles. If one of them makes you wince slightly, you’re probably in the right place.
 

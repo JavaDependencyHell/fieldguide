@@ -1,7 +1,7 @@
 # Circular Dependencies
 *or what to Do When It Can’t Untangle the Graph*
 
-This scenario demonstrates its handling of circular dependencies.
+This scenario demonstrates Gradle's handling of circular dependencies.
 
 #### Dependency Graph
 ```{mermaid}
@@ -27,22 +27,16 @@ Resolves successfully.
 Both jars present.
 
 #### Why This Happens
-It handles cycles gracefully.
-
-#### How Developers Commonly "Fix" This
-N/A
-
-#### Safer Ways to Take Control
-Avoid cycles.
-
-#### Signals to Watch For
-N/A
+Gradle maintains a set of already-visited nodes during graph traversal. When it encounters a dependency it has already resolved, it stops following that branch, preventing infinite recursion. Unlike Maven, which fails at reactor build time if modules in a multi-project build form a cycle, Gradle handles circular external dependencies gracefully during resolution. Both libraries end up on the classpath.
 
 #### How This Scales in Real Systems
-N/A
+While Gradle tolerates circular dependencies at resolution time, they are still a serious architectural problem. Cycles make it impossible to reason about the build order of modules, force tightly coupled releases, and often indicate that shared abstractions should be extracted into a separate module. In Gradle multi-project builds, circular project dependencies will cause build failures since Gradle needs a linear task execution order.
+
+#### Signals to Watch For
+Circular project dependencies will produce an explicit error: "Circular dependency between the following tasks." Circular repository dependencies are silent but can cause unexpected classloading behaviour. If two libraries must evolve in lockstep, consider whether they should be a single module.
 
 #### Key Takeaway
-It tolerates cycles.
+Gradle tolerates cycles.
 
 #### Related Scenarios
 N/A

@@ -1,6 +1,7 @@
 # Dependency Configurations
+*or what to Do When You Need a Library Only for Testing*
 
-This scenario demonstrates its configurations (`Compile`, `Test`, `Provided`).
+This scenario demonstrates SBT's dependency configurations (similar to Maven scopes), such as `Compile`, `Test`, and `Provided`.
 
 #### Dependency Graph
 ```{mermaid}
@@ -17,31 +18,33 @@ graph LR
 ```
 
 #### Expected Intuition
-Provided not in runtime.
+"I expect `lib-c` to be available in my tests but not in my main code. I expect `lib-b` to be available when I compile, but I don't want to package it because the server provides it."
 
 #### Actual Resolution Results
-Respects configurations.
+*   `lib-a`: Available in `Compile` and `Runtime`.
+*   `lib-b`: Available in `Compile`, but not `Runtime` (unless provided by the environment).
+*   `lib-c`: Available only in `Test`.
 
 #### Classpath Reality
-Correct separation.
+*   **Compile Classpath:** Contains `lib-a`, `lib-b`.
+*   **Runtime Classpath:** Contains `lib-a`.
+*   **Test Classpath:** Contains `lib-a`, `lib-b`, `lib-c`.
 
 #### Why This Happens
-Ivy configurations.
-
-#### How Developers Commonly "Fix" This
-N/A
-
-#### Safer Ways to Take Control
-N/A
+SBT maps dependencies to Ivy configurations.
+*   **Default (no configuration):** Maps to `Compile`. It is transitive and available at runtime.
+*   **`% Test`:** Maps to `Test`. It is only available for test sources.
+*   **`% Provided`:** Maps to `Provided`. It is available at compile time but is not transitive and is not included in the runtime classpath (it is expected to be provided by the container, e.g., Spark or a Servlet container).
 
 #### Signals to Watch For
-N/A
+*   **`NoClassDefFoundError`:** This often happens if you use `% Provided` but the runtime environment doesn't actually provide the library.
+*   **Bloated JARs:** If you forget `% Test` or `% Provided`, your final artifact might contain unnecessary libraries.
 
 #### How This Scales in Real Systems
-N/A
+Correct configuration usage is essential for Scala/SBT projects that publish libraries. The `% Provided` configuration is commonly used for Spark and Hadoop dependencies in data engineering projects, where the cluster provides these libraries. Getting this wrong means either a bloated uber-JAR (wasting deployment bandwidth) or a runtime crash (missing classes).
 
 #### Key Takeaway
-Configurations control visibility.
+Configurations control visibility and transitivity. Use `% Test` and `% Provided` to keep your production artifacts clean.
 
 #### Related Scenarios
 *   [Scenario 8: Optional](../scenario-8-optional/guide.md)

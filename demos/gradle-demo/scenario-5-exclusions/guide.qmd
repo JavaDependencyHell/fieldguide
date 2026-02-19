@@ -27,19 +27,13 @@ graph LR
 `lib-c` is missing.
 
 #### Why This Happens
-It prunes the graph.
-
-#### How Developers Commonly "Fix" This
-N/A
-
-#### Safer Ways to Take Control
-Ensure `lib-a` doesn't need `lib-c`.
-
-#### Signals to Watch For
-`NoClassDefFoundError`.
+Gradle honours exclusion metadata during graph traversal. When it encounters an exclusion on a dependency declaration, it prunes the specified artifact (and its entire transitive subtree) from that branch of the graph. Note that Gradle also supports configuration-level exclusions using configurations.implementation { exclude group: 'com.demo', module: 'lib-c' }, which applies the exclusion globally to all dependencies in that configuration.
 
 #### How This Scales in Real Systems
-Common for removing logging frameworks.
+Exclusions are one of the most commonly used --- and most commonly abused --- dependency management tools. The classic use case is replacing a logging framework: excluding log4j-core and substituting slf4j-api + logback. However, in large codebases, exclusions accumulate over time and create what might be called "Swiss cheese" dependency graphs where important libraries are missing from branches that actually need them. Unlike Maven, Gradle's configuration-level excludes make it easier to apply blanket exclusions, which is powerful but can mask real problems.
+
+#### Signals to Watch For
+NoClassDefFoundError or ClassNotFoundException at runtime are the smoking guns. If you exclude a dependency, run your full test suite immediately. Consider using ./gradlew dependencies --configuration runtimeClasspath to verify the final classpath contains everything you need. A safer alternative to exclusion is often substitution (Scenario 15), which replaces a dependency rather than leaving a hole.
 
 #### Key Takeaway
 Exclusions work as expected.

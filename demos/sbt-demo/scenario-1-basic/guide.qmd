@@ -1,7 +1,7 @@
 # Basic Transitive Resolution
 *or what to Do When it Pulls in More Than You Declared*
 
-This scenario demonstrates fundamental concept of transitive dependency resolution.
+This scenario demonstrates the fundamental concept of transitive dependency resolution in SBT.
 
 #### Dependency Graph
 ```{mermaid}
@@ -18,31 +18,33 @@ graph LR
 ```
 
 #### Expected Intuition
-All present.
+"I declared `lib-a`. I expect `lib-a` to be on my classpath. If `lib-a` needs `lib-b`, I expect the build tool to handle that for me."
 
 #### Actual Resolution Results
-Resolves all.
+Resolves `lib-a:1.0.0`, `lib-b:1.0.0`, and `lib-c:1.0.0`.
+    *   *Reason*: SBT (via Ivy or Coursier) traverses the dependency graph. It sees that `lib-a` depends on `lib-b`, and `lib-b` depends on `lib-c`. Since there are no conflicts, it includes all of them.
 
 #### Classpath Reality
-All present.
+The classpath contains `lib-a-1.0.0.jar`, `lib-b-1.0.0.jar`, and `lib-c-1.0.0.jar`.
 
 #### Why This Happens
-Standard resolution.
+SBT uses a dependency resolution engine (historically Ivy, now Coursier by default in newer versions) to resolve dependencies. The core principle is **transitivity**: if you depend on A, you also depend on everything A depends on. This saves you from manually declaring every single library your project needs.
 
 #### How Developers Commonly "Fix" This
-N/A
+There is nothing to fix here; this is the desired behavior. However, developers sometimes try to manually add transitive dependencies to `libraryDependencies` to "be sure" they are there. This is generally unnecessary unless you are using APIs from those transitive dependencies directly in your code.
 
 #### Safer Ways to Take Control
-N/A
+Trust the transitive resolution. Only declare direct dependencies (libraries you import in your code) in your `build.sbt`.
 
 #### Signals to Watch For
-N/A
+*   **Bloated Classpath:** If your application size is growing unexpectedly, check the transitive dependencies of your new libraries.
+*   **Unexpected Classes:** If you see classes in your IDE that you didn't add, they are likely coming from transitive dependencies.
 
 #### How This Scales in Real Systems
-N/A
+Transitive resolution is the only way modern software development scales. Without it, you would be managing hundreds of jar files manually. However, it also means that adding one small library can pull in a large tree of other libraries, potentially leading to conflicts (see Scenario 2).
 
 #### Key Takeaway
-It resolves transitively.
+SBT resolves dependencies transitively. You declare the roots; SBT finds the rest of the tree.
 
 #### Related Scenarios
-*   [Scenario 2: Conflict](../scenario-2-conflict/guide.md)
+*   [Scenario 2: Conflict](../scenario-2-conflict/guide.md) - What happens when two branches of the tree disagree on a version.

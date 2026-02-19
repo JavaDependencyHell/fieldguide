@@ -1,15 +1,14 @@
 # Dependency Substitution
 *or what to Do When One Component Quietly Replaces Another*
 
-This scenario demonstrates swapping dependencies.
+This scenario demonstrates how to completely replace one dependency with another (or a different version of the same dependency) using Gradle's dependency substitution rules.
 
 #### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
     Root[Project Root] --> LibA[lib-a:1.0.0]
-    LibA -.-> LibB[lib-b:1.0.0]
-    Root -- substitute --> LibB_New[lib-b-new:1.0.0]
+    Root -- substitute --> LibA_New[lib-a:2.0.0]
 ```
 
 #### Gradle (Groovy DSL)
@@ -18,31 +17,34 @@ graph LR
 ```
 
 #### Expected Intuition
-"Replace it."
+"I want to replace `lib-a:1.0.0` with `lib-a:2.0.0` everywhere in my build, even if it's a transitive dependency."
 
 #### Actual Resolution Results
-Swaps it.
+Resolves `lib-a:2.0.0`.
+    *   *Reason*: The `resolutionStrategy.dependencySubstitution` rule intercepts the dependency resolution process. When Gradle encounters `lib-a:1.0.0`, it swaps it for `lib-a:2.0.0` before attempting to resolve it.
 
 #### Classpath Reality
-`2.0.0`.
+The classpath contains `lib-a-2.0.0.jar`.
 
 #### Why This Happens
-Substitution rule.
+Dependency substitution is a powerful feature that allows you to rewrite the dependency graph on the fly. It is often used to replace a published library with a local project during development (e.g., `substitute module('org.example:lib') using project(':lib')`), or to replace a legacy library with its modern replacement (e.g., `log4j` with `log4j-over-slf4j`).
 
 #### How Developers Commonly "Fix" This
-Exclusions.
+*   **Exclusions:** Developers often try to exclude the old dependency and add the new one manually. This is tedious and error-prone.
+*   **Forcing Versions:** Forcing a version works if the group and artifact IDs are the same, but it cannot replace `com.old:lib` with `com.new:lib`.
 
 #### Safer Ways to Take Control
-Substitution is cleaner.
+*   **Use Substitution:** This is the cleanest way to handle replacements. It applies globally and handles transitive dependencies correctly.
 
 #### Signals to Watch For
-N/A
+*   **Unexpected Swaps:** If you use substitution rules, be careful not to accidentally swap a library that is not fully compatible.
+*   **Build Scans:** Build scans show substitutions clearly, making it easy to debug why a dependency was replaced.
 
 #### How This Scales in Real Systems
-Great for local development (substitute module for project).
+This is essential for multi-repo development (composite builds) where you want to substitute a binary dependency with a local source build. It is also critical for migrating away from deprecated libraries across a large codebase.
 
 #### Key Takeaway
-Swap dependencies easily.
+Dependency substitution allows you to swap modules or versions cleanly, handling complex replacements that exclusions cannot.
 
 #### Related Scenarios
-*   [Scenario 5: Exclusions](../scenario-5-exclusions/guide.md)
+*   [Scenario 5: Exclusions](../scenario-5-exclusions/guide.md) - Removing dependencies without replacement.

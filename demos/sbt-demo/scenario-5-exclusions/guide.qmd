@@ -26,19 +26,16 @@ Excluded.
 Missing.
 
 #### Why This Happens
-Exclusion metadata.
+SBT uses Ivy (or Coursier in modern versions) for dependency resolution, and exclusions work similarly to Maven. The .exclude(group, artifact) method on a dependency declaration tells the resolver to prune that artifact from the transitive graph under the declaring dependency. The excluded library and its entire subtree are removed.
 
-#### How Developers Commonly "Fix" This
-N/A
-
-#### Safer Ways to Take Control
-N/A
+#### How Developers Commonly Fix This
+The most common pattern is swapping logging frameworks: excluding log4j and adding Logback. Some teams also exclude outdated or vulnerable transitives and replace them with newer versions declared directly.
 
 #### Signals to Watch For
-N/A
+ClassNotFoundException or NoClassDefFoundError at runtime. Because SBT often uses eviction warnings (which are noisy), developers sometimes miss that an exclusion removed something critical. Always run sbt test after adding exclusions and check sbt dependencyTree to verify the resulting graph.
 
 #### How This Scales in Real Systems
-N/A
+In large Scala projects, exclusions accumulate as different library ecosystems bring in conflicting versions of common dependencies (particularly around Scala version suffixes and cross-builds). Exclusion management is one of the primary maintenance burdens in SBT builds.
 
 #### Key Takeaway
 Exclusions work.

@@ -1,7 +1,7 @@
 # Version Conflict Resolution (Latest Wins)
 *or what to Do When it Always Picks the Latest Version*
 
-This scenario demonstrates its "Latest Wins" strategy.
+This scenario demonstrates SBT's "Latest Wins" strategy for resolving version conflicts.
 
 #### Dependency Graph
 ```{mermaid}
@@ -18,31 +18,35 @@ graph LR
 ```
 
 #### Expected Intuition
-Maven users expect 1.0.0. SBT users expect 2.0.0.
+Maven users might expect `1.0.0` because it is declared directly in the project (nearest definition). SBT users, however, should expect `2.0.0` because SBT (via Ivy/Coursier) defaults to picking the newest version found in the graph.
 
 #### Actual Resolution Results
-Resolves 2.0.0.
+Resolves `lib-b:2.0.0`.
+    *   *Reason*: SBT sees two versions of `lib-b`: `1.0.0` (direct) and `2.0.0` (transitive via `lib-a`). Its default conflict manager is `latest-revision`, which selects the highest version number.
 
 #### Classpath Reality
-2.0.0.
+The classpath contains `lib-b-2.0.0.jar`. The `1.0.0` version is **evicted**.
 
 #### Why This Happens
-Ivy/It defaults to latest revision.
+SBT's underlying dependency engine (historically Ivy) uses a conflict manager to decide which version to keep when multiple versions of the same module are present. The default strategy is `latest-revision`, which assumes that newer versions are backward compatible. This is similar to Gradle's default behavior but opposite to Maven's "nearest definition wins".
 
 #### How Developers Commonly "Fix" This
-Overrides.
+*   **Explicitly upgrading:** Change the direct dependency to `2.0.0` to match the transitive one.
+*   **Forcing a version:** Using `dependencyOverrides` to force `1.0.0` if `2.0.0` is broken (see Scenario 6).
 
 #### Safer Ways to Take Control
-`dependencyOverrides`.
+*   **Check Eviction Warnings:** SBT prints eviction warnings when a direct dependency is overridden by a transitive one. Pay attention to these.
+*   **Use `dependencyOverrides`:** If you absolutely need a specific version, use `dependencyOverrides` to lock it down.
 
 #### Signals to Watch For
-Eviction warnings.
+*   **Eviction Warnings:** Run `sbt evicted` to see a report of all evicted modules.
+*   **Runtime Errors:** `NoSuchMethodError` or `ClassNotFoundException` if the newer version (`2.0.0`) removed something that your code (expecting `1.0.0`) relies on.
 
 #### How This Scales in Real Systems
-Similar to Gradle.
+"Latest wins" is generally safer for semantic versioning because it ensures bug fixes and security patches (which are usually in newer versions) are included. However, it relies on library authors strictly adhering to semantic versioning. If a library breaks compatibility in a minor release, "latest wins" can break your build.
 
 #### Key Takeaway
-It picks the latest version.
+SBT defaults to the latest version found in the graph, regardless of depth.
 
 #### Related Scenarios
-*   [Scenario 3: Mgmt](../scenario-3-mgmt/guide.md)
+*   [Scenario 6: Forcing Versions](../scenario-6-forcing/guide.md) - How to override this behavior.

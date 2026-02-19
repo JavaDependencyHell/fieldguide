@@ -1,7 +1,7 @@
 # Version Ranges
 *or what to Do When It Chooses a Version You Didn’t Intend*
 
-This scenario demonstrates its support for version ranges.
+This scenario demonstrates Gradle's support for version ranges.
 
 #### Dependency Graph
 ```{mermaid}
@@ -25,19 +25,13 @@ Resolves `1.0.0`.
 `1.0.0`.
 
 #### Why This Happens
-It supports Maven-style ranges.
-
-#### How Developers Commonly "Fix" This
-N/A
-
-#### Safer Ways to Take Control
-Locking.
-
-#### Signals to Watch For
-N/A
+Gradle supports both Maven-style ranges like `[1.0.0, 2.0.0)` and its own dynamic version syntax like `1.+` (any version starting with 1.). When it encounters a dynamic version, Gradle queries the repository metadata to determine the available versions and selects the highest matching version. This makes the resolved version dependent on what exists in the repository at the time of resolution.
 
 #### How This Scales in Real Systems
-N/A
+Dynamic versions and ranges are the primary cause of "it worked yesterday" failures. If a new version of a library is published to Maven Central between your local build and your CI build, the two builds may resolve different versions. This is why Gradle provides built-in dependency locking (Scenario 11) --- it's specifically designed to tame dynamic versions. In Java/JVM ecosystems, ranges are less common than in npm/pip, precisely because the JVM community has historically valued build reproducibility. Most teams either ban dynamic versions entirely or pair them with strict locking.
+
+#### Signals to Watch For
+Build failures or test regressions that appear without any code changes. Differences between local and CI builds. Use `./gradlew dependencyInsight --dependency lib-a` to see which version was actually resolved and why. If you must use dynamic versions, always enable dependency locking.
 
 #### Key Takeaway
 Ranges work but are dynamic.

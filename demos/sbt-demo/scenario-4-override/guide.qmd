@@ -1,13 +1,14 @@
 # Hardcoded Version vs Overrides
+*or what to Do When You Need to Break the Rules*
 
-This scenario demonstrates that `dependencyOverrides` wins over `libraryDependencies`.
+This scenario demonstrates how explicit version declarations in `libraryDependencies` can override managed versions or defaults.
 
 #### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
-    Root[Project Root] --> LibA[lib-a:1.0.0]
-    Root -- override --> LibA_Forced[lib-a:2.0.0]
+    Root[Project Root] --> LibA[lib-a:2.0.0]
+    Root --> LibB[lib-b:1.0.0]
 ```
 
 #### SBT (build.sbt)
@@ -16,31 +17,37 @@ graph LR
 ```
 
 #### Expected Intuition
-"Override wins."
+"I have a default version for my libraries, but for `lib-a`, I specifically need version `2.0.0`. I expect my explicit declaration to win."
 
 #### Actual Resolution Results
-Resolves 2.0.0.
+Resolves `lib-a:2.0.0` and `lib-b:1.0.0`.
+    *   *Reason*: The explicit declaration `"com.demo" % "lib-a" % "2.0.0"` is used directly. Since there are no other conflicting constraints in this simple example, SBT uses the version you asked for.
 
 #### Classpath Reality
-2.0.0.
+The classpath contains `lib-a-2.0.0.jar` and `lib-b-1.0.0.jar`.
 
 #### Why This Happens
-Overrides are stronger.
+In SBT, `libraryDependencies` is just a sequence of module definitions. If you add a specific version to that sequence, that is the version SBT will try to resolve. If there are conflicts with transitive dependencies, the conflict manager (usually "latest wins") will kick in.
 
 #### How Developers Commonly "Fix" This
-N/A
+*   **Explicit Overrides:** If a transitive dependency is pulling in an unwanted version, developers often add the desired version as a direct dependency to force the conflict manager to see it.
+*   **`dependencyOverrides`:** For stricter control, use `dependencyOverrides`. This setting forces a specific version regardless of what the dependency graph says (similar to Maven's `<dependencyManagement>`).
 
 #### Safer Ways to Take Control
-N/A
+*   **Use `dependencyOverrides`:** If you want to ensure that `lib-a` is *always* `2.0.0` even if some other library asks for `3.0.0`, add it to `dependencyOverrides`.
+    ```scala
+    dependencyOverrides += "com.demo" % "lib-a" % "2.0.0"
+    ```
 
 #### Signals to Watch For
-N/A
+*   **Unexpected Upgrades:** If you don't use `dependencyOverrides`, a transitive dependency could still upgrade `lib-a` to `3.0.0` if it depends on it.
+*   **Eviction Warnings:** If your explicit version is lower than a transitive version, you will see eviction warnings.
 
 #### How This Scales in Real Systems
-N/A
+Hardcoding versions in `libraryDependencies` is fine for direct dependencies. However, for enforcing versions across a large project (especially for transitive dependencies you don't directly use), `dependencyOverrides` or a BOM plugin is a more robust solution.
 
 #### Key Takeaway
-Overrides win.
+Explicit declarations in `libraryDependencies` are your primary way of requesting versions, but they are subject to conflict resolution. `dependencyOverrides` provides a stronger guarantee.
 
 #### Related Scenarios
-*   [Scenario 3: Mgmt](../scenario-3-mgmt/guide.md)
+*   [Scenario 6: Forcing Versions](../scenario-6-forcing/guide.md) - Using `dependencyOverrides` for stricter control.

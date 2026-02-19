@@ -27,19 +27,13 @@ Resolves `lib-b:2.0.0`.
 `lib-b-2.0.0.jar`.
 
 #### Why This Happens
-It assumes semantic versioning: newer versions are backward compatible and include fixes. Therefore, it picks the highest version in the graph to satisfy all consumers.
-
-#### How Developers Commonly "Fix" This
-If `2.0.0` is actually incompatible, they use `strictly` or `force`.
-
-#### Safer Ways to Take Control
-Use `constraints` to define the version policy.
-
-#### Signals to Watch For
-*   `-> 2.0.0` in the dependency tree output, indicating an upgrade.
+Gradle's default conflict resolution strategy assumes semantic versioning: a newer version of a library is backward-compatible with older versions and includes bug fixes and features that all consumers in the graph may need. By selecting the highest version, Gradle attempts to satisfy every consumer simultaneously. This is the opposite of Maven's "nearest wins" strategy, which prioritises the developer's explicit structural choices.
 
 #### How This Scales in Real Systems
-"Newest Wins" generally leads to fewer duplicate classes but higher risk of runtime incompatibility if SemVer is violated.
+"Newest Wins" generally produces fewer duplicate classes on the classpath and fewer "missing method" errors caused by accidental downgrades. However, it carries a different risk: if a library releases a breaking change (violating semver), Gradle may silently upgrade you to the broken version. This is particularly dangerous with libraries like Guava or Jackson that have historically made breaking changes between major versions.
+
+#### Signals to Watch For
+Run ./gradlew dependencyInsight --dependency lib-b to see exactly why a version was chosen. Look for "by conflict resolution" annotations. If you see → 2.0.0 next to a dependency you expected at 1.0.0, that's the "newest wins" strategy in action. Runtime errors like NoSuchMethodError or AbstractMethodError are the classic symptoms of a bad upgrade.
 
 #### Key Takeaway
 It upgrades you to the newest version found in the graph.

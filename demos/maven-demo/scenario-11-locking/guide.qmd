@@ -1,0 +1,69 @@
+## 11. Dependency Locking
+
+*or what to Do When Yesterday's Build and Today's Build Produce Different Results*
+
+This scenario demonstrates how Maven approaches (or rather, does not approach) dependency locking. Unlike Gradle and SBT, Maven has no native locking mechanism. Instead, Maven's philosophy assumes that all versions are declared explicitly and fixed, making locking unnecessary in theory—but not always in practice.
+
+### Dependency Graph
+
+Maven (pom.xml)
+
+```xml
+<dependencies>
+    <dependency>
+        <groupId>com.demo</groupId>
+        <artifactId>lib-a</artifactId>
+        <version>[1.0.0,2.0.0)</version>
+    </dependency>
+</dependencies>
+```
+
+### Expected Intuition
+
+"I want reproducible builds. If I build today and build tomorrow, I should get the same result."
+
+### Actual Resolution Results
+
+Maven resolves the highest available version within the range at build time. If 1.5.0 existed yesterday and 1.6.0 is published today, you get a different build without changing a single line of your POM.
+
+### Classpath Reality
+
+The classpath contains whichever version was the highest match at the time of resolution. This can differ between your local machine and CI, or between builds run minutes apart.
+
+### Why This Happens
+
+Maven was designed around the principle of explicit, fixed version declarations. When you write `<version>1.0.0</version>`, that version is deterministic. The need for locking only arises when version ranges (Scenario 9) or SNAPSHOT dependencies are used. Maven's designers expected teams to avoid ranges in production builds, so a locking mechanism was never added to the core tool.
+
+In practice, however, transitive dependencies may use ranges, and SNAPSHOT versions are common during development. This creates a reproducibility gap that Maven itself does not address.
+
+### How Developers Commonly "Fix" This
+
+- **Avoiding ranges entirely:** Most Maven teams declare exact versions for all direct dependencies and rely on `<dependencyManagement>` to pin transitive versions. This is effective but requires discipline.
+- **The Versions Maven Plugin:** `mvn versions:resolve-ranges` replaces ranges with the currently resolved version, converting dynamic declarations to fixed ones. `mvn versions:lock-snapshots` pins SNAPSHOT versions to their timestamped equivalents.
+- **Third-party lock plugins:** The `dependency-lock-maven-plugin` (se.vandmo) generates a `dependencies-lock.json` file that records the full resolved graph, similar to Gradle's lock file. The `maven-lockfile` plugin (chains-project) provides similar functionality with integrity checking.
+
+### Safer Ways to Take Control
+
+- Declare exact versions for all direct dependencies.
+- Use `<dependencyManagement>` to pin transitive versions.
+- If you must use ranges, use the Versions Maven Plugin to resolve and freeze them before release.
+- Consider a lockfile plugin for CI/CD pipelines where reproducibility is critical.
+
+### Signals to Watch For
+
+- "It worked yesterday." If a build breaks without code changes, a dynamic version has likely shifted.
+- Differences between local and CI builds, especially around SNAPSHOT resolution.
+- `mvn dependency:tree` showing different versions on different machines.
+
+### How This Scales in Real Systems
+
+Maven's lack of native locking is rarely a problem in well-managed projects because the ecosystem convention of fixed versions is so strong. The issue surfaces in large organisations where teams inherit transitive dependencies from third-party libraries that use ranges, or during active development with SNAPSHOT dependencies. For release builds, the combination of exact versions plus `<dependencyManagement>` achieves the same outcome as a lock file—just through a different mechanism.
+
+### Key Takeaway
+
+Maven has no native dependency locking because its philosophy is "declare exact versions." When that isn't sufficient, third-party plugins and the Versions Maven Plugin fill the gap.
+
+### Related Scenarios
+
+- Scenario 9: Version Ranges — The source of non-determinism that locking addresses.
+- Scenario 3: Dependency Management (BOM) — Maven's primary mechanism for pinning transitive versions.

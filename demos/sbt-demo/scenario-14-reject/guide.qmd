@@ -1,6 +1,7 @@
 # Rejecting Versions
+*or what to Do When You Can't Say No*
 
-This scenario demonstrates rejecting versions.
+This scenario demonstrates how to reject specific versions in SBT, which lacks a native "reject" keyword.
 
 #### Dependency Graph
 N/A
@@ -11,31 +12,32 @@ N/A
 ```
 
 #### Expected Intuition
-N/A
+"I want to say 'never use version 2.0.0' because it has a security vulnerability."
 
 #### Actual Resolution Results
-N/A
+SBT does not have a direct way to say "reject 2.0.0". You must instead say "use 1.0.0" (force) or "exclude 2.0.0" (exclude).
 
 #### Classpath Reality
-N/A
+Depends on the workaround used.
 
 #### Why This Happens
-N/A
+SBT does not have a built-in "reject" syntax like Gradle's `version { reject "2.0.0" }`. To prevent a specific version from being used, you must use indirect mechanisms: `dependencyOverrides` to force a different version, or exclusions combined with an explicit declaration of an acceptable version.
 
 #### How Developers Commonly "Fix" This
-N/A
-
-#### Safer Ways to Take Control
-N/A
+*   **`dependencyOverrides`:** The most common pattern is to force a known-good version.
+    ```scala
+    dependencyOverrides += "com.demo" % "lib-a" % "1.0.0"
+    ```
+*   **Plugins:** Use plugins like `sbt-dependency-check` to fail the build if a vulnerable version is found.
 
 #### Signals to Watch For
-N/A
+*   **Security Scans:** Rely on external tools to catch bad versions since the build tool won't automatically reject them based on a blacklist.
 
 #### How This Scales in Real Systems
-N/A
+Version rejection is critical for security compliance. When a CVE is discovered in a specific library version, teams need to ensure that version cannot appear anywhere in the dependency graph. Without a first-class reject mechanism, SBT teams typically combine `dependencyOverrides` with CI pipeline checks (e.g., running `sbt dependencyTree` and grepping for banned versions) to enforce policies.
 
 #### Key Takeaway
-Rejection via overrides/exclusions.
+SBT lacks native rejection; use overrides or external plugins to enforce version policies.
 
 #### Related Scenarios
-N/A
+*   [Scenario 6: Forcing Versions](../scenario-6-forcing/guide.md)

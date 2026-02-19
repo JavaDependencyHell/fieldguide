@@ -1,12 +1,14 @@
 # Optional Dependencies
+*or what to Do When You Need a Library Only Sometimes*
 
-This scenario demonstrates optional dependencies.
+This scenario demonstrates how SBT handles optional dependencies.
 
 #### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
-    Root[Project Root] --> LibA["lib-a:1.0.0 (Optional)"]
+    Root[Project Root] --> LibA["lib-a:1.0.0"]
+    LibA -.-> LibB["lib-b:1.0.0 (Optional)"]
 ```
 
 #### SBT (build.sbt)
@@ -15,31 +17,26 @@ graph LR
 ```
 
 #### Expected Intuition
-Not transitive.
+"I depend on `lib-a`. `lib-a` has an optional dependency on `lib-b`. I expect `lib-b` to NOT be on my classpath unless I ask for it."
 
 #### Actual Resolution Results
-Respects optional.
+Resolves `lib-a:1.0.0`. `lib-b` is NOT resolved.
+    *   *Reason*: SBT (via Ivy/Coursier) respects the `<optional>true</optional>` flag in Maven POMs. It treats optional dependencies as not transitive by default.
 
 #### Classpath Reality
-Not transitive.
+The classpath contains `lib-a-1.0.0.jar`. It does not contain `lib-b`.
 
 #### Why This Happens
-Ivy metadata.
-
-#### How Developers Commonly "Fix" This
-N/A
-
-#### Safer Ways to Take Control
-N/A
+SBT/Ivy does not have a first-class "optional" flag in its dependency DSL. When consuming Maven dependencies that declare optional transitives, SBT respects the flag and does not include those transitives. When publishing your own library, simulating optionality requires either using configurations (e.g., making the dependency available in a non-default configuration) or manually editing the generated POM to add `<optional>true</optional>`.
 
 #### Signals to Watch For
-N/A
+*   **`ClassNotFoundException`:** If you use a feature of `lib-a` that requires `lib-b`, you will get a runtime error. The fix is to explicitly add `lib-b` to your `libraryDependencies`.
 
 #### How This Scales in Real Systems
-N/A
+Large frameworks like Akka and Play use optional dependencies extensively to support many integrations without forcing all of them on every consumer. As a library author in the SBT ecosystem, documenting your optional dependencies clearly is critical, since the tooling won't surface them automatically. Consider providing separate "starter" or "extras" modules that bundle optional dependencies for common use cases.
 
 #### Key Takeaway
-Optional works.
+SBT respects optional dependencies from Maven POMs but doesn't have a native "optional" keyword for declaring them.
 
 #### Related Scenarios
-N/A
+*   [Scenario 7: Scopes](../scenario-7-scopes/guide.md)

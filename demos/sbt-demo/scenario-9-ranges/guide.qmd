@@ -1,6 +1,7 @@
 # Version Ranges
+*or what to Do When You Want the Latest and Greatest (Until It Breaks)*
 
-This scenario demonstrates its ranges.
+This scenario demonstrates how to use version ranges in SBT.
 
 #### Dependency Graph
 ```{mermaid}
@@ -15,31 +16,27 @@ graph LR
 ```
 
 #### Expected Intuition
-Highest match.
+"I want the latest version of `lib-a` in the 1.x series. I don't want to manually update my build file every time a patch is released."
 
 #### Actual Resolution Results
-Resolves highest.
+Resolves the highest available version that matches the range (e.g., `1.9.9`).
+    *   *Reason*: SBT (via Ivy/Coursier) queries the repository metadata to find all available versions and selects the highest one that satisfies the range constraint.
 
 #### Classpath Reality
-Highest.
+The classpath contains the highest matching version found at build time.
 
 #### Why This Happens
-Ivy ranges.
-
-#### How Developers Commonly "Fix" This
-N/A
-
-#### Safer Ways to Take Control
-Locking.
+SBT supports Ivy-style version ranges (which are compatible with Maven ranges). When you specify a range like `[1.0, 2.0)`, SBT asks the repository for a list of versions and picks the best match. This makes your build dynamic—the result depends on what is in the repository at the time of the build.
 
 #### Signals to Watch For
-N/A
+*   **Non-Reproducible Builds:** A build that works today might fail tomorrow if a new, broken version is released within the range.
+*   **CI Failures:** Builds might pass locally (using cached metadata) but fail on CI (fetching fresh metadata).
 
 #### How This Scales in Real Systems
-N/A
+Version ranges are risky for application development because they sacrifice reproducibility. However, they are sometimes used in library development to express compatibility with a range of versions. In the Scala ecosystem, binary compatibility is critical, so ranges are used carefully.
 
 #### Key Takeaway
-Ranges work.
+Ranges provide automatic upgrades but sacrifice build reproducibility. Use dependency locking to mitigate the risk.
 
 #### Related Scenarios
-*   [Scenario 11: Locking](../scenario-11-locking/guide.md)
+*   [Scenario 11: Locking](../scenario-11-locking/guide.md) - How to freeze dynamic versions.

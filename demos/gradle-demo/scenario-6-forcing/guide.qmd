@@ -1,15 +1,15 @@
 # Strict Constraints
 *or what to Do When Constraints Stop Resolution Completely*
 
-This scenario demonstrates its `strictly` keyword to force a version, even downgrading if necessary.
+This scenario demonstrates how to force a specific version of a dependency, overriding any other constraints or transitive dependencies.
 
 #### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
-    Root[Project Root] --> LibA[lib-a:2.0.0]
-    LibA --> LibC[lib-c:2.0.0]
-    Root -- strictly --> LibC_Forced[lib-c:1.0.0]
+    Root[Project Root] --> LibA[lib-a:1.0.0]
+    LibA --> LibC[lib-c:1.0.0]
+    Root -- force --> LibC_Forced[lib-c:2.0.0]
 ```
 
 #### Gradle (Groovy DSL)
@@ -18,31 +18,43 @@ graph LR
 ```
 
 #### Expected Intuition
-"I want 1.0.0, period."
+"I want version `2.0.0` of `lib-c`, regardless of what `lib-a` asks for. I expect my forced version to be used."
 
 #### Actual Resolution Results
-Resolves `1.0.0`. It downgrades `2.0.0` to `1.0.0`.
+Resolves `lib-c:2.0.0`.
+    *   *Reason*: The `resolutionStrategy.force` directive (or a `strictly` constraint in modern Gradle) tells the dependency engine to ignore other version requests and use the specified version.
 
 #### Classpath Reality
-`1.0.0`.
+The classpath contains `lib-c-2.0.0.jar`.
 
 #### Why This Happens
-`strictly` is a strong constraint that overrides conflict resolution.
+Gradle provides mechanisms to override its default conflict resolution. `resolutionStrategy.force` is the older, imperative way. The modern, declarative way is using a `strictly` constraint within a `dependencies { constraints { ... } }` block. Both achieve the same goal: they tell Gradle that a specific version *must* be used, even if it contradicts other parts of the graph.
 
 #### How Developers Commonly "Fix" This
-This is the fix for unwanted upgrades.
+*   **`resolutionStrategy.force`:** As shown in the snippet, this is a common "big hammer" approach to fix version conflicts.
+*   **`strictly`:** The preferred modern approach is:
+    ```groovy
+    dependencies {
+        constraints {
+            implementation('com.demo:lib-c') {
+                version { strictly '2.0.0' }
+            }
+        }
+    }
+    ```
 
 #### Safer Ways to Take Control
-Use `strictly` in `constraints` blocks.
+*   **Prefer `strictly`:** Using `strictly` in a `constraints` block is generally safer and more idiomatic in modern Gradle than `resolutionStrategy.force`. It integrates better with dependency insight tools and other plugins.
 
 #### Signals to Watch For
-"Downgrading..." messages in build scan or debug output.
+*   **Downgrades:** Forcing a version can cause a downgrade (e.g., forcing `1.0.0` when `2.0.0` is requested). This might break code that relies on newer APIs.
+*   **Build Failures:** If you force a version that is incompatible with other libraries, you might see runtime errors like `NoSuchMethodError`.
 
 #### How This Scales in Real Systems
-Essential for locking down versions in enterprise environments.
+Forcing versions is essential in large enterprise environments where you need to ensure all applications use a specific, vetted version of a library (e.g., for security compliance), regardless of what transitive dependencies request.
 
 #### Key Takeaway
-`strictly` enforces a version, even if it means a downgrade.
+`resolutionStrategy.force` (and `strictly`) overrides all other version conflict resolution rules. Use it when you need absolute control.
 
 #### Related Scenarios
-*   [Scenario 14: Reject](../scenario-14-reject/guide.qmd)
+*   [Scenario 14: Reject](../scenario-14-reject/guide.qmd) - How to reject specific versions entirely.

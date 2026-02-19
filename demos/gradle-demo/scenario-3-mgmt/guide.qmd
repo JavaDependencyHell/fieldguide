@@ -1,7 +1,7 @@
 # Dependency Management (Platform/BOM)
 *or what to Do When a Platform Aligns Versions — Until Something Overrides It*
 
-This scenario demonstrates use Maven BOMs using `platform()`.
+This scenario demonstrates how to use Maven BOMs (Bill of Materials) in Gradle using the `platform()` method.
 
 #### Dependency Graph
 ```{mermaid}
@@ -18,31 +18,36 @@ graph LR
 ```
 
 #### Expected Intuition
-"I import the BOM, so I don't need versions."
+"I import the BOM, so I don't need to specify versions for my dependencies. The BOM should ensure that `lib-a` and `lib-b` are compatible."
 
 #### Actual Resolution Results
-Resolves versions from the BOM.
+Resolves versions defined in the BOM (e.g., `1.0.0`).
+    *   *Reason*: The `platform()` dependency imports the BOM as a set of dependency constraints. When `lib-a` and `lib-b` are declared without versions, Gradle looks at the constraints provided by the platform to determine which version to use.
 
 #### Classpath Reality
-Versions match the BOM.
+The classpath contains the versions specified in the BOM.
 
 #### Why This Happens
-`platform()` imports the BOM as a set of dependency constraints.
+Gradle treats BOMs as "platforms". A platform is essentially a module that provides recommendations for versions of other modules. When you use `implementation platform(...)`, you are adding these recommendations to your dependency graph. If no other stronger constraint (like a hardcoded version) exists, Gradle uses the recommendation.
 
 #### How Developers Commonly "Fix" This
-N/A
+*   **Hardcoding Versions:** If a developer wants a different version than the BOM provides, they often just add a version to the dependency declaration (e.g., `implementation 'com.demo:lib-a:1.1.0'`). This works because a direct version declaration is stronger than a platform recommendation.
 
 #### Safer Ways to Take Control
-Use `enforcedPlatform()` if you want to force these versions (like `<dependencyManagement>` in Maven) rather than just recommend them.
+*   **`enforcedPlatform()`:** If you want the BOM to act more like a strict lock (similar to Maven's `<dependencyManagement>` but stronger), use `enforcedPlatform()`. This turns the recommendations into strict constraints, meaning other dependencies cannot easily override them.
+    ```groovy
+    implementation enforcedPlatform('com.demo:demo-bom:1.0.0')
+    ```
 
 #### Signals to Watch For
-N/A
+*   **Unexpected Upgrades:** If you use `platform()`, a transitive dependency could still pull in a newer version of a library than what is in the BOM (because `platform` is just a recommendation, and Gradle's "newest wins" strategy still applies if a conflict arises).
+*   **Multiple Platforms:** If you import multiple BOMs that manage the same library, Gradle will try to merge the constraints, usually picking the highest version.
 
 #### How This Scales in Real Systems
-Standard practice for Spring Boot and other large ecosystems.
+Using `platform()` is the standard practice for managing dependencies in large ecosystems like Spring Boot. It allows you to upgrade the entire framework by changing just one version number (the BOM version). However, be aware of the difference between `platform` (recommendation) and `enforcedPlatform` (strict constraint).
 
 #### Key Takeaway
-It treats BOMs as platforms.
+Gradle treats BOMs as platforms. `platform()` provides version recommendations, while `enforcedPlatform()` enforces them strictly.
 
 #### Related Scenarios
-*   [Scenario 4: Override](../scenario-4-override/guide.qmd)
+*   [Scenario 4: Override](../scenario-4-override/guide.qmd) - What happens when you mix platforms and hardcoded versions.

@@ -38,4 +38,4 @@ The classpath contains `spring-boot-starter-2.5.14.ACME.jar`.
 A direct version declaration for a dependency is the most straightforward way to ensure a specific version is used, provided that version is available in one of the configured resolvers.
 
 #### Related Scenarios
-*   [Scenario 16: Private Repository & BOM Override](../scenario-16-private-bom/guide.md) - A more scalable approach using a vendor BOM.
+*   [Scenario 16: Private Repository & BOM Override](../scenario-16-private-bom/guide.qmd) - A more scalable approach using a vendor BOM.

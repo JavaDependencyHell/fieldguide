@@ -27,19 +27,13 @@ Respects configurations.
 `lib-b` (compileOnly) is not in runtime classpath.
 
 #### Why This Happens
-Configurations define visibility.
-
-#### How Developers Commonly "Fix" This
-N/A
-
-#### Safer Ways to Take Control
-Use `api` vs `implementation` correctly in libraries.
-
-#### Signals to Watch For
-N/A
+Gradle's configuration system is more granular than Maven's scopes. The key distinction is between api and implementation: api exposes a dependency to consumers of your library (it appears on their compile classpath), while implementation hides it (consumers can't see it at compile time, though it's still present at runtime). compileOnly is equivalent to Maven's provided scope, and testImplementation restricts visibility to the test source set.
 
 #### How This Scales in Real Systems
-Critical for build performance (ABI compatibility).
+Correct use of implementation vs api has a direct impact on build performance. When a dependency declared as implementation changes, only the declaring module needs to be recompiled. If the same dependency were declared as api, every module that depends on the declaring module would also need recompilation. In large multi-module builds (50+ modules), this can mean the difference between a 30-second incremental build and a 5-minute full rebuild. Getting configurations right is one of the most impactful performance optimisations in Gradle.
+
+#### Signals to Watch For
+If a downstream module gets a compilation error about missing classes from your library's dependencies, you may need to promote that dependency from implementation to api. If your production JAR contains test libraries, check for accidental use of implementation instead of testImplementation. Use ./gradlew buildEnvironment and ./gradlew dependencies to audit which dependencies land in which configurations.
 
 #### Key Takeaway
 Configurations control transitivity and packaging.

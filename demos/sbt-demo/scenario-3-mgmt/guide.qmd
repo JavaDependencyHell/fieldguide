@@ -1,14 +1,14 @@
-# Dependency Overrides
-*or what to Do When Overrides Fix the Problem — and Create the Next One*
+# Dependency Management
+*or what to Do When You Want to Centralize Versions*
 
-This scenario demonstrates `dependencyOverrides`.
+This scenario demonstrates how to manage dependency versions centrally in SBT, similar to Maven's `<dependencyManagement>`.
 
 #### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
     Root[Project Root] --> LibA[lib-a:1.0.0]
-    Root -- override --> LibA_Forced[lib-a:1.0.0]
+    Root --> LibB[lib-b:1.0.0]
 ```
 
 #### SBT (build.sbt)
@@ -17,31 +17,33 @@ graph LR
 ```
 
 #### Expected Intuition
-"I force 1.0.0."
+"I want to define the version of my libraries in one place so that all modules in my project use the same version."
 
 #### Actual Resolution Results
-Resolves 1.0.0.
+Resolves `lib-a:1.0.0` and `lib-b:1.0.0`.
+    *   *Reason*: The variable `libVersion` is used in both dependency declarations, ensuring consistency.
 
 #### Classpath Reality
-1.0.0.
+The classpath contains `lib-a-1.0.0.jar` and `lib-b-1.0.0.jar`.
 
 #### Why This Happens
-Overrides take precedence.
+SBT builds are Scala programs. You can use variables, functions, and other programming constructs to manage versions. This is more flexible than Maven's declarative XML but requires discipline.
 
 #### How Developers Commonly "Fix" This
-N/A
+*   **Variables:** Define versions in `val`s at the top of `build.sbt` or in a separate `Dependencies.scala` file in `project/`.
+*   **Plugins:** Use plugins like `sbt-bom` to import Maven BOMs for version management.
 
 #### Safer Ways to Take Control
-Use overrides.
+*   **`project/Dependencies.scala`:** For multi-module builds, define all your dependencies and versions in a single Scala object in the `project` directory. This keeps your `build.sbt` clean and ensures all modules share the same version definitions.
 
 #### Signals to Watch For
-N/A
+*   **Inconsistent Versions:** If you see different versions of the same library in different modules, it's a sign that you need centralized version management.
 
 #### How This Scales in Real Systems
-Standard way to fix conflicts.
+As projects grow, `build.sbt` files can become messy. Moving dependency definitions to `project/Dependencies.scala` is a standard best practice in the Scala ecosystem. It allows you to group related dependencies (e.g., "testing libraries", "database drivers") and manage their versions together.
 
 #### Key Takeaway
-Overrides force versions.
+SBT allows you to use Scala code to manage versions. Use variables or a dedicated `Dependencies` object to keep your build maintainable.
 
 #### Related Scenarios
-*   [Scenario 4: Override](../scenario-4-override/guide.md)
+*   [Scenario 16: Private BOM](../scenario-16-private-bom/guide.md) - Using an external BOM for management.

@@ -1,6 +1,7 @@
 # Dependency Locking
+*or what to Do When You Want Reproducible Builds*
 
-This scenario demonstrates its locking.
+This scenario demonstrates how to lock dependencies in SBT to ensure that builds are reproducible, even when using dynamic versions.
 
 #### Dependency Graph
 ```{mermaid}
@@ -15,31 +16,31 @@ graph LR
 ```
 
 #### Expected Intuition
-Locked.
+"I want to use version ranges (e.g., `1.+`) to get updates, but I also want my build to be deterministic. If I build today and tomorrow, I want the exact same result unless I explicitly update."
 
 #### Actual Resolution Results
-Uses lock file.
+Resolves the version recorded in the lock file (e.g., `lib-a:1.0.0`), even if `1.1.0` is available.
+    *   *Reason*: SBT's dependency locking feature (available since 1.4.x) freezes the resolved graph into a file. Subsequent builds use this file instead of resolving against the repository.
 
 #### Classpath Reality
-Locked.
+The classpath contains the locked version.
 
 #### Why This Happens
-Locking.
+Dependency locking separates the concern of *resolving* dependencies (finding the best match) from *reproducing* a build. When you lock, you take a snapshot of the resolution result. This snapshot is committed to version control, ensuring that every developer and CI server uses the exact same versions.
 
 #### How Developers Commonly "Fix" This
-N/A
-
-#### Safer Ways to Take Control
-Locking.
+*   **Hardcoding Versions:** Many teams avoid locking features and simply hardcode exact versions in `build.sbt`. This works but requires manual updates.
+*   **Scala Steward:** Automated tools like Scala Steward can send PRs to update hardcoded versions, making manual management easier.
 
 #### Signals to Watch For
-N/A
+*   **"Lock file out of date":** If you change `build.sbt` but don't update the lock file, SBT will complain.
+*   **Unexpected Downgrades:** If you delete the lock file, SBT might resolve a newer version than what you were using.
 
 #### How This Scales in Real Systems
-N/A
+For production systems, reproducibility is non-negotiable. Dependency locking (or strict version pinning) is essential to prevent "it works on my machine" issues. It also protects against malicious package updates (supply chain attacks) by ensuring you only use vetted versions.
 
 #### Key Takeaway
-Locking ensures reproducibility.
+Dependency locking ensures that dynamic versions don't break your build.
 
 #### Related Scenarios
-*   [Scenario 9: Ranges](../scenario-9-ranges/guide.md)
+*   [Scenario 9: Ranges](../scenario-9-ranges/guide.md) - Using dynamic versions.

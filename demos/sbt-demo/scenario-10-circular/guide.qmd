@@ -1,6 +1,7 @@
 # Circular Dependencies
+*or what to Do When A Needs B and B Needs A*
 
-This scenario demonstrates its cycles.
+This scenario demonstrates how SBT handles circular dependencies between external libraries.
 
 #### Dependency Graph
 ```{mermaid}
@@ -17,31 +18,27 @@ graph LR
 ```
 
 #### Expected Intuition
-Works.
+"This should fail. A depends on B, and B depends on A. It's an infinite loop."
 
 #### Actual Resolution Results
-Tolerates.
+Resolves both `lib-circle-a:1.0.0` and `lib-circle-b:1.0.0`.
+    *   *Reason*: SBT's dependency resolver (Ivy/Coursier) detects the cycle during graph traversal and stops recursing. It includes both libraries in the result.
 
 #### Classpath Reality
-Both present.
+The classpath contains `lib-circle-a-1.0.0.jar` and `lib-circle-b-1.0.0.jar`.
 
 #### Why This Happens
-Visited set.
-
-#### How Developers Commonly "Fix" This
-N/A
-
-#### Safer Ways to Take Control
-N/A
+Circular dependencies between *external* libraries (JARs) are technically allowed by the JVM (classes can refer to each other across JAR boundaries). Build tools tolerate them to support legacy libraries that were split poorly. However, circular dependencies between *internal* modules (sub-projects) in a multi-module build are strictly forbidden and will cause a build error.
 
 #### Signals to Watch For
-N/A
+*   **StackOverflowError:** In rare cases, tools that process the dependency graph might crash if they don't handle cycles correctly.
+*   **Initialization Deadlocks:** If static initializers in A depend on B, and vice versa, you might get a deadlock at runtime.
 
 #### How This Scales in Real Systems
-N/A
+Circular dependencies are a design smell. They make the system harder to understand and maintain. In the Scala ecosystem, they sometimes arise when library authors split a project into `api` and `impl` modules but accidentally create cross-dependencies. The fix is usually to extract shared types into a third, independent module.
 
 #### Key Takeaway
-Cycles tolerated.
+SBT tolerates circular dependencies between external libraries but forbids them between internal modules.
 
 #### Related Scenarios
 N/A

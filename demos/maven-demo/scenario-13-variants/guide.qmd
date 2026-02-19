@@ -1,0 +1,66 @@
+## 13. Feature Variants
+
+*or what to Do When a Library Has Multiple Flavours*
+
+This scenario demonstrates how Maven handles (and cannot handle) the concept of library variants—where a single library publishes multiple artifacts for different contexts (e.g., Java 8 vs Java 11 builds, debug vs release, different database drivers).
+
+### Dependency Graph
+
+Maven (pom.xml)
+
+```xml
+<dependencies>
+    <dependency>
+        <groupId>com.demo</groupId>
+        <artifactId>lib-a</artifactId>
+        <version>1.0.0</version>
+        <classifier>jdk11</classifier>
+    </dependency>
+</dependencies>
+```
+
+### Expected Intuition
+
+"This library publishes a JDK 8 and a JDK 11 variant. I'm on JDK 11, so I want the build tool to automatically pick the right one."
+
+### Actual Resolution Results
+
+Maven does not automatically select variants. You must explicitly specify a `<classifier>` to get a non-default artifact. If you don't, you get the default (usually the JDK 8 build). There is no automatic matching based on your project's JDK version or any other attribute.
+
+### Classpath Reality
+
+The classpath contains `lib-a-1.0.0-jdk11.jar` if you specified the classifier, or `lib-a-1.0.0.jar` (the default) if you didn't.
+
+### Why This Happens
+
+Maven's dependency model treats classifiers as opaque strings appended to the artifact name. There is no semantic meaning attached to a classifier—the build tool does not know that "jdk11" means "for Java 11." This is fundamentally different from Gradle's attribute-based variant selection, where the build tool understands that `org.gradle.jvm.version=11` means "this variant requires Java 11" and can automatically match it against the consumer's target JVM.
+
+Maven also has no concept of "capabilities"—the ability to declare that two different artifacts provide the same API and are mutually exclusive. If two libraries provide competing implementations (e.g., `log4j-core` and `logback-classic` both implementing SLF4J), Maven cannot detect the conflict. You find out at runtime.
+
+### How Developers Commonly "Fix" This
+
+- **Manual classifier selection:** Developers must know which classifier to use and hard-code it. This is fragile because it does not adapt to changes in the build environment.
+- **Maven profiles:** Teams sometimes use profiles to switch classifiers based on environment variables or build properties. For example, activating a "jdk11" profile that sets classifier properties.
+- **Separate artifact IDs:** Many library authors sidestep classifiers entirely by publishing separate artifacts: `lib-a-jdk8` and `lib-a-jdk11` as different artifactIds. This is verbose but unambiguous.
+
+### Safer Ways to Take Control
+
+If you need automatic variant selection based on context (JDK version, OS, CPU architecture), Maven cannot provide it natively. The safest approach is to use explicit classifiers or separate artifact IDs. For projects where this limitation is a significant pain point, Gradle's variant-aware resolution is the more capable model.
+
+### Signals to Watch For
+
+- `UnsupportedClassVersionError` at runtime: You may have the wrong JDK variant on the classpath.
+- Duplicate classes from competing implementations: Two libraries providing the same API without Maven detecting the conflict.
+- "Artifact not found" errors when a classifier doesn't exist for a particular version.
+
+### How This Scales in Real Systems
+
+The lack of automatic variant selection is one of Maven's most significant limitations for modern JVM projects. As multi-release JARs, platform-specific native code (e.g., gRPC, Netty), and modular Java become more common, the gap between Maven's classifier model and Gradle's attribute model widens. Most Maven projects work around this through convention and documentation rather than tooling.
+
+### Key Takeaway
+
+Maven uses classifiers for variants, but they are opaque strings with no automatic matching. The build tool cannot select variants based on context. Use explicit classifiers or separate artifact IDs.
+
+### Related Scenarios
+
+- Scenario 7: Dependency Scopes — Scopes are Maven's other mechanism for controlling which artifacts reach which classpaths.

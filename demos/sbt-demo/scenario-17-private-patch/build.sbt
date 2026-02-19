@@ -1,4 +1,4 @@
-// snippet: repo-and-deps
+// tag::repo-and-deps[]
 ThisBuild / version := "0.1.0-SNAPSHOT"
 
 ThisBuild / scalaVersion := "2.13.8"
@@ -14,4 +14,4 @@ lazy val root = (project in file("."))
       "org.springframework.boot" % "spring-boot-starter" % "2.5.14.ACME"
     )
   )
-// snippet: end
+// end::repo-and-deps[]

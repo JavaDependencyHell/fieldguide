@@ -26,19 +26,13 @@ graph LR
 2.0.0.
 
 #### Why This Happens
-Overrides.
-
-#### How Developers Commonly "Fix" This
-N/A
-
-#### Safer Ways to Take Control
-N/A
+dependencyOverrides is SBT's strongest version enforcement mechanism. It overrides the version of any matching artifact anywhere in the dependency graph, regardless of what the transitive graph would otherwise resolve. Unlike Gradle's strictly, SBT's overrides don't have a built-in mechanism to fail the build if the override causes incompatibilities --- they silently force the version.
 
 #### Signals to Watch For
-N/A
+Eviction warnings in SBT output. A message like "[warn] Found version conflict(s) in library dependencies; some are suspected to be binary incompatible" is SBT telling you that it has replaced a version that a library explicitly requested. These warnings deserve investigation, not just suppression.
 
 #### How This Scales in Real Systems
-N/A
+In large Scala codebases, dependencyOverrides sections can grow to dozens of lines as teams force compatible versions across an ecosystem that doesn't always agree. This is especially acute with Scala libraries that are published for specific Scala binary versions (2.12 vs 2.13 vs 3.x). The override section becomes a critical piece of infrastructure that requires careful management. Consider documenting why each override exists.
 
 #### Key Takeaway
 Overrides force versions.
