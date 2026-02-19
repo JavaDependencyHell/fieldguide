@@ -1,6 +1,6 @@
 # Version Ranges
 
-This scenario demonstrates SBT ranges.
+This scenario demonstrates its ranges.
 
 #### Dependency Graph
 ```{mermaid}
@@ -18,7 +18,7 @@ graph LR
 Highest match.
 
 #### Actual Resolution Results
-*   **SBT**: Resolves highest.
+Resolves highest.
 
 #### Classpath Reality
 Highest.

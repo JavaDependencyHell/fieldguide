@@ -1,6 +1,6 @@
 # Dependency Configurations
 
-This scenario demonstrates SBT configurations (`Compile`, `Test`, `Provided`).
+This scenario demonstrates its configurations (`Compile`, `Test`, `Provided`).
 
 #### Dependency Graph
 ```{mermaid}
@@ -20,7 +20,7 @@ graph LR
 Provided not in runtime.
 
 #### Actual Resolution Results
-*   **SBT**: Respects configurations.
+Respects configurations.
 
 #### Classpath Reality
 Correct separation.

@@ -31,7 +31,7 @@ The `pom.xml` first adds the private repository. Then, it imports the vendor's B
 "I want to use Spring Boot, but I need the version that my vendor supports. By adding their repository and importing their BOM, my build should automatically pick up the patched versions they provide."
 
 #### Actual Resolution Results
-*   **Maven**: Resolves `org.springframework.boot:spring-boot-starter:2.5.14.ACME`.
+Resolves `org.springframework.boot:spring-boot-starter:2.5.14.ACME`.
     *   *Reason*: The project explicitly adds the private repository, making its artifacts available. The imported `patched-bom` takes precedence in dependency management, and it dictates that `spring-boot-starter` should be version `2.5.14.ACME`.
 
 #### Classpath Reality

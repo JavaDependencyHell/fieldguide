@@ -1,7 +1,7 @@
 # Variant Selection
 *or what to Do When the “Correct” Dependency Is Rejected*
 
-This scenario demonstrates Gradle's attribute-based matching.
+This scenario demonstrates its attribute-based matching.
 
 #### Dependency Graph
 ```{mermaid}
@@ -20,7 +20,7 @@ graph LR
 "I get the right variant (Java 11, Debug, etc)."
 
 #### Actual Resolution Results
-*   **Gradle**: Matches attributes.
+Matches attributes.
 
 #### Classpath Reality
 Correct variant.

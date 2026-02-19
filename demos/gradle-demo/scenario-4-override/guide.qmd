@@ -1,7 +1,7 @@
 # Hardcoded Version vs Platform
 *or what to Do When a Single Declaration Escapes the Platform*
 
-This scenario demonstrates that an explicit version in Gradle overrides a `platform()` recommendation.
+This scenario demonstrates that an explicit version overrides a `platform()` recommendation.
 
 #### Dependency Graph
 ```{mermaid}
@@ -20,7 +20,7 @@ graph LR
 "I typed 2.0.0, so I get 2.0.0."
 
 #### Actual Resolution Results
-*   **Gradle**: Resolves `2.0.0`.
+Resolves `2.0.0`.
 
 #### Classpath Reality
 `2.0.0`.

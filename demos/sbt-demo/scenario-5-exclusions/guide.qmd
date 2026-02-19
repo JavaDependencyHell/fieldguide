@@ -1,6 +1,6 @@
 # Dependency Exclusions
 
-This scenario demonstrates exclusions in SBT.
+This scenario demonstrates exclusions.
 
 #### Dependency Graph
 ```{mermaid}
@@ -20,7 +20,7 @@ graph LR
 `lib-c` gone.
 
 #### Actual Resolution Results
-*   **SBT**: Excluded.
+Excluded.
 
 #### Classpath Reality
 Missing.

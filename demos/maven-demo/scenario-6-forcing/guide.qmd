@@ -22,9 +22,7 @@ graph LR
 "I said use 2.0.0, so use 2.0.0."
 
 #### Actual Resolution Results
-*   **Maven**: Using `<dependencyManagement>`, `lib-c` becomes `2.0.0`.
-*   **Gradle**: Using `strictly` or `force`, `lib-c` becomes `2.0.0`.
-*   **SBT**: Using `dependencyOverrides`, `lib-c` becomes `2.0.0`.
+Using `<dependencyManagement>`, `lib-c` becomes `2.0.0`.
 
 #### Classpath Reality
 `lib-c-2.0.0.jar` is on the classpath.

@@ -21,9 +21,7 @@ graph LR
 Most developers expect that if they depend on `lib-a`, they will also get `lib-b` and `lib-c` automatically, and that all versions will match what is declared in the POMs of those libraries.
 
 #### Actual Resolution Results
-*   **Maven**: Resolves `lib-a:1.0.0`, `lib-b:1.0.0`, and `lib-c:1.0.0`.
-*   **Gradle**: Resolves `lib-a:1.0.0`, `lib-b:1.0.0`, and `lib-c:1.0.0`.
-*   **SBT**: Resolves `lib-a:1.0.0`, `lib-b:1.0.0`, and `lib-c:1.0.0`.
+Resolves `lib-a:1.0.0`, `lib-b:1.0.0`, and `lib-c:1.0.0`.
 
 #### Classpath Reality
 The runtime classpath contains exactly one JAR for each library:

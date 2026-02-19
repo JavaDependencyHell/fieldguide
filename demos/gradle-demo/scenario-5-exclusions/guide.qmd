@@ -1,7 +1,7 @@
 # Dependency Exclusions
 *or what to Do When an Exclusion Reshapes the Dependency Graph*
 
-This scenario demonstrates excluding transitive dependencies in Gradle.
+This scenario demonstrates excluding transitive dependencies.
 
 #### Dependency Graph
 ```{mermaid}
@@ -21,13 +21,13 @@ graph LR
 `lib-c` is gone.
 
 #### Actual Resolution Results
-*   **Gradle**: `lib-c` is excluded.
+`lib-c` is excluded.
 
 #### Classpath Reality
 `lib-c` is missing.
 
 #### Why This Happens
-Gradle prunes the graph.
+It prunes the graph.
 
 #### How Developers Commonly "Fix" This
 N/A

@@ -28,7 +28,7 @@ The `build.sbt` adds the private repository to the list of `resolvers` and then 
 "I know the exact patched version I need from my vendor. I will add their repository and ask for that version directly."
 
 #### Actual Resolution Results
-*   **SBT**: Resolves `org.springframework.boot:spring-boot-starter:2.5.14.ACME`.
+Resolves `org.springframework.boot:spring-boot-starter:2.5.14.ACME`.
     *   *Reason*: The project explicitly adds the private repository as a resolver, making `2.5.14.ACME` available. The direct declaration of this version in `libraryDependencies` is the strongest signal and is selected.
 
 #### Classpath Reality

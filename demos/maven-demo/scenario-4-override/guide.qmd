@@ -23,15 +23,13 @@ graph LR
 Developers often assume that "explicit wins". If I type `2.0.0` right next to the dependency, I expect `2.0.0`, even if the BOM says `1.0.0`.
 
 #### Actual Resolution Results
-*   **Maven**: Resolves `lib-a:2.0.0`. Explicit declaration in `<dependencies>` overrides `<dependencyManagement>`.
-*   **Gradle**: Resolves `lib-a:2.0.0`. "Newest wins" logic applies, and `2.0.0` > `1.0.0`.
-*   **SBT**: Resolves `lib-a:2.0.0`. Explicit override works.
+Resolves `lib-a:2.0.0`. Explicit declaration in `<dependencies>` overrides `<dependencyManagement>`.
 
 #### Classpath Reality
 `lib-a-2.0.0.jar` is on the classpath. `lib-b-1.0.0.jar` is on the classpath (from BOM).
 
 #### Why This Happens
-*   **Maven**: The `<dependencies>` section is the final authority for the current project. Management is just a suggestion/default.
+The `<dependencies>` section is the final authority for the current project. Management is just a suggestion/default.
 *   **Gradle**: The BOM is treated as a constraint or recommendation. An explicit version is a stronger signal (or simply a newer version).
 
 #### How Developers Commonly "Fix" This

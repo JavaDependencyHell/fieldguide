@@ -19,7 +19,7 @@ graph LR
 "Override wins."
 
 #### Actual Resolution Results
-*   **SBT**: Resolves 2.0.0.
+Resolves 2.0.0.
 
 #### Classpath Reality
 2.0.0.

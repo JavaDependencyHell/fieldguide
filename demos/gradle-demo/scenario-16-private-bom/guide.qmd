@@ -31,7 +31,7 @@ The `build.gradle` file first adds the private repository. Then, it imports the 
 "I want to use Spring Boot, but I need the version that my vendor supports. By adding their repository and importing their BOM, my build should automatically pick up the patched versions they provide."
 
 #### Actual Resolution Results
-*   **Gradle**: Resolves `org.springframework.boot:spring-boot-starter:2.5.14.ACME`.
+Resolves `org.springframework.boot:spring-boot-starter:2.5.14.ACME`.
     *   *Reason*: The project explicitly adds the private repository, making its artifacts available. The imported `platform('com.thirdparty.springboot:patched-bom:1.0.0')` constrains the versions of dependencies in the graph, and it dictates that `spring-boot-starter` should be version `2.5.14.ACME`.
 
 #### Classpath Reality

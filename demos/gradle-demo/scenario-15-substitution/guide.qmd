@@ -21,7 +21,7 @@ graph LR
 "Replace it."
 
 #### Actual Resolution Results
-*   **Gradle**: Swaps it.
+Swaps it.
 
 #### Classpath Reality
 `2.0.0`.

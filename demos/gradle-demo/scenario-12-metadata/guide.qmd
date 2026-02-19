@@ -21,7 +21,7 @@ graph LR
 "I can fix it without waiting for upstream."
 
 #### Actual Resolution Results
-*   **Gradle**: `lib-b` becomes `2.0.0`.
+`lib-b` becomes `2.0.0`.
 
 #### Classpath Reality
 `2.0.0`.

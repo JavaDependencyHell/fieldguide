@@ -1,6 +1,6 @@
 # Circular Dependencies
 
-This scenario demonstrates SBT cycles.
+This scenario demonstrates its cycles.
 
 #### Dependency Graph
 ```{mermaid}
@@ -20,7 +20,7 @@ graph LR
 Works.
 
 #### Actual Resolution Results
-*   **SBT**: Tolerates.
+Tolerates.
 
 #### Classpath Reality
 Both present.

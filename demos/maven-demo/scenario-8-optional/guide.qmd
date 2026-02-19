@@ -1,7 +1,7 @@
 # Optional Dependencies
 *or what to Do When “Optional” Dependencies Don’t Show Up*
 
-This scenario demonstrates the `<optional>true</optional>` flag in Maven.
+This scenario demonstrates `<optional>true</optional>` flag.
 
 #### Dependency Graph
 ```{mermaid}
@@ -19,7 +19,7 @@ graph LR
 "I use this library, but my consumers don't need it unless they use a specific feature."
 
 #### Actual Resolution Results
-*   **Maven**: `lib-a` is included in *this* project's classpath. But if another project depends on *this* project, `lib-a` is excluded.
+`lib-a` is included in *this* project's classpath. But if another project depends on *this* project, `lib-a` is excluded.
 *   **Gradle/SBT**: Respect this flag when consuming Maven dependencies.
 
 #### Classpath Reality

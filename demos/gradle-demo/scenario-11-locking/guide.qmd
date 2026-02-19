@@ -1,7 +1,7 @@
 # Dependency Locking
 *or what to Do When Today’s Build Doesn’t Match Yesterday’s*
 
-This scenario demonstrates Gradle's Dependency Locking feature.
+This scenario demonstrates its Dependency Locking feature.
 
 #### Dependency Graph
 ```{mermaid}
@@ -19,7 +19,7 @@ graph LR
 "It should stay the same."
 
 #### Actual Resolution Results
-*   **Gradle**: Uses `gradle.lockfile`.
+Uses `gradle.lockfile`.
 
 #### Classpath Reality
 Locked version.

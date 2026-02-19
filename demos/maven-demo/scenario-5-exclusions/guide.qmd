@@ -21,9 +21,7 @@ graph LR
 I don't want `lib-c`. I exclude it. It should be gone.
 
 #### Actual Resolution Results
-*   **Maven**: `lib-c` is removed from the tree under `lib-a`.
-*   **Gradle**: `lib-c` is removed.
-*   **SBT**: `lib-c` is removed.
+`lib-c` is removed from the tree under `lib-a`.
 
 #### Classpath Reality
 `lib-c` is NOT on the classpath. `lib-a` is on the classpath.

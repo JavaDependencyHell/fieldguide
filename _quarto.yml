@@ -18,6 +18,7 @@ format:
     number-sections: true
     number-depth: 2
     toc-depth: 1
+    toc: false
     fontsize: 11.5pt
     documentclass: scrbook
 

@@ -1,6 +1,6 @@
 # Variants and Configurations
 
-This scenario demonstrates SBT configurations.
+This scenario demonstrates its configurations.
 
 #### Dependency Graph
 N/A
@@ -14,7 +14,7 @@ N/A
 N/A
 
 #### Actual Resolution Results
-*   **SBT**: N/A
+N/A
 
 #### Classpath Reality
 N/A

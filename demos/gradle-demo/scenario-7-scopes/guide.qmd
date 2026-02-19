@@ -1,7 +1,7 @@
 # Dependency Configurations
 *or what to Do When a Dependency Exists — But Not Where You Expect It*
 
-This scenario demonstrates Gradle configurations (`implementation`, `compileOnly`, `testImplementation`).
+This scenario demonstrates its configurations (`implementation`, `compileOnly`, `testImplementation`).
 
 #### Dependency Graph
 ```{mermaid}
@@ -21,7 +21,7 @@ graph LR
 `compileOnly` is not in runtime.
 
 #### Actual Resolution Results
-*   **Gradle**: Respects configurations.
+Respects configurations.
 
 #### Classpath Reality
 `lib-b` (compileOnly) is not in runtime classpath.

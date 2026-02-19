@@ -1,7 +1,7 @@
 # Dependency Management (Platform/BOM)
 *or what to Do When a Platform Aligns Versions — Until Something Overrides It*
 
-This scenario demonstrates how to use Maven BOMs in Gradle using `platform()`.
+This scenario demonstrates use Maven BOMs using `platform()`.
 
 #### Dependency Graph
 ```{mermaid}
@@ -21,7 +21,7 @@ graph LR
 "I import the BOM, so I don't need versions."
 
 #### Actual Resolution Results
-*   **Gradle**: Resolves versions from the BOM.
+Resolves versions from the BOM.
 
 #### Classpath Reality
 Versions match the BOM.
@@ -42,7 +42,7 @@ N/A
 Standard practice for Spring Boot and other large ecosystems.
 
 #### Key Takeaway
-Gradle treats BOMs as platforms.
+It treats BOMs as platforms.
 
 #### Related Scenarios
 *   [Scenario 4: Override](../scenario-4-override/guide.qmd)

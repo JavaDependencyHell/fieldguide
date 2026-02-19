@@ -20,7 +20,7 @@ graph LR
 2.0.0.
 
 #### Actual Resolution Results
-*   **SBT**: 2.0.0.
+2.0.0.
 
 #### Classpath Reality
 2.0.0.

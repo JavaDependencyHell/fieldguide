@@ -1,6 +1,6 @@
 # Optional Dependencies
 
-This scenario demonstrates optional dependencies in SBT.
+This scenario demonstrates optional dependencies.
 
 #### Dependency Graph
 ```{mermaid}
@@ -18,7 +18,7 @@ graph LR
 Not transitive.
 
 #### Actual Resolution Results
-*   **SBT**: Respects optional.
+Respects optional.
 
 #### Classpath Reality
 Not transitive.

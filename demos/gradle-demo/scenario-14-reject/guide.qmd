@@ -1,5 +1,5 @@
 # Rejecting Versions
-*or what to Do When Gradle Refuses a Version on Purpose*
+*or what to Do When It Refuses a Version on Purpose*
 
 This scenario demonstrates rejecting a specific version.
 
@@ -20,7 +20,7 @@ graph LR
 "Don't use 2.0.0."
 
 #### Actual Resolution Results
-*   **Gradle**: Avoids `2.0.0`.
+Avoids `2.0.0`.
 
 #### Classpath Reality
 `1.0.0`.

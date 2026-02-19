@@ -1,6 +1,6 @@
 # Dependency Locking
 
-This scenario demonstrates SBT locking.
+This scenario demonstrates its locking.
 
 #### Dependency Graph
 ```{mermaid}
@@ -18,7 +18,7 @@ graph LR
 Locked.
 
 #### Actual Resolution Results
-*   **SBT**: Uses lock file.
+Uses lock file.
 
 #### Classpath Reality
 Locked.

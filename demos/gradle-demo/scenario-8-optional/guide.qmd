@@ -1,7 +1,7 @@
 # Optional Dependencies
 *or what to Do When Optional Dependencies Don’t Arrive*
 
-This scenario demonstrates how Gradle handles optional dependencies (usually via `compileOnly` or feature variants).
+This scenario demonstrates how It handles optional dependencies (usually via `compileOnly` or feature variants).
 
 #### Dependency Graph
 ```{mermaid}
@@ -19,7 +19,7 @@ graph LR
 "I don't want to force this on consumers."
 
 #### Actual Resolution Results
-*   **Gradle**: `compileOnly` dependencies are not transitive.
+`compileOnly` dependencies are not transitive.
 
 #### Classpath Reality
 Not transitive.

@@ -1,7 +1,7 @@
 # Version Conflict Resolution (Latest Wins)
-*or what to Do When SBT Always Picks the Latest Version*
+*or what to Do When it Always Picks the Latest Version*
 
-This scenario demonstrates SBT's "Latest Wins" strategy.
+This scenario demonstrates its "Latest Wins" strategy.
 
 #### Dependency Graph
 ```{mermaid}
@@ -21,13 +21,13 @@ graph LR
 Maven users expect 1.0.0. SBT users expect 2.0.0.
 
 #### Actual Resolution Results
-*   **SBT**: Resolves 2.0.0.
+Resolves 2.0.0.
 
 #### Classpath Reality
 2.0.0.
 
 #### Why This Happens
-Ivy/SBT defaults to latest revision.
+Ivy/It defaults to latest revision.
 
 #### How Developers Commonly "Fix" This
 Overrides.
@@ -42,7 +42,7 @@ Eviction warnings.
 Similar to Gradle.
 
 #### Key Takeaway
-SBT picks the latest version.
+It picks the latest version.
 
 #### Related Scenarios
 *   [Scenario 3: Mgmt](../scenario-3-mgmt/guide.md)

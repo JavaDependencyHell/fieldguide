@@ -1,7 +1,7 @@
 # Circular Dependencies
-*or what to Do When Gradle Can’t Untangle the Graph*
+*or what to Do When It Can’t Untangle the Graph*
 
-This scenario demonstrates Gradle's handling of circular dependencies.
+This scenario demonstrates its handling of circular dependencies.
 
 #### Dependency Graph
 ```{mermaid}
@@ -21,13 +21,13 @@ graph LR
 "It should work."
 
 #### Actual Resolution Results
-*   **Gradle**: Resolves successfully.
+Resolves successfully.
 
 #### Classpath Reality
 Both jars present.
 
 #### Why This Happens
-Gradle handles cycles gracefully.
+It handles cycles gracefully.
 
 #### How Developers Commonly "Fix" This
 N/A
@@ -42,7 +42,7 @@ N/A
 N/A
 
 #### Key Takeaway
-Gradle tolerates cycles.
+It tolerates cycles.
 
 #### Related Scenarios
 N/A

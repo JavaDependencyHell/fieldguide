@@ -21,11 +21,8 @@ graph LR
 "Infinite loop! StackOverflowError!"
 
 #### Actual Resolution Results
-*   **Maven**:
     *   **Build Time (Reactor)**: Fails immediately.
     *   **Resolution Time (Repo)**: Tolerates it by stopping recursion when it sees a visited node.
-*   **Gradle**: Tolerates it.
-*   **SBT**: Tolerates it.
 
 #### Classpath Reality
 Both `lib-circle-a` and `lib-circle-b` end up on the classpath.

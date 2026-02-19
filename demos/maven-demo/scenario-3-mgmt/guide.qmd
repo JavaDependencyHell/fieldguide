@@ -23,9 +23,7 @@ graph LR
 Developers expect that by importing a BOM, they don't need to specify versions for every library, and that all libraries will be consistent with each other (e.g., Spring Boot starters).
 
 #### Actual Resolution Results
-*   **Maven**: Resolves `lib-a:1.0.0` and `lib-b:1.0.0`.
-*   **Gradle**: Resolves `lib-a:1.0.0` and `lib-b:1.0.0` (using `platform()`).
-*   **SBT**: Resolves `lib-a:1.0.0` and `lib-b:1.0.0` (using variables or plugins, as native BOM support is different).
+Resolves `lib-a:1.0.0` and `lib-b:1.0.0`.
 
 #### Classpath Reality
 The classpath contains the versions specified in the BOM.

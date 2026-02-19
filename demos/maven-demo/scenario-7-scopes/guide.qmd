@@ -23,7 +23,7 @@ graph LR
 *   `lib-c`: I only need it for unit tests (e.g., JUnit).
 
 #### Actual Resolution Results
-*   **Maven/Gradle/SBT**: All tools respect these concepts.
+* All tools respect these concepts.
     *   `lib-a`: Transitive to consumers.
     *   `lib-b`: Not transitive. Not in the runtime classpath or the packaged artifact.
     *   `lib-c`: Not transitive. Only in test classpath.

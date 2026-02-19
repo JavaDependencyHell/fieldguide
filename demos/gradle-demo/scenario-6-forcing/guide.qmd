@@ -1,7 +1,7 @@
 # Strict Constraints
 *or what to Do When Constraints Stop Resolution Completely*
 
-This scenario demonstrates Gradle's `strictly` keyword to force a version, even downgrading if necessary.
+This scenario demonstrates its `strictly` keyword to force a version, even downgrading if necessary.
 
 #### Dependency Graph
 ```{mermaid}
@@ -21,7 +21,7 @@ graph LR
 "I want 1.0.0, period."
 
 #### Actual Resolution Results
-*   **Gradle**: Resolves `1.0.0`. It downgrades `2.0.0` to `1.0.0`.
+Resolves `1.0.0`. It downgrades `2.0.0` to `1.0.0`.
 
 #### Classpath Reality
 `1.0.0`.

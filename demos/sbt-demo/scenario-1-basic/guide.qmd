@@ -1,7 +1,7 @@
 # Basic Transitive Resolution
-*or what to Do When SBT Pulls in More Than You Declared*
+*or what to Do When it Pulls in More Than You Declared*
 
-This scenario demonstrates the fundamental concept of transitive dependency resolution in SBT.
+This scenario demonstrates fundamental concept of transitive dependency resolution.
 
 #### Dependency Graph
 ```{mermaid}
@@ -21,7 +21,7 @@ graph LR
 All present.
 
 #### Actual Resolution Results
-*   **SBT**: Resolves all.
+Resolves all.
 
 #### Classpath Reality
 All present.
@@ -42,7 +42,7 @@ N/A
 N/A
 
 #### Key Takeaway
-SBT resolves transitively.
+It resolves transitively.
 
 #### Related Scenarios
 *   [Scenario 2: Conflict](../scenario-2-conflict/guide.md)

@@ -28,7 +28,7 @@ The `build.gradle` adds the private repository and then directly declares a depe
 "I know the exact patched version I need from my vendor. I will add their repository and ask for that version directly."
 
 #### Actual Resolution Results
-*   **Gradle**: Resolves `org.springframework.boot:spring-boot-starter:2.5.14.ACME`.
+Resolves `org.springframework.boot:spring-boot-starter:2.5.14.ACME`.
     *   *Reason*: The project explicitly adds the private repository, making `2.5.14.ACME` available. The direct declaration of this version in the `dependencies` block is a strong signal, and since it is the only version specified, it is selected.
 
 #### Classpath Reality

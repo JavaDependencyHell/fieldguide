@@ -1,7 +1,7 @@
 # Dependency Overrides
 *or what to Do When Overrides Fix the Problem — and Create the Next One*
 
-This scenario demonstrates `dependencyOverrides` in SBT.
+This scenario demonstrates `dependencyOverrides`.
 
 #### Dependency Graph
 ```{mermaid}
@@ -20,7 +20,7 @@ graph LR
 "I force 1.0.0."
 
 #### Actual Resolution Results
-*   **SBT**: Resolves 1.0.0.
+Resolves 1.0.0.
 
 #### Classpath Reality
 1.0.0.
