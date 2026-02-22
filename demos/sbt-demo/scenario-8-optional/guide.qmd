@@ -29,8 +29,19 @@ The classpath contains `lib-a-1.0.0.jar`. It does not contain `lib-b`.
 #### Why This Happens
 SBT/Ivy does not have a first-class "optional" flag in its dependency DSL. When consuming Maven dependencies that declare optional transitives, SBT respects the flag and does not include those transitives. When publishing your own library, simulating optionality requires either using configurations (e.g., making the dependency available in a non-default configuration) or manually editing the generated POM to add `<optional>true</optional>`.
 
-#### Signals to Watch For
-*   **`ClassNotFoundException`:** If you use a feature of `lib-a` that requires `lib-b`, you will get a runtime error. The fix is to explicitly add `lib-b` to your `libraryDependencies`.
+#### Deterministic Checks
+
+**Fast check (SBT):**
+When your project depends on a library with an optional dependency, run:
+```bash
+sbt dependencyTree
+```
+
+**What to look for:**
+The optional dependency will be absent from the tree.
+
+**Conclusion:**
+Optional dependencies are not transitive. Consumers must explicitly declare them if needed.
 
 #### How This Scales in Real Systems
 Large frameworks like Akka and Play use optional dependencies extensively to support many integrations without forcing all of them on every consumer. As a library author in the SBT ecosystem, documenting your optional dependencies clearly is critical, since the tooling won't surface them automatically. Consider providing separate "starter" or "extras" modules that bundle optional dependencies for common use cases.

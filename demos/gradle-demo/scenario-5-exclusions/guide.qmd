@@ -1,6 +1,10 @@
 # Dependency Exclusions
 *or what to Do When an Exclusion Reshapes the Dependency Graph*
 
+::: {.badge .most-common}
+Most Common in Production
+:::
+
 This scenario demonstrates excluding transitive dependencies.
 
 #### Dependency Graph
@@ -29,14 +33,34 @@ graph LR
 #### Why This Happens
 Gradle honours exclusion metadata during graph traversal. When it encounters an exclusion on a dependency declaration, it prunes the specified artifact (and its entire transitive subtree) from that branch of the graph. Note that Gradle also supports configuration-level exclusions using configurations.implementation { exclude group: 'com.demo', module: 'lib-c' }, which applies the exclusion globally to all dependencies in that configuration.
 
+#### Operational Risk
+
+*   **Low risk:** Excluding a transitive dependency and replacing it with an equivalent implementation (e.g., excluding `log4j` and adding `logback`).
+*   **Medium risk:** Excluding a transitive dependency that you believe is unused. This is risky because a future version of the library could start using it.
+*   **High risk:** Excluding a transitive dependency to "fix" a version conflict without understanding what the dependency does. This can lead to `NoClassDefFoundError` at runtime.
+
 #### How This Scales in Real Systems
 Exclusions are one of the most commonly used --- and most commonly abused --- dependency management tools. The classic use case is replacing a logging framework: excluding log4j-core and substituting slf4j-api + logback. However, in large codebases, exclusions accumulate over time and create what might be called "Swiss cheese" dependency graphs where important libraries are missing from branches that actually need them. Unlike Maven, Gradle's configuration-level excludes make it easier to apply blanket exclusions, which is powerful but can mask real problems.
 
-#### Signals to Watch For
-NoClassDefFoundError or ClassNotFoundException at runtime are the smoking guns. If you exclude a dependency, run your full test suite immediately. Consider using ./gradlew dependencies --configuration runtimeClasspath to verify the final classpath contains everything you need. A safer alternative to exclusion is often substitution (Scenario 15), which replaces a dependency rather than leaving a hole.
+#### Deterministic Checks
+
+**Fast check (Gradle):**
+```bash
+./gradlew dependencies
+```
+
+**What to look for:**
+The dependency `lib-c` will be absent from the tree under `lib-a`.
+
+**Conclusion:**
+The exclusion has successfully removed the dependency from the resolution graph. Be aware of potential `NoClassDefFoundError` at runtime if `lib-a` requires `lib-c`.
 
 #### Key Takeaway
 Exclusions work as expected.
 
 #### Related Scenarios
 *   [Scenario 15: Substitution](../scenario-15-substitution/guide.qmd)
+
+#### Seen in the Wild
+
+A mobile app team was using a library that transitively depended on a large, legacy library. The team discovered that the legacy library was not actually used, and was adding several megabytes to the final application size. They used a global exclusion to remove the legacy library from all configurations, reducing the app size and improving startup time.

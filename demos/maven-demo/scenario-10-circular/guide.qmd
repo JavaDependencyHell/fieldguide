@@ -36,9 +36,18 @@ Refactoring code to break the cycle (e.g., extracting a common interface to `lib
 #### Safer Ways to Take Control
 Avoid cycles. They are a design smell.
 
-#### Signals to Watch For
-*   `StackOverflowError` in some older tools or plugins.
-*   Weird build order issues.
+#### Deterministic Checks
+
+**Fast check (Maven):**
+```bash
+mvn dependency:tree
+```
+
+**What to look for:**
+Maven will detect the cycle and print a warning. The tree will show the circular relationship.
+
+**Conclusion:**
+Circular dependencies should be avoided as they indicate a design problem.
 
 #### How This Scales in Real Systems
 Cycles make it impossible to build modules in a linear order, forcing them to be built together or released in lockstep.

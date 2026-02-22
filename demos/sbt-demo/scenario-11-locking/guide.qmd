@@ -1,6 +1,10 @@
 # Dependency Locking
 *or what to Do When You Want Reproducible Builds*
 
+::: {.badge .most-common}
+Most Common in Production
+:::
+
 This scenario demonstrates how to lock dependencies in SBT to ensure that builds are reproducible, even when using dynamic versions.
 
 #### Dependency Graph
@@ -32,9 +36,16 @@ Dependency locking separates the concern of *resolving* dependencies (finding th
 *   **Hardcoding Versions:** Many teams avoid locking features and simply hardcode exact versions in `build.sbt`. This works but requires manual updates.
 *   **Scala Steward:** Automated tools like Scala Steward can send PRs to update hardcoded versions, making manual management easier.
 
-#### Signals to Watch For
-*   **"Lock file out of date":** If you change `build.sbt` but don't update the lock file, SBT will complain.
-*   **Unexpected Downgrades:** If you delete the lock file, SBT might resolve a newer version than what you were using.
+#### Deterministic Checks
+
+**Fast check (SBT):**
+After running a build, inspect the `build.sbt.lock` file.
+
+**What to look for:**
+The lockfile contains the exact versions of all resolved dependencies.
+
+**Conclusion:**
+Dependency locking is SBT's mechanism for ensuring reproducible builds.
 
 #### How This Scales in Real Systems
 For production systems, reproducibility is non-negotiable. Dependency locking (or strict version pinning) is essential to prevent "it works on my machine" issues. It also protects against malicious package updates (supply chain attacks) by ensuring you only use vetted versions.

@@ -1,5 +1,9 @@
 # Dependency Exclusions
 
+::: {.badge .most-common}
+Most Common in Production
+:::
+
 This scenario demonstrates exclusions.
 
 #### Dependency Graph
@@ -31,8 +35,24 @@ SBT uses Ivy (or Coursier in modern versions) for dependency resolution, and exc
 #### How Developers Commonly Fix This
 The most common pattern is swapping logging frameworks: excluding log4j and adding Logback. Some teams also exclude outdated or vulnerable transitives and replace them with newer versions declared directly.
 
-#### Signals to Watch For
-ClassNotFoundException or NoClassDefFoundError at runtime. Because SBT often uses eviction warnings (which are noisy), developers sometimes miss that an exclusion removed something critical. Always run sbt test after adding exclusions and check sbt dependencyTree to verify the resulting graph.
+#### Operational Risk
+
+*   **Low risk:** Excluding a transitive dependency and replacing it with an equivalent implementation (e.g., excluding `log4j` and adding `logback`).
+*   **Medium risk:** Excluding a transitive dependency that you believe is unused. This is risky because a future version of the library could start using it.
+*   **High risk:** Excluding a transitive dependency to "fix" a version conflict without understanding what the dependency does. This can lead to `NoClassDefFoundError` at runtime.
+
+#### Deterministic Checks
+
+**Fast check (SBT):**
+```bash
+sbt dependencyTree
+```
+
+**What to look for:**
+The dependency `lib-c` will be absent from the tree under `lib-a`.
+
+**Conclusion:**
+The exclusion has successfully removed the dependency from the resolution graph. Be aware of potential `NoClassDefFoundError` at runtime if `lib-a` requires `lib-c`.
 
 #### How This Scales in Real Systems
 In large Scala projects, exclusions accumulate as different library ecosystems bring in conflicting versions of common dependencies (particularly around Scala version suffixes and cross-builds). Exclusion management is one of the primary maintenance burdens in SBT builds.
@@ -42,3 +62,7 @@ Exclusions work.
 
 #### Related Scenarios
 N/A
+
+#### Seen in the Wild
+
+A Scala project was using two different libraries that both depended on the same JSON library, but with different Scala binary versions (2.12 and 2.13). This caused a conflict that was difficult to resolve. The team used an `exclude` rule to remove the 2.12 version of the JSON library, and then added a direct dependency on the 2.13 version, which was compatible with both libraries.

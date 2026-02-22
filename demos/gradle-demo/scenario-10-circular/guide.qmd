@@ -32,8 +32,18 @@ Gradle maintains a set of already-visited nodes during graph traversal. When it 
 #### How This Scales in Real Systems
 While Gradle tolerates circular dependencies at resolution time, they are still a serious architectural problem. Cycles make it impossible to reason about the build order of modules, force tightly coupled releases, and often indicate that shared abstractions should be extracted into a separate module. In Gradle multi-project builds, circular project dependencies will cause build failures since Gradle needs a linear task execution order.
 
-#### Signals to Watch For
-Circular project dependencies will produce an explicit error: "Circular dependency between the following tasks." Circular repository dependencies are silent but can cause unexpected classloading behaviour. If two libraries must evolve in lockstep, consider whether they should be a single module.
+#### Deterministic Checks
+
+**Fast check (Gradle):**
+```bash
+./gradlew dependencies
+```
+
+**What to look for:**
+Gradle will show the circular dependency in the tree, often with an annotation.
+
+**Conclusion:**
+While Gradle can resolve circular dependencies, they are a sign of architectural problems and should be fixed.
 
 #### Key Takeaway
 Gradle tolerates cycles.

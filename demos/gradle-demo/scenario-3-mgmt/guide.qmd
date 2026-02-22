@@ -39,9 +39,18 @@ Gradle treats BOMs as "platforms". A platform is essentially a module that provi
     implementation enforcedPlatform('com.demo:demo-bom:1.0.0')
     ```
 
-#### Signals to Watch For
-*   **Unexpected Upgrades:** If you use `platform()`, a transitive dependency could still pull in a newer version of a library than what is in the BOM (because `platform` is just a recommendation, and Gradle's "newest wins" strategy still applies if a conflict arises).
-*   **Multiple Platforms:** If you import multiple BOMs that manage the same library, Gradle will try to merge the constraints, usually picking the highest version.
+#### Deterministic Checks
+
+**Fast check (Gradle):**
+```bash
+./gradlew dependencies --configuration implementation
+```
+
+**What to look for:**
+The versions of the dependencies listed. They should match the versions specified in the BOM.
+
+**Conclusion:**
+If the versions match, the BOM is correctly influencing the resolution.
 
 #### How This Scales in Real Systems
 Using `platform()` is the standard practice for managing dependencies in large ecosystems like Spring Boot. It allows you to upgrade the entire framework by changing just one version number (the BOM version). However, be aware of the difference between `platform` (recommendation) and `enforcedPlatform` (strict constraint).

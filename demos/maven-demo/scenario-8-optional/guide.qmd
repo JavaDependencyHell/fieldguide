@@ -34,8 +34,19 @@ If a consumer *does* need the optional feature, they must explicitly declare the
 #### Safer Ways to Take Control
 Document optional dependencies clearly so consumers know what to add.
 
-#### Signals to Watch For
-*   `ClassNotFoundException` when using a specific feature of a library.
+#### Deterministic Checks
+
+**Fast check (Maven):**
+When project `B` depends on project `A` (which has an optional dependency on `lib-a`), run this in project `B`:
+```bash
+mvn dependency:tree
+```
+
+**What to look for:**
+`lib-a` will be absent from the dependency tree of project `B`.
+
+**Conclusion:**
+Optional dependencies are not transitive. Consumers must explicitly declare them if needed.
 
 #### How This Scales in Real Systems
 Used heavily by large frameworks (Spring, Hibernate) to support many integrations without forcing all of them on everyone.

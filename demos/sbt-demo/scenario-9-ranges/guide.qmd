@@ -1,6 +1,10 @@
 # Version Ranges
 *or what to Do When You Want the Latest and Greatest (Until It Breaks)*
 
+::: {.badge .most-common}
+Most Common in Production
+:::
+
 This scenario demonstrates how to use version ranges in SBT.
 
 #### Dependency Graph
@@ -28,15 +32,34 @@ The classpath contains the highest matching version found at build time.
 #### Why This Happens
 SBT supports Ivy-style version ranges (which are compatible with Maven ranges). When you specify a range like `[1.0, 2.0)`, SBT asks the repository for a list of versions and picks the best match. This makes your build dynamic—the result depends on what is in the repository at the time of the build.
 
-#### Signals to Watch For
-*   **Non-Reproducible Builds:** A build that works today might fail tomorrow if a new, broken version is released within the range.
-*   **CI Failures:** Builds might pass locally (using cached metadata) but fail on CI (fetching fresh metadata).
+#### Deterministic Checks
+
+**Fast check (SBT):**
+```bash
+sbt dependencyTree
+```
+
+**What to look for:**
+The resolved version of `lib-a`. This can change if a new version is published that matches the range.
+
+**Conclusion:**
+Version ranges can lead to non-reproducible builds.
 
 #### How This Scales in Real Systems
 Version ranges are risky for application development because they sacrifice reproducibility. However, they are sometimes used in library development to express compatibility with a range of versions. In the Scala ecosystem, binary compatibility is critical, so ranges are used carefully.
+
+#### Operational Risk
+
+*   **Low risk:** Using version ranges for `Test` configuration dependencies. This allows you to test against the latest versions of your testing libraries without affecting your production code.
+*   **Medium risk:** Using version ranges for internal libraries that are under your control and follow strict semantic versioning.
+*   **High risk:** Using version ranges for external, third-party libraries. This can lead to non-reproducible builds and unexpected breakages. It is highly recommended to use a dependency locking mechanism if you do this.
 
 #### Key Takeaway
 Ranges provide automatic upgrades but sacrifice build reproducibility. Use dependency locking to mitigate the risk.
 
 #### Related Scenarios
 *   [Scenario 11: Locking](../scenario-11-locking/guide.md) - How to freeze dynamic versions.
+
+#### Seen in the Wild
+
+A company was using a version range for a library that was known to have binary compatibility issues between minor releases. A new version was released, and the build started failing with `AbstractMethodError` at runtime. The team was forced to stop using a version range and pin the dependency to a specific version that was known to be compatible.

@@ -1,6 +1,10 @@
 # Hardcoded Version vs Overrides
 *or what to Do When You Need to Break the Rules*
 
+::: {.badge .most-common}
+Most Common in Production
+:::
+
 This scenario demonstrates how explicit version declarations in `libraryDependencies` can override managed versions or defaults.
 
 #### Dependency Graph
@@ -39,9 +43,18 @@ In SBT, `libraryDependencies` is just a sequence of module definitions. If you a
     dependencyOverrides += "com.demo" % "lib-a" % "2.0.0"
     ```
 
-#### Signals to Watch For
-*   **Unexpected Upgrades:** If you don't use `dependencyOverrides`, a transitive dependency could still upgrade `lib-a` to `3.0.0` if it depends on it.
-*   **Eviction Warnings:** If your explicit version is lower than a transitive version, you will see eviction warnings.
+#### Deterministic Checks
+
+**Fast check (SBT):**
+```bash
+sbt dependencyTree
+```
+
+**What to look for:**
+The version of `lib-a` in the tree. It will be `2.0.0`.
+
+**Conclusion:**
+An explicit version declaration in `libraryDependencies` is a direct request for that version.
 
 #### How This Scales in Real Systems
 Hardcoding versions in `libraryDependencies` is fine for direct dependencies. However, for enforcing versions across a large project (especially for transitive dependencies you don't directly use), `dependencyOverrides` or a BOM plugin is a more robust solution.
@@ -51,3 +64,7 @@ Explicit declarations in `libraryDependencies` are your primary way of requestin
 
 #### Related Scenarios
 *   [Scenario 6: Forcing Versions](../scenario-6-forcing/guide.md) - Using `dependencyOverrides` for stricter control.
+
+#### Seen in the Wild
+
+A team was using a library that had a bug in a specific version. The team was able to use `dependencyOverrides` to force a different version of the library that did not have the bug. This allowed them to work around the bug without waiting for a new version of the library to be released.

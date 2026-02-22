@@ -33,6 +33,12 @@ Dependency substitution is a powerful feature that allows you to rewrite the dep
 *   **Exclusions:** Developers often try to exclude the old dependency and add the new one manually. This is tedious and error-prone.
 *   **Forcing Versions:** Forcing a version works if the group and artifact IDs are the same, but it cannot replace `com.old:lib` with `com.new:lib`.
 
+#### Operational Risk
+
+*   **Low risk:** Replacing a logging framework with a compatible one (e.g., `log4j` with `log4j-over-slf4j`). This is a well-understood and common practice.
+*   **Medium risk:** Replacing a library with a forked or patched version. This is often necessary but introduces the risk that the fork will not be maintained.
+*   **High risk:** Replacing a library with a completely different one that is not a drop-in replacement. This is very likely to cause `NoClassDefFoundError` or `NoSuchMethodError` at runtime.
+
 #### Safer Ways to Take Control
 *   **Use Substitution:** This is the cleanest way to handle replacements. It applies globally and handles transitive dependencies correctly.
 
@@ -48,3 +54,7 @@ Dependency substitution allows you to swap modules or versions cleanly, handling
 
 #### Related Scenarios
 *   [Scenario 5: Exclusions](../scenario-5-exclusions/guide.md) - Removing dependencies without replacement.
+
+#### Seen in the Wild
+
+A team was developing a new feature in a library that was used by several other projects. To test the new feature, they used a composite build to substitute the binary dependency with a local project dependency. This allowed them to test the new feature in the context of the other projects without having to publish a new version of the library.

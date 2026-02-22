@@ -31,6 +31,12 @@ Maven's exclusion mechanism is declaration-scoped, not graph-scoped. An exclusio
 - **Global exclusion via `<dependencyManagement>`:** While `<dependencyManagement>` cannot exclude a dependency outright, you can declare the unwanted artifact with `<scope>provided</scope>` to remove it from the runtime classpath. This is not a true exclusion but achieves a similar practical effect.
 - **Maven Shade Plugin:** For substitutions where the replacement has a different package structure, the Shade Plugin can relocate classes at build time. This is a heavy-handed solution but is used in practice for complex migrations.
 
+#### Operational Risk
+
+*   **Low risk:** Replacing a logging framework with a compatible one (e.g., `log4j` with `log4j-over-slf4j`). This is a well-understood and common practice.
+*   **Medium risk:** Replacing a library with a forked or patched version. This is often necessary but introduces the risk that the fork will not be maintained.
+*   **High risk:** Replacing a library with a completely different one that is not a drop-in replacement. This is very likely to cause `NoClassDefFoundError` or `NoSuchMethodError` at runtime.
+
 ### Safer Ways to Take Control
 
 - Combine exclusions with the Enforcer Plugin: After adding exclusions, use `bannedDependencies` (Scenario 14) to ensure the old library never creeps back in through a new transitive path.
@@ -56,3 +62,7 @@ Maven has no graph-wide substitution mechanism. Use exclusions on each path plus
 - Scenario 5: Dependency Exclusions — The underlying mechanism used for substitution.
 - Scenario 14: Rejecting a Version — Using the Enforcer Plugin to prevent the old library from returning.
 - Scenario 6: Forcing Transitive Versions — An alternative when only the version (not the artifact) needs to change.
+
+#### Seen in the Wild
+
+A large enterprise project was migrating from `javax.servlet` to `jakarta.servlet`. They had hundreds of modules, and it was not feasible to update all of them at once. They used the Maven Shade Plugin to relocate the `javax.servlet` classes to `jakarta.servlet` at build time. This allowed them to migrate their application incrementally, one module at a time.

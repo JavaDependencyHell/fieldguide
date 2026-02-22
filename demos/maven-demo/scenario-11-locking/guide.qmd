@@ -1,6 +1,9 @@
 ## 11. Dependency Locking
-
 *or what to Do When Yesterday's Build and Today's Build Produce Different Results*
+
+::: {.badge .most-common}
+Most Common in Production
+:::
 
 This scenario demonstrates how Maven approaches (or rather, does not approach) dependency locking. Unlike Gradle and SBT, Maven has no native locking mechanism. Instead, Maven's philosophy assumes that all versions are declared explicitly and fixed, making locking unnecessary in theory—but not always in practice.
 
@@ -40,11 +43,18 @@ In practice, however, transitive dependencies may use ranges, and SNAPSHOT versi
 - If you must use ranges, use the Versions Maven Plugin to resolve and freeze them before release.
 - Consider a lockfile plugin for CI/CD pipelines where reproducibility is critical.
 
-### Signals to Watch For
+### Deterministic Checks
 
-- "It worked yesterday." If a build breaks without code changes, a dynamic version has likely shifted.
-- Differences between local and CI builds, especially around SNAPSHOT resolution.
-- `mvn dependency:tree` showing different versions on different machines.
+**Fast check (Maven):**
+```bash
+mvn dependency:tree
+```
+
+**What to look for:**
+Run this command on two different machines or at different times when using version ranges. If the output differs, your build is not reproducible.
+
+**Conclusion:**
+Maven does not have a built-in locking mechanism. To ensure reproducible builds, avoid version ranges and use `<dependencyManagement>` or a third-party locking plugin.
 
 ### How This Scales in Real Systems
 

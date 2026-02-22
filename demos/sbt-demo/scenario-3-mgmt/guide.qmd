@@ -36,8 +36,18 @@ SBT builds are Scala programs. You can use variables, functions, and other progr
 #### Safer Ways to Take Control
 *   **`project/Dependencies.scala`:** For multi-module builds, define all your dependencies and versions in a single Scala object in the `project` directory. This keeps your `build.sbt` clean and ensures all modules share the same version definitions.
 
-#### Signals to Watch For
-*   **Inconsistent Versions:** If you see different versions of the same library in different modules, it's a sign that you need centralized version management.
+#### Deterministic Checks
+
+**Fast check (SBT):**
+```bash
+sbt dependencyTree
+```
+
+**What to look for:**
+The versions of your libraries in the dependency tree.
+
+**Conclusion:**
+If the versions match what you have defined in your central variables, your version management is working.
 
 #### How This Scales in Real Systems
 As projects grow, `build.sbt` files can become messy. Moving dependency definitions to `project/Dependencies.scala` is a standard best practice in the Scala ecosystem. It allows you to group related dependencies (e.g., "testing libraries", "database drivers") and manage their versions together.

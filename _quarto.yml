@@ -49,6 +49,8 @@ book:
   title: "Dependency Hell"
   chapters:
     - index.md
+    - book/content/triage.md
+    - book/content/classpath-reality-check.md
     - book/content/start_here_trouble.qmd
     - book/content/start_here_control.qmd
     - book/content/scenarios.md

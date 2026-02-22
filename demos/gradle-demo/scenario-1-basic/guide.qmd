@@ -32,8 +32,18 @@ Gradle traverses the entire dependency graph depth-first, collecting every uniqu
 #### How This Scales in Real Systems
 In production projects, this simple chain (A → B → C) is replicated thousands of times. A typical Spring Boot application resolves 200--400 transitive dependencies from a handful of direct declarations. The "happy path" of zero conflicts becomes increasingly rare as the graph grows; diamond dependencies emerge naturally.
 
-#### Signals to Watch For
-Run ./gradlew dependencies to inspect the full tree. Watch for unexpected artifacts appearing --- a single new direct dependency can pull in dozens of transitives. If you see ClassNotFoundException for a class that should be present, check whether an exclusion or scope/configuration issue is pruning the graph.
+#### Deterministic Checks
+
+**Fast check (Gradle):**
+```bash
+./gradlew dependencies
+```
+
+**What to look for:**
+A clean tree with no unexpected versions or `omitted` nodes.
+
+**Conclusion:**
+The dependency graph is healthy and resolving as expected.
 
 #### Key Takeaway
 It resolves the full graph by default.

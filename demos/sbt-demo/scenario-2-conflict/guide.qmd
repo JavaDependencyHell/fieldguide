@@ -1,6 +1,10 @@
 # Version Conflict Resolution (Latest Wins)
 *or what to Do When it Always Picks the Latest Version*
 
+::: {.badge .most-common}
+Most Common in Production
+:::
+
 This scenario demonstrates SBT's "Latest Wins" strategy for resolving version conflicts.
 
 #### Dependency Graph
@@ -34,13 +38,28 @@ SBT's underlying dependency engine (historically Ivy) uses a conflict manager to
 *   **Explicitly upgrading:** Change the direct dependency to `2.0.0` to match the transitive one.
 *   **Forcing a version:** Using `dependencyOverrides` to force `1.0.0` if `2.0.0` is broken (see Scenario 6).
 
+#### Operational Risk
+
+*   **Low risk:** Using `dependencyOverrides` to pin a version. This is the safest, most explicit way to resolve a conflict.
+*   **Medium risk:** Explicitly upgrading the direct dependency to match the transitive one. This is safe, but can be tedious.
+*   **High risk:** Relying on the default "latest-revision" strategy without paying attention to eviction warnings. This can lead to unexpected upgrades and breakages.
+
 #### Safer Ways to Take Control
 *   **Check Eviction Warnings:** SBT prints eviction warnings when a direct dependency is overridden by a transitive one. Pay attention to these.
 *   **Use `dependencyOverrides`:** If you absolutely need a specific version, use `dependencyOverrides` to lock it down.
 
-#### Signals to Watch For
-*   **Eviction Warnings:** Run `sbt evicted` to see a report of all evicted modules.
-*   **Runtime Errors:** `NoSuchMethodError` or `ClassNotFoundException` if the newer version (`2.0.0`) removed something that your code (expecting `1.0.0`) relies on.
+#### Deterministic Checks
+
+**Fast check (SBT):**
+```bash
+sbt evicted
+```
+
+**What to look for:**
+A report showing which modules have been evicted. If `lib-b` is listed, it means a different version was chosen.
+
+**Conclusion:**
+SBT has selected the newest version of `lib-b` found in the graph.
 
 #### How This Scales in Real Systems
 "Latest wins" is generally safer for semantic versioning because it ensures bug fixes and security patches (which are usually in newer versions) are included. However, it relies on library authors strictly adhering to semantic versioning. If a library breaks compatibility in a minor release, "latest wins" can break your build.
@@ -50,3 +69,7 @@ SBT defaults to the latest version found in the graph, regardless of depth.
 
 #### Related Scenarios
 *   [Scenario 6: Forcing Versions](../scenario-6-forcing/guide.md) - How to override this behavior.
+
+#### Seen in the Wild
+
+A data engineering team was using a library that depended on an older version of the AWS SDK. A new team member added a new library that depended on a newer version of the SDK. SBT's "latest-wins" strategy picked the newer SDK, but the older library was not compatible with it, causing a `NoSuchMethodError` at runtime. The team used `dependencyOverrides` to force the older, compatible version of the SDK.

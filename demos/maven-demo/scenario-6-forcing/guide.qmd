@@ -33,11 +33,27 @@ This scenario uses the exact same `<dependencyManagement>` mechanism as Scenario
 #### How Developers Commonly "Fix" This
 This is often the fix for "Nearest Wins" picking an old version, or to patch a vulnerability deep in the graph.
 
+#### Operational Risk
+
+*   **Low risk:** Forcing a version to align with a BOM or to patch a known vulnerability. This is a primary use case for this feature.
+*   **Medium risk:** Forcing a version to a newer version that has not been tested with the libraries that depend on it. This can lead to `NoSuchMethodError` if the new version has breaking changes.
+*   **High risk:** Forcing a version to an older version. This is very likely to cause problems, as the libraries that depend on it may be using features only available in the newer version.
+
 #### Safer Ways to Take Control
 This is a safe and recommended pattern for enforcing policy.
 
-#### Signals to Watch For
-*   If you force a version that is too new, `lib-b` might break (binary incompatibility).
+#### Deterministic Checks
+
+**Fast check (Maven):**
+```bash
+mvn dependency:tree
+```
+
+**What to look for:**
+The version of `lib-c` in the tree. It will be `2.0.0`, overriding the `1.0.0` requested by `lib-b`.
+
+**Conclusion:**
+A version in `<dependencyManagement>` will override any transitive dependency version.
 
 #### How This Scales in Real Systems
 Strict constraints are vital for security compliance (e.g., "Must use OpenSSL >= 3.0").

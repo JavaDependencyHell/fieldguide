@@ -1,6 +1,10 @@
 # Dependency Exclusions
 *or what to Do When Excluding a Dependency Fixes the Build but Breaks Runtime*
 
+::: {.badge .most-common}
+Most Common in Production
+:::
+
 This scenario demonstrates how to surgically remove a transitive dependency from the graph. This is a common "sledgehammer" fix for conflicts.
 
 #### Dependency Graph
@@ -32,12 +36,27 @@ The build tool respects the exclusion metadata and prunes that branch of the gra
 #### How Developers Commonly "Fix" This
 This *is* the fix for many problems (e.g., excluding `log4j` to use `slf4j`).
 
+#### Operational Risk
+
+*   **Low risk:** Excluding a transitive dependency and replacing it with an equivalent implementation (e.g., excluding `log4j` and adding `logback`).
+*   **Medium risk:** Excluding a transitive dependency that you believe is unused. This is risky because a future version of the library could start using it.
+*   **High risk:** Excluding a transitive dependency to "fix" a version conflict without understanding what the dependency does. This can lead to `NoClassDefFoundError` at runtime.
+
 #### Safer Ways to Take Control
 Exclusions are risky because `lib-a` might actually *need* `lib-c` to run. If you exclude it, you might get `NoClassDefFoundError` at runtime. A safer alternative is often to force a compatible version rather than removing it entirely, unless you are replacing it with an equivalent (e.g., a bridge library).
 
-#### Signals to Watch For
-*   `NoClassDefFoundError` at runtime.
-*   "Why is this library missing?" confusion.
+#### Deterministic Checks
+
+**Fast check (Maven):**
+```bash
+mvn dependency:tree
+```
+
+**What to look for:**
+The dependency `lib-c` will be absent from the tree under `lib-a`.
+
+**Conclusion:**
+The exclusion has successfully removed the dependency from the resolution graph. Be aware of potential `NoClassDefFoundError` at runtime if `lib-a` requires `lib-c`.
 
 #### How This Scales in Real Systems
 Overuse of exclusions leads to "Swiss cheese" dependency graphs that are hard to reason about.
@@ -47,3 +66,7 @@ Exclusions are powerful but dangerous; use them only when you know the dependent
 
 #### Related Scenarios
 *   [Scenario 15: Substitution](../scenario-15-substitution/guide.qmd) - Replacing a library instead of just removing it.
+
+#### Seen in the Wild
+
+A team was using a library that pulled in a transitive dependency with a GPL license, which was not allowed by their company's policy. They couldn't remove the direct dependency, so they used an `<exclusion>` to remove the GPL-licensed library. They then added a similar library with a compatible license to ensure the application still worked.

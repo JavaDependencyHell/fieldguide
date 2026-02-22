@@ -1,6 +1,10 @@
 # Dependency Configurations
 *or what to Do When a Dependency Exists — But Not Where You Expect It*
 
+::: {.badge .most-common}
+Most Common in Production
+:::
+
 This scenario demonstrates its configurations (`implementation`, `compileOnly`, `testImplementation`).
 
 #### Dependency Graph
@@ -29,14 +33,34 @@ Respects configurations.
 #### Why This Happens
 Gradle's configuration system is more granular than Maven's scopes. The key distinction is between api and implementation: api exposes a dependency to consumers of your library (it appears on their compile classpath), while implementation hides it (consumers can't see it at compile time, though it's still present at runtime). compileOnly is equivalent to Maven's provided scope, and testImplementation restricts visibility to the test source set.
 
+#### Operational Risk
+
+*   **Low risk:** Using `testImplementation` for test-only libraries like JUnit. This is the intended use.
+*   **Medium risk:** Using `compileOnly`. This is a common and necessary practice, but it introduces the risk that the runtime environment will not provide the dependency, or will provide an incompatible version.
+*   **High risk:** Using `api` when `implementation` would suffice. This can lead to slower builds and can expose consumers of your library to dependencies that they don't need.
+
 #### How This Scales in Real Systems
 Correct use of implementation vs api has a direct impact on build performance. When a dependency declared as implementation changes, only the declaring module needs to be recompiled. If the same dependency were declared as api, every module that depends on the declaring module would also need recompilation. In large multi-module builds (50+ modules), this can mean the difference between a 30-second incremental build and a 5-minute full rebuild. Getting configurations right is one of the most impactful performance optimisations in Gradle.
 
-#### Signals to Watch For
-If a downstream module gets a compilation error about missing classes from your library's dependencies, you may need to promote that dependency from implementation to api. If your production JAR contains test libraries, check for accidental use of implementation instead of testImplementation. Use ./gradlew buildEnvironment and ./gradlew dependencies to audit which dependencies land in which configurations.
+#### Deterministic Checks
+
+**Fast check (Gradle):**
+```bash
+./gradlew dependencies --configuration runtimeClasspath
+```
+
+**What to look for:**
+The output will only show dependencies from the `implementation` and `runtimeOnly` configurations.
+
+**Conclusion:**
+Configurations are Gradle's way of managing what goes into different classpaths.
 
 #### Key Takeaway
 Configurations control transitivity and packaging.
 
 #### Related Scenarios
 *   [Scenario 8: Optional](../scenario-8-optional/guide.md)
+
+#### Seen in the Wild
+
+A team was building a library and used `api` for all of their dependencies. This worked, but it meant that consumers of their library were exposed to all of their internal dependencies. When the team wanted to change a logging library, they couldn't do it without breaking their consumers' builds. They switched to using `implementation` for all of their internal dependencies, which allowed them to change their implementation details without affecting their consumers.

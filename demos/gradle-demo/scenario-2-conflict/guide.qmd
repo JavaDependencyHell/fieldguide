@@ -1,6 +1,10 @@
 # Version Conflict Resolution (Newest Wins)
 *or what to Do When Gradle Picks a Newer Version Than Maven Would*
 
+::: {.badge .most-common}
+Most Common in Production
+:::
+
 This scenario demonstrates its default "Newest Wins" conflict resolution strategy.
 
 #### Dependency Graph
@@ -32,11 +36,31 @@ Gradle's default conflict resolution strategy assumes semantic versioning: a new
 #### How This Scales in Real Systems
 "Newest Wins" generally produces fewer duplicate classes on the classpath and fewer "missing method" errors caused by accidental downgrades. However, it carries a different risk: if a library releases a breaking change (violating semver), Gradle may silently upgrade you to the broken version. This is particularly dangerous with libraries like Guava or Jackson that have historically made breaking changes between major versions.
 
-#### Signals to Watch For
-Run ./gradlew dependencyInsight --dependency lib-b to see exactly why a version was chosen. Look for "by conflict resolution" annotations. If you see → 2.0.0 next to a dependency you expected at 1.0.0, that's the "newest wins" strategy in action. Runtime errors like NoSuchMethodError or AbstractMethodError are the classic symptoms of a bad upgrade.
+#### Operational Risk
+
+*   **Low risk:** Using a `strictly` constraint to pin a version. This is the safest, most explicit way to resolve a conflict.
+*   **Medium risk:** Using `resolutionStrategy.force`. This is effective but less granular than `strictly`.
+*   **High risk:** Relying on the default "newest wins" strategy without testing. This can lead to unexpected upgrades and breakages.
+
+#### Deterministic Checks
+
+**Fast check (Gradle):**
+```bash
+./gradlew dependencyInsight --dependency lib-b
+```
+
+**What to look for:**
+The phrase `lib-b:2.0.0 (by conflict resolution)` indicates that Gradle has chosen a version different from what you may have expected.
+
+**Conclusion:**
+Gradle has selected the newest version of `lib-b` found in the graph.
 
 #### Key Takeaway
 It upgrades you to the newest version found in the graph.
 
 #### Related Scenarios
 *   [Scenario 6: Strict](../scenario-6-forcing/guide.qmd)
+
+#### Seen in the Wild
+
+A large e-commerce company discovered that a new version of a popular utility library was causing a subtle bug in their checkout process. The bug was only triggered under specific conditions and was not caught by their existing tests. Because they were using Gradle's "newest wins" strategy, the library was automatically upgraded, and the bug was introduced into production. They now use `strictly` constraints on all business-critical libraries.

@@ -36,9 +36,18 @@ There is nothing to fix here; this is the desired behavior. However, developers 
 #### Safer Ways to Take Control
 Trust the transitive resolution. Only declare direct dependencies (libraries you import in your code) in your `build.sbt`.
 
-#### Signals to Watch For
-*   **Bloated Classpath:** If your application size is growing unexpectedly, check the transitive dependencies of your new libraries.
-*   **Unexpected Classes:** If you see classes in your IDE that you didn't add, they are likely coming from transitive dependencies.
+#### Deterministic Checks
+
+**Fast check (SBT):**
+```bash
+sbt dependencyTree
+```
+
+**What to look for:**
+A clean tree with no unexpected versions or `omitted` nodes.
+
+**Conclusion:**
+The dependency graph is healthy and resolving as expected.
 
 #### How This Scales in Real Systems
 Transitive resolution is the only way modern software development scales. Without it, you would be managing hundreds of jar files manually. However, it also means that adding one small library can pull in a large tree of other libraries, potentially leading to conflicts (see Scenario 2).

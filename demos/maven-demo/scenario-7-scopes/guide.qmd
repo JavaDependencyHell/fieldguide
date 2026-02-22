@@ -1,6 +1,10 @@
 # Dependency Scopes
 *or what to Do When a Dependency Exists at Compile Time but Not at Runtime*
 
+::: {.badge .most-common}
+Most Common in Production
+:::
+
 This scenario demonstrates how scopes (`compile`, `provided`, `test`, `runtime`) affect transitivity and the final classpath.
 
 #### Dependency Graph
@@ -39,12 +43,27 @@ Scopes allow you to trim the fat from your distribution.
 #### How Developers Commonly "Fix" This
 Using the wrong scope leads to `ClassNotFoundException` (if `provided` was used wrongly) or bloated JARs (if `test` dependencies leak into production).
 
+#### Operational Risk
+
+*   **Low risk:** Using `test` scope for test-only libraries like JUnit. This is the intended use.
+*   **Medium risk:** Using `provided` scope. This is a common and necessary practice, but it introduces the risk that the runtime environment will not provide the dependency, or will provide an incompatible version.
+*   **High risk:** Using `compile` scope for a dependency that is only needed at runtime. This can bloat the compile classpath and slow down builds. It can also lead to including unnecessary dependencies in the final application.
+
 #### Safer Ways to Take Control
 Review scopes carefully. `provided` is dangerous if the runtime environment *doesn't* actually provide it.
 
-#### Signals to Watch For
-*   `NoClassDefFoundError` in production (missing dependency).
-*   Test libraries appearing in your final WAR/JAR.
+#### Deterministic Checks
+
+**Fast check (Maven):**
+```bash
+mvn dependency:tree -Dscope=runtime
+```
+
+**What to look for:**
+The tree will only show dependencies with `compile` and `runtime` scope. `provided` and `test` dependencies will be absent.
+
+**Conclusion:**
+Scopes are a powerful way to control what is included in your final application.
 
 #### How This Scales in Real Systems
 Correct scoping is essential for keeping artifact sizes down and avoiding conflicts (e.g., conflicting versions of `servlet-api`).
@@ -54,3 +73,7 @@ Scopes control the visibility and transitivity of dependencies; use them to keep
 
 #### Related Scenarios
 *   [Scenario 8: Optional](../scenario-8-optional/guide.qmd) - Another way to limit transitivity.
+
+#### Seen in the Wild
+
+A developer was working on a web application and added a new dependency with `compile` scope. The application worked fine in their IDE, but when they deployed it to a server, it failed with a `NoClassDefFoundError`. The problem was that the new dependency was only needed at runtime, and the `compile` scope was causing it to be excluded from the final WAR file. Changing the scope to `runtime` fixed the problem.

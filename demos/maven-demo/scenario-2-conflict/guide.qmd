@@ -1,6 +1,10 @@
 # Version Conflict Resolution
 *or what to Do When the Version You Get Isnâ€™t the One You Chose*
 
+::: {.badge .most-common}
+Most Common in Production
+:::
+
 
 This scenario demonstrates the "Diamond Dependency" problem where two different versions of the same library are requested.
 It highlights the fundamental difference in resolution strategies between Maven ("Nearest Wins") and Gradle/SBT ("Newest Wins").
@@ -41,13 +45,28 @@ When two dependencies at the same depth in the dependency graph bring in conflic
 Reordering dependencies (fragile), adding explicit exclusions (verbose), or managing versions in a parent POM.
 *   **Gradle**: Forcing versions or using strict constraints.
 
+#### Operational Risk
+
+*   **Low risk:** Using `<dependencyManagement>` to pin a version. This is the safest, most explicit way to resolve a conflict.
+*   **Medium risk:** Adding an explicit dependency to your POM to shorten the distance. This works but can be less clear than using `<dependencyManagement>`.
+*   **High risk:** Reordering `<dependency>` blocks to influence the resolution. This is extremely fragile and relies on a poorly understood tie-breaking mechanism.
+
 #### Safer Ways to Take Control
 Use `<dependencyManagement>` to define the version of `lib-b` explicitly, regardless of depth.
 *   **Gradle**: Use `constraints` or `platform` (BOM) to align versions.
 
-#### Signals to Watch For
-*   `NoSuchMethodError` or `ClassNotFoundException` at runtime.
-*   "Downgrade" warnings in build logs (if enabled).
+#### Deterministic Checks
+
+**Fast check (Maven):**
+```bash
+mvn dependency:tree -Dverbose
+```
+
+**What to look for:**
+Lines containing `omitted for conflict`. This shows you which version lost the conflict resolution battle.
+
+**Conclusion:**
+The winning version is "nearest" to the root project. This may not be the newest or most compatible version.
 
 #### How This Scales in Real Systems
 This is the most common cause of "Dependency Hell". As graphs grow, "nearest" becomes arbitrary and "newest" can trigger unexpected upgrades.
@@ -57,3 +76,7 @@ Maven optimizes for "distance", while Gradle and SBT optimize for "freshness" â€
 
 #### Related Scenarios
 *   [Scenario 3: Dependency Management](../scenario-3-mgmt/guide.qmd) - How to fix this centrally.
+
+#### Seen in the Wild
+
+A financial services company was using a library that pulled in an old, vulnerable version of the Apache Commons Collections library. A security scan flagged the vulnerability, but the team couldn't upgrade the direct dependency. By using `<dependencyManagement>`, they were able to force the newer, patched version of Commons Collections, resolving the security finding without having to wait for the library author to release an update.

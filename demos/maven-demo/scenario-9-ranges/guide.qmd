@@ -1,6 +1,10 @@
 # Version Ranges
 *or what to Do When a Version Range Picks Something You Never Tested*
 
+::: {.badge .most-common}
+Most Common in Production
+:::
+
 This scenario demonstrates dynamic version resolution using ranges (e.g., `[1.0, 2.0)`).
 
 #### Dependency Graph
@@ -34,12 +38,27 @@ A version declared as `[1.0.0]` (with brackets) is a hard requirement. Unlike a 
 #### How Developers Commonly "Fix" This
 Ranges are controversial because they make builds non-deterministic (a new release of `lib-a` can change your build without you touching it). Many teams ban them.
 
+#### Operational Risk
+
+*   **Low risk:** Using version ranges for `test` scope dependencies. This allows you to test against the latest versions of your testing libraries without affecting your production code.
+*   **Medium risk:** Using version ranges for internal libraries that are under your control and follow strict semantic versioning.
+*   **High risk:** Using version ranges for external, third-party libraries. This can lead to non-reproducible builds and unexpected breakages. It is highly recommended to use a dependency locking mechanism if you do this.
+
 #### Safer Ways to Take Control
 Use Dependency Locking (Scenario 11) if you use ranges.
 
-#### Signals to Watch For
-*   "It worked yesterday."
-*   Builds failing on CI but passing locally (due to repo cache differences).
+#### Deterministic Checks
+
+**Fast check (Maven):**
+```bash
+mvn dependency:resolve
+```
+
+**What to look for:**
+The output will show which version of `lib-a` was resolved. This may change over time as new versions are published.
+
+**Conclusion:**
+Version ranges can lead to non-reproducible builds. Use them with caution.
 
 #### How This Scales in Real Systems
 Ranges are common in NPM/pip but less so in Java/Maven ecosystems due to the desire for reproducibility.
@@ -49,3 +68,7 @@ Ranges trade reproducibility for freshness; use with caution (and locking).
 
 #### Related Scenarios
 *   [Scenario 11: Locking](../scenario-11-locking/guide.qmd) - How to tame ranges.
+
+#### Seen in the Wild
+
+A company had a build that suddenly started failing on their CI server. No code had been changed, and the build worked fine on developer machines. The problem was a transitive dependency that used a version range. A new version of the library had been published, and the CI server, which did not have a local Maven cache, picked it up. The new version was not compatible with the rest of the application, and the build failed.

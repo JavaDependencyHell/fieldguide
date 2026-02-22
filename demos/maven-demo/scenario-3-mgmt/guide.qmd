@@ -37,9 +37,18 @@ Without BOMs, developers copy-paste version numbers across multiple modules, lea
 #### Safer Ways to Take Control
 This *is* the safer way. Always prefer BOMs or centralized version catalogs (Gradle) over scattered version numbers.
 
-#### Signals to Watch For
-*   "Missing version" errors if the BOM is not imported correctly.
-*   Unexpected versions if a direct version declaration in `<dependencies>` overrides the BOM (see Scenario 4), or if multiple BOMs define the same artifact and the import ordering produces an unexpected winner.
+#### Deterministic Checks
+
+**Fast check (Maven):**
+```bash
+mvn help:effective-pom
+```
+
+**What to look for:**
+The `<dependencyManagement>` section of the output. It should contain the versions defined in your BOM.
+
+**Conclusion:**
+If the versions are present, the BOM is correctly imported and influencing the build.
 
 #### How This Scales in Real Systems
 Essential for multi-module projects and microservices to ensure all services use the same library versions.

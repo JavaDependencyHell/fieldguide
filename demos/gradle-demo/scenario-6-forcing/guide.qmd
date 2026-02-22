@@ -43,12 +43,27 @@ Gradle provides mechanisms to override its default conflict resolution. `resolut
     }
     ```
 
+#### Operational Risk
+
+*   **Low risk:** Forcing a version to align with a BOM or to patch a known vulnerability. This is a primary use case for this feature.
+*   **Medium risk:** Forcing a version to a newer version that has not been tested with the libraries that depend on it. This can lead to `NoSuchMethodError` if the new version has breaking changes.
+*   **High risk:** Forcing a version to an older version. This is very likely to cause problems, as the libraries that depend on it may be using features only available in the newer version.
+
 #### Safer Ways to Take Control
 *   **Prefer `strictly`:** Using `strictly` in a `constraints` block is generally safer and more idiomatic in modern Gradle than `resolutionStrategy.force`. It integrates better with dependency insight tools and other plugins.
 
-#### Signals to Watch For
-*   **Downgrades:** Forcing a version can cause a downgrade (e.g., forcing `1.0.0` when `2.0.0` is requested). This might break code that relies on newer APIs.
-*   **Build Failures:** If you force a version that is incompatible with other libraries, you might see runtime errors like `NoSuchMethodError`.
+#### Deterministic Checks
+
+**Fast check (Gradle):**
+```bash
+./gradlew dependencyInsight --dependency lib-c
+```
+
+**What to look for:**
+The reason for the version selection. It will show `2.0.0` was selected `by force`.
+
+**Conclusion:**
+`resolutionStrategy.force` or a `strictly` constraint will override any other version in the graph.
 
 #### How This Scales in Real Systems
 Forcing versions is essential in large enterprise environments where you need to ensure all applications use a specific, vetted version of a library (e.g., for security compliance), regardless of what transitive dependencies request.

@@ -28,8 +28,24 @@ graph LR
 #### Why This Happens
 dependencyOverrides is SBT's strongest version enforcement mechanism. It overrides the version of any matching artifact anywhere in the dependency graph, regardless of what the transitive graph would otherwise resolve. Unlike Gradle's strictly, SBT's overrides don't have a built-in mechanism to fail the build if the override causes incompatibilities --- they silently force the version.
 
-#### Signals to Watch For
-Eviction warnings in SBT output. A message like "[warn] Found version conflict(s) in library dependencies; some are suspected to be binary incompatible" is SBT telling you that it has replaced a version that a library explicitly requested. These warnings deserve investigation, not just suppression.
+#### Operational Risk
+
+*   **Low risk:** Forcing a version to align with a BOM or to patch a known vulnerability. This is a primary use case for this feature.
+*   **Medium risk:** Forcing a version to a newer version that has not been tested with the libraries that depend on it. This can lead to `NoSuchMethodError` if the new version has breaking changes.
+*   **High risk:** Forcing a version to an older version. This is very likely to cause problems, as the libraries that depend on it may be using features only available in the newer version.
+
+#### Deterministic Checks
+
+**Fast check (SBT):**
+```bash
+sbt dependencyTree
+```
+
+**What to look for:**
+The version of `lib-b` in the tree. It will be `2.0.0`, and you may see warnings about eviction.
+
+**Conclusion:**
+`dependencyOverrides` is the strongest way to enforce a version in SBT.
 
 #### How This Scales in Real Systems
 In large Scala codebases, dependencyOverrides sections can grow to dozens of lines as teams force compatible versions across an ecosystem that doesn't always agree. This is especially acute with Scala libraries that are published for specific Scala binary versions (2.12 vs 2.13 vs 3.x). The override section becomes a critical piece of infrastructure that requires careful management. Consider documenting why each override exists.

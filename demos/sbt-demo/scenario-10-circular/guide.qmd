@@ -30,9 +30,18 @@ The classpath contains `lib-circle-a-1.0.0.jar` and `lib-circle-b-1.0.0.jar`.
 #### Why This Happens
 Circular dependencies between *external* libraries (JARs) are technically allowed by the JVM (classes can refer to each other across JAR boundaries). Build tools tolerate them to support legacy libraries that were split poorly. However, circular dependencies between *internal* modules (sub-projects) in a multi-module build are strictly forbidden and will cause a build error.
 
-#### Signals to Watch For
-*   **StackOverflowError:** In rare cases, tools that process the dependency graph might crash if they don't handle cycles correctly.
-*   **Initialization Deadlocks:** If static initializers in A depend on B, and vice versa, you might get a deadlock at runtime.
+#### Deterministic Checks
+
+**Fast check (SBT):**
+```bash
+sbt dependencyTree
+```
+
+**What to look for:**
+The tree will show the circular relationship, and SBT may print a warning.
+
+**Conclusion:**
+SBT can resolve circular dependencies between external libraries, but it's a practice to avoid.
 
 #### How This Scales in Real Systems
 Circular dependencies are a design smell. They make the system harder to understand and maintain. In the Scala ecosystem, they sometimes arise when library authors split a project into `api` and `impl` modules but accidentally create cross-dependencies. The fix is usually to extract shared types into a third, independent module.

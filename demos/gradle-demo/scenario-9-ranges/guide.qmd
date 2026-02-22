@@ -1,6 +1,10 @@
 # Version Ranges
 *or what to Do When Gradle Chooses a Version You Didn’t Intend*
 
+::: {.badge .most-common}
+Most Common in Production
+:::
+
 This scenario demonstrates Gradle's support for version ranges.
 
 #### Dependency Graph
@@ -30,11 +34,32 @@ Gradle supports both Maven-style ranges like `[1.0.0, 2.0.0)` and its own dynami
 #### How This Scales in Real Systems
 Dynamic versions and ranges are the primary cause of "it worked yesterday" failures. If a new version of a library is published to Maven Central between your local build and your CI build, the two builds may resolve different versions. This is why Gradle provides built-in dependency locking (Scenario 11) --- it's specifically designed to tame dynamic versions. In Java/JVM ecosystems, ranges are less common than in npm/pip, precisely because the JVM community has historically valued build reproducibility. Most teams either ban dynamic versions entirely or pair them with strict locking.
 
+#### Operational Risk
+
+*   **Low risk:** Using version ranges for `testImplementation` dependencies. This allows you to test against the latest versions of your testing libraries without affecting your production code.
+*   **Medium risk:** Using version ranges for internal libraries that are under your control and follow strict semantic versioning.
+*   **High risk:** Using version ranges for external, third-party libraries. This can lead to non-reproducible builds and unexpected breakages. It is highly recommended to use a dependency locking mechanism if you do this.
+
 #### Signals to Watch For
-Build failures or test regressions that appear without any code changes. Differences between local and CI builds. Use `./gradlew dependencyInsight --dependency lib-a` to see which version was actually resolved and why. If you must use dynamic versions, always enable dependency locking.
+#### Deterministic Checks
+
+**Fast check (Gradle):**
+```bash
+./gradlew dependencyInsight --dependency lib-a
+```
+
+**What to look for:**
+The resolved version of `lib-a` and the reason. It will show which version was selected from the range.
+
+**Conclusion:**
+Version ranges make builds non-deterministic. Use them with a locking mechanism.
 
 #### Key Takeaway
 Ranges work but are dynamic.
 
 #### Related Scenarios
 *   [Scenario 11: Locking](../scenario-11-locking/guide.md)
+
+#### Seen in the Wild
+
+A team was using a dynamic version (`1.+`) for a popular utility library. A new version was released that had a performance regression, and their application's latency spiked. The team was able to fix the problem by adding a `strictly` constraint to their build to force the older, faster version. They also added dependency locking to prevent similar problems in the future.

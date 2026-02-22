@@ -1,6 +1,10 @@
 # Hardcoded Version vs Platform
 *or what to Do When a Single Declaration Escapes the Platform*
 
+::: {.badge .most-common}
+Most Common in Production
+:::
+
 This scenario demonstrates how an explicit version declaration overrides a `platform()` recommendation.
 
 #### Dependency Graph
@@ -36,9 +40,18 @@ In Gradle, a `platform()` dependency adds version constraints to the graph, but 
 #### Safer Ways to Take Control
 *   **Check for Overrides:** Be mindful of where you are declaring versions. If you are using a BOM, try to avoid declaring versions for managed dependencies unless you intentionally want to override them.
 
-#### Signals to Watch For
-*   **Inconsistent Versions:** If you see different versions of libraries that should be managed by the same BOM, check for hardcoded version overrides in your build files.
-*   **Dependency Insight:** Use `./gradlew dependencyInsight --dependency lib-a` to see exactly why a specific version was chosen. It will show you if a version was selected due to a direct declaration or a platform constraint.
+#### Deterministic Checks
+
+**Fast check (Gradle):**
+```bash
+./gradlew dependencyInsight --dependency lib-a
+```
+
+**What to look for:**
+The reason for the version selection. It will show `2.0.0` was selected due to a direct declaration.
+
+**Conclusion:**
+An explicit version declaration is a stronger signal than a `platform()` recommendation.
 
 #### How This Scales in Real Systems
 Allowing local overrides of global defaults is a powerful feature. It lets teams use a standard platform (like Spring Boot) but still upgrade or downgrade individual libraries as needed for bug fixes or compatibility. However, it requires discipline to avoid "drift" where many libraries are manually versioned instead of being managed by the platform.
@@ -48,3 +61,7 @@ Explicit versions override standard platforms. Use `enforcedPlatform` if you wan
 
 #### Related Scenarios
 *   [Scenario 3: Mgmt](../scenario-3-mgmt/guide.qmd) - How platforms work.
+
+#### Seen in the Wild
+
+A team was using a platform to manage their dependencies. They wanted to try out a new feature in a library that was not yet available in the platform. They were able to override the version of the library in their build file, which allowed them to test the new feature without waiting for the platform to be updated.

@@ -1,6 +1,10 @@
 # Hardcoded Version vs Dependency Management
 *or what to Do When One Hardcoded Version Overrides Everything Else*
 
+::: {.badge .most-common}
+Most Common in Production
+:::
+
 This scenario shows what happens when you have a conflict between a version defined in a BOM (Dependency Management) and a version explicitly declared in your dependencies.
 
 #### Dependency Graph
@@ -38,8 +42,18 @@ They might try to change the BOM version, which affects everything. Or they use 
 #### Safer Ways to Take Control
 Be careful when overriding BOMs. You might break compatibility with other libraries managed by that BOM. If you must override, ensure you test thoroughly.
 
-#### Signals to Watch For
-*   Runtime errors if the overridden library is incompatible with other BOM-managed libraries.
+#### Deterministic Checks
+
+**Fast check (Maven):**
+```bash
+mvn dependency:tree
+```
+
+**What to look for:**
+The version of `lib-a` in the tree. It will be `2.0.0`, not the `1.0.0` from the BOM.
+
+**Conclusion:**
+A hardcoded version in the `<dependencies>` block always wins over a version in `<dependencyManagement>`.
 
 #### How This Scales in Real Systems
 Overriding BOMs is common when patching a vulnerability before the BOM maintainers release an update.
@@ -49,3 +63,7 @@ Explicit declarations generally trump managed recommendations, allowing for targ
 
 #### Related Scenarios
 *   [Scenario 6: Forcing Transitive Versions via Dependency Management](../scenario-6-forcing/guide.qmd) - How to force a version even against explicit declarations.
+
+#### Seen in the Wild
+
+A team was using the Spring Boot BOM to manage their dependencies. A security vulnerability was found in a library that was managed by the BOM. The Spring Boot team had not yet released a new version of the BOM with the patched library. The team was able to override the version of the vulnerable library in their own POM, allowing them to patch the vulnerability without waiting for the Spring Boot team.

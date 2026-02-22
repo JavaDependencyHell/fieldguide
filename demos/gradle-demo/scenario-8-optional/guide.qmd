@@ -30,8 +30,19 @@ Gradle doesn't have a direct equivalent of Maven's `<optional>true</optional>` f
 #### How This Scales in Real Systems
 Feature Variants let a library declare separate "features" (e.g., a database driver integration, a metrics integration) that consumers can opt into explicitly. This is significantly more powerful than Maven's binary optional flag because consumers can see what optional features are available and declare which ones they need. Large frameworks like Spring use this pattern --- the `spring-boot-starter-data-jpa` starter is essentially a feature variant that pulls in JPA-related dependencies. For library authors, Feature Variants with capabilities are the recommended modern approach.
 
-#### Signals to Watch For
-`ClassNotFoundException` when using an optional feature of a library you depend on. This is expected behaviour --- you need to explicitly declare the optional dependency yourself. Check the library's documentation for its optional/feature dependencies.
+#### Deterministic Checks
+
+**Fast check (Gradle):**
+When project `B` depends on project `A` (which has a `compileOnly` dependency on `lib-a`), run this in project `B`:
+```bash
+./gradlew dependencies
+```
+
+**What to look for:**
+`lib-a` will be absent from the dependency tree of project `B`.
+
+**Conclusion:**
+`compileOnly` dependencies are not transitive and are one way to model optional dependencies in Gradle.
 
 #### Key Takeaway
 `compileOnly` simulates optionality.
