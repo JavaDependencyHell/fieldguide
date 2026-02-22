@@ -1,197 +1,282 @@
-Purpose: Apply precision refinements to elevate the book from “strong and practical” to “quietly authoritative field manual.”
-Audience: Experienced JVM engineers (Maven, Gradle, SBT).
-Constraint: Preserve structure and voice; perform surgical improvements only. Do not expand scope.
+Purpose: Ensure every “Seen in the Wild” example is defensible, realistic, and source-aligned.
 
-PRIORITY 1 — Balance Deterministic Checks Across Tools
+Do NOT remove the section globally. Only adjust where specified.
 
-Objective
-Ensure the book is credibly tool-agnostic in diagnostics, not just in prose.
+PRIORITY A — KEEP (already defensible with known evidence)
 
-Scope
-Review all scenarios marked “Most Common in Production” first, then the remainder.
+These are realistic patterns widely documented in industry.
+They only need minor wording polish (optional).
 
-Required action
-For each Deterministic Checks section:
+A1. Scenario 2 — Commons Collections override
+Status: KEEP
+Confidence: HIGH
 
-If Maven-only → add equivalent Gradle command
+Text currently describes a financial firm forcing a patched Commons Collections version.
 
-If Maven-first → add Gradle alongside, not buried
+Dependency-Hell
 
-Add SBT where it is straightforward and meaningful
+Why safe:
 
-Do NOT force symmetry where it becomes artificial
+Matches real post-2015 behaviour
 
-Command guidance
-Prefer standard, widely recognised commands such as:
+Strong public precedent
 
-mvn dependency:tree
+Aligns with FoxGlove + CVE history
 
-./gradlew dependencyInsight
+Optional polish (recommended but not required):
 
-./gradlew dependencies
+Change opening to slightly more neutral:
 
-sbt dependencyTree (or equivalent)
+REWRITE TO:
 
-Style rules
+“A number of financial institutions discovered vulnerable versions of Apache Commons Collections deep in their transitive graphs…”
 
-Keep concise
+This removes the implied single-company claim.
 
-Maintain existing structure
+A2. Scenario 4 — Spring Boot BOM override for vulnerability
+Status: KEEP
+Confidence: HIGH
 
-Do not add long explanations
+Current pattern appears multiple times.
 
-Avoid tool evangelism tone
+Why safe:
 
-Definition of done
-In high-frequency scenarios, a Gradle user can diagnose their issue without mentally translating from Maven.
+Extremely common real-world practice
 
-PRIORITY 2 — Sharpen 2–3 “Seen in the Wild” Entries
+Strong vendor documentation exists
 
-Objective
-Increase authenticity and field credibility.
+Matches Log4Shell-era behaviour
 
-Selection criteria
-Choose the weakest current anecdotes (typically the ones that feel overly tidy or generic).
+Minor tightening recommended:
 
-Rewrite guidance
+Change:
 
-Keep length: 2–3 sentences
+“A team using the Spring Boot BOM hit a critical vulnerability…”
 
-Add realistic friction or ambiguity
+TO:
 
-Avoid perfectly clean resolutions
+“Many teams using the Spring Boot BOM encountered cases where a patched library version was required before an updated BOM was available…”
 
-Maintain enterprise plausibility
+This removes anecdotal singularity and strengthens credibility.
 
-Do NOT add humour or theatrics
+A3. Scenario 7 — provided scope missing at runtime
+Status: KEEP
+Confidence: HIGH
 
-Tone target
-Should read like something an experienced build engineer mutters after a long week.
+Current text: IDE works, production fails with NoClassDefFoundError.
 
-Anti-patterns to remove
+Dependency-Hell
 
-overly neat cause/effect
+Why safe:
 
-generic “a team fixed it” phrasing
+This is one of the most common real failures in Java EE/Spring deployments.
 
-textbook-style morality endings
+Optional polish:
 
-Definition of done
-At least three anecdotes feel unmistakably “lived experience.”
+Change:
 
-PRIORITY 3 — Tighten High-Impact Contrast Moments
+“A developer’s web application…”
 
-Objective
-Increase clarity where Maven vs Gradle/SBT behaviour materially diverges.
+TO:
 
-Focus scenarios (minimum)
+“A common production failure occurs when…”
 
-Scenario 2 — Version Conflict
+This makes it pattern-based instead of story-based.
 
-Scenario 7 — Scopes
+A4. Scenario 9 — CI vs local cache version range failure
+Status: KEEP
+Confidence: HIGH
 
-Scenario 9 — Version Ranges
+You have multiple variants of this story.
 
-Scenario 13 — Feature Variants
+Why safe:
 
-Required action
-In each, add one short emphasis sentence that explicitly states the practical consequence of the difference.
+Well documented in Maven/Gradle ecosystems
 
-Example pattern (not to copy verbatim)
+Matches official guidance
 
-“This is why the same dependency graph can behave differently across tools.”
+Very credible
 
-Constraints
+Action:
 
-Maximum one added sentence per scenario
+Keep ONE strong version.
+Remove duplicates (see Priority C).
 
-Do not expand sections
+A5. Spark uber-jar shrink via Provided
+Status: KEEP
+Confidence: HIGH
 
-Do not repeat the same wording everywhere
+Text about 300MB → 12MB after switching to Provided.
 
-Maintain formal tone
+Dependency-Hell
 
-Definition of done
-A reader immediately understands why the difference matters operationally.
+Why safe:
 
-PRIORITY 4 — Reduce Mild Hedging Language
+Very realistic Spark/SBT pattern.
 
-Objective
-Increase authority and precision of voice.
+Minor polish:
 
-Scope
-Global search for softening phrases such as:
+Change numeric specificity slightly to avoid “made up” smell:
 
-“developers often assume”
+Replace:
 
-“might expect” (when overused)
+“300MB … 12MB”
 
-“can sometimes”
+WITH:
 
-“in many cases” (when unnecessary)
+“hundreds of megabytes … tens of megabytes”
 
-Rewrite guidance
+This improves defensibility.
 
-Prefer direct, confident phrasing
+PRIORITY B — KEEP BUT REWRITE (currently too anecdotal)
 
-Preserve accuracy
+These are believable but read like invented stories.
+Rewrite to pattern-based language.
 
-Do NOT introduce absolutist claims that could be technically false
+B1. Scenario 5 — GPL exclusion compliance story
+Status: REWRITE
+Risk: MEDIUM
 
-Keep your established calm, expert tone
+Current wording implies a specific team workaround.
 
-Important
-This is polish, not personality change. Avoid becoming aggressive or conversationally informal.
+Problem:
 
-Definition of done
-Prose reads consistently confident without sounding overstated.
+Sounds plausible
 
-PRIORITY 5 — Micro-Optimize the Triage Page for Scan Speed
+but reads fictional
 
-Objective
-Reduce cognitive friction under time pressure.
+lacks anchor to known industry pattern
 
-Target section
-Rapid Dependency Failure Triage.
+Required rewrite:
 
-Required improvements
+REPLACE ENTIRE “Seen in the Wild” with:
 
-Shorten any multi-line bullets that can be one line
+“License compliance scans frequently uncover GPL-licensed libraries pulled in transitively. A common enterprise response is to exclude the offending dependency and substitute a permissively licensed alternative, verifying at runtime that the upstream library still functions.”
 
-Ensure each symptom starts with a strong noun phrase
+Why this works:
 
-Remove redundant connective wording
+Matches real compliance practice
 
-Keep mappings visually tight
+removes unverifiable narrative
 
-Do NOT
+keeps lesson intact
 
-Change structure
+B2. Scenario 5 (Gradle/mobile APK size trimming)
+Status: REWRITE
+Risk: MEDIUM
 
-Add new branches
+Current claim about trimming 4MB from APK.
 
-Add narrative text
+Dependency-Hell
 
-Definition of done
-A stressed engineer can scan the page in under ~10 seconds and find their likely path.
+Problem:
 
-PRIORITY 6 — Consistency and Authority Sweep
+very specific
 
-Objective
-Ensure the book reads as a single, deliberate system.
+unverifiable
 
-Checklist
+smells illustrative rather than observed
 
-All “Most Common in Production” badges styled consistently
+Required rewrite:
 
-All Deterministic Checks use the same internal structure
+REPLACE with:
 
-Operational Risk boxes use consistent risk ordering
+“Mobile teams frequently use exclusions to remove large transitive libraries (such as legacy analytics or duplicate support libraries) in order to reduce final APK size.”
 
-Scenario titles follow identical grammatical pattern
+Keep it pattern-based.
 
-Cross-references still accurate after edits
+B3. Scenario 5 (Scala JSON binary version war)
+Status: REWRITE
+Risk: LOW–MEDIUM
 
-No accidental tone drift between early and later chapters
+Current wording is plausible but slightly story-like.
 
-Do not add new content during this pass.
+Dependency-Hell
+
+Required rewrite:
+
+“A recurring issue in Scala ecosystems occurs when libraries depend on different Scala binary versions (for example, 2.12 vs 2.13). Teams often resolve this by excluding the unwanted variant and adding a direct dependency on the aligned version.”
+
+PRIORITY C — CONSOLIDATE (you currently have duplicates)
+
+You have too many version-range war stories.
+
+This creates risk.
+
+C1. Scenario 9 duplicate range failures
+Status: CONSOLIDATE
+Risk: MEDIUM (credibility dilution)
+
+You currently have multiple near-identical stories about:
+
+CI vs local mismatch
+
+AbstractMethodError at 3 AM
+
+range pulling bad version
+
+Examples appear in several places.
+
+Action:
+
+Keep ONE strongest version.
+
+DELETE the weaker duplicates.
+
+Preferred canonical version (recommended wording):
+
+“A well-known failure mode with version ranges occurs when CI resolves a newly published dependency that developer machines have not yet seen due to local caching. The result is a build that suddenly fails without any source changes.”
+
+This is clean and defensible.
+
+PRIORITY D — MINOR TONE HARDENING
+
+Apply globally.
+
+D1. Replace single-team anecdotes with pattern language
+
+Search for openings like:
+
+“A team was…”
+
+“A company…”
+
+“A developer…”
+
+Where not backed by famous incidents, convert to:
+
+“Teams often…”
+
+“A common production pattern…”
+
+“Many organisations…”
+
+Goal:
+
+Shift from anecdote → observed industry pattern.
+
+D2. Remove unnecessary drama markers
+
+Specifically tone down:
+
+“3 AM pager alerts” (keep at most once)
+
+overly precise numbers
+
+emotionally loaded phrasing
+
+You want calm field-manual authority.
+
+FINAL QUALITY GATE
+
+After edits:
+
+Every “Seen in the Wild” must satisfy:
+
+plausibly observable in real enterprises
+
+not dependent on a specific unnamed company
+
+aligned with documented ecosystem behaviour
+
+readable as pattern evidence, not storytelling

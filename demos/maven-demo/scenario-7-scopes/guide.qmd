@@ -21,49 +21,38 @@ graph LR
 ```{.xml include="/demos/maven-demo/scenario-7-scopes/pom.xml" snippet="s7-deps"}
 ```
 
-#### Expected Intuition
-*   `lib-a`: I need it everywhere.
-*   `lib-b`: I need it to compile, but the server provides it (e.g., Servlet API).
-*   `lib-c`: I only need it for unit tests (e.g., JUnit).
+#### Reader Expectation
+Transitive dependencies follow the parent's intent: `lib-a` is required everywhere, `lib-b` is provided by the server, and `lib-c` is only for unit tests.
 
 #### Actual Resolution Results
-* All tools respect these concepts.
-    *   `lib-a`: Transitive to consumers.
-    *   `lib-b`: Not transitive. Not in the runtime classpath or the packaged artifact.
-    *   `lib-c`: Not transitive. Only in test classpath.
-
-#### Classpath Reality
-*   **Compile Classpath**: A, B
-*   **Runtime Classpath**: A
-*   **Test Classpath**: A, B, C
+*   `lib-a`: Transitive to consumers.
+*   `lib-b`: Not transitive; omitted from runtime/package.
+*   `lib-c`: Not transitive; test classpath only.
 
 #### Why This Happens
-Scopes allow you to trim the fat from your distribution.
+Scopes trim the fat from distribution. This is why the same graph behaves differently across tools.
 
-#### How Developers Commonly "Fix" This
-Using the wrong scope leads to `ClassNotFoundException` (if `provided` was used wrongly) or bloated JARs (if `test` dependencies leak into production).
+#### Classpath Reality
+*   **Compile**: A, B
+*   **Runtime**: A
+*   **Test**: A, B, C
 
 #### Operational Risk
-
-*   **Low risk:** Using `test` scope for test-only libraries like JUnit. This is the intended use.
-*   **Medium risk:** Using `provided` scope. This is a common and necessary practice, but it introduces the risk that the runtime environment will not provide the dependency, or will provide an incompatible version.
-*   **High risk:** Using `compile` scope for a dependency that is only needed at runtime. This can bloat the compile classpath and slow down builds. It can also lead to including unnecessary dependencies in the final application.
+*   **Low risk:** Use `test` scope for test-only libraries like JUnit.
+*   **Medium risk:** Use `provided` scope; ensure the runtime environment actually supplies it.
+*   **High risk:** Use `compile` for runtime-only libraries; this bloats classpaths and distributions.
 
 #### Safer Ways to Take Control
 Review scopes carefully. `provided` is dangerous if the runtime environment *doesn't* actually provide it.
 
 #### Deterministic Checks
+**Fast check (Maven):** `mvn dependency:tree -Dscope=runtime`
+**Fast check (Gradle):** `./gradlew dependencies --configuration runtimeClasspath`
+**Fast check (SBT):** `sbt 'show runtime:dependencyClasspath'`
 
-**Fast check (Maven):**
-```bash
-mvn dependency:tree -Dscope=runtime
-```
+**What to look for:** Tree or classpath output showing only `compile` and `runtime` scope dependencies.
 
-**What to look for:**
-The tree will only show dependencies with `compile` and `runtime` scope. `provided` and `test` dependencies will be absent.
-
-**Conclusion:**
-Scopes are a powerful way to control what is included in your final application.
+**Conclusion:** Scopes control visibility and transitivity; use them to keep your runtime clean.
 
 #### How This Scales in Real Systems
 Correct scoping is essential for keeping artifact sizes down and avoiding conflicts (e.g., conflicting versions of `servlet-api`).
@@ -76,4 +65,4 @@ Scopes control the visibility and transitivity of dependencies; use them to keep
 
 #### Seen in the Wild
 
-A developer was working on a web application and added a new dependency with `compile` scope. The application worked fine in their IDE, but when they deployed it to a server, it failed with a `NoClassDefFoundError`. The problem was that the new dependency was only needed at runtime, and the `compile` scope was causing it to be excluded from the final WAR file. Changing the scope to `runtime` fixed the problem.
+A developer's web application worked fine in their IDE but failed in production with a `NoClassDefFoundError`. They'd used `provided` for a library they thought the application server would supply. It didn't. They wasted four hours debugging the server's shared library path before realizing a single word change in the `pom.xml` to `compile` (the default) would have bundled the missing JAR.

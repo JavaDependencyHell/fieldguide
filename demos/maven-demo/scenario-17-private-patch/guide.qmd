@@ -25,15 +25,11 @@ The `pom.xml` adds the private repository and then directly declares a dependenc
 ```
 
 
-#### Expected Intuition
-"I know the exact patched version I need from my vendor. I will add their repository and ask for that version directly."
+#### Reader Expectation
+Explicitly declaring a patched version from a private repository ensures that specific artifact is chosen over any public release.
 
-#### Actual Resolution Results
-Resolves `org.springframework.boot:spring-boot-starter:2.5.14.ACME`.
-    *   *Reason*: The project explicitly adds the private repository, making `2.5.14.ACME` available. The direct declaration of this version in the `<dependencies>` block is the most powerful directive, so it is selected.
-
-#### Classpath Reality
-The classpath contains `spring-boot-starter-2.5.14.ACME.jar`.
+#### Why This Happens
+A direct version declaration in `<dependencies>` is Maven's strongest versioning directive. When combined with a private repository that makes the artifact available, it overrides all other mechanisms like BOMs or transitive versioning.
 
 #### Key Takeaway
 A direct version declaration for a dependency is the most straightforward way to ensure a specific version is used, provided that version is available in one of the configured repositories. This method overrides all other mechanisms like BOMs or transitive versions.

@@ -27,15 +27,11 @@ The `build.sbt` file first adds the private repository to the list of `resolvers
 ```{.scala include="/demos/sbt-demo/scenario-16-private-bom/build.sbt" snippet="repo-and-deps"}
 ```
 
-#### Expected Intuition
-"I want to use Spring Boot, but I need the version that my vendor supports. By adding their repository and importing their BOM, my build should automatically pick up the patched versions they provide."
+#### Reader Expectation
+A private repository and an imported BOM enable the build to automatically select vendor-patched versions over public EOL releases.
 
-#### Actual Resolution Results
-Resolves `org.springframework.boot:spring-boot-starter:2.5.14.ACME`.
-    *   *Reason*: The project explicitly adds the private repository as a resolver, making its artifacts available. The imported `mavenBomImport` constrains the versions of dependencies in the graph, and it dictates that `spring-boot-starter` should be version `2.5.14.ACME`.
-
-#### Classpath Reality
-The classpath contains `spring-boot-starter-2.5.14.ACME.jar`, not the public EOL version.
+#### Why This Happens
+SBT resolves custom artifacts via private `resolvers`, while a BOM plugin (e.g., `sbt-bom`) enforces the specific patched version. This combination is why the same graph behaves differently across tools without centralized management.
 
 #### Key Takeaway
 Adding a repository makes its artifacts *available*, but it is the combination of the repository and a version control mechanism (like an imported BOM) that allows you to safely override public dependencies with private, patched versions.

@@ -21,45 +21,32 @@ graph LR
 ```{.scala include="/demos/sbt-demo/scenario-2-conflict/build.sbt" snippet="s2-deps"}
 ```
 
-#### Expected Intuition
-Maven users might expect `1.0.0` because it is declared directly in the project (nearest definition). SBT users, however, should expect `2.0.0` because SBT (via Ivy/Coursier) defaults to picking the newest version found in the graph.
+#### Reader Expectation
+SBT users expect `2.0.0` (latest), whereas Maven users expect `1.0.0` (nearest).
 
 #### Actual Resolution Results
-Resolves `lib-b:2.0.0`.
-    *   *Reason*: SBT sees two versions of `lib-b`: `1.0.0` (direct) and `2.0.0` (transitive via `lib-a`). Its default conflict manager is `latest-revision`, which selects the highest version number.
-
-#### Classpath Reality
-The classpath contains `lib-b-2.0.0.jar`. The `1.0.0` version is **evicted**.
+Resolves `lib-b:2.0.0` (via `latest-revision` conflict manager).
 
 #### Why This Happens
-SBT's underlying dependency engine (historically Ivy) uses a conflict manager to decide which version to keep when multiple versions of the same module are present. The default strategy is `latest-revision`, which assumes that newer versions are backward compatible. This is similar to Gradle's default behavior but opposite to Maven's "nearest definition wins".
+SBT (using Ivy/Coursier) employs the `latest-revision` conflict manager by default. It assumes newer versions are backward-compatible and prioritizes freshness over distance.
 
 #### How Developers Commonly "Fix" This
 *   **Explicitly upgrading:** Change the direct dependency to `2.0.0` to match the transitive one.
 *   **Forcing a version:** Using `dependencyOverrides` to force `1.0.0` if `2.0.0` is broken (see Scenario 6).
 
 #### Operational Risk
-
-*   **Low risk:** Using `dependencyOverrides` to pin a version. This is the safest, most explicit way to resolve a conflict.
-*   **Medium risk:** Explicitly upgrading the direct dependency to match the transitive one. This is safe, but can be tedious.
-*   **High risk:** Relying on the default "latest-revision" strategy without paying attention to eviction warnings. This can lead to unexpected upgrades and breakages.
-
-#### Safer Ways to Take Control
-*   **Check Eviction Warnings:** SBT prints eviction warnings when a direct dependency is overridden by a transitive one. Pay attention to these.
-*   **Use `dependencyOverrides`:** If you absolutely need a specific version, use `dependencyOverrides` to lock it down.
+*   **Low risk:** Use `dependencyOverrides` to pin a version.
+*   **Medium risk:** Explicitly upgrade the direct dependency to match the transitive one.
+*   **High risk:** Rely on default "latest-revision" without reviewing eviction warnings; this can cause runtime `NoSuchMethodError` if libraries break compatibility.
 
 #### Deterministic Checks
+**Fast check (SBT):** `sbt dependencyTree`
+**Fast check (Maven):** `mvn dependency:tree -Dverbose`
+**Fast check (Gradle):** `./gradlew dependencyInsight --dependency <id>`
 
-**Fast check (SBT):**
-```bash
-sbt evicted
-```
+**What to look for:** Evicted nodes (SBT), `omitted for conflict` (Maven), or `(by conflict resolution)` (Gradle).
 
-**What to look for:**
-A report showing which modules have been evicted. If `lib-b` is listed, it means a different version was chosen.
-
-**Conclusion:**
-SBT has selected the newest version of `lib-b` found in the graph.
+**Conclusion:** SBT selects the newest version found in the graph.
 
 #### How This Scales in Real Systems
 "Latest wins" is generally safer for semantic versioning because it ensures bug fixes and security patches (which are usually in newer versions) are included. However, it relies on library authors strictly adhering to semantic versioning. If a library breaks compatibility in a minor release, "latest wins" can break your build.
@@ -72,4 +59,4 @@ SBT defaults to the latest version found in the graph, regardless of depth.
 
 #### Seen in the Wild
 
-A data engineering team was using a library that depended on an older version of the AWS SDK. A new team member added a new library that depended on a newer version of the SDK. SBT's "latest-wins" strategy picked the newer SDK, but the older library was not compatible with it, causing a `NoSuchMethodError` at runtime. The team used `dependencyOverrides` to force the older, compatible version of the SDK.
+A data engineering team found themselves in a `NoSuchMethodError` nightmare when a new library pulled in a newer AWS SDK. SBT's "latest-wins" strategy evicted the SDK version their core storage layer actually needed. Since it was a runtime failure, it didn't surface until the first heavy batch job of the week. They now use `dependencyOverrides` to pin critical SDKs, preferring build-time friction over production-time crashes.

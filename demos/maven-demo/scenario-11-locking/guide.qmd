@@ -12,21 +12,11 @@ This scenario demonstrates how Maven approaches (or rather, does not approach) d
 ```{.xml include="/demos/maven-demo/scenario-11-locking/pom.xml" snippet="s11-deps"}
 ```
 
-### Expected Intuition
+#### Reader Expectation
+Resolve the same dependency versions across different builds and environments.
 
-"I want reproducible builds. If I build today and build tomorrow, I should get the same result."
-
-### Actual Resolution Results
-
-Maven resolves the highest available version within the range at build time. If 1.5.0 existed yesterday and 1.6.0 is published today, you get a different build without changing a single line of your POM.
-
-### Classpath Reality
-
-The classpath contains whichever version was the highest match at the time of resolution. This can differ between your local machine and CI, or between builds run minutes apart.
-
-### Why This Happens
-
-Maven was designed around the principle of explicit, fixed version declarations. When you write `<version>1.0.0</version>`, that version is deterministic. The need for locking only arises when version ranges (Scenario 9) or SNAPSHOT dependencies are used. Maven's designers expected teams to avoid ranges in production builds, so a locking mechanism was never added to the core tool.
+#### Why This Happens
+Maven assumes explicit, fixed version declarations. Locking only becomes necessary when using version ranges (Scenario 9) or SNAPSHOTs, which the core tool does not natively address. This philosophy is why the same graph behaves differently across tools.
 
 In practice, however, transitive dependencies may use ranges, and SNAPSHOT versions are common during development. This creates a reproducibility gap that Maven itself does not address.
 
@@ -43,18 +33,14 @@ In practice, however, transitive dependencies may use ranges, and SNAPSHOT versi
 - If you must use ranges, use the Versions Maven Plugin to resolve and freeze them before release.
 - Consider a lockfile plugin for CI/CD pipelines where reproducibility is critical.
 
-### Deterministic Checks
+#### Deterministic Checks
+**Fast check (Maven):** `mvn dependency:tree`
+**Fast check (Gradle):** `./gradlew dependencies --lock-state`
+**Fast check (SBT):** `sbt dependencyTree`
 
-**Fast check (Maven):**
-```bash
-mvn dependency:tree
-```
+**What to look for:** Compare tree output across different machines or times when using ranges. Discrepancies indicate your build is not reproducible.
 
-**What to look for:**
-Run this command on two different machines or at different times when using version ranges. If the output differs, your build is not reproducible.
-
-**Conclusion:**
-Maven does not have a built-in locking mechanism. To ensure reproducible builds, avoid version ranges and use `<dependencyManagement>` or a third-party locking plugin.
+**Conclusion:** Maven lacks built-in locking; to ensure reproducibility, use fixed versions, `<dependencyManagement>`, or third-party plugins.
 
 ### How This Scales in Real Systems
 

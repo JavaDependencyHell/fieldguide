@@ -23,18 +23,11 @@ graph LR
 ```{.xml include="/demos/maven-demo/scenario-4-override/pom.xml" snippet="s4-deps"}
 ```
 
-#### Expected Intuition
-Developers often assume that "explicit wins". If I type `2.0.0` right next to the dependency, I expect `2.0.0`, even if the BOM says `1.0.0`.
-
-#### Actual Resolution Results
-Resolves `lib-a:2.0.0`. Explicit declaration in `<dependencies>` overrides `<dependencyManagement>`.
-
-#### Classpath Reality
-`lib-a-2.0.0.jar` is on the classpath. `lib-b-1.0.0.jar` is on the classpath (from BOM).
+#### Reader Expectation
+Explicitly declared versions win over managed suggestions.
 
 #### Why This Happens
-The `<dependencies>` section is the final authority for the current project. Management is just a suggestion/default.
-*   **Gradle**: The BOM is treated as a constraint or recommendation. An explicit version is a stronger signal (or simply a newer version).
+The `<dependencies>` section is the final authority for the project; `<dependencyManagement>` acts only as a default. This priority is why the same graph behaves differently across tools.
 
 #### How Developers Commonly "Fix" This
 They might try to change the BOM version, which affects everything. Or they use exclusions.
@@ -43,17 +36,13 @@ They might try to change the BOM version, which affects everything. Or they use 
 Be careful when overriding BOMs. You might break compatibility with other libraries managed by that BOM. If you must override, ensure you test thoroughly.
 
 #### Deterministic Checks
+**Fast check (Maven):** `mvn dependency:tree`
+**Fast check (Gradle):** `./gradlew dependencyInsight --dependency <id>`
+**Fast check (SBT):** `sbt dependencyTree`
 
-**Fast check (Maven):**
-```bash
-mvn dependency:tree
-```
+**What to look for:** The explicitly declared version in the tree, rather than the BOM or platform recommendation.
 
-**What to look for:**
-The version of `lib-a` in the tree. It will be `2.0.0`, not the `1.0.0` from the BOM.
-
-**Conclusion:**
-A hardcoded version in the `<dependencies>` block always wins over a version in `<dependencyManagement>`.
+**Conclusion:** A hardcoded version in `<dependencies>` always overrides `<dependencyManagement>`.
 
 #### How This Scales in Real Systems
 Overriding BOMs is common when patching a vulnerability before the BOM maintainers release an update.
@@ -66,4 +55,4 @@ Explicit declarations generally trump managed recommendations, allowing for targ
 
 #### Seen in the Wild
 
-A team was using the Spring Boot BOM to manage their dependencies. A security vulnerability was found in a library that was managed by the BOM. The Spring Boot team had not yet released a new version of the BOM with the patched library. The team was able to override the version of the vulnerable library in their own POM, allowing them to patch the vulnerability without waiting for the Spring Boot team.
+A team using the Spring Boot BOM hit a critical vulnerability in a managed library before a new BOM was available. By declaring the patched version explicitly in their `<dependencies>` block, they overrode the BOM's "safe" suggestion. This allowed them to ship a fix in hours rather than waiting days for the platform maintainers to release a synchronized update.

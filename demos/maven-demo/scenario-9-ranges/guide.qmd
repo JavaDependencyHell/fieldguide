@@ -19,46 +19,31 @@ graph LR
 ```{.xml include="/demos/maven-demo/scenario-9-ranges/pom.xml" snippet="s9-deps"}
 ```
 
-#### Expected Intuition
-"Give me the latest version that is at least 1.0.0 but less than 2.0.0."
-
-#### Actual Resolution Results
-* All will query the repository metadata to find available versions and pick the highest one matching the criteria.
-*   In our demo repo, `1.0.0` and `2.0.0` exist. The range excludes `2.0.0`, so `1.0.0` is chosen.
-
-#### Classpath Reality
-`lib-a-1.0.0.jar`.
+#### Reader Expectation
+Resolve the latest version matching the range (e.g., at least 1.0.0 but less than 2.0.0).
 
 #### Why This Happens
-The build tool performs a "select" operation against the available versions in the repo.
+The build tool selects from repository metadata. This mechanism is why the same graph behaves differently across tools.
 
-#### What About Hard Version Ranges?
-A version declared as `[1.0.0]` (with brackets) is a hard requirement. Unlike a plain `1.0.0`, which Maven treats as a soft preference that can be overridden by the "nearest-wins" rule, a bracketed version will cause the build to fail if a different version is selected anywhere in the dependency graph. This is Maven’s mechanism for expressing ‘this exact version must be used, or the build breaks.’ It is the strictest way to declare a dependency version.
+#### Hard Version Ranges
+A bracketed version like `[1.0.0]` is a hard requirement. Unlike a soft preference, it causes build failure if any other version is selected in the graph. This is Maven’s strictest version enforcement.
 
 #### How Developers Commonly "Fix" This
 Ranges are controversial because they make builds non-deterministic (a new release of `lib-a` can change your build without you touching it). Many teams ban them.
 
 #### Operational Risk
-
-*   **Low risk:** Using version ranges for `test` scope dependencies. This allows you to test against the latest versions of your testing libraries without affecting your production code.
-*   **Medium risk:** Using version ranges for internal libraries that are under your control and follow strict semantic versioning.
-*   **High risk:** Using version ranges for external, third-party libraries. This can lead to non-reproducible builds and unexpected breakages. It is highly recommended to use a dependency locking mechanism if you do this.
-
-#### Safer Ways to Take Control
-Use Dependency Locking (Scenario 11) if you use ranges.
+*   **Low risk:** Use ranges for `test` dependencies; allows testing against the latest test libraries without affecting production.
+*   **Medium risk:** Use ranges for internal libraries under strict semver control.
+*   **High risk:** Use ranges for external libraries; this causes non-reproducible builds and "it worked yesterday" failures.
 
 #### Deterministic Checks
+**Fast check (Maven):** `mvn dependency:resolve`
+**Fast check (Gradle):** `./gradlew dependencyInsight --dependency <id>`
+**Fast check (SBT):** `sbt dependencyTree`
 
-**Fast check (Maven):**
-```bash
-mvn dependency:resolve
-```
+**What to look for:** Output showing which version resolved from the range.
 
-**What to look for:**
-The output will show which version of `lib-a` was resolved. This may change over time as new versions are published.
-
-**Conclusion:**
-Version ranges can lead to non-reproducible builds. Use them with caution.
+**Conclusion:** Ranges trade reproducibility for freshness; use with caution and locking.
 
 #### How This Scales in Real Systems
 Ranges are common in NPM/pip but less so in Java/Maven ecosystems due to the desire for reproducibility.
@@ -71,4 +56,4 @@ Ranges trade reproducibility for freshness; use with caution (and locking).
 
 #### Seen in the Wild
 
-A company had a build that suddenly started failing on their CI server. No code had been changed, and the build worked fine on developer machines. The problem was a transitive dependency that used a version range. A new version of the library had been published, and the CI server, which did not have a local Maven cache, picked it up. The new version was not compatible with the rest of the application, and the build failed.
+A company's build suddenly started failing on their CI server while remaining "green" on developer laptops. No code had changed. They eventually traced it to a transitive dependency using a version range. A buggy patch had been published to Maven Central an hour earlier; the CI server (with no local cache) grabbed it immediately, while developers were still shielded by their stale local `.m2` folders.

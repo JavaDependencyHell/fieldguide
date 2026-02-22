@@ -16,18 +16,11 @@ graph LR
 ```{.scala include="/demos/sbt-demo/scenario-3-mgmt/build.sbt" snippet="s3-deps"}
 ```
 
-#### Expected Intuition
-"I want to define the version of my libraries in one place so that all modules in my project use the same version."
-
-#### Actual Resolution Results
-Resolves `lib-a:1.0.0` and `lib-b:1.0.0`.
-    *   *Reason*: The variable `libVersion` is used in both dependency declarations, ensuring consistency.
-
-#### Classpath Reality
-The classpath contains `lib-a-1.0.0.jar` and `lib-b-1.0.0.jar`.
+#### Reader Expectation
+Versions defined in a central location (e.g., a variable or a `Dependencies` object) are applied consistently across all modules.
 
 #### Why This Happens
-SBT builds are Scala programs. You can use variables, functions, and other programming constructs to manage versions. This is more flexible than Maven's declarative XML but requires discipline.
+SBT builds are Scala programs, allowing you to use variables and functions for version management. This programmatic approach provides more flexibility than Maven's declarative XML, though it requires developer discipline to remain maintainable.
 
 #### How Developers Commonly "Fix" This
 *   **Variables:** Define versions in `val`s at the top of `build.sbt` or in a separate `Dependencies.scala` file in `project/`.

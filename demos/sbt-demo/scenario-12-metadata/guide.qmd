@@ -17,7 +17,7 @@ graph LR
 ```{.scala include="/demos/sbt-demo/scenario-12-metadata/build.sbt" snippet="s12-deps"}
 ```
 
-#### Expected Intuition
+#### Reader Expectation
 "The library author made a mistake in their POM. I should be able to patch it locally."
 
 #### Actual Resolution Results

@@ -17,18 +17,11 @@ graph LR
 ```{.scala include="/demos/sbt-demo/scenario-1-basic/build.sbt" snippet="s1-deps"}
 ```
 
-#### Expected Intuition
-"I declared `lib-a`. I expect `lib-a` to be on my classpath. If `lib-a` needs `lib-b`, I expect the build tool to handle that for me."
-
-#### Actual Resolution Results
-Resolves `lib-a:1.0.0`, `lib-b:1.0.0`, and `lib-c:1.0.0`.
-    *   *Reason*: SBT (via Ivy or Coursier) traverses the dependency graph. It sees that `lib-a` depends on `lib-b`, and `lib-b` depends on `lib-c`. Since there are no conflicts, it includes all of them.
-
-#### Classpath Reality
-The classpath contains `lib-a-1.0.0.jar`, `lib-b-1.0.0.jar`, and `lib-c-1.0.0.jar`.
+#### Reader Expectation
+Declaring `lib-a` automatically includes its transitive dependencies `lib-b` and `lib-c` on the classpath.
 
 #### Why This Happens
-SBT uses a dependency resolution engine (historically Ivy, now Coursier by default in newer versions) to resolve dependencies. The core principle is **transitivity**: if you depend on A, you also depend on everything A depends on. This saves you from manually declaring every single library your project needs.
+SBT (via Ivy or Coursier) uses transitivity to resolve the entire dependency tree from your direct declarations. This mechanism saves you from manually declaring every required library.
 
 #### How Developers Commonly "Fix" This
 There is nothing to fix here; this is the desired behavior. However, developers sometimes try to manually add transitive dependencies to `libraryDependencies` to "be sure" they are there. This is generally unnecessary unless you are using APIs from those transitive dependencies directly in your code.

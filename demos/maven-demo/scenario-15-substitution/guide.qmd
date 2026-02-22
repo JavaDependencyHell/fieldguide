@@ -9,21 +9,11 @@ This scenario demonstrates how to replace one dependency with another in Maven. 
 ```{.xml include="/demos/maven-demo/scenario-15-substitution/pom.xml" snippet="s15-deps"}
 ```
 
-### Expected Intuition
+#### Reader Expectation
+Substituting one library for another (e.g., swapping `log4j` for `slf4j`) replaces it throughout the entire dependency graph.
 
-"I want to replace log4j with SLF4J everywhere in my build. I don't want to hunt down every path that pulls in log4j and exclude it one by one."
-
-### Actual Resolution Results
-
-Maven resolves the dependency graph, applies the exclusion to the specified dependency, and adds the replacement. However, the exclusion only applies to the single `<dependency>` declaration where it is specified. If another dependency also pulls in log4j transitively, it will still appear on the classpath unless you add exclusions there too.
-
-### Classpath Reality
-
-The classpath contains `log4j-over-slf4j-1.7.36.jar` instead of `log4j.jar`—but only if all transitive paths to log4j have been excluded. Missing even one path means both JARs end up on the classpath, which can cause unpredictable behaviour.
-
-### Why This Happens
-
-Maven's exclusion mechanism is declaration-scoped, not graph-scoped. An exclusion on one `<dependency>` element only affects the transitive tree under that specific dependency. There is no way to say "exclude `log4j:log4j` from the entire graph." This is fundamentally different from Gradle's `dependencySubstitution`, which intercepts resolution globally and swaps the dependency wherever it appears.
+#### Why This Happens
+Maven lacks a graph-wide substitution mechanism; its exclusions are declaration-scoped. To achieve substitution, you must apply exclusions to every path and declare the replacement explicitly, a manual process that differs from Gradle's global `dependencySubstitution`. This distinction is why the same graph behaves differently across tools.
 
 ### How Developers Commonly "Fix" This
 

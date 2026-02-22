@@ -16,7 +16,7 @@ graph LR
 ```{.scala include="/demos/sbt-demo/scenario-6-forcing/build.sbt" snippet="s6-deps"}
 ```
 
-#### Expected Intuition
+#### Reader Expectation
 2.0.0.
 
 #### Actual Resolution Results

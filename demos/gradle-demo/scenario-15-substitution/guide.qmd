@@ -16,18 +16,11 @@ graph LR
 ```{.groovy include="/demos/gradle-demo/scenario-15-substitution/build.gradle" snippet="s15-deps"}
 ```
 
-#### Expected Intuition
-"I want to replace `lib-a:1.0.0` with `lib-a:2.0.0` everywhere in my build, even if it's a transitive dependency."
-
-#### Actual Resolution Results
-Resolves `lib-a:2.0.0`.
-    *   *Reason*: The `resolutionStrategy.dependencySubstitution` rule intercepts the dependency resolution process. When Gradle encounters `lib-a:1.0.0`, it swaps it for `lib-a:2.0.0` before attempting to resolve it.
-
-#### Classpath Reality
-The classpath contains `lib-a-2.0.0.jar`.
+#### Reader Expectation
+Substituting a module globally replaces it in all transitive paths.
 
 #### Why This Happens
-Dependency substitution is a powerful feature that allows you to rewrite the dependency graph on the fly. It is often used to replace a published library with a local project during development (e.g., `substitute module('org.example:lib') using project(':lib')`), or to replace a legacy library with its modern replacement (e.g., `log4j` with `log4j-over-slf4j`).
+Dependency substitution rewrites the graph on the fly, enabling global replacements—like swapping a binary for a local project—that exclusions cannot match.
 
 #### How Developers Commonly "Fix" This
 *   **Exclusions:** Developers often try to exclude the old dependency and add the new one manually. This is tedious and error-prone.

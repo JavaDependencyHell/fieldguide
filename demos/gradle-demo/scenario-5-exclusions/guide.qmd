@@ -21,39 +21,25 @@ graph LR
 ```{.groovy include="/demos/gradle-demo/scenario-5-exclusions/build.gradle" snippet="s5-deps"}
 ```
 
-#### Expected Intuition
-`lib-c` is gone.
-
-#### Actual Resolution Results
-`lib-c` is excluded.
-
-#### Classpath Reality
-`lib-c` is missing.
+#### Reader Expectation
+Excluding `lib-c` removes it and its transitive subtree from this branch of the graph.
 
 #### Why This Happens
-Gradle honours exclusion metadata during graph traversal. When it encounters an exclusion on a dependency declaration, it prunes the specified artifact (and its entire transitive subtree) from that branch of the graph. Note that Gradle also supports configuration-level exclusions using configurations.implementation { exclude group: 'com.demo', module: 'lib-c' }, which applies the exclusion globally to all dependencies in that configuration.
+Gradle honours exclusion metadata, pruning the specified artifact and its descendants during traversal. This configuration-level control is why the same graph behaves differently across tools.
 
 #### Operational Risk
-
-*   **Low risk:** Excluding a transitive dependency and replacing it with an equivalent implementation (e.g., excluding `log4j` and adding `logback`).
-*   **Medium risk:** Excluding a transitive dependency that you believe is unused. This is risky because a future version of the library could start using it.
-*   **High risk:** Excluding a transitive dependency to "fix" a version conflict without understanding what the dependency does. This can lead to `NoClassDefFoundError` at runtime.
-
-#### How This Scales in Real Systems
-Exclusions are one of the most commonly used --- and most commonly abused --- dependency management tools. The classic use case is replacing a logging framework: excluding log4j-core and substituting slf4j-api + logback. However, in large codebases, exclusions accumulate over time and create what might be called "Swiss cheese" dependency graphs where important libraries are missing from branches that actually need them. Unlike Maven, Gradle's configuration-level excludes make it easier to apply blanket exclusions, which is powerful but can mask real problems.
+*   **Low risk:** Replacing an implementation (e.g., `log4j-core` with `log4j-over-slf4j`).
+*   **Medium risk:** Excluding a transitive thought to be unused.
+*   **High risk:** Excluding to "fix" conflicts without technical verification; this risks `NoClassDefFoundError` at runtime.
 
 #### Deterministic Checks
+**Fast check (Gradle):** `./gradlew dependencies`
+**Fast check (Maven):** `mvn dependency:tree`
+**Fast check (SBT):** `sbt dependencyTree`
 
-**Fast check (Gradle):**
-```bash
-./gradlew dependencies
-```
+**What to look for:** Absence of the dependency under the declaring artifact.
 
-**What to look for:**
-The dependency `lib-c` will be absent from the tree under `lib-a`.
-
-**Conclusion:**
-The exclusion has successfully removed the dependency from the resolution graph. Be aware of potential `NoClassDefFoundError` at runtime if `lib-a` requires `lib-c`.
+**Conclusion:** The exclusion successfully removes the dependency from this resolution path.
 
 #### Key Takeaway
 Exclusions work as expected.
@@ -63,4 +49,4 @@ Exclusions work as expected.
 
 #### Seen in the Wild
 
-A mobile app team was using a library that transitively depended on a large, legacy library. The team discovered that the legacy library was not actually used, and was adding several megabytes to the final application size. They used a global exclusion to remove the legacy library from all configurations, reducing the app size and improving startup time.
+A mobile app team trimmed 4MB off their final APK size by surgically excluding a legacy analytics library that was transitively included by three different SDKs. They replaced it with a single, configuration-level exclude in their `build.gradle`, ensuring that no future SDK additions could accidentally smuggle it back onto the classpath.

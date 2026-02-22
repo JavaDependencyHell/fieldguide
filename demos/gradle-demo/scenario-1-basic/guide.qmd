@@ -17,17 +17,11 @@ graph LR
 ```{.groovy include="/demos/gradle-demo/scenario-1-basic/build.gradle" snippet="s1-deps"}
 ```
 
-#### Expected Intuition
-Developers expect `lib-a`, `lib-b`, and `lib-c` to be present.
-
-#### Actual Resolution Results
-Resolves `lib-a:1.0.0`, `lib-b:1.0.0`, and `lib-c:1.0.0`.
-
-#### Classpath Reality
-All three JARs are on the classpath.
+#### Reader Expectation
+Declaring `lib-a` automatically includes its transitive dependencies `lib-b` and `lib-c`.
 
 #### Why This Happens
-Gradle traverses the entire dependency graph depth-first, collecting every unique artifact. Each POM or Gradle module metadata file declares its own dependencies, and Gradle follows every edge until it has mapped the complete graph. Since no version conflicts exist in this scenario, every artifact is included at its declared version.
+Gradle performs a depth-first traversal of the graph, following every edge in POM or Gradle module metadata files. In the absence of version conflicts, it collects every unique artifact to build the complete classpath.
 
 #### How This Scales in Real Systems
 In production projects, this simple chain (A → B → C) is replicated thousands of times. A typical Spring Boot application resolves 200--400 transitive dependencies from a handful of direct declarations. The "happy path" of zero conflicts becomes increasingly rare as the graph grows; diamond dependencies emerge naturally.

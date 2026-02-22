@@ -9,23 +9,11 @@ This scenario demonstrates how Maven handles (and cannot handle) the concept of 
 ```{.xml include="/demos/maven-demo/scenario-13-variants/pom.xml" snippet="s13-deps"}
 ```
 
-### Expected Intuition
+#### Reader Expectation
+Classifiers like `jdk11` enable the tool to select the correct variant of a library.
 
-"This library publishes a JDK 8 and a JDK 11 variant. I'm on JDK 11, so I want the build tool to automatically pick the right one."
-
-### Actual Resolution Results
-
-Maven does not automatically select variants. You must explicitly specify a `<classifier>` to get a non-default artifact. If you don't, you get the default (usually the JDK 8 build). There is no automatic matching based on your project's JDK version or any other attribute.
-
-### Classpath Reality
-
-The classpath contains `lib-a-1.0.0-jdk11.jar` if you specified the classifier, or `lib-a-1.0.0.jar` (the default) if you didn't.
-
-### Why This Happens
-
-Maven's dependency model treats classifiers as opaque strings appended to the artifact name. There is no semantic meaning attached to a classifier—the build tool does not know that "jdk11" means "for Java 11." This is fundamentally different from Gradle's attribute-based variant selection, where the build tool understands that `org.gradle.jvm.version=11` means "this variant requires Java 11" and can automatically match it against the consumer's target JVM.
-
-Maven also has no concept of "capabilities"—the ability to declare that two different artifacts provide the same API and are mutually exclusive. If two libraries provide competing implementations (e.g., `log4j-core` and `logback-classic` both implementing SLF4J), Maven cannot detect the conflict. You find out at runtime.
+#### Why This Happens
+Maven treats classifiers as opaque strings. It lacks attribute-based selection (like Gradle) or capabilities to detect competing implementations (e.g., `log4j-core` vs `logback-classic`). This limitation is why the same graph behaves differently across tools.
 
 ### How Developers Commonly "Fix" This
 

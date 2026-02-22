@@ -15,18 +15,11 @@ graph LR
 ```{.xml include="/demos/maven-demo/scenario-8-optional/pom.xml" snippet="s8-deps"}
 ```
 
-#### Expected Intuition
-"I use this library, but my consumers don't need it unless they use a specific feature."
-
-#### Actual Resolution Results
-`lib-a` is included in *this* project's classpath. But if another project depends on *this* project, `lib-a` is excluded.
-*   **Gradle/SBT**: Respect this flag when consuming Maven dependencies.
-
-#### Classpath Reality
-Present for the producer, absent for the consumer.
+#### Reader Expectation
+Optional dependencies are omitted from a consumer's transitive graph by default.
 
 #### Why This Happens
-It prevents "pollution" of the consumer's classpath with libraries they might not need (e.g., a database driver for a DB they don't use).
+The optional flag prevents consumer classpaths from being "polluted" with libraries required only for specific, non-universal features.
 
 #### How Developers Commonly "Fix" This
 If a consumer *does* need the optional feature, they must explicitly declare the dependency themselves.

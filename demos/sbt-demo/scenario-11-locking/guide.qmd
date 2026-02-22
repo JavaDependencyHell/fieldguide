@@ -19,33 +19,24 @@ graph LR
 ```{.scala include="/demos/sbt-demo/scenario-11-locking/build.sbt" snippet="s11-deps"}
 ```
 
-#### Expected Intuition
-"I want to use version ranges (e.g., `1.+`) to get updates, but I also want my build to be deterministic. If I build today and tomorrow, I want the exact same result unless I explicitly update."
-
-#### Actual Resolution Results
-Resolves the version recorded in the lock file (e.g., `lib-a:1.0.0`), even if `1.1.0` is available.
-    *   *Reason*: SBT's dependency locking feature (available since 1.4.x) freezes the resolved graph into a file. Subsequent builds use this file instead of resolving against the repository.
-
-#### Classpath Reality
-The classpath contains the locked version.
+#### Reader Expectation
+Ranges (e.g., `1.+`) provide updates, but the build must remain deterministic unless explicitly updated.
 
 #### Why This Happens
-Dependency locking separates the concern of *resolving* dependencies (finding the best match) from *reproducing* a build. When you lock, you take a snapshot of the resolution result. This snapshot is committed to version control, ensuring that every developer and CI server uses the exact same versions.
+SBT (1.4.x+) freezes the resolved graph into a lock file. Committed to version control, this snapshot ensures every developer and CI server uses identical versions, separating resolution from reproduction.
 
 #### How Developers Commonly "Fix" This
 *   **Hardcoding Versions:** Many teams avoid locking features and simply hardcode exact versions in `build.sbt`. This works but requires manual updates.
 *   **Scala Steward:** Automated tools like Scala Steward can send PRs to update hardcoded versions, making manual management easier.
 
 #### Deterministic Checks
+**Fast check (SBT):** `sbt dependencyTree`
+**Fast check (Maven):** `mvn dependency:tree`
+**Fast check (Gradle):** `./gradlew dependencies --lock-state`
 
-**Fast check (SBT):**
-After running a build, inspect the `build.sbt.lock` file.
+**What to look for:** A lockfile (e.g., `build.sbt.lock` or `gradle.lockfile`) containing the exact resolved versions.
 
-**What to look for:**
-The lockfile contains the exact versions of all resolved dependencies.
-
-**Conclusion:**
-Dependency locking is SBT's mechanism for ensuring reproducible builds.
+**Conclusion:** Locking ensures reproducibility by snapshots of dynamic versions.
 
 #### How This Scales in Real Systems
 For production systems, reproducibility is non-negotiable. Dependency locking (or strict version pinning) is essential to prevent "it works on my machine" issues. It also protects against malicious package updates (supply chain attacks) by ensuring you only use vetted versions.

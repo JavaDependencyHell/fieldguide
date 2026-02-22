@@ -19,17 +19,11 @@ graph LR
 ```{.xml include="/demos/maven-demo/scenario-3-mgmt/pom.xml" snippet="s3-deps"}
 ```
 
-#### Expected Intuition
-Developers expect that by importing a BOM, they don't need to specify versions for every library, and that all libraries will be consistent with each other (e.g., Spring Boot starters).
-
-#### Actual Resolution Results
-Resolves `lib-a:1.0.0` and `lib-b:1.0.0`.
-
-#### Classpath Reality
-The classpath contains the versions specified in the BOM.
+#### Reader Expectation
+Importing a BOM centralizes version control, ensuring consistency across project and transitive dependencies.
 
 #### Why This Happens
-`<dependencyManagement>` serves two functions: it provides default versions for dependencies declared without an explicit version, and it overrides the version of any matching artifact encountered anywhere in the transitive dependency tree. It is not merely a lookup table — it is an active version-enforcement mechanism.
+`<dependencyManagement>` provides default versions for dependencies declared without an explicit version and enforces those versions throughout the transitive tree. This central orientation is why the same graph behaves differently across tools.
 
 #### How Developers Commonly "Fix" This
 Without BOMs, developers copy-paste version numbers across multiple modules, leading to drift and inconsistency.

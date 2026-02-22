@@ -17,7 +17,7 @@ graph LR
 ```{.groovy include="/demos/gradle-demo/scenario-10-circular/build.gradle" snippet="s10-deps"}
 ```
 
-#### Expected Intuition
+#### Reader Expectation
 "It should work."
 
 #### Actual Resolution Results

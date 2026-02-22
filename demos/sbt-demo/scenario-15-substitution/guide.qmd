@@ -11,7 +11,7 @@ N/A
 ```{.scala include="/demos/sbt-demo/scenario-15-substitution/build.sbt" snippet="s15-deps"}
 ```
 
-#### Expected Intuition
+#### Reader Expectation
 "I want to replace `old-lib` with `new-lib` everywhere in my build."
 
 #### Actual Resolution Results

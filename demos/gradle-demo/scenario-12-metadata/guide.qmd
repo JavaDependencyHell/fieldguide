@@ -17,7 +17,7 @@ graph LR
 ```{.groovy include="/demos/gradle-demo/scenario-12-metadata/build.gradle" snippet="s12-deps"}
 ```
 
-#### Expected Intuition
+#### Reader Expectation
 "I know that `lib-a:1.0.0` has a bug in its POM file—it declares a dependency on `lib-b:1.0.0`, but it actually needs `lib-b:2.0.0` to work. I want to fix this without waiting for the library author to release a patch."
 
 #### Actual Resolution Results

@@ -11,17 +11,11 @@ N/A
 ```{.scala include="/demos/sbt-demo/scenario-14-reject/build.sbt" snippet="s14-deps"}
 ```
 
-#### Expected Intuition
-"I want to say 'never use version 2.0.0' because it has a security vulnerability."
-
-#### Actual Resolution Results
-SBT does not have a direct way to say "reject 2.0.0". You must instead say "use 1.0.0" (force) or "exclude 2.0.0" (exclude).
-
-#### Classpath Reality
-Depends on the workaround used.
+#### Reader Expectation
+Prevent specific versions (e.g., those with security vulnerabilities) from appearing in the build.
 
 #### Why This Happens
-SBT does not have a built-in "reject" syntax like Gradle's `version { reject "2.0.0" }`. To prevent a specific version from being used, you must use indirect mechanisms: `dependencyOverrides` to force a different version, or exclusions combined with an explicit declaration of an acceptable version.
+SBT lacks a first-class "reject" mechanism. To blacklist a version, you must use indirect workarounds like `dependencyOverrides` to force a safe version or exclusions to prune the bad one. This gap is why the same graph behaves differently across tools like Gradle.
 
 #### How Developers Commonly "Fix" This
 *   **`dependencyOverrides`:** The most common pattern is to force a known-good version.

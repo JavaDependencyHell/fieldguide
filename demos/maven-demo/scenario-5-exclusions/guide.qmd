@@ -21,42 +21,28 @@ graph LR
 ```{.xml include="/demos/maven-demo/scenario-5-exclusions/pom.xml" snippet="s5-deps"}
 ```
 
-#### Expected Intuition
-I don't want `lib-c`. I exclude it. It should be gone.
-
-#### Actual Resolution Results
-`lib-c` is removed from the tree under `lib-a`.
-
-#### Classpath Reality
-`lib-c` is NOT on the classpath. `lib-a` is on the classpath.
+#### Reader Expectation
+Excluding `lib-c` removes it and its transitive subtree from the graph entirely.
 
 #### Why This Happens
-The build tool respects the exclusion metadata and prunes that branch of the graph during traversal.
+Maven respects exclusion metadata and prunes the specified branch during graph traversal. This "sledgehammer" fix for conflicts is why the same graph behaves differently across tools.
 
 #### How Developers Commonly "Fix" This
 This *is* the fix for many problems (e.g., excluding `log4j` to use `slf4j`).
 
 #### Operational Risk
-
-*   **Low risk:** Excluding a transitive dependency and replacing it with an equivalent implementation (e.g., excluding `log4j` and adding `logback`).
-*   **Medium risk:** Excluding a transitive dependency that you believe is unused. This is risky because a future version of the library could start using it.
-*   **High risk:** Excluding a transitive dependency to "fix" a version conflict without understanding what the dependency does. This can lead to `NoClassDefFoundError` at runtime.
-
-#### Safer Ways to Take Control
-Exclusions are risky because `lib-a` might actually *need* `lib-c` to run. If you exclude it, you might get `NoClassDefFoundError` at runtime. A safer alternative is often to force a compatible version rather than removing it entirely, unless you are replacing it with an equivalent (e.g., a bridge library).
+*   **Low risk:** Replacing an implementation (e.g., `log4j` with `logback` + bridge).
+*   **Medium risk:** Excluding a transitive you believe is unused; future versions may require it.
+*   **High risk:** Excluding to "fix" a conflict without understanding the dependency; this frequently causes `NoClassDefFoundError` at runtime.
 
 #### Deterministic Checks
+**Fast check (Maven):** `mvn dependency:tree`
+**Fast check (Gradle):** `./gradlew dependencies`
+**Fast check (SBT):** `sbt dependencyTree`
 
-**Fast check (Maven):**
-```bash
-mvn dependency:tree
-```
+**What to look for:** Absence of the dependency under the declaring artifact. If it remains elsewhere, it is being pulled in through another path.
 
-**What to look for:**
-The dependency `lib-c` will be absent from the tree under `lib-a`.
-
-**Conclusion:**
-The exclusion has successfully removed the dependency from the resolution graph. Be aware of potential `NoClassDefFoundError` at runtime if `lib-a` requires `lib-c`.
+**Conclusion:** The exclusion successfully prunes the dependency from this path.
 
 #### How This Scales in Real Systems
 Overuse of exclusions leads to "Swiss cheese" dependency graphs that are hard to reason about.
@@ -69,4 +55,4 @@ Exclusions are powerful but dangerous; use them only when you know the dependent
 
 #### Seen in the Wild
 
-A team was using a library that pulled in a transitive dependency with a GPL license, which was not allowed by their company's policy. They couldn't remove the direct dependency, so they used an `<exclusion>` to remove the GPL-licensed library. They then added a similar library with a compatible license to ensure the application still worked.
+A team was using an SDK that pulled in a GPL-licensed transitive dependency, violating their corporate compliance policy. They couldn't drop the SDK, so they surgically `<exclude>`-d the GPL library. They then added a BSD-licensed equivalent to the project, manually verifying that the SDK could still find the classes it needed at runtime. They essentially performed a "license transplant" to keep the legal team happy without breaking the build.

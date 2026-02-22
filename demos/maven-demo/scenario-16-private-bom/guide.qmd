@@ -27,15 +27,11 @@ The `pom.xml` first adds the private repository. Then, it imports the vendor's B
 ```{.xml include="/demos/maven-demo/scenario-16-private-bom/pom.xml" snippet="s16-deps"}
 ```
 
-#### Expected Intuition
-"I want to use Spring Boot, but I need the version that my vendor supports. By adding their repository and importing their BOM, my build should automatically pick up the patched versions they provide."
+#### Reader Expectation
+Adding a private repository and importing its BOM ensures that patched or extended-support versions are prioritized over public, EOL versions.
 
-#### Actual Resolution Results
-Resolves `org.springframework.boot:spring-boot-starter:2.5.14.ACME`.
-    *   *Reason*: The project explicitly adds the private repository, making its artifacts available. The imported `patched-bom` takes precedence in dependency management, and it dictates that `spring-boot-starter` should be version `2.5.14.ACME`.
-
-#### Classpath Reality
-The classpath contains `spring-boot-starter-2.5.14.ACME.jar`, not the public EOL version.
+#### Why This Happens
+Private repositories make custom artifacts available, while `<dependencyManagement>` (via a vendor BOM) enforces their selection. This combination allows for surgical overrides of public dependencies with enterprise-supported versions.
 
 #### Key Takeaway
 Adding a repository makes its artifacts *available*, but it is the combination of the repository and a version control mechanism (like a BOM in `<dependencyManagement>`) that allows you to safely override public dependencies with private, patched versions. The order of repository declaration can also matter if the same artifact exists in multiple repositories.

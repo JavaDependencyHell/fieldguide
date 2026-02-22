@@ -19,40 +19,25 @@ graph LR
 ```{.scala include="/demos/sbt-demo/scenario-9-ranges/build.sbt" snippet="s9-deps"}
 ```
 
-#### Expected Intuition
-"I want the latest version of `lib-a` in the 1.x series. I don't want to manually update my build file every time a patch is released."
-
-#### Actual Resolution Results
-Resolves the highest available version that matches the range (e.g., `1.9.9`).
-    *   *Reason*: SBT (via Ivy/Coursier) queries the repository metadata to find all available versions and selects the highest one that satisfies the range constraint.
-
-#### Classpath Reality
-The classpath contains the highest matching version found at build time.
+#### Reader Expectation
+Automatically resolve the latest patch or version in the 1.x series (e.g., `1.+`).
 
 #### Why This Happens
-SBT supports Ivy-style version ranges (which are compatible with Maven ranges). When you specify a range like `[1.0, 2.0)`, SBT asks the repository for a list of versions and picks the best match. This makes your build dynamic—the result depends on what is in the repository at the time of the build.
-
-#### Deterministic Checks
-
-**Fast check (SBT):**
-```bash
-sbt dependencyTree
-```
-
-**What to look for:**
-The resolved version of `lib-a`. This can change if a new version is published that matches the range.
-
-**Conclusion:**
-Version ranges can lead to non-reproducible builds.
-
-#### How This Scales in Real Systems
-Version ranges are risky for application development because they sacrifice reproducibility. However, they are sometimes used in library development to express compatibility with a range of versions. In the Scala ecosystem, binary compatibility is critical, so ranges are used carefully.
+SBT (via Ivy/Coursier) queries repository metadata and selects the highest version satisfying the range. This makes the build dynamic and dependent on current repository state.
 
 #### Operational Risk
+*   **Low risk:** Use ranges for `Test` dependencies.
+*   **Medium risk:** Use ranges for internal libraries under strict semver.
+*   **High risk:** Use ranges for external libraries; non-deterministic builds risk 3 AM "AbstractMethodError" alerts during automated redeploys.
 
-*   **Low risk:** Using version ranges for `Test` configuration dependencies. This allows you to test against the latest versions of your testing libraries without affecting your production code.
-*   **Medium risk:** Using version ranges for internal libraries that are under your control and follow strict semantic versioning.
-*   **High risk:** Using version ranges for external, third-party libraries. This can lead to non-reproducible builds and unexpected breakages. It is highly recommended to use a dependency locking mechanism if you do this.
+#### Deterministic Checks
+**Fast check (SBT):** `sbt dependencyTree`
+**Fast check (Maven):** `mvn dependency:resolve`
+**Fast check (Gradle):** `./gradlew dependencyInsight --dependency <id>`
+
+**What to look for:** The resolved version in the dependency tree.
+
+**Conclusion:** Ranges trade build reproducibility for freshness.
 
 #### Key Takeaway
 Ranges provide automatic upgrades but sacrifice build reproducibility. Use dependency locking to mitigate the risk.
@@ -62,4 +47,4 @@ Ranges provide automatic upgrades but sacrifice build reproducibility. Use depen
 
 #### Seen in the Wild
 
-A company was using a version range for a library that was known to have binary compatibility issues between minor releases. A new version was released, and the build started failing with `AbstractMethodError` at runtime. The team was forced to stop using a version range and pin the dependency to a specific version that was known to be compatible.
+A company using version ranges for a legacy library got hit with `AbstractMethodError` at 3 AM. A minor release had broken binary compatibility, and SBT's range resolution pulled it in during an automated redeploy. The team had to scramble to pin the dependency to the last known-good version. They've since replaced all ranges with hard versions, deciding that "freshness" wasn't worth the middle-of-the-night pager alerts.

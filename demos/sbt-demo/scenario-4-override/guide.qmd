@@ -20,18 +20,11 @@ graph LR
 ```{.scala include="/demos/sbt-demo/scenario-4-override/build.sbt" snippet="s4-deps"}
 ```
 
-#### Expected Intuition
-"I have a default version for my libraries, but for `lib-a`, I specifically need version `2.0.0`. I expect my explicit declaration to win."
-
-#### Actual Resolution Results
-Resolves `lib-a:2.0.0` and `lib-b:1.0.0`.
-    *   *Reason*: The explicit declaration `"com.demo" % "lib-a" % "2.0.0"` is used directly. Since there are no other conflicting constraints in this simple example, SBT uses the version you asked for.
-
-#### Classpath Reality
-The classpath contains `lib-a-2.0.0.jar` and `lib-b-1.0.0.jar`.
+#### Reader Expectation
+Explicit versions in `libraryDependencies` win over defaults or transitive suggestions.
 
 #### Why This Happens
-In SBT, `libraryDependencies` is just a sequence of module definitions. If you add a specific version to that sequence, that is the version SBT will try to resolve. If there are conflicts with transitive dependencies, the conflict manager (usually "latest wins") will kick in.
+In SBT, `libraryDependencies` is a sequence of module definitions; direct additions take precedence during resolution. This mechanism is why the same graph behaves differently across tools.
 
 #### How Developers Commonly "Fix" This
 *   **Explicit Overrides:** If a transitive dependency is pulling in an unwanted version, developers often add the desired version as a direct dependency to force the conflict manager to see it.
@@ -44,17 +37,13 @@ In SBT, `libraryDependencies` is just a sequence of module definitions. If you a
     ```
 
 #### Deterministic Checks
+**Fast check (SBT):** `sbt dependencyTree`
+**Fast check (Maven):** `mvn dependency:tree`
+**Fast check (Gradle):** `./gradlew dependencyInsight --dependency <id>`
 
-**Fast check (SBT):**
-```bash
-sbt dependencyTree
-```
+**What to look for:** The explicitly declared version in the dependency tree.
 
-**What to look for:**
-The version of `lib-a` in the tree. It will be `2.0.0`.
-
-**Conclusion:**
-An explicit version declaration in `libraryDependencies` is a direct request for that version.
+**Conclusion:** Versions in `libraryDependencies` represent direct requests that override defaults.
 
 #### How This Scales in Real Systems
 Hardcoding versions in `libraryDependencies` is fine for direct dependencies. However, for enforcing versions across a large project (especially for transitive dependencies you don't directly use), `dependencyOverrides` or a BOM plugin is a more robust solution.

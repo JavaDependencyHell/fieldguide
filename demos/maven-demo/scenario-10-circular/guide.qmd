@@ -17,18 +17,11 @@ graph LR
 ```{.xml include="/demos/maven-demo/scenario-10-circular/pom.xml" snippet="s10-deps"}
 ```
 
-#### Expected Intuition
-"Infinite loop! StackOverflowError!"
-
-#### Actual Resolution Results
-    *   **Build Time (Reactor)**: Fails immediately.
-    *   **Resolution Time (Repo)**: Tolerates it by stopping recursion when it sees a visited node.
-
-#### Classpath Reality
-Both `lib-circle-a` and `lib-circle-b` end up on the classpath.
+#### Reader Expectation
+Circular dependencies (e.g., A depends on B, and B depends on A) cause infinite loops or stack overflows.
 
 #### Why This Happens
-Build tools maintain a "visited" set during graph traversal to prevent infinite recursion.
+Build tools maintain a "visited" set during graph traversal to prevent infinite recursion. While resolution succeeds, cycles often signal architectural issues that should be refactored.
 
 #### How Developers Commonly "Fix" This
 Refactoring code to break the cycle (e.g., extracting a common interface to `lib-c`).

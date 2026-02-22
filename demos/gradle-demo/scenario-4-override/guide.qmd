@@ -20,18 +20,11 @@ graph LR
 ```{.groovy include="/demos/gradle-demo/scenario-4-override/build.gradle" snippet="s4-deps"}
 ```
 
-#### Expected Intuition
-"I imported the BOM, but I also explicitly requested version `2.0.0` for `lib-a`. I expect my explicit request to be honored."
-
-#### Actual Resolution Results
-Resolves `lib-a:2.0.0`.
-    *   *Reason*: The `platform()` dependency provides a *recommendation* for `lib-a:1.0.0`. However, the direct dependency declaration `implementation 'com.demo:lib-a:2.0.0'` is a stronger constraint, so Gradle selects `2.0.0`.
-
-#### Classpath Reality
-The classpath contains `lib-a-2.0.0.jar`.
+#### Reader Expectation
+Explicit version declarations take precedence over `platform()` recommendations.
 
 #### Why This Happens
-In Gradle, a `platform()` dependency adds version constraints to the graph, but these constraints are treated as recommendations unless they are enforced. A direct version declaration on a dependency is considered a stronger signal than a recommendation from a platform, so it takes precedence.
+In Gradle, a `platform()` dependency provides version recommendations, which are overridden by direct version declarations—a stronger signal. This priority is why the same graph behaves differently across tools.
 
 #### How Developers Commonly "Fix" This
 *   **Removing the Version:** If the developer *wanted* the BOM version but accidentally left a hardcoded version in, the fix is simply to remove the version from the `implementation` line.
@@ -41,17 +34,13 @@ In Gradle, a `platform()` dependency adds version constraints to the graph, but 
 *   **Check for Overrides:** Be mindful of where you are declaring versions. If you are using a BOM, try to avoid declaring versions for managed dependencies unless you intentionally want to override them.
 
 #### Deterministic Checks
+**Fast check (Gradle):** `./gradlew dependencyInsight --dependency <id>`
+**Fast check (Maven):** `mvn dependency:tree`
+**Fast check (SBT):** `sbt dependencyTree`
 
-**Fast check (Gradle):**
-```bash
-./gradlew dependencyInsight --dependency lib-a
-```
+**What to look for:** The reason for selection; it will indicate if the version was chosen via direct declaration.
 
-**What to look for:**
-The reason for the version selection. It will show `2.0.0` was selected due to a direct declaration.
-
-**Conclusion:**
-An explicit version declaration is a stronger signal than a `platform()` recommendation.
+**Conclusion:** Direct version declarations override standard `platform()` recommendations.
 
 #### How This Scales in Real Systems
 Allowing local overrides of global defaults is a powerful feature. It lets teams use a standard platform (like Spring Boot) but still upgrade or downgrade individual libraries as needed for bug fixes or compatibility. However, it requires discipline to avoid "drift" where many libraries are manually versioned instead of being managed by the platform.

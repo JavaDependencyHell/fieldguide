@@ -16,18 +16,11 @@ graph LR
 ```{.groovy include="/demos/gradle-demo/scenario-13-variants/build.gradle" snippet="s13-deps"}
 ```
 
-#### Expected Intuition
-"I am building a Java 11 application. If `lib-a` publishes a Java 11-optimized version, I expect Gradle to pick that one automatically."
-
-#### Actual Resolution Results
-Matches attributes.
-    *   *Reason*: Gradle uses **Attributes** (like `org.gradle.jvm.version`, `org.gradle.usage`, `org.gradle.category`) to match what the consumer requests with what the producer provides. If `lib-a` publishes Gradle Module Metadata with these attributes, Gradle will select the best match.
-
-#### Classpath Reality
-The classpath contains the variant that best matches the project's configuration (e.g., the Java 11 jar).
+#### Reader Expectation
+Build tools automatically select the correct JDK or runtime variant (e.g., Java 11).
 
 #### Why This Happens
-Maven relies on "classifiers" (e.g., `-jdk11`, `-sources`) which are just strings appended to the artifact name. Gradle's model is richer: a component can have multiple **variants**, each with a set of attributes. When resolving dependencies, Gradle performs **variant-aware resolution** to find the variant whose attributes are compatible with the consumer's attributes.
+Gradle matches **Attributes** (e.g., `org.gradle.jvm.version`) from consumers against producer metadata. This variant-aware resolution replaces the opaque "classifiers" used by Maven, which is why the same graph behaves differently across tools.
 
 #### How Developers Commonly "Fix" This
 *   **Classifiers:** In Maven, developers manually add `<classifier>jdk11</classifier>`. This is fragile because if the classifier name changes or if the consumer upgrades their JDK, they have to manually update the dependency.

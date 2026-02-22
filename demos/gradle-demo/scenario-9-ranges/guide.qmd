@@ -19,40 +19,28 @@ graph LR
 ```{.groovy include="/demos/gradle-demo/scenario-9-ranges/build.gradle" snippet="s9-deps"}
 ```
 
-#### Expected Intuition
-`1.0.0`.
-
-#### Actual Resolution Results
-Resolves `1.0.0`.
-
-#### Classpath Reality
-`1.0.0`.
+#### Reader Expectation
+Resolve the latest version matching the range (e.g., `1.+`).
 
 #### Why This Happens
-Gradle supports both Maven-style ranges like `[1.0.0, 2.0.0)` and its own dynamic version syntax like `1.+` (any version starting with 1.). When it encounters a dynamic version, Gradle queries the repository metadata to determine the available versions and selects the highest matching version. This makes the resolved version dependent on what exists in the repository at the time of resolution.
+Gradle supports Maven-style ranges and its own dynamic version syntax like `1.+`. It queries repository metadata for the highest match, making resolution dependent on current repository state. This is why the same graph behaves differently across tools.
 
 #### How This Scales in Real Systems
 Dynamic versions and ranges are the primary cause of "it worked yesterday" failures. If a new version of a library is published to Maven Central between your local build and your CI build, the two builds may resolve different versions. This is why Gradle provides built-in dependency locking (Scenario 11) --- it's specifically designed to tame dynamic versions. In Java/JVM ecosystems, ranges are less common than in npm/pip, precisely because the JVM community has historically valued build reproducibility. Most teams either ban dynamic versions entirely or pair them with strict locking.
 
 #### Operational Risk
+*   **Low risk:** Use ranges for `testImplementation`; allows latest test libraries without affecting production.
+*   **Medium risk:** Use ranges for internal libraries under strict semver.
+*   **High risk:** Use ranges for external libraries; this causes non-reproducible "it worked yesterday" failures.
 
-*   **Low risk:** Using version ranges for `testImplementation` dependencies. This allows you to test against the latest versions of your testing libraries without affecting your production code.
-*   **Medium risk:** Using version ranges for internal libraries that are under your control and follow strict semantic versioning.
-*   **High risk:** Using version ranges for external, third-party libraries. This can lead to non-reproducible builds and unexpected breakages. It is highly recommended to use a dependency locking mechanism if you do this.
-
-#### Signals to Watch For
 #### Deterministic Checks
+**Fast check (Gradle):** `./gradlew dependencyInsight --dependency <id>`
+**Fast check (Maven):** `mvn dependency:resolve`
+**Fast check (SBT):** `sbt dependencyTree`
 
-**Fast check (Gradle):**
-```bash
-./gradlew dependencyInsight --dependency lib-a
-```
+**What to look for:** The resolved version and the reason.
 
-**What to look for:**
-The resolved version of `lib-a` and the reason. It will show which version was selected from the range.
-
-**Conclusion:**
-Version ranges make builds non-deterministic. Use them with a locking mechanism.
+**Conclusion:** Ranges are dynamic and require locking for determinism.
 
 #### Key Takeaway
 Ranges work but are dynamic.
@@ -62,4 +50,4 @@ Ranges work but are dynamic.
 
 #### Seen in the Wild
 
-A team was using a dynamic version (`1.+`) for a popular utility library. A new version was released that had a performance regression, and their application's latency spiked. The team was able to fix the problem by adding a `strictly` constraint to their build to force the older, faster version. They also added dependency locking to prevent similar problems in the future.
+A team used `1.+` for a popular utility library and got hit with a performance regression on a Monday morning. The new release was only hours old. They fixed it by adding a `strictly` constraint to their build to force the older, faster version, but the downtime had already happened. They've since switched to dependency locking, which gives them the benefits of ranges without the "Monday morning surprises."

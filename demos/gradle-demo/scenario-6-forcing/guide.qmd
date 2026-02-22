@@ -17,18 +17,11 @@ graph LR
 ```{.groovy include="/demos/gradle-demo/scenario-6-forcing/build.gradle" snippet="s6-deps"}
 ```
 
-#### Expected Intuition
-"I want version `2.0.0` of `lib-c`, regardless of what `lib-a` asks for. I expect my forced version to be used."
-
-#### Actual Resolution Results
-Resolves `lib-c:2.0.0`.
-    *   *Reason*: The `resolutionStrategy.force` directive (or a `strictly` constraint in modern Gradle) tells the dependency engine to ignore other version requests and use the specified version.
-
-#### Classpath Reality
-The classpath contains `lib-c-2.0.0.jar`.
+#### Reader Expectation
+Forced versions override all other constraints or transitive version requests.
 
 #### Why This Happens
-Gradle provides mechanisms to override its default conflict resolution. `resolutionStrategy.force` is the older, imperative way. The modern, declarative way is using a `strictly` constraint within a `dependencies { constraints { ... } }` block. Both achieve the same goal: they tell Gradle that a specific version *must* be used, even if it contradicts other parts of the graph.
+Gradle overrides its default conflict resolution through `resolutionStrategy.force` or `strictly` constraints. This ensures a specific version wins regardless of contradictory signals in the graph.
 
 #### How Developers Commonly "Fix" This
 *   **`resolutionStrategy.force`:** As shown in the snippet, this is a common "big hammer" approach to fix version conflicts.
@@ -53,17 +46,11 @@ Gradle provides mechanisms to override its default conflict resolution. `resolut
 *   **Prefer `strictly`:** Using `strictly` in a `constraints` block is generally safer and more idiomatic in modern Gradle than `resolutionStrategy.force`. It integrates better with dependency insight tools and other plugins.
 
 #### Deterministic Checks
+**Fast check (Gradle):** `./gradlew dependencyInsight --dependency lib-c`
 
-**Fast check (Gradle):**
-```bash
-./gradlew dependencyInsight --dependency lib-c
-```
+**What to look for:** The reason for selection; it will indicate the version was selected `by force` or via constraint.
 
-**What to look for:**
-The reason for the version selection. It will show `2.0.0` was selected `by force`.
-
-**Conclusion:**
-`resolutionStrategy.force` or a `strictly` constraint will override any other version in the graph.
+**Conclusion:** Force or `strictly` directives override all other graph signals.
 
 #### How This Scales in Real Systems
 Forcing versions is essential in large enterprise environments where you need to ensure all applications use a specific, vetted version of a library (e.g., for security compliance), regardless of what transitive dependencies request.

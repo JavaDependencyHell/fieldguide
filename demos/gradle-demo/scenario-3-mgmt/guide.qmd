@@ -17,18 +17,11 @@ graph LR
 ```{.groovy include="/demos/gradle-demo/scenario-3-mgmt/build.gradle" snippet="s3-deps"}
 ```
 
-#### Expected Intuition
-"I import the BOM, so I don't need to specify versions for my dependencies. The BOM should ensure that `lib-a` and `lib-b` are compatible."
-
-#### Actual Resolution Results
-Resolves versions defined in the BOM (e.g., `1.0.0`).
-    *   *Reason*: The `platform()` dependency imports the BOM as a set of dependency constraints. When `lib-a` and `lib-b` are declared without versions, Gradle looks at the constraints provided by the platform to determine which version to use.
-
-#### Classpath Reality
-The classpath contains the versions specified in the BOM.
+#### Reader Expectation
+Importing a BOM via `platform()` centralizes version control, aligning project and transitive dependencies to compatible versions.
 
 #### Why This Happens
-Gradle treats BOMs as "platforms". A platform is essentially a module that provides recommendations for versions of other modules. When you use `implementation platform(...)`, you are adding these recommendations to your dependency graph. If no other stronger constraint (like a hardcoded version) exists, Gradle uses the recommendation.
+Gradle treats BOMs as "platforms" that provide version recommendations. These recommendations act as defaults that are applied unless a stronger signal—like a direct version declaration or an `enforcedPlatform()` constraint—exists in the graph.
 
 #### How Developers Commonly "Fix" This
 *   **Hardcoding Versions:** If a developer wants a different version than the BOM provides, they often just add a version to the dependency declaration (e.g., `implementation 'com.demo:lib-a:1.1.0'`). This works because a direct version declaration is stronger than a platform recommendation.

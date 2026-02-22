@@ -9,19 +9,11 @@ This scenario demonstrates a fundamental limitation of Maven's dependency model:
 ```{.xml include="/demos/maven-demo/scenario-12-metadata/pom.xml" snippet="s12-deps"}
 ```
 
-### Expected Intuition
+#### Reader Expectation
+Build tools support "strictly," "prefer," and "reject" constraints for fine-grained version control.
 
-"I want to say: use version 1.5.0, but if something else in the graph needs 1.6.0, that's fine. Just don't go below 1.3.0 or above 2.0.0."
-
-### Actual Resolution Results
-
-Maven cannot express this. A version declaration is either a fixed recommendation (`1.0.0`, subject to nearest-wins) or a hard range (`[1.0.0,2.0.0)`, which queries the repository). There is no middle ground—no "prefer", no "strictly", no "reject."
-
-### Why This Happens
-
-Maven's POM schema predates the concept of rich version constraints. When Maven was designed, the assumption was that library authors would publish stable, compatible releases, and consumers would declare the exact version they wanted. The POM's `<version>` element is a single string with only two interpretations: a fixed version (e.g. `1.0.0`) or a range (e.g. `[1.0,2.0)`).
-
-Gradle's Module Metadata format (introduced in Gradle 6) adds `strictly`, `prefer`, and `reject` constraints, allowing far more expressive version declarations. SBT inherits Ivy's conflict managers but also lacks this level of expressiveness. Maven has no equivalent and no plans to add one to the POM format.
+#### Why This Happens
+Maven's POM schema predates rich versioning; the `<version>` element only supports fixed strings or simple ranges. This lack of expressiveness is why the same graph behaves differently across tools like Gradle, which uses richer Module Metadata.
 
 ### How Developers Commonly "Fix" This
 

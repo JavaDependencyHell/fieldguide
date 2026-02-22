@@ -17,20 +17,11 @@ graph LR
 ```{.xml include="/demos/maven-demo/scenario-1-basic/pom.xml" snippet="s1-deps"}
 ```
 
-#### Expected Intuition
-Most developers expect that if they depend on `lib-a`, they will also get `lib-b` and `lib-c` automatically, and that all versions will match what is declared in the POMs of those libraries.
-
-#### Actual Resolution Results
-Resolves `lib-a:1.0.0`, `lib-b:1.0.0`, and `lib-c:1.0.0`.
-
-#### Classpath Reality
-The runtime classpath contains exactly one JAR for each library:
-*   `lib-a-1.0.0.jar`
-*   `lib-b-1.0.0.jar`
-*   `lib-c-1.0.0.jar`
+#### Reader Expectation
+Declaring `lib-a` automatically includes its transitive dependencies `lib-b` and `lib-c` on the classpath.
 
 #### Why This Happens
-Build tools traverse the dependency graph. Since there are no conflicting versions for any library, the resolution is straightforward. The tool simply collects all unique nodes in the graph.
+Build tools traverse the dependency graph and collect all unique nodes. In the absence of version conflicts, resolution is straightforward and follows the project's dependency structure.
 
 #### How Developers Commonly "Fix" This
 No fix is needed here. This is the desired behavior.

@@ -11,17 +11,11 @@ N/A
 ```{.scala include="/demos/sbt-demo/scenario-13-variants/build.sbt" snippet="s13-deps"}
 ```
 
-#### Expected Intuition
-"I want the 'native' version of `lib-a` for Linux, or I want the 'sources' jar for debugging."
-
-#### Actual Resolution Results
-Resolves the artifact with the specified classifier (e.g., `lib-a-1.0.0-linux.jar`).
-
-#### Classpath Reality
-The classpath contains the specific artifact requested.
+#### Reader Expectation
+Select specific library flavors (e.g., native Linux builds or source JARs) automatically.
 
 #### Why This Happens
-SBT uses Ivy configurations (`Compile`, `Test`, `Runtime`, `Provided`, `Optional`) to manage different classpaths, but does not have Gradle's attribute-based variant selection system. When you need a specific variant of a library (e.g., a native build for a particular OS, or a sources/javadoc artifact), SBT uses **classifiers**—the same mechanism as Maven.
+SBT (via Ivy) uses configurations for classpaths but relies on **classifiers** for variant selection, identical to Maven. This distinguishes it from Gradle's attribute-based system.
 
 #### How Developers Commonly "Fix" This
 *   **Classifiers:** Use the `classifier` method on a dependency:

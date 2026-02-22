@@ -21,39 +21,25 @@ graph LR
 ```{.groovy include="/demos/gradle-demo/scenario-7-scopes/build.gradle" snippet="s7-deps"}
 ```
 
-#### Expected Intuition
-`compileOnly` is not in runtime.
-
-#### Actual Resolution Results
-Respects configurations.
-
-#### Classpath Reality
-`lib-b` (compileOnly) is not in runtime classpath.
+#### Reader Expectation
+`compileOnly` dependencies are available during compilation but excluded from runtime.
 
 #### Why This Happens
-Gradle's configuration system is more granular than Maven's scopes. The key distinction is between api and implementation: api exposes a dependency to consumers of your library (it appears on their compile classpath), while implementation hides it (consumers can't see it at compile time, though it's still present at runtime). compileOnly is equivalent to Maven's provided scope, and testImplementation restricts visibility to the test source set.
+Gradle configurations are granular. `api` exposes dependencies to consumers; `implementation` hides them; `compileOnly` matches Maven's `provided`. Encapsulating build graphs through these configurations optimizes recompilation speed in large projects.
 
 #### Operational Risk
-
-*   **Low risk:** Using `testImplementation` for test-only libraries like JUnit. This is the intended use.
-*   **Medium risk:** Using `compileOnly`. This is a common and necessary practice, but it introduces the risk that the runtime environment will not provide the dependency, or will provide an incompatible version.
-*   **High risk:** Using `api` when `implementation` would suffice. This can lead to slower builds and can expose consumers of your library to dependencies that they don't need.
-
-#### How This Scales in Real Systems
-Correct use of implementation vs api has a direct impact on build performance. When a dependency declared as implementation changes, only the declaring module needs to be recompiled. If the same dependency were declared as api, every module that depends on the declaring module would also need recompilation. In large multi-module builds (50+ modules), this can mean the difference between a 30-second incremental build and a 5-minute full rebuild. Getting configurations right is one of the most impactful performance optimisations in Gradle.
+*   **Low risk:** Use `testImplementation` for test-only libraries.
+*   **Medium risk:** Use `compileOnly`; verify the runtime environment provides the dependency.
+*   **High risk:** Use `api` when `implementation` suffices; this bloats consumer classpaths and slows builds.
 
 #### Deterministic Checks
+**Fast check (Gradle):** `./gradlew dependencies --configuration runtimeClasspath`
+**Fast check (Maven):** `mvn dependency:tree -Dscope=runtime`
+**Fast check (SBT):** `sbt 'show runtime:dependencyClasspath'`
 
-**Fast check (Gradle):**
-```bash
-./gradlew dependencies --configuration runtimeClasspath
-```
+**What to look for:** Output showing only dependencies in the selected configuration or scope.
 
-**What to look for:**
-The output will only show dependencies from the `implementation` and `runtimeOnly` configurations.
-
-**Conclusion:**
-Configurations are Gradle's way of managing what goes into different classpaths.
+**Conclusion:** Configurations manage what enters each classpath.
 
 #### Key Takeaway
 Configurations control transitivity and packaging.
@@ -63,4 +49,4 @@ Configurations control transitivity and packaging.
 
 #### Seen in the Wild
 
-A team was building a library and used `api` for all of their dependencies. This worked, but it meant that consumers of their library were exposed to all of their internal dependencies. When the team wanted to change a logging library, they couldn't do it without breaking their consumers' builds. They switched to using `implementation` for all of their internal dependencies, which allowed them to change their implementation details without affecting their consumers.
+A platform team migrated a legacy monolith to a 50-module Gradle build, initially using `api` for everything. A single change in a low-level "utils" module triggered a ten-minute recompile of the entire project. After they systematically switched internal dependencies to `implementation`, that same change took less than forty seconds. They finally understood that "encapsulation" applies to build graphs, not just class designs.

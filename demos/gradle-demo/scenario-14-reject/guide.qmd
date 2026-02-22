@@ -16,18 +16,11 @@ graph LR
 ```{.groovy include="/demos/gradle-demo/scenario-14-reject/build.gradle" snippet="s14-deps"}
 ```
 
-#### Expected Intuition
-"I know `lib-a:2.0.0` has a critical bug. I want to make sure my build never uses it, even if a transitive dependency asks for it."
-
-#### Actual Resolution Results
-Resolves `lib-a:1.0.0` (or another available version).
-    *   *Reason*: The `reject '2.0.0'` constraint tells Gradle that `2.0.0` is not a valid candidate. If `2.0.0` would have been selected by conflict resolution (e.g., "newest wins"), Gradle will look for the next best candidate or fail if no other version is available.
-
-#### Classpath Reality
-The classpath contains `lib-a-1.0.0.jar`.
+#### Reader Expectation
+Blacklist broken or vulnerable releases without forcing a specific downgrade that might block future patches.
 
 #### Why This Happens
-Gradle's dependency resolution engine allows you to express negative constraints. This is useful for blacklisting broken releases without having to force a specific older version (which might prevent legitimate upgrades to `2.0.1`).
+Gradle's engine supports negative constraints. Rejecting a version (e.g., `2.0.0`) removes it from the candidate pool during resolution, allowing upgrades to `2.0.1` while still blocking the known "bad" version. This precision is why the same graph behaves differently across tools.
 
 #### How Developers Commonly "Fix" This
 *   **Forcing an Older Version:** Developers often use `resolutionStrategy.force '1.0.0'` to avoid `2.0.0`. This works, but it also prevents upgrading to `2.0.1` or `2.1.0` later. Rejection is more precise.

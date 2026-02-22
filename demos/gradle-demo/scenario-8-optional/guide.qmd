@@ -15,7 +15,7 @@ graph LR
 ```{.groovy include="/demos/gradle-demo/scenario-8-optional/build.gradle" snippet="s8-deps"}
 ```
 
-#### Expected Intuition
+#### Reader Expectation
 "I don't want to force this on consumers."
 
 #### Actual Resolution Results

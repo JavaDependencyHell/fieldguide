@@ -16,18 +16,11 @@ graph LR
 ```{.scala include="/demos/sbt-demo/scenario-8-optional/build.sbt" snippet="s8-deps"}
 ```
 
-#### Expected Intuition
-"I depend on `lib-a`. `lib-a` has an optional dependency on `lib-b`. I expect `lib-b` to NOT be on my classpath unless I ask for it."
-
-#### Actual Resolution Results
-Resolves `lib-a:1.0.0`. `lib-b` is NOT resolved.
-    *   *Reason*: SBT (via Ivy/Coursier) respects the `<optional>true</optional>` flag in Maven POMs. It treats optional dependencies as not transitive by default.
-
-#### Classpath Reality
-The classpath contains `lib-a-1.0.0.jar`. It does not contain `lib-b`.
+#### Reader Expectation
+Optional dependencies are omitted from the consumer's classpath by default.
 
 #### Why This Happens
-SBT/Ivy does not have a first-class "optional" flag in its dependency DSL. When consuming Maven dependencies that declare optional transitives, SBT respects the flag and does not include those transitives. When publishing your own library, simulating optionality requires either using configurations (e.g., making the dependency available in a non-default configuration) or manually editing the generated POM to add `<optional>true</optional>`.
+SBT/Ivy respects the Maven `<optional>true</optional>` flag, excluding those transitives to prevent consumer classpath pollution. Because SBT lacks a native "optional" keyword, simulating this for your own libraries typically requires custom configurations or manual POM editing.
 
 #### Deterministic Checks
 

@@ -17,7 +17,7 @@ graph LR
 ```{.scala include="/demos/sbt-demo/scenario-10-circular/build.sbt" snippet="s10-deps"}
 ```
 
-#### Expected Intuition
+#### Reader Expectation
 "This should fail. A depends on B, and B depends on A. It's an infinite loop."
 
 #### Actual Resolution Results

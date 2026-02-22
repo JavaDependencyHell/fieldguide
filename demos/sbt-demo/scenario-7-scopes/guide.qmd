@@ -21,43 +21,30 @@ graph LR
 ```{.scala include="/demos/sbt-demo/scenario-7-scopes/build.sbt" snippet="s7-deps"}
 ```
 
-#### Expected Intuition
-"I expect `lib-c` to be available in my tests but not in my main code. I expect `lib-b` to be available when I compile, but I don't want to package it because the server provides it."
+#### Reader Expectation
+`Test` dependencies are restricted to tests, while `Provided` is for compilation only (container-supplied).
 
 #### Actual Resolution Results
-*   `lib-a`: Available in `Compile` and `Runtime`.
-*   `lib-b`: Available in `Compile`, but not `Runtime` (unless provided by the environment).
-*   `lib-c`: Available only in `Test`.
-
-#### Classpath Reality
-*   **Compile Classpath:** Contains `lib-a`, `lib-b`.
-*   **Runtime Classpath:** Contains `lib-a`.
-*   **Test Classpath:** Contains `lib-a`, `lib-b`, `lib-c`.
+*   `lib-a`: `Compile` and `Runtime`.
+*   `lib-b`: `Compile` only.
+*   `lib-c`: `Test` only.
 
 #### Why This Happens
-SBT maps dependencies to Ivy configurations.
-*   **Default (no configuration):** Maps to `Compile`. It is transitive and available at runtime.
-*   **`% Test`:** Maps to `Test`. It is only available for test sources.
-*   **`% Provided`:** Maps to `Provided`. It is available at compile time but is not transitive and is not included in the runtime classpath (it is expected to be provided by the container, e.g., Spark or a Servlet container).
+SBT maps dependencies to Ivy configurations. Defaulting to `Compile` makes them transitive and runtime-available; `% Test` limits them to tests; `% Provided` assumes the environment (e.g., Spark) supplies them.
 
 #### Operational Risk
-
-*   **Low risk:** Using the `Test` configuration for test-only libraries like JUnit. This is the intended use.
-*   **Medium risk:** Using the `Provided` configuration. This is a common and necessary practice, but it introduces the risk that the runtime environment will not provide the dependency, or will provide an incompatible version.
-*   **High risk:** Using the `Compile` configuration for a dependency that is only needed at runtime. This can bloat the compile classpath and slow down builds. It can also lead to including unnecessary dependencies in the final application.
+*   **Low risk:** Use `Test` for test-only libraries.
+*   **Medium risk:** Use `Provided`; ensure the cluster or server actually provides the library.
+*   **High risk:** Use `Compile` for runtime-only libraries; this bloats artifacts and CI/CD pipelines.
 
 #### Deterministic Checks
+**Fast check (SBT):** `sbt 'show runtime:dependencyClasspath'`
+**Fast check (Maven):** `mvn dependency:tree -Dscope=runtime`
+**Fast check (Gradle):** `./gradlew dependencies --configuration runtimeClasspath`
 
-**Fast check (SBT):**
-```bash
-sbt 'show runtime:dependencyClasspath'
-```
+**What to look for:** Output showing the classpath for the selected configuration or scope.
 
-**What to look for:**
-The output will show the classpath for the `runtime` configuration. It will not include `provided` or `test` dependencies.
-
-**Conclusion:**
-Configurations are used to control which dependencies are available in which classpaths.
+**Conclusion:** Configurations determine which dependencies enter specific classpaths.
 
 #### How This Scales in Real Systems
 Correct configuration usage is essential for Scala/SBT projects that publish libraries. The `% Provided` configuration is commonly used for Spark and Hadoop dependencies in data engineering projects, where the cluster provides these libraries. Getting this wrong means either a bloated uber-JAR (wasting deployment bandwidth) or a runtime crash (missing classes).
@@ -70,4 +57,4 @@ Configurations control visibility and transitivity. Use `% Test` and `% Provided
 
 #### Seen in the Wild
 
-A data engineering team was building a Spark application and included the Spark libraries in the `Compile` configuration. This worked, but it created a very large "uber-jar" that was slow to deploy. The team switched to using the `Provided` configuration for the Spark libraries, which reduced the size of their application by hundreds of megabytes. This was possible because the Spark cluster already provides these libraries at runtime.
+A data engineering team was shipping a 300MB Spark "uber-jar" for a simple ETL job, wondering why their CI/CD was so sluggish. They'd been using `Compile` for all Spark libraries. After switching those to `% Provided`, the artifact shrank to 12MB. They realized they'd been uploading the entire Spark engine to the cluster on every single build, despite the cluster already having it installed.

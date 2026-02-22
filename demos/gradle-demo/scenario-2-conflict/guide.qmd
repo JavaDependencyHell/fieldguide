@@ -21,39 +21,31 @@ graph LR
 ```{.groovy include="/demos/gradle-demo/scenario-2-conflict/build.gradle" snippet="s2-deps"}
 ```
 
-#### Expected Intuition
-A Maven user might expect `1.0.0` (nearest). A Gradle user expects `2.0.0` (newest).
+#### Reader Expectation
+Maven users expect `1.0.0` (nearest), while Gradle users expect `2.0.0` (newest).
 
 #### Actual Resolution Results
 Resolves `lib-b:2.0.0`.
 
-#### Classpath Reality
-`lib-b-2.0.0.jar`.
-
 #### Why This Happens
-Gradle's default conflict resolution strategy assumes semantic versioning: a newer version of a library is backward-compatible with older versions and includes bug fixes and features that all consumers in the graph may need. By selecting the highest version, Gradle attempts to satisfy every consumer simultaneously. This is the opposite of Maven's "nearest wins" strategy, which prioritises the developer's explicit structural choices.
+Gradle assumes semantic versioning: the newest version is likely backward-compatible and contains necessary fixes or features. This "newest wins" approach contrasts with Maven's "nearest wins" logic.
 
 #### How This Scales in Real Systems
 "Newest Wins" generally produces fewer duplicate classes on the classpath and fewer "missing method" errors caused by accidental downgrades. However, it carries a different risk: if a library releases a breaking change (violating semver), Gradle may silently upgrade you to the broken version. This is particularly dangerous with libraries like Guava or Jackson that have historically made breaking changes between major versions.
 
 #### Operational Risk
-
-*   **Low risk:** Using a `strictly` constraint to pin a version. This is the safest, most explicit way to resolve a conflict.
-*   **Medium risk:** Using `resolutionStrategy.force`. This is effective but less granular than `strictly`.
-*   **High risk:** Relying on the default "newest wins" strategy without testing. This can lead to unexpected upgrades and breakages.
+*   **Low risk:** Use `strictly` constraints to pin versions.
+*   **Medium risk:** Use `resolutionStrategy.force`.
+*   **High risk:** Rely on default "newest wins" without testing; breaking changes in libraries like Guava or Jackson can cause silent failures.
 
 #### Deterministic Checks
+**Fast check (Gradle):** `./gradlew dependencyInsight --dependency <id>`
+**Fast check (Maven):** `mvn dependency:tree -Dverbose`
+**Fast check (SBT):** `sbt dependencyTree`
 
-**Fast check (Gradle):**
-```bash
-./gradlew dependencyInsight --dependency lib-b
-```
+**What to look for:** `(by conflict resolution)` (Gradle), `omitted for conflict` (Maven), or evicted nodes (SBT).
 
-**What to look for:**
-The phrase `lib-b:2.0.0 (by conflict resolution)` indicates that Gradle has chosen a version different from what you may have expected.
-
-**Conclusion:**
-Gradle has selected the newest version of `lib-b` found in the graph.
+**Conclusion:** Gradle selects the newest version found in the graph.
 
 #### Key Takeaway
 It upgrades you to the newest version found in the graph.
@@ -63,4 +55,4 @@ It upgrades you to the newest version found in the graph.
 
 #### Seen in the Wild
 
-A large e-commerce company discovered that a new version of a popular utility library was causing a subtle bug in their checkout process. The bug was only triggered under specific conditions and was not caught by their existing tests. Because they were using Gradle's "newest wins" strategy, the library was automatically upgraded, and the bug was introduced into production. They now use `strictly` constraints on all business-critical libraries.
+A large e-commerce company got bitten when a utility library's minor update broke their checkout process. Because they were using "newest wins", the library was automatically upgraded across dozens of microservices. They didn't even know it had happened until the alerts started firing. They now use `strictly` constraints on all business-critical libraries, essentially opting out of Gradle's "newest is better" assumption.
