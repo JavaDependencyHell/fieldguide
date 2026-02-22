@@ -85,7 +85,6 @@
 % Note / Seen in the Wild / Operational Risk
 % subtle tint, print-safe
 % --------------------------------------------------
-
 \newtcolorbox{calloutbox}{
   colback=black!3,
   colframe=black!40,
@@ -93,10 +92,13 @@
   arc=2pt,
   left=5pt,
   right=5pt,
-  top=4pt,
-  bottom=4pt
+  top=5pt,
+  bottom=5pt,
+  before upper={
+    \setlength{\parskip}{0.35em}
+    \setlength{\parindent}{0pt}
+  },
 }
-
 % --------------------------------------------------
 % Figure spacing — prevent float air gaps
 % --------------------------------------------------

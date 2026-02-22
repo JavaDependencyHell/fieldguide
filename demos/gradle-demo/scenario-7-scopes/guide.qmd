@@ -9,7 +9,6 @@ Most Common in Production
 This scenario demonstrates its configurations (`implementation`, `compileOnly`, `testImplementation`).
 :::
 
-#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR

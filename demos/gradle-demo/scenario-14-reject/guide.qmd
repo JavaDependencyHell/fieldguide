@@ -5,7 +5,6 @@
 This scenario demonstrates how to explicitly reject a specific version of a dependency, preventing it from being selected even if it is the newest version.
 :::
 
-#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR

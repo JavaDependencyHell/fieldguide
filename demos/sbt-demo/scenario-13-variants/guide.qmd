@@ -5,7 +5,6 @@
 This scenario demonstrates how SBT handles variant selection using configurations and classifiers.
 :::
 
-#### Dependency Graph
 N/A
 
 #### SBT (build.sbt)

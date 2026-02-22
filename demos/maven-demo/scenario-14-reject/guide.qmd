@@ -6,7 +6,7 @@
 This scenario demonstrates how to prevent a specific version of a dependency from appearing anywhere in your build. Maven has no native "reject" keyword, but the Maven Enforcer Plugin provides an effective workaround.
 :::
 
-#### Maven (pom.xml)
+
 
 ```{.xml include="/demos/maven-demo/scenario-14-reject/pom.xml" snippet="s14-enforcer"}
 ```

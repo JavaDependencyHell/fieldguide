@@ -5,7 +5,6 @@
 This scenario demonstrates how to use Maven BOMs (Bill of Materials) in Gradle using the `platform()` method.
 :::
 
-#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR

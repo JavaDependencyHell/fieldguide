@@ -9,7 +9,6 @@ Most Common in Production
 This scenario demonstrates its default "Newest Wins" conflict resolution strategy.
 :::
 
-#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR

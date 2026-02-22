@@ -9,7 +9,6 @@ Most Common in Production
 This scenario demonstrates Gradle's support for version ranges.
 :::
 
-#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR

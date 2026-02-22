@@ -5,7 +5,6 @@
 This scenario demonstrates how SBT handles circular dependencies between external libraries.
 :::
 
-#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR

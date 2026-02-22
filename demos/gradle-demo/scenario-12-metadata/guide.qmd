@@ -5,7 +5,6 @@
 This scenario demonstrates how to fix incorrect or missing metadata in third-party libraries using Gradle's Component Metadata Rules.
 :::
 
-#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR

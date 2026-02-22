@@ -5,7 +5,6 @@
 This scenario demonstrates fundamental concept of transitive dependency resolution. It shows how it automatically discovers and includes dependencies of your direct dependencies.
 :::
 
-#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR

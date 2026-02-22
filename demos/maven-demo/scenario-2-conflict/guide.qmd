@@ -10,7 +10,6 @@ This scenario demonstrates the "Diamond Dependency" problem where two different 
 It highlights the fundamental difference in resolution strategies between Maven ("Nearest Wins") and Gradle/SBT ("Newest Wins").
 :::
 
-#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
@@ -19,7 +18,7 @@ graph LR
     LibA --> LibB_Transitive[lib-b:2.0.0]
 ```
 
-#### Maven (pom.xml)
+
 
 ```{.xml include="/demos/maven-demo/scenario-2-conflict/pom.xml" snippet="s2-deps"}
 ```
@@ -70,6 +69,14 @@ Maven optimizes for "distance", while Gradle and SBT optimize for "freshness" â€
 #### Related Scenarios
 *   [Scenario 3: Dependency Management](../scenario-3-mgmt/guide.qmd) - How to fix this centrally.
 
-#### Seen in the Wild
 
-A number of financial institutions discovered vulnerable versions of Apache Commons Collections deep in their transitive graphs, often buried three levels deep in vendor SDKs. In many cases, they couldn't upgrade the SDK itself. Because Maven's "nearest wins" logic often favored the older, vulnerable version (due to it being slightly "closer" to the root), they utilized `<dependencyManagement>` to pin the patched version globally. This allowed them to satisfy security audits without extensive regression testing of the vendor SDK.
+::: {.calloutbox}
+**Seen in the Wild**
+
+A number of financial institutions discovered vulnerable versions of Apache Commons Collections deep in their transitive graphs, often buried three levels deep in vendor SDKs.
+
+In many cases, they couldn't upgrade the SDK itself. Because Maven's "nearest wins" logic often favored the older, vulnerable version (due to it being slightly "closer" to the root).
+
+They utilized `<dependencyManagement>` to pin the patched version globally. This allowed them to satisfy security audits without extensive regression testing of the vendor SDK.
+
+:::

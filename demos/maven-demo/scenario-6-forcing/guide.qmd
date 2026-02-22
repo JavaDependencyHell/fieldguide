@@ -5,7 +5,6 @@
 This scenario demonstrates how to force a specific version of a transitive dependency, overriding what the intermediate libraries request.
 :::
 
-#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
@@ -15,7 +14,7 @@ graph LR
     Root -- forces --> LibC_Forced[lib-c:2.0.0]
 ```
 
-#### Maven (pom.xml)
+
 
 ```{.xml include="/demos/maven-demo/scenario-6-forcing/pom.xml" snippet="s6-deps"}
 ```

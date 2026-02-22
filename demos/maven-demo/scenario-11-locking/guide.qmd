@@ -9,7 +9,7 @@ Most Common in Production
 ## 11. Dependency Locking
 :::
 
-#### Maven (pom.xml)
+
 
 ```{.xml include="/demos/maven-demo/scenario-11-locking/pom.xml" snippet="s11-deps"}
 ```

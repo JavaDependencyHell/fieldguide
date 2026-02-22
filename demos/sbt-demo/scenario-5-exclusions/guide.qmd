@@ -18,7 +18,6 @@ Most Common in Production
 This scenario demonstrates exclusions.
 :::
 
-#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR

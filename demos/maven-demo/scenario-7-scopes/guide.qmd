@@ -9,7 +9,6 @@ Most Common in Production
 This scenario demonstrates how scopes (`compile`, `provided`, `test`, `runtime`) affect transitivity and the final classpath.
 :::
 
-#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
@@ -18,7 +17,7 @@ graph LR
     Root --> LibC["lib-c:1.0.0 (test)"]
 ```
 
-#### Maven (pom.xml)
+
 
 ```{.xml include="/demos/maven-demo/scenario-7-scopes/pom.xml" snippet="s7-deps"}
 ```

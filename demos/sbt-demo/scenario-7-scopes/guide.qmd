@@ -9,7 +9,6 @@ Most Common in Production
 This scenario demonstrates SBT's dependency configurations (similar to Maven scopes), such as `Compile`, `Test`, and `Provided`.
 :::
 
-#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR

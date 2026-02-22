@@ -6,7 +6,6 @@ This scenario shows how to incorporate a private, third-party repository that pr
 This is a common enterprise pattern when a vendor provides long-term support for a library (like Spring Boot) after its official EOL date.
 :::
 
-#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR

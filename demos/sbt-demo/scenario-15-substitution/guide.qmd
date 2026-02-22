@@ -5,7 +5,6 @@
 This scenario demonstrates how to substitute dependencies in SBT.
 :::
 
-#### Dependency Graph
 N/A
 
 #### SBT (build.sbt)

@@ -9,7 +9,6 @@ Most Common in Production
 This scenario demonstrates how to lock dependencies in SBT to ensure that builds are reproducible, even when using dynamic versions.
 :::
 
-#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR

@@ -9,7 +9,6 @@ Most Common in Production
 This scenario demonstrates how to surgically remove a transitive dependency from the graph. This is a common "sledgehammer" fix for conflicts.
 :::
 
-#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
@@ -18,7 +17,7 @@ graph LR
     Root -- excludes --> LibC
 ```
 
-#### Maven (pom.xml)
+
 
 ```{.xml include="/demos/maven-demo/scenario-5-exclusions/pom.xml" snippet="s5-deps"}
 ```

@@ -5,7 +5,6 @@
 This scenario demonstrates how to use a Bill of Materials (BOM) or `<dependencyManagement>` block to centralize version definitions. This decouples "what I need" from "which version I need".
 :::
 
-#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
@@ -16,7 +15,7 @@ graph LR
     BOM -. defines .-> LibB_Ver[lib-b:1.0.0]
 ```
 
-#### Maven (pom.xml)
+
 
 ```{.xml include="/demos/maven-demo/scenario-3-mgmt/pom.xml" snippet="s3-deps"}
 ```

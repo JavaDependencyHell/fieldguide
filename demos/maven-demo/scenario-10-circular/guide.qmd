@@ -5,7 +5,6 @@
 This scenario demonstrates how build tools handle cycles in the dependency graph (A -> B -> A).
 :::
 
-#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
@@ -14,7 +13,7 @@ graph LR
     LibB --> LibA
 ```
 
-#### Maven (pom.xml)
+
 
 ```{.xml include="/demos/maven-demo/scenario-10-circular/pom.xml" snippet="s10-deps"}
 ```

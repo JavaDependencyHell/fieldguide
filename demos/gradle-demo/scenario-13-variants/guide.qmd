@@ -5,7 +5,6 @@
 This scenario demonstrates Gradle's attribute-based dependency matching, which allows it to select the correct variant of a library (e.g., Java 8 vs Java 11, debug vs release) based on the consumer's needs.
 :::
 
-#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR

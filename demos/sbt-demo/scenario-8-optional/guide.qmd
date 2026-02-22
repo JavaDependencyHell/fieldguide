@@ -5,7 +5,6 @@
 This scenario demonstrates how SBT handles optional dependencies.
 :::
 
-#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR

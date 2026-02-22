@@ -9,7 +9,6 @@ Most Common in Production
 This scenario demonstrates how explicit version declarations in `libraryDependencies` can override managed versions or defaults.
 :::
 
-#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR

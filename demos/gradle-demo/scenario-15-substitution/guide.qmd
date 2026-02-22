@@ -5,7 +5,6 @@
 This scenario demonstrates how to completely replace one dependency with another (or a different version of the same dependency) using Gradle's dependency substitution rules.
 :::
 
-#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR

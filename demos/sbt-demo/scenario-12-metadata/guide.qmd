@@ -5,7 +5,6 @@
 This scenario demonstrates how to handle incorrect metadata in SBT.
 :::
 
-#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR

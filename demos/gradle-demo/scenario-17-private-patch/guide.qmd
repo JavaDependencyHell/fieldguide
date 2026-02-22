@@ -6,7 +6,6 @@ This scenario shows a more direct way to use a private, third-party repository. 
 This approach is simpler than the BOM method but can be more verbose if many dependencies need to be overridden. It is suitable for one-off patches or when a full BOM is not available.
 :::
 
-#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR

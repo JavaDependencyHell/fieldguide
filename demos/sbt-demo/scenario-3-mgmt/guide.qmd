@@ -5,7 +5,6 @@
 This scenario demonstrates how to manage dependency versions centrally in SBT, similar to Maven's `<dependencyManagement>`.
 :::
 
-#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR

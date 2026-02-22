@@ -5,7 +5,6 @@
 This scenario demonstrates the fundamental concept of transitive dependency resolution in SBT.
 :::
 
-#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR

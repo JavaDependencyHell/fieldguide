@@ -9,7 +9,6 @@ Most Common in Production
 This scenario shows what happens when you have a conflict between a version defined in a BOM (Dependency Management) and a version explicitly declared in your dependencies.
 :::
 
-#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
@@ -20,7 +19,7 @@ graph LR
     BOM -. suggests .-> LibB_BOM[lib-b:1.0.0]
 ```
 
-#### Maven (pom.xml)
+
 
 ```{.xml include="/demos/maven-demo/scenario-4-override/pom.xml" snippet="s4-deps"}
 ```

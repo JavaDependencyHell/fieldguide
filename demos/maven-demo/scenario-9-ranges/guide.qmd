@@ -9,14 +9,13 @@ Most Common in Production
 This scenario demonstrates dynamic version resolution using ranges (e.g., `[1.0, 2.0)`).
 :::
 
-#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
     Root["Project Root"] --> LibA["lib-a:[1.0.0,2.0.0)"]
 ```
 
-#### Maven (pom.xml)
+
 
 ```{.xml include="/demos/maven-demo/scenario-9-ranges/pom.xml" snippet="s9-deps"}
 ```

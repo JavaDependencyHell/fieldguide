@@ -5,7 +5,6 @@
 This scenario demonstrates the fundamental concept of transitive dependency resolution. It shows how a build tool automatically discovers and includes dependencies of your direct dependencies, forming a dependency graph. This is the "happy path" where no conflicts exist.
 :::
 
-#### Dependency Graph
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
@@ -14,7 +13,7 @@ graph LR
     LibB --> LibC(lib-c:1.0.0)
 ```
 
-#### Maven (pom.xml)
+
 
 ```{.xml include="/demos/maven-demo/scenario-1-basic/pom.xml" snippet="s1-deps"}
 ```
