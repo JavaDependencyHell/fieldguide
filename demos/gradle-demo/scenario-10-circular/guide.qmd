@@ -13,7 +13,7 @@ graph LR
     LibB --> LibA
 ```
 
-#### Gradle (Groovy DSL)
+
 
 ```{.groovy include="/demos/gradle-demo/scenario-10-circular/build.gradle" snippet="s10-deps"}
 ```

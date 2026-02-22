@@ -13,7 +13,7 @@ graph LR
     Root --> LibB[lib-b]
 ```
 
-#### Gradle (Groovy DSL)
+
 
 ```{.groovy include="/demos/gradle-demo/scenario-3-mgmt/build.gradle" snippet="s3-deps"}
 ```

@@ -13,7 +13,7 @@ graph LR
     Root -- force --> LibC_Forced[lib-c:2.0.0]
 ```
 
-#### Gradle (Groovy DSL)
+
 
 ```{.groovy include="/demos/gradle-demo/scenario-6-forcing/build.gradle" snippet="s6-deps"}
 ```

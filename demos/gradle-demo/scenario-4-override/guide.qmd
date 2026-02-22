@@ -16,7 +16,7 @@ graph LR
     Root --> LibA[lib-a:2.0.0]
 ```
 
-#### Gradle (Groovy DSL)
+
 
 ```{.groovy include="/demos/gradle-demo/scenario-4-override/build.gradle" snippet="s4-deps"}
 ```
@@ -52,6 +52,11 @@ Explicit versions override standard platforms. Use `enforcedPlatform` if you wan
 #### Related Scenarios
 *   [Scenario 3: Mgmt](../scenario-3-mgmt/guide.qmd) - How platforms work.
 
-#### Seen in the Wild
+::: {.calloutbox}
+**Seen in the Wild**
 
-Teams often use platforms to manage their dependencies while still needing to test new features in specific libraries not yet updated in the platform. By overriding the version in their local build file, they can test these new features without waiting for a platform-wide update.
+Teams often use platforms to manage their dependencies while still needing to test new features in specific libraries not yet updated in the platform.
+
+By overriding the version in their local build file, they can test these new features without waiting for a platform-wide update.
+
+:::

@@ -58,6 +58,11 @@ SBT defaults to the latest version found in the graph, regardless of depth.
 #### Related Scenarios
 *   [Scenario 6: Forcing Versions](../scenario-6-forcing/guide.md) - How to override this behavior.
 
-#### Seen in the Wild
+::: {.callout}
+**Seen in the Wild**
 
-Data engineering teams often encounter `NoSuchMethodError` at runtime when a new library pulls in a newer AWS SDK, evicting the version required by the core storage layer. Since these failures often only surface during heavy production jobs, many teams use `dependencyOverrides` to pin critical SDKs, preferring build-time friction over runtime crashes.
+Data engineering teams often encounter `NoSuchMethodError` at runtime when a new library pulls in a newer AWS SDK, evicting the version required by the core storage layer.
+
+Since these failures often only surface during heavy production jobs, many teams use `dependencyOverrides` to pin critical SDKs, preferring build-time friction over runtime crashes.
+
+:::

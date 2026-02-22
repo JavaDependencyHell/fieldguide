@@ -11,7 +11,7 @@ graph LR
     Root[Project Root] --> LibA["lib-a:1.0.0 (compileOnly)"]
 ```
 
-#### Gradle (Groovy DSL)
+
 
 ```{.groovy include="/demos/gradle-demo/scenario-8-optional/build.gradle" snippet="s8-deps"}
 ```

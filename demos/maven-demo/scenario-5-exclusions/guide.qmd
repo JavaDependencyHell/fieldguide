@@ -54,6 +54,11 @@ Exclusions are powerful but dangerous; use them only when you know the dependent
 #### Related Scenarios
 *   [Scenario 15: Substitution](../scenario-15-substitution/guide.qmd) - Replacing a library instead of just removing it.
 
-#### Seen in the Wild
+::: {.calloutbox}
+**Seen in the Wild**
 
-License compliance scans frequently uncover GPL-licensed libraries pulled in transitively. A common enterprise response is to exclude the offending dependency and substitute a permissively licensed alternative, verifying at runtime that the upstream library still functions.
+License compliance scans frequently uncover GPL-licensed libraries pulled in transitively.
+
+A common enterprise response is to exclude the offending dependency and substitute a permissively licensed alternative, verifying at runtime that the upstream library still functions.
+
+:::

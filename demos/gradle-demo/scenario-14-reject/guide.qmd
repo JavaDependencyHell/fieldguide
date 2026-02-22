@@ -12,7 +12,7 @@ graph LR
     Root -- reject --> LibA_Bad[lib-a:2.0.0]
 ```
 
-#### Gradle (Groovy DSL)
+
 
 ```{.groovy include="/demos/gradle-demo/scenario-14-reject/build.gradle" snippet="s14-deps"}
 ```

@@ -17,7 +17,7 @@ graph LR
     Root -- exclude --> LibC
 ```
 
-#### Gradle (Groovy DSL)
+
 
 ```{.groovy include="/demos/gradle-demo/scenario-5-exclusions/build.gradle" snippet="s5-deps"}
 ```
@@ -48,6 +48,9 @@ Exclusions work as expected.
 #### Related Scenarios
 *   [Scenario 15: Substitution](../scenario-15-substitution/guide.qmd)
 
-#### Seen in the Wild
+::: {.calloutbox}
+**Seen in the Wild**
 
 Mobile teams frequently use exclusions to remove large transitive libraries (such as legacy analytics or duplicate support libraries) in order to reduce final APK size.
+
+:::

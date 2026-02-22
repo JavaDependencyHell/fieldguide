@@ -55,6 +55,11 @@ Explicit declarations in `libraryDependencies` are your primary way of requestin
 #### Related Scenarios
 *   [Scenario 6: Forcing Versions](../scenario-6-forcing/guide.md) - Using `dependencyOverrides` for stricter control.
 
-#### Seen in the Wild
+::: {.callout}
+**Seen in the Wild**
 
-When facing bugs in specific library versions, teams can use `dependencyOverrides` to force a known-good version. This avoids waiting for a new release of the library while still ensuring the bug doesn't impact production.
+When facing bugs in specific library versions, teams can use `dependencyOverrides` to force a known-good version.
+
+This avoids waiting for a new release of the library while still ensuring the bug doesn't impact production.
+
+:::

@@ -12,7 +12,7 @@ graph LR
     Root -- substitute --> LibA_New[lib-a:2.0.0]
 ```
 
-#### Gradle (Groovy DSL)
+
 
 ```{.groovy include="/demos/gradle-demo/scenario-15-substitution/build.gradle" snippet="s15-deps"}
 ```
@@ -49,6 +49,11 @@ Dependency substitution allows you to swap modules or versions cleanly, handling
 #### Related Scenarios
 *   [Scenario 5: Exclusions](../scenario-5-exclusions/guide.md) - Removing dependencies without replacement.
 
-#### Seen in the Wild
+::: {.calloutbox}
+**Seen in the Wild**
 
-When developing a new feature in a library used by several other projects, teams can use composite builds to substitute the binary dependency with a local project. This allows testing in context without publishing new library versions.
+When developing a new feature in a library used by several other projects, teams can use composite builds to substitute the binary dependency with a local project.
+
+This allows testing in context without publishing new library versions.
+
+:::

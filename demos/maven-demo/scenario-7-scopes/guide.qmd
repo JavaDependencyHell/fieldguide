@@ -64,6 +64,13 @@ Scopes control the visibility and transitivity of dependencies; use them to keep
 #### Related Scenarios
 *   [Scenario 8: Optional](../scenario-8-optional/guide.qmd) - Another way to limit transitivity.
 
-#### Seen in the Wild
+::: {.calloutbox}
+**Seen in the Wild**
 
-A common production failure occurs when a web application works fine in an IDE but fails after deployment with a `NoClassDefFoundError`. This often happens because `provided` was used for a library that the application server does not actually supply. Teams then discover that changing the scope to `compile` (the default) correctly bundles the missing JAR into the final artifact.
+A common production failure occurs when a web application works fine in an IDE but fails after deployment with a `NoClassDefFoundError`.
+
+This often happens because `provided` was used for a library that the application server does not actually supply.
+
+Teams then discover that changing the scope to `compile` (the default) correctly bundles the missing JAR into the final artifact.
+
+:::

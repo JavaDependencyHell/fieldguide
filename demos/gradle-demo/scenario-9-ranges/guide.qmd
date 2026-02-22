@@ -15,7 +15,7 @@ graph LR
     Root[Project Root] --> LibA[lib-a:1.+]
 ```
 
-#### Gradle (Groovy DSL)
+
 
 ```{.groovy include="/demos/gradle-demo/scenario-9-ranges/build.gradle" snippet="s9-deps"}
 ```
@@ -49,6 +49,10 @@ Ranges work but are dynamic.
 #### Related Scenarios
 *   [Scenario 11: Locking](../scenario-11-locking/guide.md)
 
-#### Seen in the Wild
+::: {.calloutbox}
+**Seen in the Wild**
 
-A well-known failure mode with version ranges occurs when CI resolves a newly published dependency that developer machines have not yet seen due to local caching. The result is a build that suddenly fails without any source changes.
+A well-known failure mode with version ranges occurs when CI resolves a newly published dependency that developer machines have not yet seen due to local caching.
+
+The result is a build that suddenly fails without any source changes.
+:::

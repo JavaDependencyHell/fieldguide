@@ -56,6 +56,11 @@ Configurations control visibility and transitivity. Use `% Test` and `% Provided
 #### Related Scenarios
 *   [Scenario 8: Optional](../scenario-8-optional/guide.md)
 
-#### Seen in the Wild
+::: {.callout}
+**Seen in the Wild**
 
-Data engineering teams often find themselves shipping "uber-jars" hundreds of megabytes in size, despite the cluster environment already containing the core Spark libraries. By switching these dependencies to `% Provided`, the artifact size can drop to tens of megabytes, significantly reducing deployment time and CI/CD overhead.
+Data engineering teams often find themselves shipping "uber-jars" hundreds of megabytes in size, despite the cluster environment already containing the core Spark libraries.
+
+By switching these dependencies to `% Provided`, the artifact size can drop to tens of megabytes, significantly reducing deployment time and CI/CD overhead.
+
+:::

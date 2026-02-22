@@ -55,6 +55,10 @@ Maven has no graph-wide substitution mechanism. Use exclusions on each path plus
 - Scenario 14: Rejecting a Version — Using the Enforcer Plugin to prevent the old library from returning.
 - Scenario 6: Forcing Transitive Versions — An alternative when only the version (not the artifact) needs to change.
 
-#### Seen in the Wild
+::: {.calloutbox}
+**Seen in the Wild**
 
-Large enterprise projects migrating from `javax.servlet` to `jakarta.servlet` often face hundreds of modules that cannot be updated simultaneously. Using the Maven Shade Plugin to relocate classes at build time allows for incremental migration, one module at a time, without breaking the overall application.
+Large enterprise projects migrating from `javax.servlet` to `jakarta.servlet` often face hundreds of modules that cannot be updated simultaneously.
+
+Using the Maven Shade Plugin to relocate classes at build time allows for incremental migration, one module at a time, without breaking the overall application.
+:::

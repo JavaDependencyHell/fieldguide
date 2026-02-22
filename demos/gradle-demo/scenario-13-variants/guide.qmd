@@ -12,7 +12,7 @@ graph LR
     LibA -- variant --> LibA_Java11["lib-a:1.0.0 (Java 11)"]
 ```
 
-#### Gradle (Groovy DSL)
+
 
 ```{.groovy include="/demos/gradle-demo/scenario-13-variants/build.gradle" snippet="s13-deps"}
 ```

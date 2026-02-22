@@ -17,7 +17,7 @@ graph LR
     Root --> LibC["lib-c:1.0.0 (testImplementation)"]
 ```
 
-#### Gradle (Groovy DSL)
+
 
 ```{.groovy include="/demos/gradle-demo/scenario-7-scopes/build.gradle" snippet="s7-deps"}
 ```
@@ -48,6 +48,13 @@ Configurations control transitivity and packaging.
 #### Related Scenarios
 *   [Scenario 8: Optional](../scenario-8-optional/guide.md)
 
-#### Seen in the Wild
 
-In large multi-module builds, initially using `api` for all internal dependencies can cause dramatic recompile times. A single change in a low-level utility module can trigger a full project rebuild. By systematically switching to `implementation`, teams can encapsulate their build graph, reducing compile times from minutes to seconds.
+::: {.calloutbox}
+**Seen in the Wild**
+
+In large multi-module builds, initially using `api` for all internal dependencies can cause dramatic recompile times.
+
+A single change in a low-level utility module can trigger a full project rebuild.
+
+By systematically switching to `implementation`, teams can encapsulate their build graph, reducing compile times from minutes to seconds.
+:::

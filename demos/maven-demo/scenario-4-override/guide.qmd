@@ -54,6 +54,13 @@ Explicit declarations generally trump managed recommendations, allowing for targ
 #### Related Scenarios
 *   [Scenario 6: Forcing Transitive Versions via Dependency Management](../scenario-6-forcing/guide.qmd) - How to force a version even against explicit declarations.
 
-#### Seen in the Wild
+::: {.calloutbox}
+**Seen in the Wild**
 
-Many teams using the Spring Boot BOM encountered cases where a patched library version was required before an updated BOM was available. By declaring the patched version explicitly in their `<dependencies>` block, they overrode the BOM's "safe" suggestion. This allowed them to ship a fix in hours rather than waiting days for the platform maintainers to release a synchronized update.
+Many teams using the Spring Boot BOM encountered cases where a patched library version was required before an updated BOM was available.
+
+By declaring the patched version explicitly in their `<dependencies>` block, they overrode the BOM's "safe" suggestion.
+
+This allowed them to ship a fix in hours rather than waiting days for the platform maintainers to release a synchronized update.
+
+:::

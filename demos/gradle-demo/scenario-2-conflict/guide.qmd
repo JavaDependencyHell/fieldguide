@@ -17,7 +17,7 @@ graph LR
     LibA --> LibB_Transitive[lib-b:2.0.0]
 ```
 
-#### Gradle (Groovy DSL)
+
 
 ```{.groovy include="/demos/gradle-demo/scenario-2-conflict/build.gradle" snippet="s2-deps"}
 ```
@@ -54,6 +54,13 @@ It upgrades you to the newest version found in the graph.
 #### Related Scenarios
 *   [Scenario 6: Strict](../scenario-6-forcing/guide.qmd)
 
-#### Seen in the Wild
+::: {.calloutbox}
+**Seen in the Wild**
 
-In large e-commerce architectures using "newest wins" strategies, minor updates in utility libraries can automatically propagate across dozens of microservices. This risks silent regressions if the library violates semantic versioning. To mitigate this, many organizations use `strictly` constraints on business-critical libraries, opting out of automatic "newest is better" upgrades.
+In large e-commerce architectures using "newest wins" strategies, minor updates in utility libraries can automatically propagate across dozens of microservices.
+
+This risks silent regressions if the library violates semantic versioning.
+
+To mitigate this, many organizations use `strictly` constraints on business-critical libraries, opting out of automatic "newest is better" upgrades.
+
+:::

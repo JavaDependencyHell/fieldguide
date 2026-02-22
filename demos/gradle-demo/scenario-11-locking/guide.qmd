@@ -15,7 +15,7 @@ graph LR
     Root[Project Root] --> LibA[lib-a:1.+]
 ```
 
-#### Gradle (Groovy DSL)
+
 
 ```{.groovy include="/demos/gradle-demo/scenario-11-locking/build.gradle" snippet="s11-deps"}
 ```

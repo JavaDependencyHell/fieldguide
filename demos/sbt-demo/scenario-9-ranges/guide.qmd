@@ -46,6 +46,11 @@ Ranges provide automatic upgrades but sacrifice build reproducibility. Use depen
 #### Related Scenarios
 *   [Scenario 11: Locking](../scenario-11-locking/guide.md) - How to freeze dynamic versions.
 
-#### Seen in the Wild
+::: {.callout}
+**Seen in the Wild**
 
-A well-known failure mode with version ranges occurs when CI resolves a newly published dependency that developer machines have not yet seen due to local caching. The result is a build that suddenly fails without any source changes.
+A well-known failure mode with version ranges occurs when CI resolves a newly published dependency that developer machines have not yet seen due to local caching.
+
+The result is a build that suddenly fails without any source changes.
+
+:::

@@ -13,7 +13,7 @@ graph LR
     LibB --> LibC[lib-c:1.0.0]
 ```
 
-#### Gradle (Groovy DSL)
+
 
 ```{.groovy include="/demos/gradle-demo/scenario-1-basic/build.gradle" snippet="s1-deps"}
 ```

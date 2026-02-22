@@ -63,6 +63,11 @@ Exclusions work.
 #### Related Scenarios
 N/A
 
-#### Seen in the Wild
+::: {.callout}
+**Seen in the Wild**
 
-A recurring issue in Scala ecosystems occurs when libraries depend on different Scala binary versions (for example, 2.12 vs 2.13). Teams often resolve this by excluding the unwanted variant and adding a direct dependency on the aligned version.
+A recurring issue in Scala ecosystems occurs when libraries depend on different Scala binary versions (for example, 2.12 vs 2.13).
+
+Teams often resolve this by excluding the unwanted variant and adding a direct dependency on the aligned version.
+
+:::

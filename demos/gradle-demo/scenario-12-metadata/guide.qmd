@@ -13,7 +13,7 @@ graph LR
     LibB -.-> LibB_Fixed[lib-b:2.0.0]
 ```
 
-#### Gradle (Groovy DSL)
+
 
 ```{.groovy include="/demos/gradle-demo/scenario-12-metadata/build.gradle" snippet="s12-deps"}
 ```
