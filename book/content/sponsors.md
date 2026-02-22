@@ -1,13 +1,5 @@
 # About HeroDevs {.unnumbered}
 
-This book explores how dependency resolution works, where its guarantees end, and how those boundaries affect long-lived software systems.
+This book focuses on how dependency resolution works in the real world—specifically where its guarantees end and how that impacts aging software systems. Because of this focus on realistic constraints and long-term maintenance, the project received support from HeroDevs.
 
-HeroDevs supports this work because it operates in the same problem space: maintaining, securing, and operating software that continues to matter after parts of its ecosystem have reached end of life.
-
-That perspective informs an emphasis on mechanical behaviour, responsibility boundaries, and realistic constraints rather than idealised upgrade paths.
-
-This support reflects alignment, not endorsement. The book explains how dependency systems behave.
-
-HeroDevs exists for what happens when those behaviours meet time, policy, and operational reality.
-
-More information about HeroDevs and its Never-Ending Support approach to open-source software is available at herodevs.com.
+HeroDevs operates in a similar space, securing and maintaining software ecosystems that have reached end-of-life. To be clear, their support is a reflection of shared interests in software longevity, not an endorsement. You can learn more about their specific work at herodevs.com

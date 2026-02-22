@@ -1,0 +1,19 @@
+# Start Here for Troubleshooting Dependency Issues {.unnumbered}
+
+Has something in your build has started behaving differently? A version changed, a class disappeared, or the runtime no longer matches what you expected? You’re in the right place. Don’t read this book front to back. Treat it like a field guide: find the symptom that looks closest to your situation and jump straight to that scenario.
+
+### What to do next
+
+- Version changed unexpectedly → Scenario 2: Version Conflict Resolution
+
+- Explicit version not honoured → Scenario 2, then Scenario 6
+
+- Compiles but fails at runtime → Scenario 7: Dependency Scopes, also check Scenario 5
+
+- Build worked yesterday but not today → Scenario 9: Version Ranges, then Scenario 11
+
+- Unwanted library keeps appearing → Scenario 5, then Scenario 15
+
+- Fixed a version but it keeps reverting → Scenario 6, and Scenario 14
+
+- Dependency tree looks wrong but not sure why → Scenario 1, then Scenario 3
