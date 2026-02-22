@@ -1,0 +1,12 @@
+format:
+  pdf:
+    # Use the native KOMA-Script option for 5.5 x 8.5
+    classoption: [halfletter, DIV=12, openany]
+    geometry:
+      - top=0.7in
+      - bottom=0.7in
+      - left=0.6in
+      - right=0.6in
+    # Include a dedicated tuning file for the different aspect ratio
+    include-in-header:
+      - latex/halfletter-tuning.tex

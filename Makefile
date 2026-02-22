@@ -2,12 +2,16 @@
 
 # Define variables for reuse
 BUILD_DIR = build/book
+US_BUILD_DIR = build/us-book
 PDF_OUTPUT = $(BUILD_DIR)/Dependency-Hell.pdf
+US_PDF_OUTPUT = $(US_BUILD_DIR)/Dependency-Hell.pdf
 FINAL_PDF = $(BUILD_DIR)/book.pdf
+US_FINAL_PDF = $(US_BUILD_DIR)/book.pdf
 SAMPLE_PDF = $(BUILD_DIR)/sample.pdf
+US_SAMPLE_PDF = $(US_BUILD_DIR)/sample.pdf
 FRONT_IMAGE = book/content/front-image.pdf
 
-.PHONY: all init utils book book-html book-pdf sample verify verify-maven verify-gradle verify-sbt clean help check-quarto check-qpdf
+.PHONY: all init utils book book-html book-pdf us-book sample us-sample verify verify-maven verify-gradle verify-sbt clean help check-quarto check-qpdf
 
 # Default target
 all: init book verify
@@ -21,7 +25,9 @@ help:
 	@echo "  utils          - Build demo-utils"
 	@echo "  book-html      - Render the Quarto book (HTML)"
 	@echo "  book           - Render the Quarto book (PDF)"
+	@echo "  us-book        - Render the Quarto book (US Half-Letter PDF)"
 	@echo "  sample         - Generate a sample PDF from the book"
+	@echo "  us-sample      - Generate a US Half-Letter sample PDF"
 	@echo "  verify         - Run all verification scripts"
 	@echo "  verify-maven   - Run Maven-specific verification"
 	@echo "  verify-gradle  - Run Gradle-specific verification"
@@ -51,6 +57,16 @@ book-html: check-quarto
 
 book-pdf: book
 
+# Render the US book (PDF) and apply post-processing
+us-book: check-quarto check-qpdf
+	@echo "Generating US Half-Letter Book (PDF)..."
+	quarto render --profile halfletter --to pdf --output-dir $(US_BUILD_DIR)
+	@echo "Removing first blank page from PDF..."
+	qpdf $(US_PDF_OUTPUT) --pages . 2-z -- $(US_PDF_OUTPUT).tmp && mv $(US_PDF_OUTPUT).tmp $(US_PDF_OUTPUT)
+	@echo "Cleaning up intermediate files..."
+	find -L demos -name "guide_files" -type d -exec rm -rf {} +
+	@echo "US Book generation complete. Output in $(US_BUILD_DIR)/"
+
 # Generate a sample PDF
 sample: book
 	@echo "Generating Sample PDF..."
@@ -59,6 +75,17 @@ sample: book
 		echo "Sample generation complete. Output in $(SAMPLE_PDF)"; \
 	else \
 		echo "Error: $(FINAL_PDF) not found. Run 'make book' first."; \
+		exit 1; \
+	fi
+
+# Generate a US sample PDF
+us-sample: us-book
+	@echo "Generating US Half-Letter Sample PDF..."
+	@if [ -f $(US_FINAL_PDF) ]; then \
+		qpdf $(US_FINAL_PDF) --pages . 1,7,8-18,29-31,38-40,44-47,48,60-63,84-87,89-92 -- $(US_SAMPLE_PDF); \
+		echo "US Sample generation complete. Output in $(US_SAMPLE_PDF)"; \
+	else \
+		echo "Error: $(US_FINAL_PDF) not found. Run 'make us-book' first."; \
 		exit 1; \
 	fi
 
