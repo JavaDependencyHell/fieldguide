@@ -1,7 +1,9 @@
 # Forcing Transitive Versions via Dependency Management
 *or what to Do When a Transitive Dependency is the Wrong Version*
 
+::: {.scenario}
 This scenario demonstrates how to force a specific version of a transitive dependency, overriding what the intermediate libraries request.
+:::
 
 #### Dependency Graph
 ```{mermaid}
@@ -45,6 +47,7 @@ This is a safe and recommended pattern for enforcing policy.
 #### Deterministic Checks
 
 **Fast check (Maven):**
+
 ```bash
 mvn dependency:tree
 ```

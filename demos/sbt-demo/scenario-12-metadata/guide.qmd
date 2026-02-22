@@ -1,7 +1,9 @@
 # Customizing Metadata
 *or what to Do When the Upstream POM is Wrong*
 
+::: {.scenario}
 This scenario demonstrates how to handle incorrect metadata in SBT.
+:::
 
 #### Dependency Graph
 ```{mermaid}

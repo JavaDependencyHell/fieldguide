@@ -1,8 +1,10 @@
-## 13. Feature Variants
-
+# 13. Feature Variants
 *or what to Do When a Library Has Multiple Flavours*
 
+::: {.scenario}
+## 13. Feature Variants
 This scenario demonstrates how Maven handles (and cannot handle) the concept of library variants—where a single library publishes multiple artifacts for different contexts (e.g., Java 8 vs Java 11 builds, debug vs release, different database drivers).
+:::
 
 #### Maven (pom.xml)
 

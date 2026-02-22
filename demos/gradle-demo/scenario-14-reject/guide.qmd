@@ -1,7 +1,9 @@
 # Rejecting Versions
 *or what to Do When Gradle Refuses a Version on Purpose*
 
+::: {.scenario}
 This scenario demonstrates how to explicitly reject a specific version of a dependency, preventing it from being selected even if it is the newest version.
+:::
 
 #### Dependency Graph
 ```{mermaid}

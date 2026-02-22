@@ -1,7 +1,9 @@
 # Basic Transitive Resolution
 *or what to Do When it Pulls in More Than You Declared*
 
+::: {.scenario}
 This scenario demonstrates the fundamental concept of transitive dependency resolution in SBT.
+:::
 
 #### Dependency Graph
 ```{mermaid}
@@ -32,6 +34,7 @@ Trust the transitive resolution. Only declare direct dependencies (libraries you
 #### Deterministic Checks
 
 **Fast check (SBT):**
+
 ```bash
 sbt dependencyTree
 ```

@@ -1,7 +1,9 @@
 # Dependency Management (BOM)
 *or what to Do When Your BOM Isn’t Actually in Control*
 
+::: {.scenario}
 This scenario demonstrates how to use a Bill of Materials (BOM) or `<dependencyManagement>` block to centralize version definitions. This decouples "what I need" from "which version I need".
+:::
 
 #### Dependency Graph
 ```{mermaid}
@@ -34,6 +36,7 @@ This *is* the safer way. Always prefer BOMs or centralized version catalogs (Gra
 #### Deterministic Checks
 
 **Fast check (Maven):**
+
 ```bash
 mvn help:effective-pom
 ```

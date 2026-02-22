@@ -1,6 +1,14 @@
 # Strict Constraints
 
+
+::: {.scenario}
+# Strict Constraints
+
+
+# Strict Constraints
+
 This scenario demonstrates forcing a version via overrides.
+:::
 
 #### Dependency Graph
 ```{mermaid}
@@ -37,6 +45,7 @@ dependencyOverrides is SBT's strongest version enforcement mechanism. It overrid
 #### Deterministic Checks
 
 **Fast check (SBT):**
+
 ```bash
 sbt dependencyTree
 ```

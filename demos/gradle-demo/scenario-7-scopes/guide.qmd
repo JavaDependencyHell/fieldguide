@@ -5,7 +5,9 @@
 Most Common in Production
 :::
 
+::: {.scenario}
 This scenario demonstrates its configurations (`implementation`, `compileOnly`, `testImplementation`).
+:::
 
 #### Dependency Graph
 ```{mermaid}

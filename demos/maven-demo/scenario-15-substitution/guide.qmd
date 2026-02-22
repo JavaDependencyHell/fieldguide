@@ -1,8 +1,10 @@
-## 15. Version Substitution
-
+# 15. Version Substitution
 *or what to Do When You Need to Swap One Library for Another*
 
+::: {.scenario}
+## 15. Version Substitution
 This scenario demonstrates how to replace one dependency with another in Maven. Maven has no native substitution mechanism, but exclusions combined with explicit declarations achieve the same result.
+:::
 
 #### Maven (pom.xml)
 

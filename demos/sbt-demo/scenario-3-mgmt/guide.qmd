@@ -1,7 +1,9 @@
 # Dependency Management
 *or what to Do When You Want to Centralize Versions*
 
+::: {.scenario}
 This scenario demonstrates how to manage dependency versions centrally in SBT, similar to Maven's `<dependencyManagement>`.
+:::
 
 #### Dependency Graph
 ```{mermaid}
@@ -32,6 +34,7 @@ SBT builds are Scala programs, allowing you to use variables and functions for v
 #### Deterministic Checks
 
 **Fast check (SBT):**
+
 ```bash
 sbt dependencyTree
 ```

@@ -5,7 +5,9 @@
 Most Common in Production
 :::
 
+::: {.scenario}
 This scenario demonstrates how to surgically remove a transitive dependency from the graph. This is a common "sledgehammer" fix for conflicts.
+:::
 
 #### Dependency Graph
 ```{mermaid}

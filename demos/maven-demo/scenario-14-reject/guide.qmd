@@ -1,8 +1,10 @@
-## 14. Rejecting a Version
-
+# 14. Rejecting a Version
 *or what to Do When a Specific Version Must Never Appear*
 
+::: {.scenario}
+## 14. Rejecting a Version
 This scenario demonstrates how to prevent a specific version of a dependency from appearing anywhere in your build. Maven has no native "reject" keyword, but the Maven Enforcer Plugin provides an effective workaround.
+:::
 
 #### Maven (pom.xml)
 

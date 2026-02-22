@@ -5,7 +5,9 @@
 Most Common in Production
 :::
 
+::: {.scenario}
 This scenario demonstrates how explicit version declarations in `libraryDependencies` can override managed versions or defaults.
+:::
 
 #### Dependency Graph
 ```{mermaid}

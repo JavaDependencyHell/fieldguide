@@ -1,7 +1,9 @@
 # Optional Dependencies
 *or what to Do When You Need a Library Only Sometimes*
 
+::: {.scenario}
 This scenario demonstrates how SBT handles optional dependencies.
+:::
 
 #### Dependency Graph
 ```{mermaid}
@@ -25,6 +27,7 @@ SBT/Ivy respects the Maven `<optional>true</optional>` flag, excluding those tra
 #### Deterministic Checks
 
 **Fast check (SBT):**
+
 When your project depends on a library with an optional dependency, run:
 ```bash
 sbt dependencyTree

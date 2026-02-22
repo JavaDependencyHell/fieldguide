@@ -5,7 +5,9 @@
 Most Common in Production
 :::
 
+::: {.scenario}
 This scenario demonstrates how an explicit version declaration overrides a `platform()` recommendation.
+:::
 
 #### Dependency Graph
 ```{mermaid}

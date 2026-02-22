@@ -1,7 +1,9 @@
 # Basic Transitive Resolution
 *or what to Do When Gradle Resolves More Than You Declared*
 
+::: {.scenario}
 This scenario demonstrates fundamental concept of transitive dependency resolution. It shows how it automatically discovers and includes dependencies of your direct dependencies.
+:::
 
 #### Dependency Graph
 ```{mermaid}
@@ -29,6 +31,7 @@ In production projects, this simple chain (A → B → C) is replicated thousand
 #### Deterministic Checks
 
 **Fast check (Gradle):**
+
 ```bash
 ./gradlew dependencies
 ```

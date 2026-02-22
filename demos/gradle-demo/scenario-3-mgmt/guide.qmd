@@ -1,7 +1,9 @@
 # Dependency Management (Platform/BOM)
 *or what to Do When a Platform Aligns Versions — Until Something Overrides It*
 
+::: {.scenario}
 This scenario demonstrates how to use Maven BOMs (Bill of Materials) in Gradle using the `platform()` method.
+:::
 
 #### Dependency Graph
 ```{mermaid}
@@ -35,6 +37,7 @@ Gradle treats BOMs as "platforms" that provide version recommendations. These re
 #### Deterministic Checks
 
 **Fast check (Gradle):**
+
 ```bash
 ./gradlew dependencies --configuration implementation
 ```

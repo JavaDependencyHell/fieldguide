@@ -1,7 +1,9 @@
 # Basic Transitive Resolution
 *or what to Do When a Dependency Brings in Versions You Didn’t Ask For*
 
+::: {.scenario}
 This scenario demonstrates the fundamental concept of transitive dependency resolution. It shows how a build tool automatically discovers and includes dependencies of your direct dependencies, forming a dependency graph. This is the "happy path" where no conflicts exist.
+:::
 
 #### Dependency Graph
 ```{mermaid}
@@ -32,6 +34,7 @@ Even in simple scenarios, using a BOM (Bill of Materials) or dependency constrai
 #### Deterministic Checks
 
 **Fast check (Maven):**
+
 ```bash
 mvn dependency:tree
 ```

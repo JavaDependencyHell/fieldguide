@@ -1,11 +1,13 @@
-## 11. Dependency Locking
+# 11. Dependency Locking
 *or what to Do When Yesterday's Build and Today's Build Produce Different Results*
 
 ::: {.badge .most-common}
 Most Common in Production
 :::
 
-This scenario demonstrates how Maven approaches (or rather, does not approach) dependency locking. Unlike Gradle and SBT, Maven has no native locking mechanism. Instead, Maven's philosophy assumes that all versions are declared explicitly and fixed, making locking unnecessary in theory—but not always in practice.
+::: {.scenario}
+## 11. Dependency Locking
+:::
 
 #### Maven (pom.xml)
 

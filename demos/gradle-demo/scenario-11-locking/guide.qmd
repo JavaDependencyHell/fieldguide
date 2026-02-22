@@ -5,7 +5,9 @@
 Most Common in Production
 :::
 
+::: {.scenario}
 This scenario demonstrates Gradle's Dependency Locking feature.
+:::
 
 #### Dependency Graph
 ```{mermaid}

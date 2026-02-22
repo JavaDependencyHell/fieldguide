@@ -1,7 +1,9 @@
 # Circular Dependencies
 *or what to Do When A Needs B and B Needs A*
 
+::: {.scenario}
 This scenario demonstrates how SBT handles circular dependencies between external libraries.
+:::
 
 #### Dependency Graph
 ```{mermaid}
@@ -33,6 +35,7 @@ Circular dependencies between *external* libraries (JARs) are technically allowe
 #### Deterministic Checks
 
 **Fast check (SBT):**
+
 ```bash
 sbt dependencyTree
 ```

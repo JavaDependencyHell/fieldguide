@@ -1,7 +1,9 @@
 # Optional Dependencies
 *or what to Do When Optional Dependencies Don’t Arrive*
 
+::: {.scenario}
 This scenario demonstrates how Gradle handles optional dependencies (usually via `compileOnly` or feature variants).
+:::
 
 #### Dependency Graph
 ```{mermaid}
@@ -33,6 +35,7 @@ Feature Variants let a library declare separate "features" (e.g., a database dri
 #### Deterministic Checks
 
 **Fast check (Gradle):**
+
 When project `B` depends on project `A` (which has a `compileOnly` dependency on `lib-a`), run this in project `B`:
 ```bash
 ./gradlew dependencies

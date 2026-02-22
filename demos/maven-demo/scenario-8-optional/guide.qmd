@@ -1,7 +1,9 @@
 # Optional Dependencies
 *or what to Do When “Optional” Dependencies Don’t Show Up*
 
+::: {.scenario}
 This scenario demonstrates `<optional>true</optional>` flag.
+:::
 
 #### Dependency Graph
 ```{mermaid}
@@ -30,6 +32,7 @@ Document optional dependencies clearly so consumers know what to add.
 #### Deterministic Checks
 
 **Fast check (Maven):**
+
 When project `B` depends on project `A` (which has an optional dependency on `lib-a`), run this in project `B`:
 ```bash
 mvn dependency:tree

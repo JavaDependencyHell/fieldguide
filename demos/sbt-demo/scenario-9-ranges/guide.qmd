@@ -5,7 +5,9 @@
 Most Common in Production
 :::
 
+::: {.scenario}
 This scenario demonstrates how to use version ranges in SBT.
+:::
 
 #### Dependency Graph
 ```{mermaid}

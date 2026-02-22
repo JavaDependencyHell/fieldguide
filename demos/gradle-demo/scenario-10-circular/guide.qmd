@@ -1,7 +1,9 @@
 # Circular Dependencies
 *or what to Do When Gradle Can’t Untangle the Graph*
 
+::: {.scenario}
 This scenario demonstrates Gradle's handling of circular dependencies.
+:::
 
 #### Dependency Graph
 ```{mermaid}
@@ -35,6 +37,7 @@ While Gradle tolerates circular dependencies at resolution time, they are still 
 #### Deterministic Checks
 
 **Fast check (Gradle):**
+
 ```bash
 ./gradlew dependencies
 ```

@@ -5,9 +5,10 @@
 Most Common in Production
 :::
 
-
+::: {.scenario}
 This scenario demonstrates the "Diamond Dependency" problem where two different versions of the same library are requested.
 It highlights the fundamental difference in resolution strategies between Maven ("Nearest Wins") and Gradle/SBT ("Newest Wins").
+:::
 
 #### Dependency Graph
 ```{mermaid}

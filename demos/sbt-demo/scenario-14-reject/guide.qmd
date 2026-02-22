@@ -1,7 +1,9 @@
 # Rejecting Versions
 *or what to Do When You Can't Say No*
 
+::: {.scenario}
 This scenario demonstrates how to reject specific versions in SBT, which lacks a native "reject" keyword.
+:::
 
 #### Dependency Graph
 N/A

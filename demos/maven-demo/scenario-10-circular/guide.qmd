@@ -1,7 +1,9 @@
 # Circular Dependencies
 *or what to Do When Your Dependency Graph Turns into a Cycle*
 
+::: {.scenario}
 This scenario demonstrates how build tools handle cycles in the dependency graph (A -> B -> A).
+:::
 
 #### Dependency Graph
 ```{mermaid}
@@ -32,6 +34,7 @@ Avoid cycles. They are a design smell.
 #### Deterministic Checks
 
 **Fast check (Maven):**
+
 ```bash
 mvn dependency:tree
 ```
