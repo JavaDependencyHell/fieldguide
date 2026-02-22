@@ -50,4 +50,4 @@ Dependency substitution allows you to swap modules or versions cleanly, handling
 
 #### Seen in the Wild
 
-A team was developing a new feature in a library that was used by several other projects. To test the new feature, they used a composite build to substitute the binary dependency with a local project dependency. This allowed them to test the new feature in the context of the other projects without having to publish a new version of the library.
+When developing a new feature in a library used by several other projects, teams can use composite builds to substitute the binary dependency with a local project. This allows testing in context without publishing new library versions.

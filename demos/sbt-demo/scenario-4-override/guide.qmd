@@ -56,4 +56,4 @@ Explicit declarations in `libraryDependencies` are your primary way of requestin
 
 #### Seen in the Wild
 
-A team was using a library that had a bug in a specific version. The team was able to use `dependencyOverrides` to force a different version of the library that did not have the bug. This allowed them to work around the bug without waiting for a new version of the library to be released.
+When facing bugs in specific library versions, teams can use `dependencyOverrides` to force a known-good version. This avoids waiting for a new release of the library while still ensuring the bug doesn't impact production.

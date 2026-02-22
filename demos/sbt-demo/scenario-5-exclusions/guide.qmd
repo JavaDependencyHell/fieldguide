@@ -54,4 +54,4 @@ N/A
 
 #### Seen in the Wild
 
-A Scala project was fighting a classpath war between two different libraries that both pulled in the same JSON utility, but with conflicting Scala binary versions (2.12 vs 2.13). They used an `exclude` rule to kill the 2.12 version and then added a direct dependency on the 2.13 version, which they'd verified as compatible with both consumers.
+A recurring issue in Scala ecosystems occurs when libraries depend on different Scala binary versions (for example, 2.12 vs 2.13). Teams often resolve this by excluding the unwanted variant and adding a direct dependency on the aligned version.

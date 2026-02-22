@@ -65,4 +65,4 @@ Scopes control the visibility and transitivity of dependencies; use them to keep
 
 #### Seen in the Wild
 
-A developer's web application worked fine in their IDE but failed in production with a `NoClassDefFoundError`. They'd used `provided` for a library they thought the application server would supply. It didn't. They wasted four hours debugging the server's shared library path before realizing a single word change in the `pom.xml` to `compile` (the default) would have bundled the missing JAR.
+A common production failure occurs when a web application works fine in an IDE but fails after deployment with a `NoClassDefFoundError`. This often happens because `provided` was used for a library that the application server does not actually supply. Teams then discover that changing the scope to `compile` (the default) correctly bundles the missing JAR into the final artifact.

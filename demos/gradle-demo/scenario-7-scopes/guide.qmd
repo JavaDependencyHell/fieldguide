@@ -49,4 +49,4 @@ Configurations control transitivity and packaging.
 
 #### Seen in the Wild
 
-A platform team migrated a legacy monolith to a 50-module Gradle build, initially using `api` for everything. A single change in a low-level "utils" module triggered a ten-minute recompile of the entire project. After they systematically switched internal dependencies to `implementation`, that same change took less than forty seconds. They finally understood that "encapsulation" applies to build graphs, not just class designs.
+In large multi-module builds, initially using `api` for all internal dependencies can cause dramatic recompile times. A single change in a low-level utility module can trigger a full project rebuild. By systematically switching to `implementation`, teams can encapsulate their build graph, reducing compile times from minutes to seconds.

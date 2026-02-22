@@ -55,4 +55,4 @@ It upgrades you to the newest version found in the graph.
 
 #### Seen in the Wild
 
-A large e-commerce company got bitten when a utility library's minor update broke their checkout process. Because they were using "newest wins", the library was automatically upgraded across dozens of microservices. They didn't even know it had happened until the alerts started firing. They now use `strictly` constraints on all business-critical libraries, essentially opting out of Gradle's "newest is better" assumption.
+In large e-commerce architectures using "newest wins" strategies, minor updates in utility libraries can automatically propagate across dozens of microservices. This risks silent regressions if the library violates semantic versioning. To mitigate this, many organizations use `strictly` constraints on business-critical libraries, opting out of automatic "newest is better" upgrades.

@@ -8,7 +8,7 @@ These are realistic patterns widely documented in industry.
 They only need minor wording polish (optional).
 
 A1. Scenario 2 — Commons Collections override
-Status: KEEP
+Status: COMPLETED
 Confidence: HIGH
 
 Text currently describes a financial firm forcing a patched Commons Collections version.
@@ -34,7 +34,7 @@ REWRITE TO:
 This removes the implied single-company claim.
 
 A2. Scenario 4 — Spring Boot BOM override for vulnerability
-Status: KEEP
+Status: COMPLETED
 Confidence: HIGH
 
 Current pattern appears multiple times.
@@ -60,7 +60,7 @@ TO:
 This removes anecdotal singularity and strengthens credibility.
 
 A3. Scenario 7 — provided scope missing at runtime
-Status: KEEP
+Status: COMPLETED
 Confidence: HIGH
 
 Current text: IDE works, production fails with NoClassDefFoundError.
@@ -84,7 +84,7 @@ TO:
 This makes it pattern-based instead of story-based.
 
 A4. Scenario 9 — CI vs local cache version range failure
-Status: KEEP
+Status: COMPLETED
 Confidence: HIGH
 
 You have multiple variants of this story.
@@ -103,7 +103,7 @@ Keep ONE strong version.
 Remove duplicates (see Priority C).
 
 A5. Spark uber-jar shrink via Provided
-Status: KEEP
+Status: COMPLETED
 Confidence: HIGH
 
 Text about 300MB → 12MB after switching to Provided.
@@ -134,7 +134,7 @@ These are believable but read like invented stories.
 Rewrite to pattern-based language.
 
 B1. Scenario 5 — GPL exclusion compliance story
-Status: REWRITE
+Status: COMPLETED
 Risk: MEDIUM
 
 Current wording implies a specific team workaround.
@@ -162,7 +162,7 @@ removes unverifiable narrative
 keeps lesson intact
 
 B2. Scenario 5 (Gradle/mobile APK size trimming)
-Status: REWRITE
+Status: COMPLETED
 Risk: MEDIUM
 
 Current claim about trimming 4MB from APK.
@@ -186,7 +186,7 @@ REPLACE with:
 Keep it pattern-based.
 
 B3. Scenario 5 (Scala JSON binary version war)
-Status: REWRITE
+Status: COMPLETED
 Risk: LOW–MEDIUM
 
 Current wording is plausible but slightly story-like.
@@ -204,7 +204,7 @@ You have too many version-range war stories.
 This creates risk.
 
 C1. Scenario 9 duplicate range failures
-Status: CONSOLIDATE
+Status: COMPLETED
 Risk: MEDIUM (credibility dilution)
 
 You currently have multiple near-identical stories about:

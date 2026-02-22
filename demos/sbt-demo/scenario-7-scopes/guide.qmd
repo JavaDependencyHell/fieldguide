@@ -57,4 +57,4 @@ Configurations control visibility and transitivity. Use `% Test` and `% Provided
 
 #### Seen in the Wild
 
-A data engineering team was shipping a 300MB Spark "uber-jar" for a simple ETL job, wondering why their CI/CD was so sluggish. They'd been using `Compile` for all Spark libraries. After switching those to `% Provided`, the artifact shrank to 12MB. They realized they'd been uploading the entire Spark engine to the cluster on every single build, despite the cluster already having it installed.
+Data engineering teams often find themselves shipping "uber-jars" hundreds of megabytes in size, despite the cluster environment already containing the core Spark libraries. By switching these dependencies to `% Provided`, the artifact size can drop to tens of megabytes, significantly reducing deployment time and CI/CD overhead.

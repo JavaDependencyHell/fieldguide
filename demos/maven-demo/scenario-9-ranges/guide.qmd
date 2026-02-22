@@ -56,4 +56,4 @@ Ranges trade reproducibility for freshness; use with caution (and locking).
 
 #### Seen in the Wild
 
-A company's build suddenly started failing on their CI server while remaining "green" on developer laptops. No code had changed. They eventually traced it to a transitive dependency using a version range. A buggy patch had been published to Maven Central an hour earlier; the CI server (with no local cache) grabbed it immediately, while developers were still shielded by their stale local `.m2` folders.
+A well-known failure mode with version ranges occurs when CI resolves a newly published dependency that developer machines have not yet seen due to local caching. The result is a build that suddenly fails without any source changes.

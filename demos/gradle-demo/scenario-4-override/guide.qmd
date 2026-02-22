@@ -53,4 +53,4 @@ Explicit versions override standard platforms. Use `enforcedPlatform` if you wan
 
 #### Seen in the Wild
 
-A team was using a platform to manage their dependencies. They wanted to try out a new feature in a library that was not yet available in the platform. They were able to override the version of the library in their build file, which allowed them to test the new feature without waiting for the platform to be updated.
+Teams often use platforms to manage their dependencies while still needing to test new features in specific libraries not yet updated in the platform. By overriding the version in their local build file, they can test these new features without waiting for a platform-wide update.

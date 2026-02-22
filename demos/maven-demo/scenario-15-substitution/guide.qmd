@@ -55,4 +55,4 @@ Maven has no graph-wide substitution mechanism. Use exclusions on each path plus
 
 #### Seen in the Wild
 
-A large enterprise project was migrating from `javax.servlet` to `jakarta.servlet`. They had hundreds of modules, and it was not feasible to update all of them at once. They used the Maven Shade Plugin to relocate the `javax.servlet` classes to `jakarta.servlet` at build time. This allowed them to migrate their application incrementally, one module at a time.
+Large enterprise projects migrating from `javax.servlet` to `jakarta.servlet` often face hundreds of modules that cannot be updated simultaneously. Using the Maven Shade Plugin to relocate classes at build time allows for incremental migration, one module at a time, without breaking the overall application.

@@ -49,4 +49,4 @@ Exclusions work as expected.
 
 #### Seen in the Wild
 
-A mobile app team trimmed 4MB off their final APK size by surgically excluding a legacy analytics library that was transitively included by three different SDKs. They replaced it with a single, configuration-level exclude in their `build.gradle`, ensuring that no future SDK additions could accidentally smuggle it back onto the classpath.
+Mobile teams frequently use exclusions to remove large transitive libraries (such as legacy analytics or duplicate support libraries) in order to reduce final APK size.

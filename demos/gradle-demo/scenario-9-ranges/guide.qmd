@@ -50,4 +50,4 @@ Ranges work but are dynamic.
 
 #### Seen in the Wild
 
-A team used `1.+` for a popular utility library and got hit with a performance regression on a Monday morning. The new release was only hours old. They fixed it by adding a `strictly` constraint to their build to force the older, faster version, but the downtime had already happened. They've since switched to dependency locking, which gives them the benefits of ranges without the "Monday morning surprises."
+A well-known failure mode with version ranges occurs when CI resolves a newly published dependency that developer machines have not yet seen due to local caching. The result is a build that suddenly fails without any source changes.

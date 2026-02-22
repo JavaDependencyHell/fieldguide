@@ -71,4 +71,4 @@ Maven optimizes for "distance", while Gradle and SBT optimize for "freshness" â€
 
 #### Seen in the Wild
 
-A financial services company found a security scan flagging an old, vulnerable version of Apache Commons Collections. It was buried three levels deep in a vendor SDK. They couldn't upgrade the SDK, and Maven's "nearest wins" kept picking the old version because it was slightly "closer" than another library's transitive dependency. By adding the patched version to `<dependencyManagement>`, they pinned it globally, satisfying the auditors without a week of SDK regression testing.
+A number of financial institutions discovered vulnerable versions of Apache Commons Collections deep in their transitive graphs, often buried three levels deep in vendor SDKs. In many cases, they couldn't upgrade the SDK itself. Because Maven's "nearest wins" logic often favored the older, vulnerable version (due to it being slightly "closer" to the root), they utilized `<dependencyManagement>` to pin the patched version globally. This allowed them to satisfy security audits without extensive regression testing of the vendor SDK.

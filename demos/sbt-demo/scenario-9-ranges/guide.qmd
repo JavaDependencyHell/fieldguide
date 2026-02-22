@@ -28,7 +28,7 @@ SBT (via Ivy/Coursier) queries repository metadata and selects the highest versi
 #### Operational Risk
 *   **Low risk:** Use ranges for `Test` dependencies.
 *   **Medium risk:** Use ranges for internal libraries under strict semver.
-*   **High risk:** Use ranges for external libraries; non-deterministic builds risk 3 AM "AbstractMethodError" alerts during automated redeploys.
+*   **High risk:** Use ranges for external libraries; non-deterministic builds risk runtime "AbstractMethodError" failures during automated redeploys.
 
 #### Deterministic Checks
 **Fast check (SBT):** `sbt dependencyTree`
@@ -47,4 +47,4 @@ Ranges provide automatic upgrades but sacrifice build reproducibility. Use depen
 
 #### Seen in the Wild
 
-A company using version ranges for a legacy library got hit with `AbstractMethodError` at 3 AM. A minor release had broken binary compatibility, and SBT's range resolution pulled it in during an automated redeploy. The team had to scramble to pin the dependency to the last known-good version. They've since replaced all ranges with hard versions, deciding that "freshness" wasn't worth the middle-of-the-night pager alerts.
+A well-known failure mode with version ranges occurs when CI resolves a newly published dependency that developer machines have not yet seen due to local caching. The result is a build that suddenly fails without any source changes.

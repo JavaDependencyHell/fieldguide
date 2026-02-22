@@ -55,4 +55,4 @@ Exclusions are powerful but dangerous; use them only when you know the dependent
 
 #### Seen in the Wild
 
-A team was using an SDK that pulled in a GPL-licensed transitive dependency, violating their corporate compliance policy. They couldn't drop the SDK, so they surgically `<exclude>`-d the GPL library. They then added a BSD-licensed equivalent to the project, manually verifying that the SDK could still find the classes it needed at runtime. They essentially performed a "license transplant" to keep the legal team happy without breaking the build.
+License compliance scans frequently uncover GPL-licensed libraries pulled in transitively. A common enterprise response is to exclude the offending dependency and substitute a permissively licensed alternative, verifying at runtime that the upstream library still functions.
