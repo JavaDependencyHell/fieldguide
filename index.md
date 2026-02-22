@@ -1,18 +1,29 @@
+# Welcome to the Sample of the Dependency Management Troubleshooting Guide
+
+![QR Code](book/content/sample-qr.png){height=100px}
+
+This QR code takes you to the HeroDevs website where you get the latest version of this sample and register for the complete book when available.
+
+
+![DON’T PANIC — Most dependency failures are mechanical and diagnosable.](book/content/dont_panic.png){width=80%}
+
+
 # Who This Book Is For {.unnumbered}
 
-Dependency management often behaves well enough to earn your trust—until it doesn’t. 
+Dependency management often behaves as you would guess enough times to earn your trust. Until it doesn’t. 
 
-Most trouble stems not from misunderstanding Maven or Gradle syntax, but from making reasonable assumptions that conflict with how build tools actually operate. This book is about the mechanical rules that govern those operations.
+Most trouble stems not from misunderstanding Maven or Gradle syntax, but from making assumptions that conflict with how build tools actually operate. This book is about the mechanical rules that govern those operations.
 
 ### Who This Book Is For
 
 If you have stared at a dependency tree and thought, “that doesn’t make sense,” this book is for you.
 
-It is written for:
-*   **Experienced Developers:** You know how to use exclusions and BOMs, but have learned that today’s fix can become tomorrow’s mystery.
-*   **Tech Leads & Build Owners:** You are responsible for build stability and must explain why a version changed or why "just upgrade it" isn't a strategy.
-*   **Platform & Security Engineers:** You recognize these failure modes as consequences of real-world dependency resolution, not just developer mistakes.
-*   **Junior Developers:** This guide will help you avoid persistent misconceptions early in your career.
+It is written for
+
+- **Experienced Developers:** You know how to use exclusions and BOMs, but have learned that today’s fix can become tomorrow’s mystery.
+- **Tech Leads & Build Owners:** You are responsible for build stability and must explain why a version changed or why "just upgrade it" isn't a strategy.
+- **Platform & Security Engineers:** You recognize these failure modes as consequences of real-world dependency resolution, not just developer mistakes.
+- **Junior Developers:** This guide will help you avoid persistent misconceptions early in your career.
 
 ### How to Use This Guide
 
