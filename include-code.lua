@@ -97,3 +97,30 @@ function CodeBlock(el)
   end
   return el
 end
+
+function Div(el)
+  if el.classes:includes('scenario') then
+    if FORMAT:match('latex') then
+      return {
+        pandoc.RawBlock('latex', '\\begin{scenario}'),
+        el,
+        pandoc.RawBlock('latex', '\\end{scenario}')
+      }
+    elseif FORMAT:match('html') then
+      el.attributes['style'] = 'border-left: 1.2pt solid black; padding-left: 6pt; margin-left: 0;'
+      return el
+    end
+  elseif el.classes:includes('calloutbox') then
+    if FORMAT:match('latex') then
+      return {
+        pandoc.RawBlock('latex', '\\begin{calloutbox}'),
+        el,
+        pandoc.RawBlock('latex', '\\end{calloutbox}')
+      }
+    elseif FORMAT:match('html') then
+       el.attributes['style'] = 'background-color: #f7f7f7; border: 0.3pt solid #666; padding: 4pt; border-radius: 2pt;'
+       return el
+    end
+  end
+  return el
+end

@@ -10,3 +10,4 @@ format:
     # Include a dedicated tuning file for the different aspect ratio
     include-in-header:
       - latex/halfletter-tuning.tex
+      - latex/enhanced-clarity.tex

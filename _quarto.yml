@@ -46,6 +46,7 @@ format:
       - latex/graphics.tex
       - latex/toc.tex
       - latex/a5-tuning.tex
+      - latex/enhanced-clarity.tex
 book:
   title: "Dependency Hell"
   chapters:

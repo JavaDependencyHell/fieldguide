@@ -1,0 +1,106 @@
+% --------------------------------------------------
+% Enhanced Clarity Tuning (A5 and Half-Letter)
+% --------------------------------------------------
+% This file contains additional styling for improved clarity and density.
+% To remove these changes, simply delete or comment out the inclusion 
+% of this file in _quarto.yml and _quarto-halfletter.yml.
+
+% Note: titlesec is omitted as it is incompatible with scrbook/KOMA-Script
+\usepackage{microtype}
+\usepackage{etoolbox}
+\usepackage[most]{tcolorbox}
+\usepackage{enumitem}
+
+% --------------------------------------------------
+% Paragraph density (A5 tuned)
+% --------------------------------------------------
+
+\setlength{\parskip}{0.35em}
+\setlength{\parindent}{0pt}
+
+% --------------------------------------------------
+% Section styling (strong but compact)
+% --------------------------------------------------
+
+\RedeclareSectionCommand[
+  beforeskip=1.6ex,
+  afterskip=0.8ex,
+  afterindent=false,
+  font=\normalfont\Large\bfseries,
+]{section}
+
+% Thin rule above sections (visual anchor)
+\pretocmd{\section}{\rule{\linewidth}{0.4pt}\vspace{0.3ex}}{}{}
+
+% --------------------------------------------------
+% Subsection — RUN-IN (major density win)
+% --------------------------------------------------
+
+\RedeclareSectionCommand[
+  runin=true,
+  afterindent=false,
+  beforeskip=1.2ex,
+  afterskip=0.6em,
+  font=\normalfont\bfseries,
+]{subsection}
+
+% Subsubsection slightly lighter
+
+\RedeclareSectionCommand[
+  runin=true,
+  afterindent=false,
+  beforeskip=0.8ex,
+  afterskip=0.5em,
+  font=\normalfont\itshape,
+]{subsubsection}
+
+% --------------------------------------------------
+% Lists — field guide density
+% --------------------------------------------------
+
+\setlist{
+  itemsep=0.2em,
+  topsep=0.4em,
+  parsep=0em,
+  partopsep=0em
+}
+
+% --------------------------------------------------
+% Scenario block (left rule, low whitespace)
+% --------------------------------------------------
+
+\newtcolorbox{scenario}{
+  colback=white,
+  colframe=black,
+  boxrule=0pt,
+  borderline west={1.2pt}{0pt}{black},
+  left=6pt,
+  right=3pt,
+  top=3pt,
+  bottom=3pt,
+  arc=1pt
+}
+
+% --------------------------------------------------
+% Note / Seen in the Wild / Operational Risk
+% subtle tint, print-safe
+% --------------------------------------------------
+
+\newtcolorbox{calloutbox}{
+  colback=black!3,
+  colframe=black!40,
+  boxrule=0.3pt,
+  arc=2pt,
+  left=5pt,
+  right=5pt,
+  top=4pt,
+  bottom=4pt
+}
+
+% --------------------------------------------------
+% Figure spacing — prevent float air gaps
+% --------------------------------------------------
+
+\setlength{\textfloatsep}{0.9em}
+\setlength{\floatsep}{0.8em}
+\setlength{\intextsep}{0.8em}
