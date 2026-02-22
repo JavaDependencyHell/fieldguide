@@ -8,7 +8,8 @@ resolvers += "Local Demo Repo" at "file://" + baseDirectory.value / "../../../ta
 
 // tag::s14-deps[]
 libraryDependencies += "com.demo" % "lib-a" % "1.0.0"
+// end::s14-deps[]
 
 // SBT/Ivy doesn't have a built-in "reject" syntax in the libraryDependencies DSL.
 // You would typically achieve this by forcing a different version or using exclusions.
-// end::s14-deps[]
+

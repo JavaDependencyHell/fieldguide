@@ -1,0 +1,30 @@
+% --- Section spacing (A5 tuned) via KOMA-Script native commands ---
+% We use \RedeclareSectionCommand because titlesec is incompatible with scrbook/KOMA-Script used in this project.
+
+\RedeclareSectionCommand[
+  beforeskip=-1.6ex,
+  afterskip=0.8ex
+]{section}
+
+\RedeclareSectionCommand[
+  beforeskip=-1.2ex,
+  afterskip=0.5ex
+]{subsection}
+
+\RedeclareSectionCommand[
+  beforeskip=-0.9ex,
+  afterskip=0.35ex
+]{subsubsection}
+
+% --- Paragraph density ---
+\setlength{\parskip}{0.35em}
+\setlength{\parindent}{0pt}
+
+% --- Lists tighter (important for field guides) ---
+\usepackage{enumitem}
+\setlist{
+  itemsep=0.2em,
+  topsep=0.4em,
+  parsep=0em,
+  partopsep=0em
+}
