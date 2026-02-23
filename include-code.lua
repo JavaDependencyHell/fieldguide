@@ -1,4 +1,26 @@
 function CodeBlock(el)
+  if el.classes:includes('xml') then
+    if FORMAT:match('latex') then
+      local res = CodeBlock_Original(el)
+      if type(res) == "table" then
+        table.insert(res, 1, pandoc.RawBlock('latex', '{\\small'))
+        table.insert(res, pandoc.RawBlock('latex', '}'))
+        return res
+      else
+        return {
+          pandoc.RawBlock('latex', '{\\small'),
+          res,
+          pandoc.RawBlock('latex', '}')
+        }
+      end
+    elseif FORMAT:match('html') then
+      el.attributes['style'] = (el.attributes['style'] or "") .. " font-size: 0.8em;"
+    end
+  end
+  return CodeBlock_Original(el)
+end
+
+function CodeBlock_Original(el)
   if el.attributes['include'] then
     local filename = el.attributes['include']
     local snippet = el.attributes['snippet']

@@ -13,7 +13,7 @@ BROCHURE_PDF = $(BUILD_DIR)/brochure.pdf
 US_BROCHURE_PDF = $(US_BUILD_DIR)/brochure.pdf
 FRONT_IMAGE = book/content/front-image.pdf
 
-.PHONY: all init utils book book-html book-pdf us-book sample us-sample brochure us-brochure verify verify-maven verify-gradle verify-sbt clean help check-quarto check-qpdf
+.PHONY: all init utils book book-html book-pdf us-book sample us-sample brochure us-brochure verify verify-maven verify-gradle verify-sbt clean help check-quarto check-qpdf force-book force-us-book
 
 # Default target
 all: init book verify
@@ -47,7 +47,12 @@ utils:
 	cd demo-utils && mvn clean package -DskipTests
 
 # Render the book (HTML and PDF) and apply post-processing
-book: check-quarto check-qpdf
+book: $(PDF_OUTPUT)
+
+$(PDF_OUTPUT):
+	@$(MAKE) force-book
+
+force-book: check-quarto check-qpdf
 	@echo "Generating Book (HTML, PDF)..."
 	quarto render --to html --to pdf --output-dir $(BUILD_DIR)
 	@echo "Removing first blank page from PDF..."
@@ -62,7 +67,12 @@ book-html: check-quarto
 book-pdf: book
 
 # Render the US book (PDF) and apply post-processing
-us-book: check-quarto check-qpdf
+us-book: $(US_PDF_OUTPUT)
+
+$(US_PDF_OUTPUT):
+	@$(MAKE) force-us-book
+
+force-us-book: check-quarto check-qpdf
 	@echo "Generating US Half-Letter Book (PDF)..."
 	quarto render --profile halfletter --to pdf --output-dir $(US_BUILD_DIR)
 	@echo "Removing first blank page from PDF..."
@@ -72,18 +82,18 @@ us-book: check-quarto check-qpdf
 	@echo "US Book generation complete. Output in $(US_BUILD_DIR)/"
 
 # Generate a sample PDF
-sample: book
+sample: $(PDF_OUTPUT)
 	@echo "Generating Sample PDF..."
 	@if [ -f $(PDF_OUTPUT) ]; then \
-		qpdf$(PDF_OUTPUT) --pages . 1-10,12-32,36-37,40-42,47-57,60-62 -- $(SAMPLE_PDF); \
+		qpdf $(PDF_OUTPUT) --pages . 1-10,12-32,36-37,40-42,47-57,60-62 -- $(SAMPLE_PDF); \
 		echo "Sample generation complete. Output in $(SAMPLE_PDF)"; \
 	else \
-		echo "Error: $(FINAL_PDF) not found. Run 'make book' first."; \
+		echo "Error: $(PDF_OUTPUT) not found. Run 'make book' first."; \
 		exit 1; \
 	fi
 
 # Generate a US sample PDF
-us-sample: us-book
+us-sample: $(US_PDF_OUTPUT)
 	@echo "Generating US Half-Letter Sample PDF..."
 	@if [ -f $(US_PDF_OUTPUT) ]; then \
 		qpdf $(US_PDF_OUTPUT) --pages . 1-10,12-32,36-37,40-42,47-57,60-62 -- $(US_SAMPLE_PDF); \
@@ -94,18 +104,18 @@ us-sample: us-book
 	fi
 
 # Generate a brochure PDF (same selection as sample)
-brochure: book
+brochure: $(PDF_OUTPUT)
 	@echo "Generating Brochure PDF..."
 	@if [ -f $(PDF_OUTPUT) ]; then \
 		qpdf $(PDF_OUTPUT) --pages . 1,2,4,5,10,3,5,15-17,18-20,24-26,56,57,58,59,z -- $(BROCHURE_PDF); \
 		echo "Brochure generation complete. Output in $(BROCHURE_PDF)"; \
 	else \
-		echo "Error: $(US_PDF_OUTPUT) not found. Run 'make book' first."; \
+		echo "Error: $(PDF_OUTPUT) not found. Run 'make book' first."; \
 		exit 1; \
 	fi
 
 # Generate a US brochure PDF (same selection as US sample)
-us-brochure: us-book
+us-brochure: $(US_PDF_OUTPUT)
 	@echo "Generating US Half-Letter Brochure PDF..."
 	@if [ -f $(US_PDF_OUTPUT) ]; then \
 		qpdf $(US_PDF_OUTPUT) --pages . 1,2,4,5,10,3,5,15-17,18-20,24-26,56,57,58,59,z  -- $(US_BROCHURE_PDF); \
