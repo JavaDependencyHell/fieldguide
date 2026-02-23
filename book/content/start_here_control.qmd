@@ -1,23 +1,24 @@
-# Start Here for Implementing Dependency Controls {.unnumbered}
+# Start Here for Implementing Dependency Controls
 
-f your build is stable but you’re trying to deliberately control or improve dependency behaviour — align versions, remove a library, enforce policy, or make builds reproducible — start here. Pick the outcome you want and jump directly to the mechanism that provides that control.
+f your build is stable but you’re trying to deliberately control or improve dependency behaviour: align versions, remove a library, enforce policy, or make builds reproducible.
+Then start here. Pick the outcome you want and jump directly to the mechanism that provides that control.
 
 ### What to do next
 
-- Align versions across projects → Scenario 3: Dependency Management (BOM)
+- Align versions across projects → S3: Dependency Management (BOM)
 
-- Override a transitive version → Scenario 6: Forcing Transitive Versions
+- Override a transitive version → S6: Forcing Transitive Versions
 
-- Override what a BOM provides → Scenario 4
+- Override what a BOM provides → S4
 
-- Remove a transitive dependency → Scenario 5
+- Remove a transitive dependency → S5
 
-- Replace one library with another → Scenario 15
+- Replace one library with another → S15
 
-- Ensure reproducible builds → Scenario 11
+- Ensure reproducible builds → S11
 
-- Block a known-bad version → Scenario 14
+- Block a known-bad version → S14
 
-- Reduce runtime/classpath footprint → Scenario 7, also Scenario 8
+- Reduce runtime/classpath footprint → S7, also S8
 
-- Use vendor-patched or private artifacts → Scenario 16 or Scenario 17
+- Use vendor-patched or private artifacts → S16 or S17

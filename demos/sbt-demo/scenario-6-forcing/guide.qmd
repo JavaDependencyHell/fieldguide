@@ -2,11 +2,6 @@
 
 
 ::: {.scenario}
-# Strict Constraints
-
-
-# Strict Constraints
-
 This scenario demonstrates forcing a version via overrides.
 :::
 

@@ -1,20 +1,20 @@
-# Welcome to the Sample of the Dependency Management Troubleshooting Guide
+# Welcome To the sample of the Dependency Management Troubleshooting Guide{.unnumbered} 
 
-![QR Code](book/content/sample-qr.png){height=100px}
+### This sample is rough and ready. We reserve every right to correct any mistakes  {.unnumbered}
 
 This QR code takes you to the HeroDevs website where you get the latest version of this sample and register for the complete book when available.
 
+![QR Code](book/content/sample-qr.png){height=100px}
 
-![DON’T PANIC — Most dependency failures are mechanical and diagnosable.](book/content/dont_panic.png){width=80%}
 
 
-# Who This Book Is For {.unnumbered}
+### Who This Book Is For {.unnumbered}
 
 Dependency management often behaves as you would guess enough times to earn your trust. Until it doesn’t. 
 
-Most trouble stems not from misunderstanding Maven or Gradle syntax, but from making assumptions that conflict with how build tools actually operate. This book is about the mechanical rules that govern those operations.
+Most trouble stems not from misunderstanding Maven or Gradle syntax, but from making assumptions that conflict with how build tools actually operate. 
 
-### Who This Book Is For
+This book is about the mechanical rules that govern those operations.
 
 If you have stared at a dependency tree and thought, “that doesn’t make sense,” this book is for you.
 
@@ -25,13 +25,11 @@ It is written for
 - **Platform & Security Engineers:** You recognize these failure modes as consequences of real-world dependency resolution, not just developer mistakes.
 - **Junior Developers:** This guide will help you avoid persistent misconceptions early in your career.
 
-### How to Use This Guide
+### How to Use This Guide  {.unnumbered}
 
 This guide is designed for reactive use. When a version changes unexpectedly or a class disappears at runtime, scan the scenario titles. Each scenario provides rapid orientation: expected intuition, actual results, the underlying mechanism, and safe resolutions.
 
 Alternatively, read several scenarios to understand the system's shape. You will notice recurring patterns—these represent the core mechanics of dependency resolution.
-
-### What This Book Is Not
 
 This is not a reference manual or a replacement for official documentation. It does not provide exhaustive command sequences. 
 

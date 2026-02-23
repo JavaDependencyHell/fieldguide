@@ -1,20 +1,17 @@
 # Version Ranges
-*or what to Do When a Version Range Picks Something You Never Tested*
 
-::: {.badge .most-common}
-Most Common in Production
-:::
 
 ::: {.scenario}
+*Or what to Do When a Version Range Picks Something You Never Tested*
 This scenario demonstrates dynamic version resolution using ranges (e.g., `[1.0, 2.0)`).
-:::
+
 
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
     Root["Project Root"] --> LibA["lib-a:[1.0.0,2.0.0)"]
 ```
-
+:::
 
 
 ```{.xml include="/demos/maven-demo/scenario-9-ranges/pom.xml" snippet="s9-deps"}

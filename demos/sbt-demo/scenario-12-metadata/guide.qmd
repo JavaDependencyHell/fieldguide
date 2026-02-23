@@ -1,7 +1,8 @@
 # Customizing Metadata
-*or what to Do When the Upstream POM is Wrong*
+
 
 ::: {.scenario}
+*Or what to Do When the Upstream POM is Wrong*
 This scenario demonstrates how to handle incorrect metadata in SBT.
 :::
 

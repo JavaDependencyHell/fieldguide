@@ -1,11 +1,9 @@
 # Version Conflict Resolution (Latest Wins)
-*or what to Do When it Always Picks the Latest Version*
 
-::: {.badge .most-common}
-Most Common in Production
-:::
+
 
 ::: {.scenario}
+*Or what to Do When it Always Picks the Latest Version*
 This scenario demonstrates SBT's "Latest Wins" strategy for resolving version conflicts.
 :::
 

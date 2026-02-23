@@ -1,11 +1,8 @@
 # Version Ranges
-*or what to Do When Gradle Chooses a Version You Didn’t Intend*
 
-::: {.badge .most-common}
-Most Common in Production
-:::
 
 ::: {.scenario}
+*Or what to Do When Gradle Chooses a Version You Didn’t Intend*
 This scenario demonstrates Gradle's support for version ranges.
 :::
 

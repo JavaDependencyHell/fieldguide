@@ -1,7 +1,8 @@
 # Dependency Management (Platform/BOM)
-*or what to Do When a Platform Aligns Versions — Until Something Overrides It*
+
 
 ::: {.scenario}
+*Or what to Do When a Platform Aligns Versions. Until Something Overrides It*
 This scenario demonstrates how to use Maven BOMs (Bill of Materials) in Gradle using the `platform()` method.
 :::
 

@@ -1,7 +1,8 @@
 # Strict Constraints
-*or what to Do When Constraints Stop Resolution Completely*
+
 
 ::: {.scenario}
+*Or what to Do When Constraints Stop Resolution Completely*
 This scenario demonstrates how to force a specific version of a dependency, overriding any other constraints or transitive dependencies.
 :::
 

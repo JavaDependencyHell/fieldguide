@@ -1,7 +1,8 @@
 # Variants and Configurations
-*or what to Do When You Need a Specific Flavor of a Library*
+
 
 ::: {.scenario}
+*Or what to Do When You Need a Specific Flavor of a Library*
 This scenario demonstrates how SBT handles variant selection using configurations and classifiers.
 :::
 

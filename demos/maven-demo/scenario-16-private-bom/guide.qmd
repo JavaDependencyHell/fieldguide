@@ -1,10 +1,15 @@
 # Private Repository & BOM Override
-*or what to Do When You Need Enterprise Support*
+
 
 ::: {.scenario}
-This scenario shows how to incorporate a private, third-party repository that provides patched or extended-support versions of dependencies. It specifically demonstrates how a third-party Bill of Materials (BOM) can be used to override a publicly available, EOL (End-of-Life) dependency with a patched version from the private repository.
+*Or what to Do When You Need Enterprise Support*
+
+This scenario shows how to incorporate a private, third-party repository that provides patched or extended-support versions of dependencies.
+
+It specifically demonstrates how a third-party Bill of Materials (BOM) can be used to override a publicly available, EOL (End-of-Life) dependency with a patched version from the private repository.
+
 This is a common enterprise pattern when a vendor provides long-term support for a library (like Spring Boot) after its official EOL date.
-:::
+
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -21,11 +26,11 @@ graph LR
     Root --> SpringBoot_Declared("spring-boot-starter (version from BOM)")
 
 ```
-
+:::
 
 The `pom.xml` first adds the private repository. Then, it imports the vendor's BOM in the `<dependencyManagement>` section. The actual dependency is declared without a version, letting the imported BOM control which version is used.
 
-```{.xml include="/demos/maven-demo/scenario-16-private-bom/pom.xml" snippet="s16-deps"}
+```{.xml include="/demos/maven-demo/scenario-16-private-bom/fake-pom.xml" snippet="s16-deps"}
 ```
 
 #### Reader Expectation

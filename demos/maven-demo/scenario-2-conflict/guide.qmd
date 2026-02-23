@@ -1,14 +1,14 @@
 # Version Conflict Resolution
-*or what to Do When the Version You Get Isn’t the One You Chose*
 
-::: {.badge .most-common}
-Most Common in Production
-:::
+
 
 ::: {.scenario}
+*Or what to Do When the Version You Get Isn’t the One You Chose*
+
 This scenario demonstrates the "Diamond Dependency" problem where two different versions of the same library are requested.
+
 It highlights the fundamental difference in resolution strategies between Maven ("Nearest Wins") and Gradle/SBT ("Newest Wins").
-:::
+
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -18,6 +18,7 @@ graph LR
     LibA --> LibB_Transitive[lib-b:2.0.0]
 ```
 
+:::
 
 
 ```{.xml include="/demos/maven-demo/scenario-2-conflict/pom.xml" snippet="s2-deps"}

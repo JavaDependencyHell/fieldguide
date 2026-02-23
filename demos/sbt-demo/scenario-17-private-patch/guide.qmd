@@ -1,7 +1,8 @@
 # Private Repository & Direct Patch Override
-*or what to Do When You Need a One-Off Patch*
+
 
 ::: {.scenario}
+*Or what to Do When You Need a One-Off Patch*
 This scenario shows a more direct way to use a private, third-party repository. Instead of using a vendor-supplied BOM, we explicitly request the patched version of a dependency in our project's `libraryDependencies`.
 This approach is simpler than the BOM method but can be more verbose if many dependencies need to be overridden. It is suitable for one-off patches or when a full BOM is not available.
 :::

@@ -1,7 +1,8 @@
 # Rejecting Versions
-*or what to Do When You Can't Say No*
+
 
 ::: {.scenario}
+*Or what to Do When You Can't Say No*
 This scenario demonstrates how to reject specific versions in SBT, which lacks a native "reject" keyword.
 :::
 

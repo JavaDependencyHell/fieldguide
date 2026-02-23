@@ -1,7 +1,8 @@
 # Circular Dependencies
-*or what to Do When A Needs B and B Needs A*
+
 
 ::: {.scenario}
+*Or what to Do When A Needs B and B Needs A*
 This scenario demonstrates how SBT handles circular dependencies between external libraries.
 :::
 

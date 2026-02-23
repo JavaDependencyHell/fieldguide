@@ -1,20 +1,8 @@
 # Dependency Exclusions
 
 
-::: {.badge .most-common}
-Most Common in Production
-:::
 
 ::: {.scenario}
-# Dependency Exclusions
-
-
-
-
-# Dependency Exclusions
-
-
-
 This scenario demonstrates exclusions.
 :::
 

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.example.demo</groupId>
+        <artifactId>parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <groupId>com.example.scenario</groupId>
+    <artifactId>scenario-16-private-bom</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <description>
+        Demonstrates using a private repository and a third-party BOM to override dependency versions.
+    </description>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+    </properties>
+
+    <!-- tag::s16-deps[] -->
+    <repositories>
+        <repository>
+            <id>third-party-repo</id>
+            <url>https://private-repo.com</url>
+        </repository>
+    </repositories>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.thirdparty.springboot</groupId>
+                <artifactId>patched-bom</artifactId>
+                <version>1.0.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+    </dependencies>
+    <!-- end::s16-deps[] -->
+
+</project>

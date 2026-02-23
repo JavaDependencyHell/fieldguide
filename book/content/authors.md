@@ -1,4 +1,4 @@
-# About the Authors {.unnumbered}
+# About the Authors 
 
 
 ### Hervé Boutemy
@@ -9,13 +9,10 @@ Today, Hervé works as Solutions Architect for Sonatype on next steps of the bui
 
 On the OSS front, Hervé is an Apache Software Foundation member and Apache Maven PMC Chair. He's also involved in many advanced projects like CycloneDX, SPDX, sigstore, and Reproducible Builds.
 
+
 ### Steve Poole
 
 Developer Advocate @ HeroDevs. Java Champion, Oracle ACE, Security Champion, DevOps lead.
 
 Long-time engineer and pragmatic strategist working across the stack. From operating systems and JVMs to modern AI.
-I help teams ship faster, safer, and with fewer supply-chain surprises.
-
-Open source contributor (Apache, Eclipse, OpenJDK, OpenSSF), OWASP member, user group organiser, and frequent international conference speaker. and occasional Mad scientist.
-
-Previously: IBM, Red Hat, Sonatype.
+Open source contributor (Apache, Eclipse, OpenJDK, user group keader , and frequent international conference speaker. Occasional Mad scientist.

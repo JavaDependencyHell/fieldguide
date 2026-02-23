@@ -1,17 +1,26 @@
 % --- Section spacing (Half-Letter tuned) ---
-\RedeclareSectionCommand[beforeskip=-1.4ex, afterskip=0.7ex]{section}
-\RedeclareSectionCommand[beforeskip=-1.1ex, afterskip=0.4ex]{subsection}
-\RedeclareSectionCommand[beforeskip=-0.8ex, afterskip=0.3ex]{subsubsection}
+\RedeclareSectionCommand[beforeskip=2.5ex, afterskip=0.7ex]{section}
+\RedeclareSectionCommand[beforeskip=2.1ex, afterskip=0.5ex]{subsection}
+\RedeclareSectionCommand[beforeskip=1.6ex, afterskip=0.35ex]{subsubsection}
 
-% --- Paragraph density ---
-\setlength{\parskip}{0.32em}
+% --- Paragraph density (slightly more relaxed than A5) ---
+\setlength{\parskip}{0.42em}
 \setlength{\parindent}{0pt}
+
+% --- Display Math spacing ---
+\setlength{\abovedisplayskip}{0.9em}
+\setlength{\belowdisplayskip}{0.9em}
+
+% --- Float breathing (slightly more relaxed than A5) ---
+\setlength{\textfloatsep}{1.0em}
+\setlength{\floatsep}{0.9em}
+\setlength{\intextsep}{0.9em}
 
 % --- Lists tighter ---
 \usepackage{enumitem}
 \setlist{
-  itemsep=0.15em,
-  topsep=0.35em,
+  itemsep=0.2em,
+  topsep=0.42em,
   parsep=0em,
   partopsep=0em
 }

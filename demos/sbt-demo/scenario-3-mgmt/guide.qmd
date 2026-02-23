@@ -1,7 +1,8 @@
 # Dependency Management
-*or what to Do When You Want to Centralize Versions*
+
 
 ::: {.scenario}
+*Or what to Do When You Want to Centralize Versions*
 This scenario demonstrates how to manage dependency versions centrally in SBT, similar to Maven's `<dependencyManagement>`.
 :::
 

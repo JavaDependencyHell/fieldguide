@@ -1,9 +1,13 @@
 # Dependency Management (BOM)
-*or what to Do When Your BOM Isn’t Actually in Control*
+
 
 ::: {.scenario}
+
+*Or what to Do When Your BOM Isn’t Actually in Control*
+
 This scenario demonstrates how to use a Bill of Materials (BOM) or `<dependencyManagement>` block to centralize version definitions. This decouples "what I need" from "which version I need".
-:::
+
+
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -15,7 +19,7 @@ graph LR
     BOM -. defines .-> LibB_Ver[lib-b:1.0.0]
 ```
 
-
+:::
 
 ```{.xml include="/demos/maven-demo/scenario-3-mgmt/pom.xml" snippet="s3-deps"}
 ```

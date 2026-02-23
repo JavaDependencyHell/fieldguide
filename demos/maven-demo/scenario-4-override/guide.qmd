@@ -1,13 +1,12 @@
 # Hardcoded Version vs Dependency Management
-*or what to Do When One Hardcoded Version Overrides Everything Else*
 
-::: {.badge .most-common}
-Most Common in Production
-:::
 
 ::: {.scenario}
+*Or what to Do When One Hardcoded Version Overrides Everything Else*
+
 This scenario shows what happens when you have a conflict between a version defined in a BOM (Dependency Management) and a version explicitly declared in your dependencies.
-:::
+
+
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -18,7 +17,7 @@ graph LR
     BOM -. suggests .-> LibA_BOM[lib-a:1.0.0]
     BOM -. suggests .-> LibB_BOM[lib-b:1.0.0]
 ```
-
+:::
 
 
 ```{.xml include="/demos/maven-demo/scenario-4-override/pom.xml" snippet="s4-deps"}

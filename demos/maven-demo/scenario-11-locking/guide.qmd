@@ -1,14 +1,12 @@
-# 11. Dependency Locking
-*or what to Do When Yesterday's Build and Today's Build Produce Different Results*
+# Dependency Locking
 
-::: {.badge .most-common}
-Most Common in Production
-:::
 
 ::: {.scenario}
-## 11. Dependency Locking
-:::
+#### What to Do When Yesterday's Build and Today's Build Produce Different Results
 
+Dependency Locking
+
+:::
 
 
 ```{.xml include="/demos/maven-demo/scenario-11-locking/pom.xml" snippet="s11-deps"}

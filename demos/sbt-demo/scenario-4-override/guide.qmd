@@ -1,11 +1,8 @@
 # Hardcoded Version vs Overrides
-*or what to Do When You Need to Break the Rules*
 
-::: {.badge .most-common}
-Most Common in Production
-:::
 
 ::: {.scenario}
+*or what to Do When You Need to Break the Rules*
 This scenario demonstrates how explicit version declarations in `libraryDependencies` can override managed versions or defaults.
 :::
 

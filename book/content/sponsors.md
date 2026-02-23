@@ -1,4 +1,4 @@
-# About HeroDevs {.unnumbered}
+# About HeroDevs 
 
 This book focuses on how dependency resolution works in the real world—specifically where its guarantees end and how that impacts aging software systems. Because of this focus on realistic constraints and long-term maintenance, the project received support from HeroDevs.
 

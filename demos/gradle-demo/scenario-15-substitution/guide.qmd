@@ -1,7 +1,8 @@
 # Dependency Substitution
-*or what to Do When One Component Quietly Replaces Another*
+
 
 ::: {.scenario}
+*Or what to Do When One Component Quietly Replaces Another*
 This scenario demonstrates how to completely replace one dependency with another (or a different version of the same dependency) using Gradle's dependency substitution rules.
 :::
 

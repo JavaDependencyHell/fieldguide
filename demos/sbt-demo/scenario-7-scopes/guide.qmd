@@ -1,11 +1,8 @@
 # Dependency Configurations
-*or what to Do When You Need a Library Only for Testing*
 
-::: {.badge .most-common}
-Most Common in Production
-:::
 
 ::: {.scenario}
+*Or what to Do When You Need a Library Only for Testing*
 This scenario demonstrates SBT's dependency configurations (similar to Maven scopes), such as `Compile`, `Test`, and `Provided`.
 :::
 

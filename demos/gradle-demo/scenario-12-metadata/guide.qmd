@@ -1,7 +1,8 @@
 # Component Metadata Rules
-*or what to Do When Metadata Changes the Outcome of Resolution*
+
 
 ::: {.scenario}
+*Or what to Do When Metadata Changes the Outcome of Resolution*
 This scenario demonstrates how to fix incorrect or missing metadata in third-party libraries using Gradle's Component Metadata Rules.
 :::
 

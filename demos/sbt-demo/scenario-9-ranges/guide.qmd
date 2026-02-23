@@ -1,11 +1,9 @@
 # Version Ranges
-*or what to Do When You Want the Latest and Greatest (Until It Breaks)*
 
-::: {.badge .most-common}
-Most Common in Production
-:::
+
 
 ::: {.scenario}
+*Or what to Do When You Want the Latest and Greatest (Until It Breaks)*
 This scenario demonstrates how to use version ranges in SBT.
 :::
 

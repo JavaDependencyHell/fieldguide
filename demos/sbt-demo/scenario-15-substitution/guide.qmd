@@ -1,7 +1,8 @@
 # Dependency Substitution
-*or what to Do When You Need to Swap a Library*
+
 
 ::: {.scenario}
+*Or what to Do When You Need to Swap a Library*
 This scenario demonstrates how to substitute dependencies in SBT.
 :::
 

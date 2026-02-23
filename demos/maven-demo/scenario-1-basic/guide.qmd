@@ -1,9 +1,16 @@
-# Basic Transitive Resolution
-*or what to Do When a Dependency Brings in Versions You Didn’t Ask For*
+#  Basic Transitive Resolution
+
 
 ::: {.scenario}
-This scenario demonstrates the fundamental concept of transitive dependency resolution. It shows how a build tool automatically discovers and includes dependencies of your direct dependencies, forming a dependency graph. This is the "happy path" where no conflicts exist.
-:::
+##### When a Dependency Brings in Versions You Didn’t Expect
+
+This scenario demonstrates the fundamental concept of transitive dependency resolution.
+
+It shows how a build tool automatically discovers and includes dependencies of your direct dependencies, forming a dependency graph.
+
+This is the "happy path" where no conflicts exist.
+
+
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -13,6 +20,7 @@ graph LR
     LibB --> LibC(lib-c:1.0.0)
 ```
 
+:::
 
 
 ```{.xml include="/demos/maven-demo/scenario-1-basic/pom.xml" snippet="s1-deps"}

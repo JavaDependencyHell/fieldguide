@@ -1,8 +1,9 @@
 # 12. Rich Version Metadata
-*or what to Do When You Can't Express What You Actually Need*
 
 ::: {.scenario}
-## 12. Rich Version Metadata
+
+*Or what to Do When You Can't Express What You Actually Need*
+
 This scenario demonstrates a fundamental limitation of Maven's dependency model: the POM format has no way to express rich version constraints like "prefer 1.5 but accept anything in [1.0, 2.0)" or "strictly require exactly 1.3.0."
 :::
 

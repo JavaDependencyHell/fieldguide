@@ -1,11 +1,8 @@
 # Hardcoded Version vs Platform
-*or what to Do When a Single Declaration Escapes the Platform*
 
-::: {.badge .most-common}
-Most Common in Production
-:::
 
 ::: {.scenario}
+*Or what to Do When a Single Declaration Escapes the Platform*
 This scenario demonstrates how an explicit version declaration overrides a `platform()` recommendation.
 :::
 

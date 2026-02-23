@@ -1,11 +1,7 @@
 # Dependency Exclusions
-*or what to Do When an Exclusion Reshapes the Dependency Graph*
-
-::: {.badge .most-common}
-Most Common in Production
-:::
 
 ::: {.scenario}
+*Or what to Do When an Exclusion Reshapes the Dependency Graph*
 This scenario demonstrates excluding transitive dependencies.
 :::
 

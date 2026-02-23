@@ -5,8 +5,6 @@ project:
 filters:
   - include-code.lua
 
-
-
 format:
 
   html:
@@ -18,7 +16,7 @@ format:
     number-sections: true
     number-depth: 2
     toc-depth: 1
-    toc: false
+    toc: true
     fontsize: 11.5pt
     documentclass: scrbook
 
@@ -41,21 +39,21 @@ format:
       theme: neutral
     include-in-header:
       - latex/watermark.tex
-      - latex/chapter-style.tex
       - latex/cover.tex
-      - latex/graphics.tex
+      - latex/back.tex
       - latex/toc.tex
+      - latex/chapter-style.tex
+      - latex/typography-common.tex
       - latex/a5-tuning.tex
-      - latex/enhanced-clarity.tex
 book:
   title: "Dependency Hell"
   chapters:
     - index.md
     - book/content/triage.md
     - book/content/classpath-reality-check.md
+    - book/content/scenarios.md
     - book/content/start_here_trouble.qmd
     - book/content/start_here_control.qmd
-    - book/content/scenarios.md
     - book/content/authors.md
     - book/content/sponsors.md
     - part: "Maven Scenarios"
@@ -121,6 +119,7 @@ book:
         - book/content/comparison-table.md
         - book/content/cheat-sheet.md
         - book/content/glossary.md
+
   navbar:
     page-footer:
       left: "© 2026 Dependency Hell Authors"
