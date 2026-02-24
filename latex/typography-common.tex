@@ -7,6 +7,12 @@
 \usepackage[most]{tcolorbox}
 \usepackage{enumitem}
 
+\newcommand{\checkheight}[1]{%
+  \setbox0=\vbox{#1}%
+  \ifdim\ht0>40mm
+    \typeout{WARNING: Code block exceeds safe height}%
+  \fi
+}
 % --------------------------------------------------
 % Paragraph baseline (format-neutral)
 % --------------------------------------------------
@@ -14,6 +20,42 @@
 \setlength{\parindent}{0pt}
 
 % NOTE: parskip is format-tuned in size-specific files
+
+
+
+% --------------------------------------------------
+% FONTS
+% --------------------------------------------------
+
+
+\setmainfont[
+  Path = fonts/libertinus-fonts/,
+  Extension = .otf,
+  UprightFont = LibertinusSerif-Regular,
+  BoldFont = LibertinusSerif-Bold,
+  ItalicFont = LibertinusSerif-Italic,
+  BoldItalicFont = LibertinusSerif-BoldItalic
+]{Libertinus Serif}
+
+
+\setsansfont[
+  Path = fonts/libertinus-fonts/,
+  Extension = .otf,
+  UprightFont = LibertinusSans-Regular,
+  BoldFont = LibertinusSans-Bold,
+  ItalicFont = LibertinusSans-Italic
+]{Libertinus Sans}
+
+
+\setmonofont[
+  Path = fonts/jetbrainsmono-otf/,
+  Extension = .otf,
+  UprightFont = JetBrainsMono-Regular,
+  BoldFont = JetBrainsMono-Bold,
+  ItalicFont = JetBrainsMono-Italic,
+  BoldItalicFont = JetBrainsMono-BoldItalic
+]{JetBrains Mono}
+
 
 % --------------------------------------------------
 % Section styling (compact but readable)

@@ -4,10 +4,12 @@
 
 ::: {.scenario}
 
-*Or what to Do When Excluding a Dependency Fixes the Build but Breaks Runtime*
+#### What to Do When Excluding a Dependency Fixes the Build but Breaks Runtime:
 
 
-This scenario demonstrates how to surgically remove a transitive dependency from the graph. This is a common "sledgehammer" fix for conflicts.
+This scenario demonstrates how to surgically remove a transitive dependency from the graph.
+
+This is a common "sledgehammer" fix for conflicts.
 
 
 ```{mermaid}
@@ -23,21 +25,22 @@ graph LR
 ```{.xml include="/demos/maven-demo/scenario-5-exclusions/pom.xml" snippet="s5-deps"}
 ```
 
-#### Reader Expectation
+#### Reader Expectation:
 Excluding `lib-c` removes it and its transitive subtree from the graph entirely.
 
-#### Why This Happens
+#### Why This Happens:
 Maven respects exclusion metadata and prunes the specified branch during graph traversal. This "sledgehammer" fix for conflicts is why the same graph behaves differently across tools.
 
-#### How Developers Commonly "Fix" This
+#### How Developers Commonly "Fix" This:
 This *is* the fix for many problems (e.g., excluding `log4j` to use `slf4j`).
 
-#### Operational Risk
+#### Operational Risk:
 *   **Low risk:** Replacing an implementation (e.g., `log4j` with `logback` + bridge).
 *   **Medium risk:** Excluding a transitive you believe is unused; future versions may require it.
 *   **High risk:** Excluding to "fix" a conflict without understanding the dependency; this frequently causes `NoClassDefFoundError` at runtime.
 
-#### Deterministic Checks
+#### Deterministic Checks:
+
 **Fast check (Maven):** `mvn dependency:tree`
 **Fast check (Gradle):** `./gradlew dependencies`
 **Fast check (SBT):** `sbt dependencyTree`
@@ -46,13 +49,13 @@ This *is* the fix for many problems (e.g., excluding `log4j` to use `slf4j`).
 
 **Conclusion:** The exclusion successfully prunes the dependency from this path.
 
-#### How This Scales in Real Systems
+#### How This Scales:
 Overuse of exclusions leads to "Swiss cheese" dependency graphs that are hard to reason about.
 
-#### Key Takeaway
+#### Key Takeaway:
 Exclusions are powerful but dangerous; use them only when you know the dependent library can function without the excluded artifact (or you are providing a replacement).
 
-#### Related Scenarios
+#### Related Scenarios:
 *   [Scenario 15: Substitution](../scenario-15-substitution/guide.qmd) - Replacing a library instead of just removing it.
 
 ::: {.calloutbox}

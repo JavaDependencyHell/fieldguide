@@ -3,9 +3,11 @@
 
 ::: {.scenario}
 
-*Or what to Do When Your BOM Isn’t Actually in Control*
+#### What to Do When Your BOM Isn’t Actually in Control:
 
-This scenario demonstrates how to use a Bill of Materials (BOM) or `<dependencyManagement>` block to centralize version definitions. This decouples "what I need" from "which version I need".
+This scenario demonstrates how to use a Bill of Materials (BOM) or `<dependencyManagement>` block to centralize version definitions.
+
+This decouples "what I need" from "which version I need".
 
 
 
@@ -24,19 +26,19 @@ graph LR
 ```{.xml include="/demos/maven-demo/scenario-3-mgmt/pom.xml" snippet="s3-deps"}
 ```
 
-#### Reader Expectation
+#### Reader Expectation:
 Importing a BOM centralizes version control, ensuring consistency across project and transitive dependencies.
 
-#### Why This Happens
+#### Why This Happens:
 `<dependencyManagement>` provides default versions for dependencies declared without an explicit version and enforces those versions throughout the transitive tree. This central orientation is why the same graph behaves differently across tools.
 
-#### How Developers Commonly "Fix" This
+#### How Developers Commonly "Fix" This:
 Without BOMs, developers copy-paste version numbers across multiple modules, leading to drift and inconsistency.
 
-#### Safer Ways to Take Control
+#### Safer Ways to Take Control:
 This *is* the safer way. Always prefer BOMs or centralized version catalogs (Gradle) over scattered version numbers.
 
-#### Deterministic Checks
+#### Deterministic Checks:
 
 **Fast check (Maven):**
 
@@ -50,7 +52,7 @@ The `<dependencyManagement>` section of the output. It should contain the versio
 **Conclusion:**
 If the versions are present, the BOM is correctly imported and influencing the build.
 
-#### How This Scales in Real Systems
+#### How This Scales:
 Essential for multi-module projects and microservices to ensure all services use the same library versions.
 
 #### Key Takeaway

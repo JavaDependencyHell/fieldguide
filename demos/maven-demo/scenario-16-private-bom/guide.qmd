@@ -2,7 +2,7 @@
 
 
 ::: {.scenario}
-*Or what to Do When You Need Enterprise Support*
+#### What to Do When You Need Enterprise Support:
 
 This scenario shows how to incorporate a private, third-party repository that provides patched or extended-support versions of dependencies.
 

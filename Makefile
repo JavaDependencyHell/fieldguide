@@ -107,7 +107,7 @@ us-sample: $(US_PDF_OUTPUT)
 brochure: $(PDF_OUTPUT)
 	@echo "Generating Brochure PDF..."
 	@if [ -f $(PDF_OUTPUT) ]; then \
-		qpdf $(PDF_OUTPUT) --pages . 1,2,4,5,10,3,5,15-17,18-20,24-26,56,57,58,59,z -- $(BROCHURE_PDF); \
+		qpdf $(PDF_OUTPUT) --pages . 1,2,4,5,10,3,15-17,18-20,24-26,56,57,58,59,z -- $(BROCHURE_PDF); \
 		echo "Brochure generation complete. Output in $(BROCHURE_PDF)"; \
 	else \
 		echo "Error: $(PDF_OUTPUT) not found. Run 'make book' first."; \
@@ -118,7 +118,7 @@ brochure: $(PDF_OUTPUT)
 us-brochure: $(US_PDF_OUTPUT)
 	@echo "Generating US Half-Letter Brochure PDF..."
 	@if [ -f $(US_PDF_OUTPUT) ]; then \
-		qpdf $(US_PDF_OUTPUT) --pages . 1,2,4,5,10,3,5,15-17,18-20,24-26,56,57,58,59,z  -- $(US_BROCHURE_PDF); \
+		qpdf $(US_PDF_OUTPUT) --pages . 1,2,4,5,10,3,15-17,18-20,24-26,56,57,58,59,z  -- $(US_BROCHURE_PDF); \
 		echo "US Brochure generation complete. Output in $(US_BROCHURE_PDF)"; \
 	else \
 		echo "Error: $(US_PDF_OUTPUT) not found. Run 'make us-book' first."; \
