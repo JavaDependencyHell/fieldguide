@@ -1,4 +1,4 @@
-# 14. Rejecting a Version
+# Rejecting a Version
 
 
 ::: {.scenario}
