@@ -1,10 +1,16 @@
-# Circular Dependencies
+---
+title: "Circular Dependencies"
+tagline: "Or what to Do When Gradle Can’t Untangle the Graph"
+type: scenario
+tool: gradle
+---
 
+#### Scenario
 
-::: {.scenario}
 *Or what to Do When Gradle Can’t Untangle the Graph*
 This scenario demonstrates Gradle's handling of circular dependencies.
-:::
+
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -48,8 +54,8 @@ Gradle will show the circular dependency in the tree, often with an annotation.
 **Conclusion:**
 While Gradle can resolve circular dependencies, they are a sign of architectural problems and should be fixed.
 
-#### Key Takeaway
+#### ! Takeaway
 Gradle tolerates cycles.
 
-#### Related Scenarios
+#### ! Related
 N/A

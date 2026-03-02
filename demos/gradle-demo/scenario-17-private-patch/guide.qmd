@@ -1,11 +1,17 @@
-# Private Repository & Direct Patch Override
+---
+title: "Private Repository & Direct Patch Override"
+tagline: "Or what to Do When You Need a One-Off Patch"
+type: scenario
+tool: gradle
+---
 
+#### Scenario
 
-::: {.scenario}
 *Or what to Do When You Need a One-Off Patch*
 This scenario shows a more direct way to use a private, third-party repository. Instead of using a vendor-supplied BOM, we explicitly request the patched version of a dependency in our project's `dependencies` block.
 This approach is simpler than the BOM method but can be more verbose if many dependencies need to be overridden. It is suitable for one-off patches or when a full BOM is not available.
-:::
+
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -32,8 +38,8 @@ Directly declaring a patched version from a private repository ensures that exac
 #### Why This Happens
 A direct declaration in the `dependencies` block acts as a powerful resolution signal. When combined with a private repository that makes the specific patched version available, Gradle selects it to fulfill the project's requirement.
 
-#### Key Takeaway
+#### ! Takeaway
 A direct version declaration for a dependency is the most straightforward way to ensure a specific version is used, provided that version is available in one of the configured repositories.
 
-#### Related Scenarios
+#### ! Related
 *   [Scenario 16: Private Repository & BOM Override](../scenario-16-private-bom/guide.qmd) - A more scalable approach using a vendor BOM.

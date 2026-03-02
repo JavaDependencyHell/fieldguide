@@ -1,8 +1,11 @@
-# Dependency Exclusions
+---
+title: "Dependency Exclusions"
+tagline: "What to Do When Excluding a Dependency Fixes the Build but Breaks Runtime"
+type: scenario
+tool: maven
+---
 
-
-
-::: {.scenario}
+#### Scenario
 
 #### What to Do When Excluding a Dependency Fixes the Build but Breaks Runtime:
 
@@ -11,6 +14,7 @@ This scenario demonstrates how to surgically remove a transitive dependency from
 
 This is a common "sledgehammer" fix for conflicts.
 
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -19,7 +23,6 @@ graph LR
     LibA -.-> LibC[lib-c:1.0.0]
     Root -- excludes --> LibC
 ```
-:::
 
 
 ```{.xml include="/demos/maven-demo/scenario-5-exclusions/pom.xml" snippet="s5-deps"}
@@ -52,17 +55,14 @@ This *is* the fix for many problems (e.g., excluding `log4j` to use `slf4j`).
 #### How This Scales:
 Overuse of exclusions leads to "Swiss cheese" dependency graphs that are hard to reason about.
 
-#### Key Takeaway:
+#### ! Takeaway:
 Exclusions are powerful but dangerous; use them only when you know the dependent library can function without the excluded artifact (or you are providing a replacement).
 
-#### Related Scenarios:
+#### ! Related
 *   [Scenario 15: Substitution](../scenario-15-substitution/guide.qmd) - Replacing a library instead of just removing it.
 
-::: {.calloutbox}
-**Seen in the Wild**
+#### ! Wild
 
 License compliance scans frequently uncover GPL-licensed libraries pulled in transitively.
 
 A common enterprise response is to exclude the offending dependency and substitute a permissively licensed alternative, verifying at runtime that the upstream library still functions.
-
-:::

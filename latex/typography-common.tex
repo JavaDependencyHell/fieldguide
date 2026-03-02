@@ -56,9 +56,8 @@
   BoldItalicFont = JetBrainsMono-BoldItalic
 ]{JetBrains Mono}
 
-
 % --------------------------------------------------
-% Section styling (compact but readable)
+% Section styling (compact but readable — BLOCK mode)
 % --------------------------------------------------
 
 \RedeclareSectionCommand[
@@ -69,30 +68,29 @@
 ]{section}
 
 % Thin rule above sections
-
-\pretocmd{\section}{\rule{\linewidth}{0.4pt}\vspace{0.3ex}}{}{}
+\pretocmd{\section}{\rule{\linewidth}{0.4pt}\vspace{0.25ex}}{}{}
 
 % --------------------------------------------------
-% Subsection — RUN-IN (primary density win)
+% Subsection — block (no run-in)
 % --------------------------------------------------
 
 \RedeclareSectionCommand[
-  runin=true,
+  runin=false,
   afterindent=false,
   beforeskip=1.7ex,
-  afterskip=0.74em,
+  afterskip=0.9ex,
   font=\normalfont\bfseries,
 ]{subsection}
 
 % --------------------------------------------------
-% Subsubsection — stepped hierarchy
+% Subsubsection — block (no run-in)
 % --------------------------------------------------
 
 \RedeclareSectionCommand[
-  runin=true,
+  runin=false,
   afterindent=false,
-  beforeskip=1.1ex,
-  afterskip=0.75em,
+  beforeskip=1.2ex,
+  afterskip=0.8ex,
   font=\normalfont\bfseries\scshape,
 ]{subsubsection}
 

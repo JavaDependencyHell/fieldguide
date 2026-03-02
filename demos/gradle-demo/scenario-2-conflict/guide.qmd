@@ -1,11 +1,16 @@
-# Version Conflict Resolution (Newest Wins)
+---
+title: "Version Conflict Resolution (Newest Wins)"
+tagline: "Or what to Do When Gradle Picks a Newer Version Than Maven Would"
+type: scenario
+tool: gradle
+---
 
+#### Scenario
 
-
-::: {.scenario}
 *Or what to Do When Gradle Picks a Newer Version Than Maven Would*
 This scenario demonstrates its default "Newest Wins" conflict resolution strategy.
-:::
+
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -46,19 +51,16 @@ Gradle assumes semantic versioning: the newest version is likely backward-compat
 
 **Conclusion:** Gradle selects the newest version found in the graph.
 
-#### Key Takeaway
+#### ! Takeaway
 It upgrades you to the newest version found in the graph.
 
-#### Related Scenarios
+#### ! Related
 *   [Scenario 6: Strict](../scenario-6-forcing/guide.qmd)
 
-::: {.calloutbox}
-**Seen in the Wild**
+#### ! Wild
 
 In large e-commerce architectures using "newest wins" strategies, minor updates in utility libraries can automatically propagate across dozens of microservices.
 
 This risks silent regressions if the library violates semantic versioning.
 
 To mitigate this, many organizations use `strictly` constraints on business-critical libraries, opting out of automatic "newest is better" upgrades.
-
-:::

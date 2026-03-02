@@ -1,14 +1,19 @@
-# Version Conflict Resolution
+---
+title: "Version Conflict Resolution"
+tagline: "What to Do When the Version You Get Isn’t the One You Chose"
+type: scenario
+tool: maven
+---
 
+#### Scenario
 
-
-::: {.scenario}
 #### What to Do When the Version You Get Isn’t the One You Chose:
 
 This scenario demonstrates the "Diamond Dependency" problem where two different versions of the same library are requested.
 
 It highlights the fundamental difference in resolution strategies between Maven ("Nearest Wins") and Gradle/SBT ("Newest Wins").
 
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -18,7 +23,6 @@ graph LR
     LibA --> LibB_Transitive[lib-b:2.0.0]
 ```
 
-:::
 
 
 ```{.xml include="/demos/maven-demo/scenario-2-conflict/pom.xml" snippet="s2-deps"}
@@ -65,15 +69,15 @@ Use `<dependencyManagement>` to fix the version regardless of depth. Gradle uses
 #### How This Scales:
 This is the primary cause of "Dependency Hell." As graphs grow, "nearest" becomes arbitrary and "newest" can trigger unintended upgrades.
 
-#### Key Takeaway:
+#### ! Takeaway
 Maven optimizes for "distance", while Gradle and SBT optimize for "freshness" — knowing which strategy your tool uses is critical for stability.
 
-#### Related Scenarios:
-*   [Scenario 3: Dependency Management](../scenario-3-mgmt/guide.qmd) - How to fix this centrally.
+#### ! Related
+ [Scenario 3: Dependency Management](../scenario-3-mgmt/guide.qmd) - How to fix this centrally.
 
 
-::: {.calloutbox}
-**Seen in the Wild**
+
+#### ! Wild
 
 A number of financial institutions discovered vulnerable versions of Apache Commons Collections deep in their transitive graphs, often buried three levels deep in vendor SDKs.
 
@@ -81,4 +85,3 @@ In many cases, they couldn't upgrade the SDK itself. Because Maven's "nearest wi
 
 They utilized `<dependencyManagement>` to pin the patched version globally. This allowed them to satisfy security audits without extensive regression testing of the vendor SDK.
 
-:::

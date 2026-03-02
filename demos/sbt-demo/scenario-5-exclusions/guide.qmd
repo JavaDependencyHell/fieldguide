@@ -1,10 +1,12 @@
 # Dependency Exclusions
 
+#### Scenario
 
 
-::: {.scenario}
+
 This scenario demonstrates exclusions.
-:::
+
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -45,10 +47,10 @@ The most common pattern is swapping logging frameworks: excluding log4j and addi
 #### How This Scales in Real Systems
 In large Scala projects, exclusions accumulate as different library ecosystems bring in conflicting versions of common dependencies (particularly around Scala version suffixes and cross-builds). Exclusion management is one of the primary maintenance burdens in SBT builds.
 
-#### Key Takeaway
+#### ! Takeaway
 Exclusions work.
 
-#### Related Scenarios
+#### ! Related
 N/A
 
 ::: {.callout}

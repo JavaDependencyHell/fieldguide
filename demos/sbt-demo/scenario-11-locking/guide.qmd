@@ -1,10 +1,16 @@
-# Dependency Locking
+---
+title: "Dependency Locking"
+tagline: "Or what to Do When You Want Reproducible Builds"
+type: scenario
+tool: sbt
+---
 
+#### Scenario
 
-::: {.scenario}
 *Or what to Do When You Want Reproducible Builds*
 This scenario demonstrates how to lock dependencies in SBT to ensure that builds are reproducible, even when using dynamic versions.
-:::
+
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -39,8 +45,8 @@ SBT (1.4.x+) freezes the resolved graph into a lock file. Committed to version c
 #### How This Scales in Real Systems
 For production systems, reproducibility is non-negotiable. Dependency locking (or strict version pinning) is essential to prevent "it works on my machine" issues. It also protects against malicious package updates (supply chain attacks) by ensuring you only use vetted versions.
 
-#### Key Takeaway
+#### ! Takeaway
 Dependency locking ensures that dynamic versions don't break your build.
 
-#### Related Scenarios
+#### ! Related
 *   [Scenario 9: Ranges](../scenario-9-ranges/guide.md) - Using dynamic versions.

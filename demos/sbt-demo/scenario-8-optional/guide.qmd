@@ -1,10 +1,16 @@
-# Optional Dependencies
+---
+title: "Optional Dependencies"
+tagline: "Or what to Do When You Need a Library Only Sometimes"
+type: scenario
+tool: sbt
+---
 
+#### Scenario
 
-::: {.scenario}
 *Or what to Do When You Need a Library Only Sometimes*
 This scenario demonstrates how SBT handles optional dependencies.
-:::
+
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -42,8 +48,8 @@ Optional dependencies are not transitive. Consumers must explicitly declare them
 #### How This Scales in Real Systems
 Large frameworks like Akka and Play use optional dependencies extensively to support many integrations without forcing all of them on every consumer. As a library author in the SBT ecosystem, documenting your optional dependencies clearly is critical, since the tooling won't surface them automatically. Consider providing separate "starter" or "extras" modules that bundle optional dependencies for common use cases.
 
-#### Key Takeaway
+#### ! Takeaway
 SBT respects optional dependencies from Maven POMs but doesn't have a native "optional" keyword for declaring them.
 
-#### Related Scenarios
+#### ! Related
 *   [Scenario 7: Scopes](../scenario-7-scopes/guide.md)

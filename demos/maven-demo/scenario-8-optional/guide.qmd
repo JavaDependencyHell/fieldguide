@@ -1,19 +1,23 @@
-# Optional Dependencies
+---
+title: "Optional Dependencies"
+tagline: "Or what to Do When “Optional” Dependencies Don’t Show Up"
+type: scenario
+tool: maven
+---
 
+#### Scenario
 
-::: {.scenario}
 *Or what to Do When “Optional” Dependencies Don’t Show Up*
 
 This scenario demonstrates `<optional>true</optional>` flag.
 
-
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
     Root["Project Root"] --> LibA["lib-a:1.0.0 (optional)"]
 ```
-:::
 
 
 ```{.xml include="/demos/maven-demo/scenario-8-optional/pom.xml" snippet="s8-deps"}
@@ -49,8 +53,8 @@ Optional dependencies are not transitive. Consumers must explicitly declare them
 #### How This Scales in Real Systems
 Used heavily by large frameworks (Spring, Hibernate) to support many integrations without forcing all of them on everyone.
 
-#### Key Takeaway
+#### ! Takeaway
 Optional dependencies shift the burden of declaration to the consumer.
 
-#### Related Scenarios
+#### ! Related
 *   [Scenario 7: Scopes](../scenario-7-scopes/guide.qmd) - `provided` scope is similar but semantically different.

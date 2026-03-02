@@ -1,10 +1,14 @@
-# Feature Variants
+---
+title: "Feature Variants"
+tagline: "What to Do When a Library Has Multiple Flavours"
+type: scenario
+tool: maven
+---
 
+#### Scenario
 
-::: {.scenario}
 *What to Do When a Library Has Multiple Flavours*
 This scenario demonstrates how Maven handles (and cannot handle) the concept of library variants—where a single library publishes multiple artifacts for different contexts (e.g., Java 8 vs Java 11 builds, debug vs release, different database drivers).
-:::
 
 
 
@@ -37,10 +41,10 @@ If you need automatic variant selection based on context (JDK version, OS, CPU a
 
 The lack of automatic variant selection is one of Maven's most significant limitations for modern JVM projects. As multi-release JARs, platform-specific native code (e.g., gRPC, Netty), and modular Java become more common, the gap between Maven's classifier model and Gradle's attribute model widens. Most Maven projects work around this through convention and documentation rather than tooling.
 
-### Key Takeaway
+### Takeaway
 
 Maven uses classifiers for variants, but they are opaque strings with no automatic matching. The build tool cannot select variants based on context. Use explicit classifiers or separate artifact IDs.
 
-### Related Scenarios
+### Related
 
 - Scenario 7: Dependency Scopes — Scopes are Maven's other mechanism for controlling which artifacts reach which classpaths.

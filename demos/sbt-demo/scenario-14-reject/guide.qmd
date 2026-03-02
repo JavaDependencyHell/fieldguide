@@ -1,10 +1,14 @@
-# Rejecting Versions
+---
+title: "Rejecting Versions"
+tagline: "Or what to Do When You Can't Say No"
+type: scenario
+tool: sbt
+---
 
+#### Scenario
 
-::: {.scenario}
 *Or what to Do When You Can't Say No*
 This scenario demonstrates how to reject specific versions in SBT, which lacks a native "reject" keyword.
-:::
 
 N/A
 
@@ -32,8 +36,8 @@ SBT lacks a first-class "reject" mechanism. To blacklist a version, you must use
 #### How This Scales in Real Systems
 Version rejection is critical for security compliance. When a CVE is discovered in a specific library version, teams need to ensure that version cannot appear anywhere in the dependency graph. Without a first-class reject mechanism, SBT teams typically combine `dependencyOverrides` with CI pipeline checks (e.g., running `sbt dependencyTree` and grepping for banned versions) to enforce policies.
 
-#### Key Takeaway
+#### ! Takeaway
 SBT lacks native rejection; use overrides or external plugins to enforce version policies.
 
-#### Related Scenarios
+#### ! Related
 *   [Scenario 6: Forcing Versions](../scenario-6-forcing/guide.md)

@@ -1,10 +1,16 @@
-# Dependency Management
+---
+title: "Dependency Management"
+tagline: "Or what to Do When You Want to Centralize Versions"
+type: scenario
+tool: sbt
+---
 
+#### Scenario
 
-::: {.scenario}
 *Or what to Do When You Want to Centralize Versions*
 This scenario demonstrates how to manage dependency versions centrally in SBT, similar to Maven's `<dependencyManagement>`.
-:::
+
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -48,8 +54,8 @@ If the versions match what you have defined in your central variables, your vers
 #### How This Scales in Real Systems
 As projects grow, `build.sbt` files can become messy. Moving dependency definitions to `project/Dependencies.scala` is a standard best practice in the Scala ecosystem. It allows you to group related dependencies (e.g., "testing libraries", "database drivers") and manage their versions together.
 
-#### Key Takeaway
+#### ! Takeaway
 SBT allows you to use Scala code to manage versions. Use variables or a dedicated `Dependencies` object to keep your build maintainable.
 
-#### Related Scenarios
+#### ! Related
 *   [Scenario 16: Private BOM](../scenario-16-private-bom/guide.md) - Using an external BOM for management.

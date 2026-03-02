@@ -1,11 +1,16 @@
-# Version Conflict Resolution (Latest Wins)
+---
+title: "Version Conflict Resolution (Latest Wins)"
+tagline: "Or what to Do When it Always Picks the Latest Version"
+type: scenario
+tool: sbt
+---
 
+#### Scenario
 
-
-::: {.scenario}
 *Or what to Do When it Always Picks the Latest Version*
 This scenario demonstrates SBT's "Latest Wins" strategy for resolving version conflicts.
-:::
+
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -50,10 +55,10 @@ SBT (using Ivy/Coursier) employs the `latest-revision` conflict manager by defau
 #### How This Scales in Real Systems
 "Latest wins" is generally safer for semantic versioning because it ensures bug fixes and security patches (which are usually in newer versions) are included. However, it relies on library authors strictly adhering to semantic versioning. If a library breaks compatibility in a minor release, "latest wins" can break your build.
 
-#### Key Takeaway
+#### ! Takeaway
 SBT defaults to the latest version found in the graph, regardless of depth.
 
-#### Related Scenarios
+#### ! Related
 *   [Scenario 6: Forcing Versions](../scenario-6-forcing/guide.md) - How to override this behavior.
 
 ::: {.callout}

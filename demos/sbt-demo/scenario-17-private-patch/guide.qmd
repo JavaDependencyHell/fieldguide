@@ -1,11 +1,17 @@
-# Private Repository & Direct Patch Override
+---
+title: "Private Repository & Direct Patch Override"
+tagline: "Or what to Do When You Need a One-Off Patch"
+type: scenario
+tool: sbt
+---
 
+#### Scenario
 
-::: {.scenario}
 *Or what to Do When You Need a One-Off Patch*
 This scenario shows a more direct way to use a private, third-party repository. Instead of using a vendor-supplied BOM, we explicitly request the patched version of a dependency in our project's `libraryDependencies`.
 This approach is simpler than the BOM method but can be more verbose if many dependencies need to be overridden. It is suitable for one-off patches or when a full BOM is not available.
-:::
+
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -32,8 +38,8 @@ Directly declaring a patched version from a private repository ensures the build
 #### Why This Happens
 Adding a private resolver makes the artifact available, and a direct `libraryDependencies` declaration serves as the primary resolution signal. SBT selects the requested version to fulfill the project requirement.
 
-#### Key Takeaway
+#### ! Takeaway
 A direct version declaration for a dependency is the most straightforward way to ensure a specific version is used, provided that version is available in one of the configured resolvers.
 
-#### Related Scenarios
+#### ! Related
 *   [Scenario 16: Private Repository & BOM Override](../scenario-16-private-bom/guide.qmd) - A more scalable approach using a vendor BOM.

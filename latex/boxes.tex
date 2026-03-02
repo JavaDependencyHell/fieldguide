@@ -1,0 +1,130 @@
+% ==================================================
+% BOXES — canonical, pgfkeys-safe implementation
+% ==================================================
+
+\usepackage[table,xcdraw,dvipsnames]{xcolor}
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{tikz}
+
+% --------------------------------------------------
+% Storage macros (initially empty)
+% --------------------------------------------------
+
+\newcommand{\scnlabel}{}
+\newcommand{\scnbg}{}
+\newcommand{\scnframe}{}
+
+% --------------------------------------------------
+% Safe fallback resolvers
+% (avoids conditionals inside pgfkeys)
+% --------------------------------------------------
+
+\makeatletter
+\newcommand{\scngetbg}{%
+    \ifx\scnbg\empty
+    black!2%
+    \else
+        \scnbg%
+    \fi
+}
+
+\newcommand{\scngetframe}{%
+    \ifx\scnframe\empty
+    black!40%
+    \else
+        \scnframe%
+    \fi
+}
+\makeatother
+
+% --------------------------------------------------
+% Key definitions
+% --------------------------------------------------
+
+\tcbset{
+    scn label/.store in=\scnlabel,
+    scn label=,
+    scn bg/.store in=\scnbg,
+    scn frame/.store in=\scnframe
+}
+
+% ==================================================
+% SCENARIO CALLOUT
+% ==================================================
+
+\newtcolorbox{scncallout}[1][]{%
+    enhanced,
+    breakable,
+% --- apply user parameters first ---
+    #1,
+% --- then apply colours (expanded safely) ---
+    colback/.expanded=\scngetbg,
+    colframe/.expanded=\scngetframe,
+% --- geometry ---
+    boxrule=0.35pt,
+    arc=1mm,
+    left=7mm,
+    right=2mm,
+    top=1.6mm,
+    bottom=1.6mm,
+    before skip=6pt,
+    after skip=6pt,
+% --- vertical spine label ---
+    overlay={
+        \ifx\scnlabel\empty\relax\else
+            \node[
+                rotate=90,
+                anchor=south,
+                font=\sffamily\bfseries\footnotesize,
+                text=black!70
+            ] at ([xshift=-4.5mm]frame.west) {\scnlabel};
+        \fi
+    }
+}
+
+% ==================================================
+% INLINE SCENARIO BADGE (S1, S2, …)
+% ==================================================
+
+\ifdefined\scenariobadge\else
+\newtcbox{\scenariobadge}{%
+    on line,
+    boxrule=0pt,
+    colback=black!15,
+    colframe=black!15,
+    arc=1.2mm,
+    left=1.2mm,
+    right=1.2mm,
+    top=0.4mm,
+    bottom=0.4mm,
+    fontupper=\sffamily\bfseries\footnotesize,
+    nobeforeafter
+}
+\fi
+
+\ifdefined\scnref\else
+\newcommand{\scnref}[1]{\scenariobadge{S#1}}
+\fi
+
+% ==================================================
+% OPTIONAL GENERIC BOX (kept for compatibility)
+% ==================================================
+
+\ifdefined\sbox\else
+\newtcolorbox{sbox}[1][]{%
+    enhanced,
+    breakable,
+    boxrule=0.35pt,
+    colframe=black!60,
+    colback=black!2,
+    arc=1mm,
+    left=2mm,
+    right=2mm,
+    top=1.6mm,
+    bottom=1.6mm,
+    before skip=6pt,
+    after skip=6pt,
+    #1
+}
+\fi

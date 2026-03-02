@@ -1,10 +1,16 @@
-# Basic Transitive Resolution
+---
+title: "Basic Transitive Resolution"
+tagline: "Or what to Do When it Pulls in More Than You Declared"
+type: scenario
+tool: sbt
+---
 
+#### Scenario
 
-::: {.scenario}
 *Or what to Do When it Pulls in More Than You Declared*
 This scenario demonstrates the fundamental concept of transitive dependency resolution in SBT.
-:::
+
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -48,8 +54,8 @@ The dependency graph is healthy and resolving as expected.
 #### How This Scales in Real Systems
 Transitive resolution is the only way modern software development scales. Without it, you would be managing hundreds of jar files manually. However, it also means that adding one small library can pull in a large tree of other libraries, potentially leading to conflicts (see Scenario 2).
 
-#### Key Takeaway
+#### ! Takeaway
 SBT resolves dependencies transitively. You declare the roots; SBT finds the rest of the tree.
 
-#### Related Scenarios
+#### ! Related
 *   [Scenario 2: Conflict](../scenario-2-conflict/guide.md) - What happens when two branches of the tree disagree on a version.

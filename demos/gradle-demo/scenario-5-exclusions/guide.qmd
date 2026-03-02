@@ -1,9 +1,16 @@
-# Dependency Exclusions
+---
+title: "Dependency Exclusions"
+tagline: "Or what to Do When an Exclusion Reshapes the Dependency Graph"
+type: scenario
+tool: gradle
+---
 
-::: {.scenario}
+#### Scenario
+
 *Or what to Do When an Exclusion Reshapes the Dependency Graph*
 This scenario demonstrates excluding transitive dependencies.
-:::
+
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -38,15 +45,12 @@ Gradle honours exclusion metadata, pruning the specified artifact and its descen
 
 **Conclusion:** The exclusion successfully removes the dependency from this resolution path.
 
-#### Key Takeaway
+#### ! Takeaway
 Exclusions work as expected.
 
-#### Related Scenarios
+#### ! Related
 *   [Scenario 15: Substitution](../scenario-15-substitution/guide.qmd)
 
-::: {.calloutbox}
-**Seen in the Wild**
+#### ! Wild
 
 Mobile teams frequently use exclusions to remove large transitive libraries (such as legacy analytics or duplicate support libraries) in order to reduce final APK size.
-
-:::

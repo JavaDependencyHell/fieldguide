@@ -1,7 +1,12 @@
-# Private Repository & BOM Override
+---
+title: "Private Repository & BOM Override"
+tagline: "What to Do When You Need Enterprise Support"
+type: scenario
+tool: maven
+---
 
+#### Scenario
 
-::: {.scenario}
 #### What to Do When You Need Enterprise Support:
 
 This scenario shows how to incorporate a private, third-party repository that provides patched or extended-support versions of dependencies.
@@ -10,6 +15,7 @@ It specifically demonstrates how a third-party Bill of Materials (BOM) can be us
 
 This is a common enterprise pattern when a vendor provides long-term support for a library (like Spring Boot) after its official EOL date.
 
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -26,7 +32,6 @@ graph LR
     Root --> SpringBoot_Declared("spring-boot-starter (version from BOM)")
 
 ```
-:::
 
 The `pom.xml` first adds the private repository. Then, it imports the vendor's BOM in the `<dependencyManagement>` section. The actual dependency is declared without a version, letting the imported BOM control which version is used.
 
@@ -39,5 +44,5 @@ Adding a private repository and importing its BOM ensures that patched or extend
 #### Why This Happens
 Private repositories make custom artifacts available, while `<dependencyManagement>` (via a vendor BOM) enforces their selection. This combination allows for surgical overrides of public dependencies with enterprise-supported versions.
 
-#### Key Takeaway
+#### ! Takeaway
 Adding a repository makes its artifacts *available*, but it is the combination of the repository and a version control mechanism (like a BOM in `<dependencyManagement>`) that allows you to safely override public dependencies with private, patched versions. The order of repository declaration can also matter if the same artifact exists in multiple repositories.

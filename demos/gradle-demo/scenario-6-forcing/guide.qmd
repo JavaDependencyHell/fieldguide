@@ -1,10 +1,16 @@
-# Strict Constraints
+---
+title: "Strict Constraints"
+tagline: "Or what to Do When Constraints Stop Resolution Completely"
+type: scenario
+tool: gradle
+---
 
+#### Scenario
 
-::: {.scenario}
 *Or what to Do When Constraints Stop Resolution Completely*
 This scenario demonstrates how to force a specific version of a dependency, overriding any other constraints or transitive dependencies.
-:::
+
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -57,8 +63,8 @@ Gradle overrides its default conflict resolution through `resolutionStrategy.for
 #### How This Scales in Real Systems
 Forcing versions is essential in large enterprise environments where you need to ensure all applications use a specific, vetted version of a library (e.g., for security compliance), regardless of what transitive dependencies request.
 
-#### Key Takeaway
+#### ! Takeaway
 `resolutionStrategy.force` (and `strictly`) overrides all other version conflict resolution rules. Use it when you need absolute control.
 
-#### Related Scenarios
+#### ! Related
 *   [Scenario 14: Reject](../scenario-14-reject/guide.qmd) - How to reject specific versions entirely.

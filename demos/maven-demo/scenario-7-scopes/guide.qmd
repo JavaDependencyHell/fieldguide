@@ -1,10 +1,17 @@
-# Dependency Scopes
+---
+title: "Dependency Scopes"
+tagline: "Or what to Do When a Dependency Exists at Compile Time but Not at Runtime"
+type: scenario
+tool: maven
+---
 
-::: {.scenario}
+#### Scenario
+
 *Or what to Do When a Dependency Exists at Compile Time but Not at Runtime*
 
 This scenario demonstrates how scopes (`compile`, `provided`, `test`, `runtime`) affect transitivity and the final classpath.
 
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -13,7 +20,6 @@ graph LR
     Root --> LibB["lib-b:1.0.0 (provided)"]
     Root --> LibC["lib-c:1.0.0 (test)"]
 ```
-:::
 
 
 ```{.xml include="/demos/maven-demo/scenario-7-scopes/pom.xml" snippet="s7-deps"}
@@ -55,19 +61,16 @@ Review scopes carefully. `provided` is dangerous if the runtime environment *doe
 #### How This Scales in Real Systems
 Correct scoping is essential for keeping artifact sizes down and avoiding conflicts (e.g., conflicting versions of `servlet-api`).
 
-#### Key Takeaway
+#### ! Takeaway
 Scopes control the visibility and transitivity of dependencies; use them to keep your runtime clean.
 
-#### Related Scenarios
+#### ! Related
 *   [Scenario 8: Optional](../scenario-8-optional/guide.qmd) - Another way to limit transitivity.
 
-::: {.calloutbox}
-**Seen in the Wild**
+#### ! Wild
 
 A common production failure occurs when a web application works fine in an IDE but fails after deployment with a `NoClassDefFoundError`.
 
 This often happens because `provided` was used for a library that the application server does not actually supply.
 
 Teams then discover that changing the scope to `compile` (the default) correctly bundles the missing JAR into the final artifact.
-
-:::

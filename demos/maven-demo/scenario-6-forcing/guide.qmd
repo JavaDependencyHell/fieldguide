@@ -1,10 +1,16 @@
-# Forcing Transitive Versions via Dependency Management
+---
+title: "Forcing Transitive Versions via Dependency Management"
+tagline: "Or what to Do When a Transitive Dependency is the Wrong Version"
+type: scenario
+tool: maven
+---
 
+#### Scenario
 
-::: {.scenario}
 *Or what to Do When a Transitive Dependency is the Wrong Version*
 This scenario demonstrates how to force a specific version of a transitive dependency, overriding what the intermediate libraries request.
 
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -14,7 +20,6 @@ graph LR
     LibB --> LibC[lib-c:1.0.0]
     Root -- forces --> LibC_Forced[lib-c:2.0.0]
 ```
-:::
 
 
 ```{.xml include="/demos/maven-demo/scenario-6-forcing/pom.xml" snippet="s6-deps"}
@@ -61,10 +66,10 @@ A version in `<dependencyManagement>` will override any transitive dependency ve
 #### How This Scales in Real Systems
 Strict constraints are vital for security compliance (e.g., "Must use OpenSSL >= 3.0").
 
-#### Key Takeaway
+#### ! Takeaway
 `<dependencyManagement>` overrides transitive version resolution (nearest-wins), making it the primary tool for enforcing version policy across the dependency tree. Note that a direct version in `<dependencies>` will still take precedence (see Scenario 4).
 
-#### Related Scenarios
+#### ! Related
 *   [Scenario 3: Dependency Management (BOM)](../scenario-3-mgmt/guide.qmd) - The core mechanism used here.
 *   [Scenario 4: Hardcoded Version vs Dependency Management](../scenario-4-override/guide.qmd) - Understanding the precedence of direct declarations.
 *   [Scenario 14: Reject](../scenario-14-reject/guide.qmd) - Forcing *away* from a version.

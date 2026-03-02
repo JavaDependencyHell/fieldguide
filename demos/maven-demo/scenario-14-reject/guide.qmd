@@ -1,10 +1,14 @@
-# Rejecting a Version
+---
+title: "Rejecting a Version"
+tagline: "Or what to Do When a Specific Version Must Never Appear"
+type: scenario
+tool: maven
+---
 
+#### Scenario
 
-::: {.scenario}
 *Or what to Do When a Specific Version Must Never Appear*
 This scenario demonstrates how to prevent a specific version of a dependency from appearing anywhere in your build. Maven has no native "reject" keyword, but the Maven Enforcer Plugin provides an effective workaround.
-:::
 
 
 
@@ -38,11 +42,11 @@ Maven lacks native resolution-time "reject" constraints. The Maven Enforcer Plug
 
 The Enforcer Plugin is widely used in enterprise environments for security and compliance. Organisations maintain parent POMs with banned-dependency lists that are updated when new CVEs are published. This is particularly effective when combined with automated dependency scanning tools (e.g., Dependabot, Snyk) that identify vulnerable versions.
 
-### Key Takeaway
+### Takeaway
 
 Maven cannot reject versions during resolution, but the Enforcer Plugin's `bannedDependencies` rule provides an effective post-resolution check. Always pair it with a `<dependencyManagement>` fix.
 
-### Related Scenarios
+### Related
 
 - Scenario 6: Forcing Transitive Versions — How to redirect resolution to a safe version.
 - Scenario 5: Dependency Exclusions — Removing a specific version from a specific path.

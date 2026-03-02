@@ -1,12 +1,17 @@
-# Hardcoded Version vs Dependency Management
+---
+title: "Hardcoded Version vs Dependency Management"
+tagline: "What to Do When One Hardcoded Version Overrides Everything Else"
+type: scenario
+tool: maven
+---
 
+#### ! Scenario
 
-::: {.scenario}
 #### What to Do When One Hardcoded Version Overrides Everything Else:
 
 This scenario shows what happens when you have a conflict between a version defined in a BOM (Dependency Management) and a version explicitly declared in your dependencies.
 
-
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -17,7 +22,6 @@ graph LR
     BOM -. suggests .-> LibA_BOM[lib-a:1.0.0]
     BOM -. suggests .-> LibB_BOM[lib-b:1.0.0]
 ```
-:::
 
 
 ```{.xml include="/demos/maven-demo/scenario-4-override/pom.xml" snippet="s4-deps"}
@@ -48,19 +52,17 @@ Be careful when overriding BOMs. You might break compatibility with other librar
 
 Overriding BOMs is common when patching a vulnerability before the BOM maintainers release an update.
 
-#### Key Takeaway:
+#### ! Takeaway:
 Explicit declarations generally trump managed recommendations, allowing for targeted overrides.
 
-#### Related Scenarios:
+#### ! Related
 *   [Scenario 6: Forcing Transitive Versions via Dependency Management](../scenario-6-forcing/guide.qmd) - How to force a version even against explicit declarations.
 
-::: {.calloutbox}
-**Seen in the Wild**
+
+#### ! Wild
 
 Many teams using the Spring Boot BOM encountered cases where a patched library version was required before an updated BOM was available.
 
 By declaring the patched version explicitly in their `<dependencies>` block, they overrode the BOM's "safe" suggestion.
 
 This allowed them to ship a fix in hours rather than waiting days for the platform maintainers to release a synchronized update.
-
-:::

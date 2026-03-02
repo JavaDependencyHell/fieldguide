@@ -1,10 +1,14 @@
-# Variants and Configurations
+---
+title: "Variants and Configurations"
+tagline: "Or what to Do When You Need a Specific Flavor of a Library"
+type: scenario
+tool: sbt
+---
 
+#### Scenario
 
-::: {.scenario}
 *Or what to Do When You Need a Specific Flavor of a Library*
 This scenario demonstrates how SBT handles variant selection using configurations and classifiers.
-:::
 
 N/A
 
@@ -33,8 +37,8 @@ SBT (via Ivy) uses configurations for classpaths but relies on **classifiers** f
 #### How This Scales in Real Systems
 Classifier-based variant selection is more limited than Gradle's attribute matching because classifiers are opaque strings with no formal compatibility rules. In the Scala ecosystem, the most important "variant" is the Scala version suffix (e.g., `_2.13` or `_3`). SBT handles this automatically via the `%%` operator, which appends the correct Scala version suffix. This is a form of variant selection that is unique to the Scala ecosystem and handles one of its biggest dependency management challenges.
 
-#### Key Takeaway
+#### ! Takeaway
 SBT uses classifiers and the `%%` operator to handle variants.
 
-#### Related Scenarios
+#### ! Related
 N/A

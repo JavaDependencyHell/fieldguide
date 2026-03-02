@@ -1,10 +1,14 @@
-# Dependency Substitution
+---
+title: "Dependency Substitution"
+tagline: "Or what to Do When You Need to Swap a Library"
+type: scenario
+tool: sbt
+---
 
+#### Scenario
 
-::: {.scenario}
 *Or what to Do When You Need to Swap a Library*
 This scenario demonstrates how to substitute dependencies in SBT.
-:::
 
 N/A
 
@@ -41,8 +45,8 @@ This works but must be applied to *every* dependency that transitively pulls in 
 #### How This Scales in Real Systems
 Module substitution is particularly important in the Scala ecosystem when migrating between forks (e.g., when a popular library changes maintainers or organisations). It's also used for local development when you want to test against a locally-published version of a dependency. For the local development case, SBT's `ProjectRef` and project dependencies provide a cleaner solution than exclusion-based substitution.
 
-#### Key Takeaway
+#### ! Takeaway
 SBT lacks native substitution; use exclusions and explicit additions.
 
-#### Related Scenarios
+#### ! Related
 *   [Scenario 5: Exclusions](../scenario-5-exclusions/guide.md)

@@ -1,10 +1,16 @@
-# Hardcoded Version vs Overrides
+---
+title: "Hardcoded Version vs Overrides"
+tagline: "or what to Do When You Need to Break the Rules"
+type: scenario
+tool: sbt
+---
 
+#### Scenario
 
-::: {.scenario}
 *or what to Do When You Need to Break the Rules*
 This scenario demonstrates how explicit version declarations in `libraryDependencies` can override managed versions or defaults.
-:::
+
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -46,10 +52,10 @@ In SBT, `libraryDependencies` is a sequence of module definitions; direct additi
 #### How This Scales in Real Systems
 Hardcoding versions in `libraryDependencies` is fine for direct dependencies. However, for enforcing versions across a large project (especially for transitive dependencies you don't directly use), `dependencyOverrides` or a BOM plugin is a more robust solution.
 
-#### Key Takeaway
+#### ! Takeaway
 Explicit declarations in `libraryDependencies` are your primary way of requesting versions, but they are subject to conflict resolution. `dependencyOverrides` provides a stronger guarantee.
 
-#### Related Scenarios
+#### ! Related
 *   [Scenario 6: Forcing Versions](../scenario-6-forcing/guide.md) - Using `dependencyOverrides` for stricter control.
 
 ::: {.callout}

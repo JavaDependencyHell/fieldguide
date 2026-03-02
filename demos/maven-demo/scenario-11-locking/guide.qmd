@@ -1,12 +1,16 @@
-# Dependency Locking
+---
+title: "Dependency Locking"
+tagline: "What to Do When Yesterday's Build and Today's Build Produce Different Results"
+type: scenario
+tool: maven
+---
 
+#### Scenario
 
-::: {.scenario}
 #### What to Do When Yesterday's Build and Today's Build Produce Different Results
 
 Dependency Locking
 
-:::
 
 
 ```{.xml include="/demos/maven-demo/scenario-11-locking/pom.xml" snippet="s11-deps"}
@@ -46,11 +50,11 @@ In practice, however, transitive dependencies may use ranges, and SNAPSHOT versi
 
 Maven's lack of native locking is rarely a problem in well-managed projects because the ecosystem convention of fixed versions is so strong. The issue surfaces in large organisations where teams inherit transitive dependencies from third-party libraries that use ranges, or during active development with SNAPSHOT dependencies. For release builds, the combination of exact versions plus `<dependencyManagement>` achieves the same outcome as a lock file—just through a different mechanism.
 
-### Key Takeaway
+### Takeaway
 
 Maven has no native dependency locking because its philosophy is "declare exact versions." When that isn't sufficient, third-party plugins and the Versions Maven Plugin fill the gap.
 
-### Related Scenarios
+### Related
 
 - Scenario 9: Version Ranges — The source of non-determinism that locking addresses.
 - Scenario 3: Dependency Management (BOM) — Maven's primary mechanism for pinning transitive versions.

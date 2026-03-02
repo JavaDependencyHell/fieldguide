@@ -1,10 +1,14 @@
-# Version Substitution
+---
+title: "Version Substitution"
+tagline: "Or what to Do When You Need to Swap One Library for Another"
+type: scenario
+tool: maven
+---
 
+#### Scenario
 
-::: {.scenario}
 *Or what to Do When You Need to Swap One Library for Another*
 This scenario demonstrates how to replace one dependency with another in Maven. Maven has no native substitution mechanism, but exclusions combined with explicit declarations achieve the same result.
-:::
 
 
 
@@ -23,11 +27,11 @@ Maven lacks a graph-wide substitution mechanism; its exclusions are declaration-
 - **Global exclusion via `<dependencyManagement>`:** While `<dependencyManagement>` cannot exclude a dependency outright, you can declare the unwanted artifact with `<scope>provided</scope>` to remove it from the runtime classpath. This is not a true exclusion but achieves a similar practical effect.
 - **Maven Shade Plugin:** For substitutions where the replacement has a different package structure, the Shade Plugin can relocate classes at build time. This is a heavy-handed solution but is used in practice for complex migrations.
 
-#### Operational Risk
+#### ! Risk
 
-*   **Low risk:** Replacing a logging framework with a compatible one (e.g., `log4j` with `log4j-over-slf4j`). This is a well-understood and common practice.
-*   **Medium risk:** Replacing a library with a forked or patched version. This is often necessary but introduces the risk that the fork will not be maintained.
-*   **High risk:** Replacing a library with a completely different one that is not a drop-in replacement. This is very likely to cause `NoClassDefFoundError` or `NoSuchMethodError` at runtime.
+*   LOW  Replacing a logging framework with a compatible one (e.g., `log4j` with `log4j-over-slf4j`). This is a well-understood and common practice.
+*   MEDIUM Replacing a library with a forked or patched version. This is often necessary but introduces the risk that the fork will not be maintained.
+*   HIGH Replacing a library with a completely different one that is not a drop-in replacement. This is very likely to cause `NoClassDefFoundError` or `NoSuchMethodError` at runtime.
 
 ### Safer Ways to Take Control
 
@@ -45,20 +49,18 @@ Maven lacks a graph-wide substitution mechanism; its exclusions are declaration-
 
 The logging framework swap (log4j → SLF4J + Logback) is the canonical example, but the pattern applies to any library migration: moving from `javax.*` to `jakarta.*`, replacing a community library with an internal fork, or swapping an abandoned library for a maintained alternative. In large multi-module Maven projects, the exclusion-based approach becomes a maintenance burden. Some teams centralise substitutions in a parent POM's `<dependencyManagement>`, combining scope overrides and exclusions to approximate what Gradle achieves with a single substitution rule.
 
-### Key Takeaway
+### Takeaway
 
 Maven has no graph-wide substitution mechanism. Use exclusions on each path plus an explicit replacement declaration. Always verify with `dependency:tree` and guard with the Enforcer Plugin.
 
-### Related Scenarios
+### Related
 
 - Scenario 5: Dependency Exclusions — The underlying mechanism used for substitution.
 - Scenario 14: Rejecting a Version — Using the Enforcer Plugin to prevent the old library from returning.
 - Scenario 6: Forcing Transitive Versions — An alternative when only the version (not the artifact) needs to change.
 
-::: {.calloutbox}
-**Seen in the Wild**
+#### ! Wild
 
 Large enterprise projects migrating from `javax.servlet` to `jakarta.servlet` often face hundreds of modules that cannot be updated simultaneously.
 
 Using the Maven Shade Plugin to relocate classes at build time allows for incremental migration, one module at a time, without breaking the overall application.
-:::

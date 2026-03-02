@@ -1,9 +1,11 @@
 # Strict Constraints
 
+#### Scenario
 
-::: {.scenario}
+
 This scenario demonstrates forcing a version via overrides.
-:::
+
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -53,8 +55,8 @@ The version of `lib-b` in the tree. It will be `2.0.0`, and you may see warnings
 #### How This Scales in Real Systems
 In large Scala codebases, dependencyOverrides sections can grow to dozens of lines as teams force compatible versions across an ecosystem that doesn't always agree. This is especially acute with Scala libraries that are published for specific Scala binary versions (2.12 vs 2.13 vs 3.x). The override section becomes a critical piece of infrastructure that requires careful management. Consider documenting why each override exists.
 
-#### Key Takeaway
+#### ! Takeaway
 Overrides force versions.
 
-#### Related Scenarios
+#### ! Related
 N/A

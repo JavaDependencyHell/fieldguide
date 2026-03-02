@@ -1,10 +1,16 @@
-# Circular Dependencies
+---
+title: "Circular Dependencies"
+tagline: "Or what to Do When A Needs B and B Needs A"
+type: scenario
+tool: sbt
+---
 
+#### Scenario
 
-::: {.scenario}
 *Or what to Do When A Needs B and B Needs A*
 This scenario demonstrates how SBT handles circular dependencies between external libraries.
-:::
+
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -49,8 +55,8 @@ SBT can resolve circular dependencies between external libraries, but it's a pra
 #### How This Scales in Real Systems
 Circular dependencies are a design smell. They make the system harder to understand and maintain. In the Scala ecosystem, they sometimes arise when library authors split a project into `api` and `impl` modules but accidentally create cross-dependencies. The fix is usually to extract shared types into a third, independent module.
 
-#### Key Takeaway
+#### ! Takeaway
 SBT tolerates circular dependencies between external libraries but forbids them between internal modules.
 
-#### Related Scenarios
+#### ! Related
 N/A

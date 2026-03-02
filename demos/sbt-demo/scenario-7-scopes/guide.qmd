@@ -1,10 +1,16 @@
-# Dependency Configurations
+---
+title: "Dependency Configurations"
+tagline: "Or what to Do When You Need a Library Only for Testing"
+type: scenario
+tool: sbt
+---
 
+#### Scenario
 
-::: {.scenario}
 *Or what to Do When You Need a Library Only for Testing*
 This scenario demonstrates SBT's dependency configurations (similar to Maven scopes), such as `Compile`, `Test`, and `Provided`.
-:::
+
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -47,10 +53,10 @@ SBT maps dependencies to Ivy configurations. Defaulting to `Compile` makes them 
 #### How This Scales in Real Systems
 Correct configuration usage is essential for Scala/SBT projects that publish libraries. The `% Provided` configuration is commonly used for Spark and Hadoop dependencies in data engineering projects, where the cluster provides these libraries. Getting this wrong means either a bloated uber-JAR (wasting deployment bandwidth) or a runtime crash (missing classes).
 
-#### Key Takeaway
+#### ! Takeaway
 Configurations control visibility and transitivity. Use `% Test` and `% Provided` to keep your production artifacts clean.
 
-#### Related Scenarios
+#### ! Related
 *   [Scenario 8: Optional](../scenario-8-optional/guide.md)
 
 ::: {.callout}

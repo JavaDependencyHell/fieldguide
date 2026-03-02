@@ -1,10 +1,16 @@
-# Dependency Substitution
+---
+title: "Dependency Substitution"
+tagline: "Or what to Do When One Component Quietly Replaces Another"
+type: scenario
+tool: gradle
+---
 
+#### Scenario
 
-::: {.scenario}
 *Or what to Do When One Component Quietly Replaces Another*
 This scenario demonstrates how to completely replace one dependency with another (or a different version of the same dependency) using Gradle's dependency substitution rules.
-:::
+
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -44,17 +50,14 @@ Dependency substitution rewrites the graph on the fly, enabling global replaceme
 #### How This Scales in Real Systems
 This is essential for multi-repo development (composite builds) where you want to substitute a binary dependency with a local source build. It is also critical for migrating away from deprecated libraries across a large codebase.
 
-#### Key Takeaway
+#### ! Takeaway
 Dependency substitution allows you to swap modules or versions cleanly, handling complex replacements that exclusions cannot.
 
-#### Related Scenarios
+#### ! Related
 *   [Scenario 5: Exclusions](../scenario-5-exclusions/guide.md) - Removing dependencies without replacement.
 
-::: {.calloutbox}
-**Seen in the Wild**
+#### ! Wild
 
 When developing a new feature in a library used by several other projects, teams can use composite builds to substitute the binary dependency with a local project.
 
 This allows testing in context without publishing new library versions.
-
-:::

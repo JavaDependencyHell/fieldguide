@@ -1,11 +1,16 @@
-# Version Ranges
+---
+title: "Version Ranges"
+tagline: "Or what to Do When You Want the Latest and Greatest (Until It Breaks)"
+type: scenario
+tool: sbt
+---
 
+#### Scenario
 
-
-::: {.scenario}
 *Or what to Do When You Want the Latest and Greatest (Until It Breaks)*
 This scenario demonstrates how to use version ranges in SBT.
-:::
+
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -38,10 +43,10 @@ SBT (via Ivy/Coursier) queries repository metadata and selects the highest versi
 
 **Conclusion:** Ranges trade build reproducibility for freshness.
 
-#### Key Takeaway
+#### ! Takeaway
 Ranges provide automatic upgrades but sacrifice build reproducibility. Use dependency locking to mitigate the risk.
 
-#### Related Scenarios
+#### ! Related
 *   [Scenario 11: Locking](../scenario-11-locking/guide.md) - How to freeze dynamic versions.
 
 ::: {.callout}
