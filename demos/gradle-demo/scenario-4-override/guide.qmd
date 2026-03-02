@@ -5,7 +5,7 @@ type: scenario
 tool: gradle
 ---
 
-#### Scenario
+#### ! Scenario
 
 *Or what to Do When a Single Declaration Escapes the Platform*
 This scenario demonstrates how an explicit version declaration overrides a `platform()` recommendation.
@@ -24,20 +24,20 @@ graph LR
 ```{.groovy include="/demos/gradle-demo/scenario-4-override/build.gradle" snippet="s4-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 Explicit version declarations take precedence over `platform()` recommendations.
 
-#### Why This Happens
+#### ! Why
 In Gradle, a `platform()` dependency provides version recommendations, which are overridden by direct version declarations—a stronger signal. This priority is why the same graph behaves differently across tools.
 
-#### How Developers Commonly "Fix" This
+#### ! Fix
 *   **Removing the Version:** If the developer *wanted* the BOM version but accidentally left a hardcoded version in, the fix is simply to remove the version from the `implementation` line.
 *   **Using `enforcedPlatform`:** If the goal is to *prevent* developers from overriding the BOM version, the platform should be imported using `enforcedPlatform()`.
 
-#### Safer Ways to Take Control
+#### ! Control
 *   **Check for Overrides:** Be mindful of where you are declaring versions. If you are using a BOM, try to avoid declaring versions for managed dependencies unless you intentionally want to override them.
 
-#### Deterministic Checks
+#### ! Check
 **Fast check (Gradle):** `./gradlew dependencyInsight --dependency <id>`
 **Fast check (Maven):** `mvn dependency:tree`
 **Fast check (SBT):** `sbt dependencyTree`
@@ -46,7 +46,7 @@ In Gradle, a `platform()` dependency provides version recommendations, which are
 
 **Conclusion:** Direct version declarations override standard `platform()` recommendations.
 
-#### How This Scales in Real Systems
+#### ! Scales
 Allowing local overrides of global defaults is a powerful feature. It lets teams use a standard platform (like Spring Boot) but still upgrade or downgrade individual libraries as needed for bug fixes or compatibility. However, it requires discipline to avoid "drift" where many libraries are manually versioned instead of being managed by the platform.
 
 #### ! Takeaway

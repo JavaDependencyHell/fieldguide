@@ -6,6 +6,7 @@ filters:
   - include-code.lua
   - filters/scenario-boxes.lua
   - filters/scenario_badge.lua
+  - filters/risks.lua
 
 format:
 

@@ -5,7 +5,7 @@ type: scenario
 tool: sbt
 ---
 
-#### Scenario
+#### ! Scenario
 
 *Or what to Do When it Always Picks the Latest Version*
 This scenario demonstrates SBT's "Latest Wins" strategy for resolving version conflicts.
@@ -20,30 +20,30 @@ graph LR
     LibA --> LibB_Transitive[lib-b:2.0.0]
 ```
 
-#### SBT (build.sbt)
+#### ! Example
 
 ```{.scala include="/demos/sbt-demo/scenario-2-conflict/build.sbt" snippet="s2-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 SBT users expect `2.0.0` (latest), whereas Maven users expect `1.0.0` (nearest).
 
-#### Actual Resolution Results
+#### ! Actual
 Resolves `lib-b:2.0.0` (via `latest-revision` conflict manager).
 
-#### Why This Happens
+#### ! Why
 SBT (using Ivy/Coursier) employs the `latest-revision` conflict manager by default. It assumes newer versions are backward-compatible and prioritizes freshness over distance.
 
-#### How Developers Commonly "Fix" This
+#### ! Fix
 *   **Explicitly upgrading:** Change the direct dependency to `2.0.0` to match the transitive one.
 *   **Forcing a version:** Using `dependencyOverrides` to force `1.0.0` if `2.0.0` is broken (see Scenario 6).
 
-#### Operational Risk
+#### ! Risk
 *   **Low risk:** Use `dependencyOverrides` to pin a version.
 *   **Medium risk:** Explicitly upgrade the direct dependency to match the transitive one.
 *   **High risk:** Rely on default "latest-revision" without reviewing eviction warnings; this can cause runtime `NoSuchMethodError` if libraries break compatibility.
 
-#### Deterministic Checks
+#### ! Check
 **Fast check (SBT):** `sbt dependencyTree`
 **Fast check (Maven):** `mvn dependency:tree -Dverbose`
 **Fast check (Gradle):** `./gradlew dependencyInsight --dependency <id>`
@@ -52,7 +52,7 @@ SBT (using Ivy/Coursier) employs the `latest-revision` conflict manager by defau
 
 **Conclusion:** SBT selects the newest version found in the graph.
 
-#### How This Scales in Real Systems
+#### ! Scales
 "Latest wins" is generally safer for semantic versioning because it ensures bug fixes and security patches (which are usually in newer versions) are included. However, it relies on library authors strictly adhering to semantic versioning. If a library breaks compatibility in a minor release, "latest wins" can break your build.
 
 #### ! Takeaway

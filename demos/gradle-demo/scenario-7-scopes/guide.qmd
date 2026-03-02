@@ -5,7 +5,7 @@ type: scenario
 tool: gradle
 ---
 
-#### Scenario
+#### ! Scenario
 
 *Or what to Do When a Dependency Exists — But Not Where You Expect It*
 This scenario demonstrates its configurations (`implementation`, `compileOnly`, `testImplementation`).
@@ -25,18 +25,18 @@ graph LR
 ```{.groovy include="/demos/gradle-demo/scenario-7-scopes/build.gradle" snippet="s7-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 `compileOnly` dependencies are available during compilation but excluded from runtime.
 
-#### Why This Happens
+#### ! Why
 Gradle configurations are granular. `api` exposes dependencies to consumers; `implementation` hides them; `compileOnly` matches Maven's `provided`. Encapsulating build graphs through these configurations optimizes recompilation speed in large projects.
 
-#### Operational Risk
+#### ! Risk
 *   **Low risk:** Use `testImplementation` for test-only libraries.
 *   **Medium risk:** Use `compileOnly`; verify the runtime environment provides the dependency.
 *   **High risk:** Use `api` when `implementation` suffices; this bloats consumer classpaths and slows builds.
 
-#### Deterministic Checks
+#### ! Check
 **Fast check (Gradle):** `./gradlew dependencies --configuration runtimeClasspath`
 **Fast check (Maven):** `mvn dependency:tree -Dscope=runtime`
 **Fast check (SBT):** `sbt 'show runtime:dependencyClasspath'`

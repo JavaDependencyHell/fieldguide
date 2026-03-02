@@ -5,7 +5,7 @@ type: scenario
 tool: sbt
 ---
 
-#### Scenario
+#### ! Scenario
 
 *or what to Do When You Need to Break the Rules*
 This scenario demonstrates how explicit version declarations in `libraryDependencies` can override managed versions or defaults.
@@ -19,28 +19,28 @@ graph LR
     Root --> LibB[lib-b:1.0.0]
 ```
 
-#### SBT (build.sbt)
+#### ! Example
 
 ```{.scala include="/demos/sbt-demo/scenario-4-override/build.sbt" snippet="s4-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 Explicit versions in `libraryDependencies` win over defaults or transitive suggestions.
 
-#### Why This Happens
+#### ! Why
 In SBT, `libraryDependencies` is a sequence of module definitions; direct additions take precedence during resolution. This mechanism is why the same graph behaves differently across tools.
 
-#### How Developers Commonly "Fix" This
+#### ! Fix
 *   **Explicit Overrides:** If a transitive dependency is pulling in an unwanted version, developers often add the desired version as a direct dependency to force the conflict manager to see it.
 *   **`dependencyOverrides`:** For stricter control, use `dependencyOverrides`. This setting forces a specific version regardless of what the dependency graph says (similar to Maven's `<dependencyManagement>`).
 
-#### Safer Ways to Take Control
+#### ! Control
 *   **Use `dependencyOverrides`:** If you want to ensure that `lib-a` is *always* `2.0.0` even if some other library asks for `3.0.0`, add it to `dependencyOverrides`.
     ```scala
     dependencyOverrides += "com.demo" % "lib-a" % "2.0.0"
     ```
 
-#### Deterministic Checks
+#### ! Check
 **Fast check (SBT):** `sbt dependencyTree`
 **Fast check (Maven):** `mvn dependency:tree`
 **Fast check (Gradle):** `./gradlew dependencyInsight --dependency <id>`
@@ -49,7 +49,7 @@ In SBT, `libraryDependencies` is a sequence of module definitions; direct additi
 
 **Conclusion:** Versions in `libraryDependencies` represent direct requests that override defaults.
 
-#### How This Scales in Real Systems
+#### ! Scales
 Hardcoding versions in `libraryDependencies` is fine for direct dependencies. However, for enforcing versions across a large project (especially for transitive dependencies you don't directly use), `dependencyOverrides` or a BOM plugin is a more robust solution.
 
 #### ! Takeaway

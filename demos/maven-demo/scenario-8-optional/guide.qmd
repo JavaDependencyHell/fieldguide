@@ -5,7 +5,7 @@ type: scenario
 tool: maven
 ---
 
-#### Scenario
+#### ! Scenario
 
 *Or what to Do When “Optional” Dependencies Don’t Show Up*
 
@@ -23,19 +23,19 @@ graph LR
 ```{.xml include="/demos/maven-demo/scenario-8-optional/pom.xml" snippet="s8-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 Optional dependencies are omitted from a consumer's transitive graph by default.
 
-#### Why This Happens
+#### ! Why
 The optional flag prevents consumer classpaths from being "polluted" with libraries required only for specific, non-universal features.
 
-#### How Developers Commonly "Fix" This
+#### ! Fix
 If a consumer *does* need the optional feature, they must explicitly declare the dependency themselves.
 
-#### Safer Ways to Take Control
+#### ! Control
 Document optional dependencies clearly so consumers know what to add.
 
-#### Deterministic Checks
+#### ! Check
 
 **Fast check (Maven):**
 
@@ -50,7 +50,7 @@ mvn dependency:tree
 **Conclusion:**
 Optional dependencies are not transitive. Consumers must explicitly declare them if needed.
 
-#### How This Scales in Real Systems
+#### ! Scales
 Used heavily by large frameworks (Spring, Hibernate) to support many integrations without forcing all of them on everyone.
 
 #### ! Takeaway

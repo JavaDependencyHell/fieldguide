@@ -5,7 +5,7 @@ type: scenario
 tool: gradle
 ---
 
-#### Scenario
+#### ! Scenario
 
 *Or what to Do When a Platform Aligns Versions. Until Something Overrides It*
 This scenario demonstrates how to use Maven BOMs (Bill of Materials) in Gradle using the `platform()` method.
@@ -25,22 +25,22 @@ graph LR
 ```{.groovy include="/demos/gradle-demo/scenario-3-mgmt/build.gradle" snippet="s3-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 Importing a BOM via `platform()` centralizes version control, aligning project and transitive dependencies to compatible versions.
 
-#### Why This Happens
+#### ! Why
 Gradle treats BOMs as "platforms" that provide version recommendations. These recommendations act as defaults that are applied unless a stronger signal—like a direct version declaration or an `enforcedPlatform()` constraint—exists in the graph.
 
-#### How Developers Commonly "Fix" This
+#### ! Fix
 *   **Hardcoding Versions:** If a developer wants a different version than the BOM provides, they often just add a version to the dependency declaration (e.g., `implementation 'com.demo:lib-a:1.1.0'`). This works because a direct version declaration is stronger than a platform recommendation.
 
-#### Safer Ways to Take Control
+#### ! Control
 *   **`enforcedPlatform()`:** If you want the BOM to act more like a strict lock (similar to Maven's `<dependencyManagement>` but stronger), use `enforcedPlatform()`. This turns the recommendations into strict constraints, meaning other dependencies cannot easily override them.
     ```groovy
     implementation enforcedPlatform('com.demo:demo-bom:1.0.0')
     ```
 
-#### Deterministic Checks
+#### ! Check
 
 **Fast check (Gradle):**
 
@@ -54,7 +54,7 @@ The versions of the dependencies listed. They should match the versions specifie
 **Conclusion:**
 If the versions match, the BOM is correctly influencing the resolution.
 
-#### How This Scales in Real Systems
+#### ! Scales
 Using `platform()` is the standard practice for managing dependencies in large ecosystems like Spring Boot. It allows you to upgrade the entire framework by changing just one version number (the BOM version). However, be aware of the difference between `platform` (recommendation) and `enforcedPlatform` (strict constraint).
 
 #### ! Takeaway

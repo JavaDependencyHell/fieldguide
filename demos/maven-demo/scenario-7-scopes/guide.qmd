@@ -5,7 +5,7 @@ type: scenario
 tool: maven
 ---
 
-#### Scenario
+#### ! Scenario
 
 *Or what to Do When a Dependency Exists at Compile Time but Not at Runtime*
 
@@ -25,31 +25,31 @@ graph LR
 ```{.xml include="/demos/maven-demo/scenario-7-scopes/pom.xml" snippet="s7-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 Transitive dependencies follow the parent's intent: `lib-a` is required everywhere, `lib-b` is provided by the server, and `lib-c` is only for unit tests.
 
-#### Actual Resolution Results
+#### ! Actual
 *   `lib-a`: Transitive to consumers.
 *   `lib-b`: Not transitive; omitted from runtime/package.
 *   `lib-c`: Not transitive; test classpath only.
 
-#### Why This Happens
+#### ! Why
 Scopes trim the fat from distribution. This is why the same graph behaves differently across tools.
 
-#### Classpath Reality
+#### ! Reality
 *   **Compile**: A, B
 *   **Runtime**: A
 *   **Test**: A, B, C
 
-#### Operational Risk
+#### ! Risk
 *   **Low risk:** Use `test` scope for test-only libraries like JUnit.
 *   **Medium risk:** Use `provided` scope; ensure the runtime environment actually supplies it.
 *   **High risk:** Use `compile` for runtime-only libraries; this bloats classpaths and distributions.
 
-#### Safer Ways to Take Control
+#### ! Control
 Review scopes carefully. `provided` is dangerous if the runtime environment *doesn't* actually provide it.
 
-#### Deterministic Checks
+#### ! Check
 **Fast check (Maven):** `mvn dependency:tree -Dscope=runtime`
 **Fast check (Gradle):** `./gradlew dependencies --configuration runtimeClasspath`
 **Fast check (SBT):** `sbt 'show runtime:dependencyClasspath'`
@@ -58,7 +58,7 @@ Review scopes carefully. `provided` is dangerous if the runtime environment *doe
 
 **Conclusion:** Scopes control visibility and transitivity; use them to keep your runtime clean.
 
-#### How This Scales in Real Systems
+#### ! Scales
 Correct scoping is essential for keeping artifact sizes down and avoiding conflicts (e.g., conflicting versions of `servlet-api`).
 
 #### ! Takeaway

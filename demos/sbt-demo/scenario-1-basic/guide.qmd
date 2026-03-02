@@ -5,7 +5,7 @@ type: scenario
 tool: sbt
 ---
 
-#### Scenario
+#### ! Scenario
 
 *Or what to Do When it Pulls in More Than You Declared*
 This scenario demonstrates the fundamental concept of transitive dependency resolution in SBT.
@@ -20,24 +20,24 @@ graph LR
     LibB --> LibC[lib-c:1.0.0]
 ```
 
-#### SBT (build.sbt)
+#### ! Example
 
 ```{.scala include="/demos/sbt-demo/scenario-1-basic/build.sbt" snippet="s1-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 Declaring `lib-a` automatically includes its transitive dependencies `lib-b` and `lib-c` on the classpath.
 
-#### Why This Happens
+#### ! Why
 SBT (via Ivy or Coursier) uses transitivity to resolve the entire dependency tree from your direct declarations. This mechanism saves you from manually declaring every required library.
 
-#### How Developers Commonly "Fix" This
+#### ! Fix
 There is nothing to fix here; this is the desired behavior. However, developers sometimes try to manually add transitive dependencies to `libraryDependencies` to "be sure" they are there. This is generally unnecessary unless you are using APIs from those transitive dependencies directly in your code.
 
-#### Safer Ways to Take Control
+#### ! Control
 Trust the transitive resolution. Only declare direct dependencies (libraries you import in your code) in your `build.sbt`.
 
-#### Deterministic Checks
+#### ! Check
 
 **Fast check (SBT):**
 
@@ -51,7 +51,7 @@ A clean tree with no unexpected versions or `omitted` nodes.
 **Conclusion:**
 The dependency graph is healthy and resolving as expected.
 
-#### How This Scales in Real Systems
+#### ! Scales
 Transitive resolution is the only way modern software development scales. Without it, you would be managing hundreds of jar files manually. However, it also means that adding one small library can pull in a large tree of other libraries, potentially leading to conflicts (see Scenario 2).
 
 #### ! Takeaway

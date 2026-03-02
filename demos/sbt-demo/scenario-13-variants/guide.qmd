@@ -5,36 +5,36 @@ type: scenario
 tool: sbt
 ---
 
-#### Scenario
+#### ! Scenario
 
 *Or what to Do When You Need a Specific Flavor of a Library*
 This scenario demonstrates how SBT handles variant selection using configurations and classifiers.
 
 N/A
 
-#### SBT (build.sbt)
+#### ! Example
 
 ```{.scala include="/demos/sbt-demo/scenario-13-variants/build.sbt" snippet="s13-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 Select specific library flavors (e.g., native Linux builds or source JARs) automatically.
 
-#### Why This Happens
+#### ! Why
 SBT (via Ivy) uses configurations for classpaths but relies on **classifiers** for variant selection, identical to Maven. This distinguishes it from Gradle's attribute-based system.
 
-#### How Developers Commonly "Fix" This
+#### ! Fix
 *   **Classifiers:** Use the `classifier` method on a dependency:
     ```scala
     "com.demo" % "lib-a" % "1.0.0" classifier "native-linux"
     ```
 *   **`updateClassifiers`:** For sources and javadoc, SBT provides built-in support via the `updateClassifiers` task.
 
-#### Signals to Watch For
+#### ! Look
 *   **"Artifact not found":** If you request a classifier that doesn't exist, resolution will fail.
 *   **Platform Mismatches:** If you hardcode a classifier like `linux-x86_64` in your build, it will fail on macOS or Windows.
 
-#### How This Scales in Real Systems
+#### ! Scales
 Classifier-based variant selection is more limited than Gradle's attribute matching because classifiers are opaque strings with no formal compatibility rules. In the Scala ecosystem, the most important "variant" is the Scala version suffix (e.g., `_2.13` or `_3`). SBT handles this automatically via the `%%` operator, which appends the correct Scala version suffix. This is a form of variant selection that is unique to the Scala ecosystem and handles one of its biggest dependency management challenges.
 
 #### ! Takeaway

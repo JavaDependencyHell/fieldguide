@@ -5,7 +5,7 @@ type: scenario
 tool: maven
 ---
 
-#### Scenario
+#### ! Scenario
 
 *Or what to Do When You Need to Swap One Library for Another*
 This scenario demonstrates how to replace one dependency with another in Maven. Maven has no native substitution mechanism, but exclusions combined with explicit declarations achieve the same result.
@@ -15,10 +15,10 @@ This scenario demonstrates how to replace one dependency with another in Maven. 
 ```{.xml include="/demos/maven-demo/scenario-15-substitution/pom.xml" snippet="s15-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 Substituting one library for another (e.g., swapping `log4j` for `slf4j`) replaces it throughout the entire dependency graph.
 
-#### Why This Happens
+#### ! Why
 Maven lacks a graph-wide substitution mechanism; its exclusions are declaration-scoped. To achieve substitution, you must apply exclusions to every path and declare the replacement explicitly, a manual process that differs from Gradle's global `dependencySubstitution`. This distinction is why the same graph behaves differently across tools.
 
 ### How Developers Commonly "Fix" This

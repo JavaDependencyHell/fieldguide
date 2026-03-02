@@ -5,7 +5,7 @@ type: scenario
 tool: sbt
 ---
 
-#### Scenario
+#### ! Scenario
 
 *Or what to Do When You Want Reproducible Builds*
 This scenario demonstrates how to lock dependencies in SBT to ensure that builds are reproducible, even when using dynamic versions.
@@ -18,22 +18,22 @@ graph LR
     Root[Project Root] --> LibA[lib-a:1.+]
 ```
 
-#### SBT (build.sbt)
+#### ! Example
 
 ```{.scala include="/demos/sbt-demo/scenario-11-locking/build.sbt" snippet="s11-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 Ranges (e.g., `1.+`) provide updates, but the build must remain deterministic unless explicitly updated.
 
-#### Why This Happens
+#### ! Why
 SBT (1.4.x+) freezes the resolved graph into a lock file. Committed to version control, this snapshot ensures every developer and CI server uses identical versions, separating resolution from reproduction.
 
-#### How Developers Commonly "Fix" This
+#### ! Fix
 *   **Hardcoding Versions:** Many teams avoid locking features and simply hardcode exact versions in `build.sbt`. This works but requires manual updates.
 *   **Scala Steward:** Automated tools like Scala Steward can send PRs to update hardcoded versions, making manual management easier.
 
-#### Deterministic Checks
+#### ! Check
 **Fast check (SBT):** `sbt dependencyTree`
 **Fast check (Maven):** `mvn dependency:tree`
 **Fast check (Gradle):** `./gradlew dependencies --lock-state`
@@ -42,7 +42,7 @@ SBT (1.4.x+) freezes the resolved graph into a lock file. Committed to version c
 
 **Conclusion:** Locking ensures reproducibility by snapshots of dynamic versions.
 
-#### How This Scales in Real Systems
+#### ! Scales
 For production systems, reproducibility is non-negotiable. Dependency locking (or strict version pinning) is essential to prevent "it works on my machine" issues. It also protects against malicious package updates (supply chain attacks) by ensuring you only use vetted versions.
 
 #### ! Takeaway

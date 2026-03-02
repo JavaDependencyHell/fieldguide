@@ -28,21 +28,19 @@ graph LR
 ```{.xml include="/demos/maven-demo/scenario-1-basic/pom.xml" snippet="s1-deps"}
 ```
 
-####  ! expect
+#### ! Expect
 Declaring `lib-a` automatically includes its transitive dependencies `lib-b` and `lib-c` on the classpath.
 
-####  ! Why
+#### ! Why
 Build tools traverse the dependency graph and collect all unique nodes. In the absence of version conflicts, resolution is straightforward and follows the project's dependency structure.
 
-####  ! fix
+#### ! Fix
 No fix is needed here. This is the desired behavior.
 
-####  ! risk
+#### ! Risk
 Even in simple scenarios, using a BOM (Bill of Materials) or dependency constraints can prevent future surprises if new dependencies are added.
 
 #### ! Check
-
-**Fast check (Maven):**
 
 ```bash
 mvn dependency:tree

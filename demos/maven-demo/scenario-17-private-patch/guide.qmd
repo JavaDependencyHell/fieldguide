@@ -5,9 +5,9 @@ type: scenario
 tool: maven
 ---
 
-#### Scenario
+#### ! Scenario
 
-#### What to Do When You Need a One-Off Patch:
+#### ! Scenario
 
 This scenario shows a more direct way to use a private, third-party repository. Instead of using a vendor-supplied BOM, we explicitly request the patched version of a dependency in our project's `<dependencies>` block.
 
@@ -34,10 +34,10 @@ The `pom.xml` adds the private repository and then directly declares a dependenc
 ```
 
 
-#### Reader Expectation
+#### ! Expect
 Explicitly declaring a patched version from a private repository ensures that specific artifact is chosen over any public release.
 
-#### Why This Happens
+#### ! Why
 A direct version declaration in `<dependencies>` is Maven's strongest versioning directive. When combined with a private repository that makes the artifact available, it overrides all other mechanisms like BOMs or transitive versioning.
 
 #### ! Takeaway

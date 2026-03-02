@@ -7,7 +7,7 @@ tool: maven
 
 #### ! Scenario
 
-#### What to Do When One Hardcoded Version Overrides Everything Else:
+##### What to Do When One Hardcoded Version Overrides Everything Else:
 
 This scenario shows what happens when you have a conflict between a version defined in a BOM (Dependency Management) and a version explicitly declared in your dependencies.
 
@@ -27,36 +27,35 @@ graph LR
 ```{.xml include="/demos/maven-demo/scenario-4-override/pom.xml" snippet="s4-deps"}
 ```
 
-#### Reader Expectation:
+#### ! Expect
 Explicitly declared versions win over managed suggestions.
 
-#### Why This Happens:
+#### ! Why
 The `<dependencies>` section is the final authority for the project; `<dependencyManagement>` acts only as a default. This priority is why the same graph behaves differently across tools.
 
-#### How Developers Commonly "Fix" This:
+#### ! Fix
 They might try to change the BOM version, which affects everything. Or they use exclusions.
 
-#### Safer Ways to Take Control:
+#### ! Control
 Be careful when overriding BOMs. You might break compatibility with other libraries managed by that BOM. If you must override, ensure you test thoroughly.
 
-#### Deterministic Checks:
-**Fast check (Maven):** `mvn dependency:tree`
-**Fast check (Gradle):** `./gradlew dependencyInsight --dependency <id>`
-**Fast check (SBT):** `sbt dependencyTree`
+#### ! Check
+
+ `mvn dependency:tree`
 
 **What to look for:** The explicitly declared version in the tree, rather than the BOM or platform recommendation.
 
 **Conclusion:** A hardcoded version in `<dependencies>` always overrides `<dependencyManagement>`.
 
-#### How This Scales:
+#### ! Scales
 
 Overriding BOMs is common when patching a vulnerability before the BOM maintainers release an update.
 
-#### ! Takeaway:
+#### ! Takeaway
 Explicit declarations generally trump managed recommendations, allowing for targeted overrides.
 
 #### ! Related
-*   [Scenario 6: Forcing Transitive Versions via Dependency Management](../scenario-6-forcing/guide.qmd) - How to force a version even against explicit declarations.
+*   [S6: Forcing Transitive Versions via Dependency Management](../scenario-6-forcing/guide.qmd) - How to force a version even against explicit declarations.
 
 
 #### ! Wild

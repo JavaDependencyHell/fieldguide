@@ -5,7 +5,7 @@ type: scenario
 tool: gradle
 ---
 
-#### !Scenario $tagline$
+#### ! Scenario $tagline$
 
 This scenario demonstrates fundamental concept of transitive dependency resolution. It shows how it automatically discovers and includes dependencies of your direct dependencies.
 
@@ -27,13 +27,13 @@ graph LR
 #### ! Dot Reader Expectation
 Declaring `lib-a` automatically includes its transitive dependencies `lib-b` and `lib-c`.
 
-#### ! Why Why This Happens
+#### ! Why
 Gradle performs a depth-first traversal of the graph, following every edge in POM or Gradle module metadata files. In the absence of version conflicts, it collects every unique artifact to build the complete classpath.
 
 #### ! Scales How This Scales
 In production projects, this simple chain (A → B → C) is replicated thousands of times. A typical Spring Boot application resolves 200--400 transitive dependencies from a handful of direct declarations. The "happy path" of zero conflicts becomes increasingly rare as the graph grows; diamond dependencies emerge naturally.
 
-#### ! Deterministic Checks
+#### ! Check
 
 **Fast check (Gradle):**
 
@@ -47,8 +47,8 @@ A clean tree with no unexpected versions or `omitted` nodes.
 **Conclusion:**
 The dependency graph is healthy and resolving as expected.
 
-#### ! Takeaway Takeaway
+#### ! Takeaway
 It resolves the full graph by default.
 
-#### ! Related Related
+#### ! Related
 *   [Scenario 2: Conflict](../scenario-2-conflict/guide.qmd)

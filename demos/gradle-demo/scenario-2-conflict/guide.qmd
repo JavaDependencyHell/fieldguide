@@ -5,7 +5,7 @@ type: scenario
 tool: gradle
 ---
 
-#### Scenario
+#### ! Scenario
 
 *Or what to Do When Gradle Picks a Newer Version Than Maven Would*
 This scenario demonstrates its default "Newest Wins" conflict resolution strategy.
@@ -25,24 +25,24 @@ graph LR
 ```{.groovy include="/demos/gradle-demo/scenario-2-conflict/build.gradle" snippet="s2-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 Maven users expect `1.0.0` (nearest), while Gradle users expect `2.0.0` (newest).
 
-#### Actual Resolution Results
+#### ! Actual
 Resolves `lib-b:2.0.0`.
 
-#### Why This Happens
+#### ! Why
 Gradle assumes semantic versioning: the newest version is likely backward-compatible and contains necessary fixes or features. This "newest wins" approach contrasts with Maven's "nearest wins" logic.
 
-#### How This Scales in Real Systems
+#### ! Scales
 "Newest Wins" generally produces fewer duplicate classes on the classpath and fewer "missing method" errors caused by accidental downgrades. However, it carries a different risk: if a library releases a breaking change (violating semver), Gradle may silently upgrade you to the broken version. This is particularly dangerous with libraries like Guava or Jackson that have historically made breaking changes between major versions.
 
-#### Operational Risk
+#### ! Risk
 *   **Low risk:** Use `strictly` constraints to pin versions.
 *   **Medium risk:** Use `resolutionStrategy.force`.
 *   **High risk:** Rely on default "newest wins" without testing; breaking changes in libraries like Guava or Jackson can cause silent failures.
 
-#### Deterministic Checks
+#### ! Check
 **Fast check (Gradle):** `./gradlew dependencyInsight --dependency <id>`
 **Fast check (Maven):** `mvn dependency:tree -Dverbose`
 **Fast check (SBT):** `sbt dependencyTree`

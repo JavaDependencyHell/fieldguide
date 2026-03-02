@@ -1,6 +1,6 @@
 # Dependency Exclusions
 
-#### Scenario
+#### ! Scenario
 
 
 
@@ -16,26 +16,26 @@ graph LR
     Root -- exclude --> LibC
 ```
 
-#### SBT (build.sbt)
+#### ! Example
 
 ```{.scala include="/demos/sbt-demo/scenario-5-exclusions/build.sbt" snippet="s5-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 `lib-c` is pruned from the transitive graph under the declaring dependency.
 
-#### Why This Happens
+#### ! Why
 SBT (via Ivy/Coursier) uses the `.exclude(group, artifact)` method to prune the specified artifact from the transitive graph. This mechanism is why the same graph behaves differently across tools.
 
-#### How Developers Commonly Fix This
+#### ! Fix
 The most common pattern is swapping logging frameworks: excluding log4j and adding Logback. Some teams also exclude outdated or vulnerable transitives and replace them with newer versions declared directly.
 
-#### Operational Risk
+#### ! Risk
 *   **Low risk:** Replacing an implementation (e.g., `log4j` with `logback`).
 *   **Medium risk:** Excluding a transitive thought to be unused.
 *   **High risk:** Excluding to "fix" conflicts without technical verification; this risks `NoClassDefFoundError` at runtime.
 
-#### Deterministic Checks
+#### ! Check
 **Fast check (SBT):** `sbt dependencyTree`
 **Fast check (Maven):** `mvn dependency:tree`
 **Fast check (Gradle):** `./gradlew dependencies`
@@ -44,7 +44,7 @@ The most common pattern is swapping logging frameworks: excluding log4j and addi
 
 **Conclusion:** The exclusion successfully prunes the dependency from this path.
 
-#### How This Scales in Real Systems
+#### ! Scales
 In large Scala projects, exclusions accumulate as different library ecosystems bring in conflicting versions of common dependencies (particularly around Scala version suffixes and cross-builds). Exclusion management is one of the primary maintenance burdens in SBT builds.
 
 #### ! Takeaway

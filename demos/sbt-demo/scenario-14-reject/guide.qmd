@@ -5,35 +5,35 @@ type: scenario
 tool: sbt
 ---
 
-#### Scenario
+#### ! Scenario
 
 *Or what to Do When You Can't Say No*
 This scenario demonstrates how to reject specific versions in SBT, which lacks a native "reject" keyword.
 
 N/A
 
-#### SBT (build.sbt)
+#### ! Example
 
 ```{.scala include="/demos/sbt-demo/scenario-14-reject/build.sbt" snippet="s14-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 Prevent specific versions (e.g., those with security vulnerabilities) from appearing in the build.
 
-#### Why This Happens
+#### ! Why
 SBT lacks a first-class "reject" mechanism. To blacklist a version, you must use indirect workarounds like `dependencyOverrides` to force a safe version or exclusions to prune the bad one. This gap is why the same graph behaves differently across tools like Gradle.
 
-#### How Developers Commonly "Fix" This
+#### ! Fix
 *   **`dependencyOverrides`:** The most common pattern is to force a known-good version.
     ```scala
     dependencyOverrides += "com.demo" % "lib-a" % "1.0.0"
     ```
 *   **Plugins:** Use plugins like `sbt-dependency-check` to fail the build if a vulnerable version is found.
 
-#### Signals to Watch For
+#### ! Look
 *   **Security Scans:** Rely on external tools to catch bad versions since the build tool won't automatically reject them based on a blacklist.
 
-#### How This Scales in Real Systems
+#### ! Scales
 Version rejection is critical for security compliance. When a CVE is discovered in a specific library version, teams need to ensure that version cannot appear anywhere in the dependency graph. Without a first-class reject mechanism, SBT teams typically combine `dependencyOverrides` with CI pipeline checks (e.g., running `sbt dependencyTree` and grepping for banned versions) to enforce policies.
 
 #### ! Takeaway

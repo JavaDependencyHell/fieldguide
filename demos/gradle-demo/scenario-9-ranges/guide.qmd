@@ -5,7 +5,7 @@ type: scenario
 tool: gradle
 ---
 
-#### Scenario
+#### ! Scenario
 
 *Or what to Do When Gradle Chooses a Version You Didn’t Intend*
 This scenario demonstrates Gradle's support for version ranges.
@@ -23,21 +23,21 @@ graph LR
 ```{.groovy include="/demos/gradle-demo/scenario-9-ranges/build.gradle" snippet="s9-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 Resolve the latest version matching the range (e.g., `1.+`).
 
-#### Why This Happens
+#### ! Why
 Gradle supports Maven-style ranges and its own dynamic version syntax like `1.+`. It queries repository metadata for the highest match, making resolution dependent on current repository state. This is why the same graph behaves differently across tools.
 
-#### How This Scales in Real Systems
+#### ! Scales
 Dynamic versions and ranges are the primary cause of "it worked yesterday" failures. If a new version of a library is published to Maven Central between your local build and your CI build, the two builds may resolve different versions. This is why Gradle provides built-in dependency locking (Scenario 11) --- it's specifically designed to tame dynamic versions. In Java/JVM ecosystems, ranges are less common than in npm/pip, precisely because the JVM community has historically valued build reproducibility. Most teams either ban dynamic versions entirely or pair them with strict locking.
 
-#### Operational Risk
+#### ! Risk
 *   **Low risk:** Use ranges for `testImplementation`; allows latest test libraries without affecting production.
 *   **Medium risk:** Use ranges for internal libraries under strict semver.
 *   **High risk:** Use ranges for external libraries; this causes non-reproducible "it worked yesterday" failures.
 
-#### Deterministic Checks
+#### ! Check
 **Fast check (Gradle):** `./gradlew dependencyInsight --dependency <id>`
 **Fast check (Maven):** `mvn dependency:resolve`
 **Fast check (SBT):** `sbt dependencyTree`

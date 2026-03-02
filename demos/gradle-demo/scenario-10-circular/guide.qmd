@@ -5,7 +5,7 @@ type: scenario
 tool: gradle
 ---
 
-#### Scenario
+#### ! Scenario
 
 *Or what to Do When Gradle Can’t Untangle the Graph*
 This scenario demonstrates Gradle's handling of circular dependencies.
@@ -25,22 +25,22 @@ graph LR
 ```{.groovy include="/demos/gradle-demo/scenario-10-circular/build.gradle" snippet="s10-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 "It should work."
 
-#### Actual Resolution Results
+#### ! Actual
 Resolves successfully.
 
-#### Classpath Reality
+#### ! Reality
 Both jars present.
 
-#### Why This Happens
+#### ! Why
 Gradle maintains a set of already-visited nodes during graph traversal. When it encounters a dependency it has already resolved, it stops following that branch, preventing infinite recursion. Unlike Maven, which fails at reactor build time if modules in a multi-project build form a cycle, Gradle handles circular external dependencies gracefully during resolution. Both libraries end up on the classpath.
 
-#### How This Scales in Real Systems
+#### ! Scales
 While Gradle tolerates circular dependencies at resolution time, they are still a serious architectural problem. Cycles make it impossible to reason about the build order of modules, force tightly coupled releases, and often indicate that shared abstractions should be extracted into a separate module. In Gradle multi-project builds, circular project dependencies will cause build failures since Gradle needs a linear task execution order.
 
-#### Deterministic Checks
+#### ! Check
 
 **Fast check (Gradle):**
 

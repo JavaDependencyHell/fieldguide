@@ -5,7 +5,7 @@ type: scenario
 tool: sbt
 ---
 
-#### Scenario
+#### ! Scenario
 
 *Or what to Do When You Need a Library Only Sometimes*
 This scenario demonstrates how SBT handles optional dependencies.
@@ -19,18 +19,18 @@ graph LR
     LibA -.-> LibB["lib-b:1.0.0 (Optional)"]
 ```
 
-#### SBT (build.sbt)
+#### ! Example
 
 ```{.scala include="/demos/sbt-demo/scenario-8-optional/build.sbt" snippet="s8-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 Optional dependencies are omitted from the consumer's classpath by default.
 
-#### Why This Happens
+#### ! Why
 SBT/Ivy respects the Maven `<optional>true</optional>` flag, excluding those transitives to prevent consumer classpath pollution. Because SBT lacks a native "optional" keyword, simulating this for your own libraries typically requires custom configurations or manual POM editing.
 
-#### Deterministic Checks
+#### ! Check
 
 **Fast check (SBT):**
 
@@ -45,7 +45,7 @@ The optional dependency will be absent from the tree.
 **Conclusion:**
 Optional dependencies are not transitive. Consumers must explicitly declare them if needed.
 
-#### How This Scales in Real Systems
+#### ! Scales
 Large frameworks like Akka and Play use optional dependencies extensively to support many integrations without forcing all of them on every consumer. As a library author in the SBT ecosystem, documenting your optional dependencies clearly is critical, since the tooling won't surface them automatically. Consider providing separate "starter" or "extras" modules that bundle optional dependencies for common use cases.
 
 #### ! Takeaway

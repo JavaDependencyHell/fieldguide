@@ -5,7 +5,7 @@ type: scenario
 tool: sbt
 ---
 
-#### Scenario
+#### ! Scenario
 
 *Or what to Do When You Want the Latest and Greatest (Until It Breaks)*
 This scenario demonstrates how to use version ranges in SBT.
@@ -18,23 +18,23 @@ graph LR
     Root[Project Root] --> LibA[lib-a:1.+]
 ```
 
-#### SBT (build.sbt)
+#### ! Example
 
 ```{.scala include="/demos/sbt-demo/scenario-9-ranges/build.sbt" snippet="s9-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 Automatically resolve the latest patch or version in the 1.x series (e.g., `1.+`).
 
-#### Why This Happens
+#### ! Why
 SBT (via Ivy/Coursier) queries repository metadata and selects the highest version satisfying the range. This makes the build dynamic and dependent on current repository state.
 
-#### Operational Risk
+#### ! Risk
 *   **Low risk:** Use ranges for `Test` dependencies.
 *   **Medium risk:** Use ranges for internal libraries under strict semver.
 *   **High risk:** Use ranges for external libraries; non-deterministic builds risk runtime "AbstractMethodError" failures during automated redeploys.
 
-#### Deterministic Checks
+#### ! Check
 **Fast check (SBT):** `sbt dependencyTree`
 **Fast check (Maven):** `mvn dependency:resolve`
 **Fast check (Gradle):** `./gradlew dependencyInsight --dependency <id>`

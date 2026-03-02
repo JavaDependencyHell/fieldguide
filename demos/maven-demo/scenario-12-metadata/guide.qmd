@@ -5,7 +5,7 @@ type: scenario
 tool: maven
 ---
 
-#### Scenario
+#### ! Scenario
 
 *Or what to Do When You Can't Express What You Actually Need*
 
@@ -16,10 +16,10 @@ This scenario demonstrates a fundamental limitation of Maven's dependency model:
 ```{.xml include="/demos/maven-demo/scenario-12-metadata/pom.xml" snippet="s12-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 Build tools support "strictly," "prefer," and "reject" constraints for fine-grained version control.
 
-#### Why This Happens
+#### ! Why
 Maven's POM schema predates rich versioning; the `<version>` element only supports fixed strings or simple ranges. This lack of expressiveness is why the same graph behaves differently across tools like Gradle, which uses richer Module Metadata.
 
 ### How Developers Commonly "Fix" This

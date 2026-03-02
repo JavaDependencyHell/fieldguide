@@ -5,9 +5,9 @@ type: scenario
 tool: maven
 ---
 
-#### Scenario
+#### ! Scenario
 
-#### What to Do When Yesterday's Build and Today's Build Produce Different Results
+#### ! Scenario
 
 Dependency Locking
 
@@ -16,10 +16,10 @@ Dependency Locking
 ```{.xml include="/demos/maven-demo/scenario-11-locking/pom.xml" snippet="s11-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 Resolve the same dependency versions across different builds and environments.
 
-#### Why This Happens
+#### ! Why
 Maven assumes explicit, fixed version declarations. Locking only becomes necessary when using version ranges (Scenario 9) or SNAPSHOTs, which the core tool does not natively address. This philosophy is why the same graph behaves differently across tools.
 
 In practice, however, transitive dependencies may use ranges, and SNAPSHOT versions are common during development. This creates a reproducibility gap that Maven itself does not address.
@@ -37,7 +37,7 @@ In practice, however, transitive dependencies may use ranges, and SNAPSHOT versi
 - If you must use ranges, use the Versions Maven Plugin to resolve and freeze them before release.
 - Consider a lockfile plugin for CI/CD pipelines where reproducibility is critical.
 
-#### Deterministic Checks
+#### ! Check
 **Fast check (Maven):** `mvn dependency:tree`
 **Fast check (Gradle):** `./gradlew dependencies --lock-state`
 **Fast check (SBT):** `sbt dependencyTree`

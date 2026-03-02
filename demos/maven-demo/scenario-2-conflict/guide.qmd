@@ -5,9 +5,9 @@ type: scenario
 tool: maven
 ---
 
-#### Scenario
+#### ! Scenario
 
-#### What to Do When the Version You Get Isn’t the One You Chose:
+#### ! Scenario
 
 This scenario demonstrates the "Diamond Dependency" problem where two different versions of the same library are requested.
 
@@ -28,36 +28,36 @@ graph LR
 ```{.xml include="/demos/maven-demo/scenario-2-conflict/pom.xml" snippet="s2-deps"}
 ```
 
-#### Reader Expectation:
+#### ! Expect
 The newer version (`2.0.0`) wins to provide features for `lib-a`, or the direct dependency (`1.0.0`) wins because it was explicitly requested.
 
-#### Actual Resolution Results:
+#### ! Actual
 
 Resolves `lib-b:1.0.0` due to "Nearest Wins": depth 1 (direct) beats depth 2 (transitive).
 
-#### Classpath Reality:
+#### ! Reality
 *   **Maven**: Contains `lib-b-1.0.0.jar`. `lib-a` may crash if it requires API only in `2.0.0`.
 *   **Gradle/SBT**: Contains `lib-b-2.0.0.jar`. Project code may crash if it requires API removed in `2.0.0`.
 
-#### Why This Happens:
+#### ! Why
 Maven prioritizes predictability; the closest declaration is assumed to be the intentional one. This "nearest wins" strategy is why the same graph behaves differently across tools.
 
-#### Conflicts at the Same Depth:
+#### ! Why
 When depth is equal, Maven uses **declaration order**. The version from the dependency declared first in the `pom.xml` wins. This makes ordering significant and potentially fragile.
 
-#### How Developers Commonly "Fix" This:
+#### ! Fix
 Reordering dependencies (fragile), adding explicit exclusions (verbose), or managing versions in a parent POM.
 *   **Gradle**: Forcing versions or using strict constraints.
 
-#### Operational Risk:
-*   **Low risk:** Use `<dependencyManagement>` to pin versions explicitly.
-*   **Medium risk:** Add an explicit direct dependency to shorten distance.
-*   **High risk:** Reorder `<dependency>` blocks to trigger tie-breaking; this is fragile and often misunderstood.
+#### ! Risk
+*   LOW Use `<dependencyManagement>` to pin versions explicitly.
+*   MEDIUM Add an explicit direct dependency to shorten distance.
+*   HIGH Reorder `<dependency>` blocks to trigger tie-breaking; this is fragile and often misunderstood.
 
-#### Safer Ways to Take Control:
+#### ! Control
 Use `<dependencyManagement>` to fix the version regardless of depth. Gradle uses `constraints` or `platform` (BOM) for similar control.
 
-#### Deterministic Checks:
+#### ! Check
 **Fast check (Maven):** `mvn dependency:tree -Dverbose`
 **Fast check (Gradle):** `./gradlew dependencyInsight --dependency <id>`
 **Fast check (SBT):** `sbt dependencyTree`
@@ -66,7 +66,7 @@ Use `<dependencyManagement>` to fix the version regardless of depth. Gradle uses
 
 **Conclusion:** The winning version is "nearest" to the root, not necessarily the newest or most compatible.
 
-#### How This Scales:
+#### ! Scales
 This is the primary cause of "Dependency Hell." As graphs grow, "nearest" becomes arbitrary and "newest" can trigger unintended upgrades.
 
 #### ! Takeaway

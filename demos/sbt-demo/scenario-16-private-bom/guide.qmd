@@ -5,7 +5,7 @@ type: scenario
 tool: sbt
 ---
 
-#### Scenario
+#### ! Scenario
 
 *Or what to Do When You Need Enterprise Support*
 This scenario shows how to incorporate a private, third-party repository that provides patched or extended-support versions of dependencies. It specifically demonstrates how a third-party Bill of Materials (BOM) can be used to override a publicly available, EOL (End-of-Life) dependency with a patched version from the private repository.
@@ -29,16 +29,16 @@ graph LR
 
 ```
 
-#### SBT (build.sbt)
+#### ! Example
 The `build.sbt` file first adds the private repository to the list of `resolvers`. Then, it imports the vendor's BOM. This typically requires a plugin like `sbt-bom` to provide the `mavenBomImport` setting. The actual dependency is declared without a version, letting the imported BOM control which version is used.
 
 ```{.scala include="/demos/sbt-demo/scenario-16-private-bom/build.sbt" snippet="repo-and-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 A private repository and an imported BOM enable the build to automatically select vendor-patched versions over public EOL releases.
 
-#### Why This Happens
+#### ! Why
 SBT resolves custom artifacts via private `resolvers`, while a BOM plugin (e.g., `sbt-bom`) enforces the specific patched version. This combination is why the same graph behaves differently across tools without centralized management.
 
 #### ! Takeaway

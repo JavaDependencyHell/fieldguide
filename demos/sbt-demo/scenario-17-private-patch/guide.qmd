@@ -5,7 +5,7 @@ type: scenario
 tool: sbt
 ---
 
-#### Scenario
+#### ! Scenario
 
 *Or what to Do When You Need a One-Off Patch*
 This scenario shows a more direct way to use a private, third-party repository. Instead of using a vendor-supplied BOM, we explicitly request the patched version of a dependency in our project's `libraryDependencies`.
@@ -26,16 +26,16 @@ graph LR
 
 ```
 
-#### SBT (build.sbt)
+#### ! Example
 The `build.sbt` adds the private repository to the list of `resolvers` and then directly declares a dependency on the specific patched version.
 
 ```{.scala include="/demos/sbt-demo/scenario-17-private-patch/build.sbt" snippet="repo-and-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 Directly declaring a patched version from a private repository ensures the build tool resolves that specific artifact over public alternatives.
 
-#### Why This Happens
+#### ! Why
 Adding a private resolver makes the artifact available, and a direct `libraryDependencies` declaration serves as the primary resolution signal. SBT selects the requested version to fulfill the project requirement.
 
 #### ! Takeaway
