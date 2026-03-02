@@ -38,9 +38,9 @@ Gradle assumes semantic versioning: the newest version is likely backward-compat
 "Newest Wins" generally produces fewer duplicate classes on the classpath and fewer "missing method" errors caused by accidental downgrades. However, it carries a different risk: if a library releases a breaking change (violating semver), Gradle may silently upgrade you to the broken version. This is particularly dangerous with libraries like Guava or Jackson that have historically made breaking changes between major versions.
 
 #### ! Risk
-*   **Low risk:** Use `strictly` constraints to pin versions.
-*   **Medium risk:** Use `resolutionStrategy.force`.
-*   **High risk:** Rely on default "newest wins" without testing; breaking changes in libraries like Guava or Jackson can cause silent failures.
+* LOW Use `strictly` constraints to pin versions.
+* MEDIUM Use `resolutionStrategy.force`.
+* HIGH Rely on default "newest wins" without testing; breaking changes in libraries like Guava or Jackson can cause silent failures.
 
 #### ! Check
 **Fast check (Gradle):** `./gradlew dependencyInsight --dependency <id>`

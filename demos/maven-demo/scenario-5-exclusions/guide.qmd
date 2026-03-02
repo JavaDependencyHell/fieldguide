@@ -38,9 +38,9 @@ Maven respects exclusion metadata and prunes the specified branch during graph t
 This *is* the fix for many problems (e.g., excluding `log4j` to use `slf4j`).
 
 #### ! Risk
-*   **Low risk:** Replacing an implementation (e.g., `log4j` with `logback` + bridge).
-*   **Medium risk:** Excluding a transitive you believe is unused; future versions may require it.
-*   **High risk:** Excluding to "fix" a conflict without understanding the dependency; this frequently causes `NoClassDefFoundError` at runtime.
+* LOW Replacing an implementation (e.g., `log4j` with `logback` + bridge).
+* MEDIUM Excluding a transitive you believe is unused; future versions may require it.
+* HIGH Excluding to "fix" a conflict without understanding the dependency; this frequently causes `NoClassDefFoundError` at runtime.
 
 #### ! Check
 

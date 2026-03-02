@@ -33,9 +33,9 @@ A bracketed version like `[1.0.0]` is a hard requirement. Unlike a soft preferen
 Ranges are controversial because they make builds non-deterministic (a new release of `lib-a` can change your build without you touching it). Many teams ban them.
 
 #### ! Risk
-*   **Low risk:** Use ranges for `test` dependencies; allows testing against the latest test libraries without affecting production.
-*   **Medium risk:** Use ranges for internal libraries under strict semver control.
-*   **High risk:** Use ranges for external libraries; this causes non-reproducible builds and "it worked yesterday" failures.
+* LOW Use ranges for `test` dependencies; allows testing against the latest test libraries without affecting production.
+* MEDIUM Use ranges for internal libraries under strict semver control.
+* HIGH Use ranges for external libraries; this causes non-reproducible builds and "it worked yesterday" failures.
 
 #### ! Check
 **Fast check (Maven):** `mvn dependency:resolve`

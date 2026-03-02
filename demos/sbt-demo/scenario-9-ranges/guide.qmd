@@ -30,9 +30,9 @@ Automatically resolve the latest patch or version in the 1.x series (e.g., `1.+`
 SBT (via Ivy/Coursier) queries repository metadata and selects the highest version satisfying the range. This makes the build dynamic and dependent on current repository state.
 
 #### ! Risk
-*   **Low risk:** Use ranges for `Test` dependencies.
-*   **Medium risk:** Use ranges for internal libraries under strict semver.
-*   **High risk:** Use ranges for external libraries; non-deterministic builds risk runtime "AbstractMethodError" failures during automated redeploys.
+* LOW Use ranges for `Test` dependencies.
+* MEDIUM Use ranges for internal libraries under strict semver.
+* HIGH Use ranges for external libraries; non-deterministic builds risk runtime "AbstractMethodError" failures during automated redeploys.
 
 #### ! Check
 **Fast check (SBT):** `sbt dependencyTree`

@@ -42,9 +42,9 @@ Scopes trim the fat from distribution. This is why the same graph behaves differ
 *   **Test**: A, B, C
 
 #### ! Risk
-*   **Low risk:** Use `test` scope for test-only libraries like JUnit.
-*   **Medium risk:** Use `provided` scope; ensure the runtime environment actually supplies it.
-*   **High risk:** Use `compile` for runtime-only libraries; this bloats classpaths and distributions.
+* LOW Use `test` scope for test-only libraries like JUnit.
+* MEDIUM Use `provided` scope; ensure the runtime environment actually supplies it.
+* HIGH Use `compile` for runtime-only libraries; this bloats classpaths and distributions.
 
 #### ! Control
 Review scopes carefully. `provided` is dangerous if the runtime environment *doesn't* actually provide it.

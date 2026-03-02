@@ -33,9 +33,9 @@ Gradle supports Maven-style ranges and its own dynamic version syntax like `1.+`
 Dynamic versions and ranges are the primary cause of "it worked yesterday" failures. If a new version of a library is published to Maven Central between your local build and your CI build, the two builds may resolve different versions. This is why Gradle provides built-in dependency locking (Scenario 11) --- it's specifically designed to tame dynamic versions. In Java/JVM ecosystems, ranges are less common than in npm/pip, precisely because the JVM community has historically valued build reproducibility. Most teams either ban dynamic versions entirely or pair them with strict locking.
 
 #### ! Risk
-*   **Low risk:** Use ranges for `testImplementation`; allows latest test libraries without affecting production.
-*   **Medium risk:** Use ranges for internal libraries under strict semver.
-*   **High risk:** Use ranges for external libraries; this causes non-reproducible "it worked yesterday" failures.
+* LOW Use ranges for `testImplementation`; allows latest test libraries without affecting production.
+* MEDIUM Use ranges for internal libraries under strict semver.
+* HIGH Use ranges for external libraries; this causes non-reproducible "it worked yesterday" failures.
 
 #### ! Check
 **Fast check (Gradle):** `./gradlew dependencyInsight --dependency <id>`

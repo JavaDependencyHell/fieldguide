@@ -32,9 +32,9 @@ graph LR
 Gradle configurations are granular. `api` exposes dependencies to consumers; `implementation` hides them; `compileOnly` matches Maven's `provided`. Encapsulating build graphs through these configurations optimizes recompilation speed in large projects.
 
 #### ! Risk
-*   **Low risk:** Use `testImplementation` for test-only libraries.
-*   **Medium risk:** Use `compileOnly`; verify the runtime environment provides the dependency.
-*   **High risk:** Use `api` when `implementation` suffices; this bloats consumer classpaths and slows builds.
+* LOW Use `testImplementation` for test-only libraries.
+* MEDIUM Use `compileOnly`; verify the runtime environment provides the dependency.
+* HIGH Use `api` when `implementation` suffices; this bloats consumer classpaths and slows builds.
 
 #### ! Check
 **Fast check (Gradle):** `./gradlew dependencies --configuration runtimeClasspath`

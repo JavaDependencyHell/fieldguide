@@ -34,9 +34,9 @@ dependencyOverrides is SBT's strongest version enforcement mechanism. It overrid
 
 #### ! Risk
 
-*   **Low risk:** Forcing a version to align with a BOM or to patch a known vulnerability. This is a primary use case for this feature.
-*   **Medium risk:** Forcing a version to a newer version that has not been tested with the libraries that depend on it. This can lead to `NoSuchMethodError` if the new version has breaking changes.
-*   **High risk:** Forcing a version to an older version. This is very likely to cause problems, as the libraries that depend on it may be using features only available in the newer version.
+* LOW Forcing a version to align with a BOM or to patch a known vulnerability. This is a primary use case for this feature.
+* MEDIUM Forcing a version to a newer version that has not been tested with the libraries that depend on it. This can lead to `NoSuchMethodError` if the new version has breaking changes.
+* HIGH Forcing a version to an older version. This is very likely to cause problems, as the libraries that depend on it may be using features only available in the newer version.
 
 #### ! Check
 

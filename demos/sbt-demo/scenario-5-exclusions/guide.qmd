@@ -31,9 +31,9 @@ SBT (via Ivy/Coursier) uses the `.exclude(group, artifact)` method to prune the 
 The most common pattern is swapping logging frameworks: excluding log4j and adding Logback. Some teams also exclude outdated or vulnerable transitives and replace them with newer versions declared directly.
 
 #### ! Risk
-*   **Low risk:** Replacing an implementation (e.g., `log4j` with `logback`).
-*   **Medium risk:** Excluding a transitive thought to be unused.
-*   **High risk:** Excluding to "fix" conflicts without technical verification; this risks `NoClassDefFoundError` at runtime.
+* LOW Replacing an implementation (e.g., `log4j` with `logback`).
+* MEDIUM Excluding a transitive thought to be unused.
+* HIGH Excluding to "fix" conflicts without technical verification; this risks `NoClassDefFoundError` at runtime.
 
 #### ! Check
 **Fast check (SBT):** `sbt dependencyTree`

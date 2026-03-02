@@ -29,9 +29,9 @@ Maven lacks a graph-wide substitution mechanism; its exclusions are declaration-
 
 #### ! Risk
 
-*   LOW  Replacing a logging framework with a compatible one (e.g., `log4j` with `log4j-over-slf4j`). This is a well-understood and common practice.
-*   MEDIUM Replacing a library with a forked or patched version. This is often necessary but introduces the risk that the fork will not be maintained.
-*   HIGH Replacing a library with a completely different one that is not a drop-in replacement. This is very likely to cause `NoClassDefFoundError` or `NoSuchMethodError` at runtime.
+* LOW Replacing a logging framework with a compatible one (e.g., `log4j` with `log4j-over-slf4j`). This is a well-understood and common practice.
+* MEDIUM Replacing a library with a forked or patched version. This is often necessary but introduces the risk that the fork will not be maintained.
+* HIGH Replacing a library with a completely different one that is not a drop-in replacement. This is very likely to cause `NoClassDefFoundError` or `NoSuchMethodError` at runtime.
 
 ### Safer Ways to Take Control
 

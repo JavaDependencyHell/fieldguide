@@ -39,9 +39,9 @@ SBT (using Ivy/Coursier) employs the `latest-revision` conflict manager by defau
 *   **Forcing a version:** Using `dependencyOverrides` to force `1.0.0` if `2.0.0` is broken (see Scenario 6).
 
 #### ! Risk
-*   **Low risk:** Use `dependencyOverrides` to pin a version.
-*   **Medium risk:** Explicitly upgrade the direct dependency to match the transitive one.
-*   **High risk:** Rely on default "latest-revision" without reviewing eviction warnings; this can cause runtime `NoSuchMethodError` if libraries break compatibility.
+* LOW Use `dependencyOverrides` to pin a version.
+* MEDIUM Explicitly upgrade the direct dependency to match the transitive one.
+* HIGH Rely on default "latest-revision" without reviewing eviction warnings; this can cause runtime `NoSuchMethodError` if libraries break compatibility.
 
 #### ! Check
 **Fast check (SBT):** `sbt dependencyTree`
