@@ -35,7 +35,7 @@ Maven lacks a graph-wide substitution mechanism; its exclusions are declaration-
 
 ### Safer Ways to Take Control
 
-- Combine exclusions with the Enforcer Plugin: After adding exclusions, use `bannedDependencies` (Scenario 14) to ensure the old library never creeps back in through a new transitive path.
+- Combine exclusions with the Enforcer Plugin: After adding exclusions, use `bannedDependencies` (S14) to ensure the old library never creeps back in through a new transitive path.
 - Document every substitution: Add a comment next to each exclusion explaining what it replaces and why. Future developers (including you in six months) will thank you.
 - Run `mvn dependency:tree` after every substitution to verify that the old library is truly gone from the entire graph.
 
@@ -55,9 +55,9 @@ Maven has no graph-wide substitution mechanism. Use exclusions on each path plus
 
 ### Related
 
-- Scenario 5: Dependency Exclusions — The underlying mechanism used for substitution.
-- Scenario 14: Rejecting a Version — Using the Enforcer Plugin to prevent the old library from returning.
-- Scenario 6: Forcing Transitive Versions — An alternative when only the version (not the artifact) needs to change.
+- S5: Dependency Exclusions — The underlying mechanism used for substitution.
+- S14: Rejecting a Version — Using the Enforcer Plugin to prevent the old library from returning.
+- S6: Forcing Transitive Versions — An alternative when only the version (not the artifact) needs to change.
 
 #### ! Wild
 

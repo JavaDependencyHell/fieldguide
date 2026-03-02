@@ -61,4 +61,4 @@ Using `platform()` is the standard practice for managing dependencies in large e
 Gradle treats BOMs as platforms. `platform()` provides version recommendations, while `enforcedPlatform()` enforces them strictly.
 
 #### ! Related
-*   [Scenario 4: Override](../scenario-4-override/guide.qmd) - What happens when you mix platforms and hardcoded versions.
+*   [S4](../scenario-4-override/guide.qmd) - What happens when you mix platforms and hardcoded versions.

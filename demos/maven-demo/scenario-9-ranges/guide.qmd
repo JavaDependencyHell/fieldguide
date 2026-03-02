@@ -53,7 +53,7 @@ Ranges are common in NPM/pip but less so in Java/Maven ecosystems due to the des
 Ranges trade reproducibility for freshness; use with caution (and locking).
 
 #### ! Related
-*   [Scenario 11: Locking](../scenario-11-locking/guide.qmd) - How to tame ranges.
+*   [S11](../scenario-11-locking/guide.qmd) - How to tame ranges.
 
 #### ! Wild
 

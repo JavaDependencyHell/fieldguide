@@ -48,5 +48,5 @@ Maven cannot reject versions during resolution, but the Enforcer Plugin's `banne
 
 ### Related
 
-- Scenario 6: Forcing Transitive Versions — How to redirect resolution to a safe version.
-- Scenario 5: Dependency Exclusions — Removing a specific version from a specific path.
+- S6: Forcing Transitive Versions — How to redirect resolution to a safe version.
+- S5: Dependency Exclusions — Removing a specific version from a specific path.

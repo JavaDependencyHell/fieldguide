@@ -62,4 +62,4 @@ In large organizations, you can package these rules into a custom Gradle plugin 
 You can patch incorrect metadata on the fly using Component Metadata Rules, avoiding brittle exclusions.
 
 #### ! Related
-*   [Scenario 15: Substitution](../scenario-15-substitution/guide.qmd) - Replacing one module with another entirely.
+*   [S15](../scenario-15-substitution/guide.qmd) - Replacing one module with another entirely.

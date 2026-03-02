@@ -67,4 +67,4 @@ Forcing versions is essential in large enterprise environments where you need to
 `resolutionStrategy.force` (and `strictly`) overrides all other version conflict resolution rules. Use it when you need absolute control.
 
 #### ! Related
-*   [Scenario 14: Reject](../scenario-14-reject/guide.qmd) - How to reject specific versions entirely.
+*   [S14](../scenario-14-reject/guide.qmd) - How to reject specific versions entirely.

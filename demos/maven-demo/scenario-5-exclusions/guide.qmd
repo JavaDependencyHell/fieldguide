@@ -59,7 +59,7 @@ Overuse of exclusions leads to "Swiss cheese" dependency graphs that are hard to
 Exclusions are powerful but dangerous; use them only when you know the dependent library can function without the excluded artifact (or you are providing a replacement).
 
 #### ! Related
-*   [Scenario 15: Substitution](../scenario-15-substitution/guide.qmd) - Replacing a library instead of just removing it.
+*   [S15](../scenario-15-substitution/guide.qmd) - Replacing a library instead of just removing it.
 
 #### ! Wild
 

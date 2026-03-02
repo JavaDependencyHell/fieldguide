@@ -30,7 +30,7 @@ Resolve the latest version matching the range (e.g., `1.+`).
 Gradle supports Maven-style ranges and its own dynamic version syntax like `1.+`. It queries repository metadata for the highest match, making resolution dependent on current repository state. This is why the same graph behaves differently across tools.
 
 #### ! Scales
-Dynamic versions and ranges are the primary cause of "it worked yesterday" failures. If a new version of a library is published to Maven Central between your local build and your CI build, the two builds may resolve different versions. This is why Gradle provides built-in dependency locking (Scenario 11) --- it's specifically designed to tame dynamic versions. In Java/JVM ecosystems, ranges are less common than in npm/pip, precisely because the JVM community has historically valued build reproducibility. Most teams either ban dynamic versions entirely or pair them with strict locking.
+Dynamic versions and ranges are the primary cause of "it worked yesterday" failures. If a new version of a library is published to Maven Central between your local build and your CI build, the two builds may resolve different versions. This is why Gradle provides built-in dependency locking (S11) --- it's specifically designed to tame dynamic versions. In Java/JVM ecosystems, ranges are less common than in npm/pip, precisely because the JVM community has historically valued build reproducibility. Most teams either ban dynamic versions entirely or pair them with strict locking.
 
 #### ! Risk
 * LOW Use ranges for `testImplementation`; allows latest test libraries without affecting production.
@@ -50,7 +50,7 @@ Dynamic versions and ranges are the primary cause of "it worked yesterday" failu
 Ranges work but are dynamic.
 
 #### ! Related
-*   [Scenario 11: Locking](../scenario-11-locking/guide.md)
+*   [S11](../scenario-11-locking/guide.md)
 
 #### ! Wild
 

@@ -48,4 +48,4 @@ This is the future of dependency management in the JVM ecosystem. It allows libr
 Attributes are more powerful than classifiers. They allow for automatic, context-aware dependency resolution.
 
 #### ! Related
-*   [Scenario 12: Metadata](../scenario-12-metadata/guide.qmd) - Fixing metadata if attributes are missing.
+*   [S12](../scenario-12-metadata/guide.qmd) - Fixing metadata if attributes are missing.

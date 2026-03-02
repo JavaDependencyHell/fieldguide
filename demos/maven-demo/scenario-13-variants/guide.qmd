@@ -47,4 +47,4 @@ Maven uses classifiers for variants, but they are opaque strings with no automat
 
 ### Related
 
-- Scenario 7: Dependency Scopes — Scopes are Maven's other mechanism for controlling which artifacts reach which classpaths.
+- S7: Dependency Scopes — Scopes are Maven's other mechanism for controlling which artifacts reach which classpaths.

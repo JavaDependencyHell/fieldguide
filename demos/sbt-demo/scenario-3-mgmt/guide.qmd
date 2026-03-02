@@ -58,4 +58,4 @@ As projects grow, `build.sbt` files can become messy. Moving dependency definiti
 SBT allows you to use Scala code to manage versions. Use variables or a dedicated `Dependencies` object to keep your build maintainable.
 
 #### ! Related
-*   [Scenario 16: Private BOM](../scenario-16-private-bom/guide.md) - Using an external BOM for management.
+*   [S16](../scenario-16-private-bom/guide.md) - Using an external BOM for management.

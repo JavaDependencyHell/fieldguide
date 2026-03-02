@@ -57,4 +57,4 @@ When project `B` depends on project `A` (which has a `compileOnly` dependency on
 `compileOnly` simulates optionality.
 
 #### ! Related
-*   [Scenario 7: Scopes](../scenario-7-scopes/guide.qmd)
+*   [S7](../scenario-7-scopes/guide.qmd)

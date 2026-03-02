@@ -65,7 +65,7 @@ Correct scoping is essential for keeping artifact sizes down and avoiding confli
 Scopes control the visibility and transitivity of dependencies; use them to keep your runtime clean.
 
 #### ! Related
-*   [Scenario 8: Optional](../scenario-8-optional/guide.qmd) - Another way to limit transitivity.
+*   [S8](../scenario-8-optional/guide.qmd) - Another way to limit transitivity.
 
 #### ! Wild
 

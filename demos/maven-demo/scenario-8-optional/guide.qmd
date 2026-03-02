@@ -57,4 +57,4 @@ Used heavily by large frameworks (Spring, Hibernate) to support many integration
 Optional dependencies shift the burden of declaration to the consumer.
 
 #### ! Related
-*   [Scenario 7: Scopes](../scenario-7-scopes/guide.qmd) - `provided` scope is similar but semantically different.
+*   [S7](../scenario-7-scopes/guide.qmd) - `provided` scope is similar but semantically different.

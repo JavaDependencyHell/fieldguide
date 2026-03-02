@@ -49,4 +49,4 @@ For production systems, reproducibility is non-negotiable. Dependency locking (o
 Dependency locking ensures that dynamic versions don't break your build.
 
 #### ! Related
-*   [Scenario 9: Ranges](../scenario-9-ranges/guide.md) - Using dynamic versions.
+*   [S9](../scenario-9-ranges/guide.md) - Using dynamic versions.

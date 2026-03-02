@@ -20,7 +20,7 @@ Dependency Locking
 Resolve the same dependency versions across different builds and environments.
 
 #### ! Why
-Maven assumes explicit, fixed version declarations. Locking only becomes necessary when using version ranges (Scenario 9) or SNAPSHOTs, which the core tool does not natively address. This philosophy is why the same graph behaves differently across tools.
+Maven assumes explicit, fixed version declarations. Locking only becomes necessary when using version ranges (S9) or SNAPSHOTs, which the core tool does not natively address. This philosophy is why the same graph behaves differently across tools.
 
 In practice, however, transitive dependencies may use ranges, and SNAPSHOT versions are common during development. This creates a reproducibility gap that Maven itself does not address.
 
@@ -56,5 +56,5 @@ Maven has no native dependency locking because its philosophy is "declare exact 
 
 ### Related
 
-- Scenario 9: Version Ranges — The source of non-determinism that locking addresses.
-- Scenario 3: Dependency Management (BOM) — Maven's primary mechanism for pinning transitive versions.
+- S9: Version Ranges — The source of non-determinism that locking addresses.
+- S3: Dependency Management (BOM) — Maven's primary mechanism for pinning transitive versions.

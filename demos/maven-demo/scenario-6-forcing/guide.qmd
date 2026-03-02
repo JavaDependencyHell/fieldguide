@@ -35,7 +35,7 @@ Using `<dependencyManagement>`, `lib-c` becomes `2.0.0`.
 `lib-c-2.0.0.jar` is on the classpath.
 
 #### ! Why
-This scenario uses the exact same `<dependencyManagement>` mechanism as Scenario 3, but applies it to a *transitive* dependency instead of a direct one. There is no special "forcing" keyword in Maven; it's all handled by `<dependencyManagement>`. It works because Maven evaluates the `<dependencyManagement>` section after building the complete dependency graph but *before* selecting the final versions. This allows the managed versions to override any version chosen by the "nearest-wins" algorithm.
+This scenario uses the exact same `<dependencyManagement>` mechanism as S3, but applies it to a *transitive* dependency instead of a direct one. There is no special "forcing" keyword in Maven; it's all handled by `<dependencyManagement>`. It works because Maven evaluates the `<dependencyManagement>` section after building the complete dependency graph but *before* selecting the final versions. This allows the managed versions to override any version chosen by the "nearest-wins" algorithm.
 
 #### ! Fix
 This is often the fix for "Nearest Wins" picking an old version, or to patch a vulnerability deep in the graph.
@@ -67,9 +67,9 @@ A version in `<dependencyManagement>` will override any transitive dependency ve
 Strict constraints are vital for security compliance (e.g., "Must use OpenSSL >= 3.0").
 
 #### ! Takeaway
-`<dependencyManagement>` overrides transitive version resolution (nearest-wins), making it the primary tool for enforcing version policy across the dependency tree. Note that a direct version in `<dependencies>` will still take precedence (see Scenario 4).
+`<dependencyManagement>` overrides transitive version resolution (nearest-wins), making it the primary tool for enforcing version policy across the dependency tree. Note that a direct version in `<dependencies>` will still take precedence (see S4).
 
 #### ! Related
-*   [Scenario 3: Dependency Management (BOM)](../scenario-3-mgmt/guide.qmd) - The core mechanism used here.
-*   [Scenario 4: Hardcoded Version vs Dependency Management](../scenario-4-override/guide.qmd) - Understanding the precedence of direct declarations.
-*   [Scenario 14: Reject](../scenario-14-reject/guide.qmd) - Forcing *away* from a version.
+*   [S3](../scenario-3-mgmt/guide.qmd) - The core mechanism used here.
+*   [S4](../scenario-4-override/guide.qmd) - Understanding the precedence of direct declarations.
+*   [S14](../scenario-14-reject/guide.qmd) - Forcing *away* from a version.

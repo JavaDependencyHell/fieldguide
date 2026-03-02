@@ -54,7 +54,7 @@ This is essential for multi-repo development (composite builds) where you want t
 Dependency substitution allows you to swap modules or versions cleanly, handling complex replacements that exclusions cannot.
 
 #### ! Related
-*   [Scenario 5: Exclusions](../scenario-5-exclusions/guide.md) - Removing dependencies without replacement.
+*   [S5](../scenario-5-exclusions/guide.md) - Removing dependencies without replacement.
 
 #### ! Wild
 

@@ -38,5 +38,5 @@ Maven's POM format does not support rich version metadata (`prefer`, `strictly`,
 
 ### Related
 
-- Scenario 6: Forcing Transitive Versions — `<dependencyManagement>` as Maven's version enforcement tool.
-- Scenario 14: Rejecting a Version — Using the Enforcer Plugin for negative constraints.
+- S6: Forcing Transitive Versions — `<dependencyManagement>` as Maven's version enforcement tool.
+- S14: Rejecting a Version — Using the Enforcer Plugin for negative constraints.

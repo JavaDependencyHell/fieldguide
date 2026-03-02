@@ -53,7 +53,7 @@ Allowing local overrides of global defaults is a powerful feature. It lets teams
 Explicit versions override standard platforms. Use `enforcedPlatform` if you want the platform to win.
 
 #### ! Related
-*   [Scenario 3: Mgmt](../scenario-3-mgmt/guide.qmd) - How platforms work.
+*   [S3](../scenario-3-mgmt/guide.qmd) - How platforms work.
 
 #### ! Wild
 

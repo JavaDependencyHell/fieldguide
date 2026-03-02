@@ -51,4 +51,4 @@ The dependency graph is healthy and resolving as expected.
 It resolves the full graph by default.
 
 #### ! Related
-*   [Scenario 2: Conflict](../scenario-2-conflict/guide.qmd)
+*   [S2](../scenario-2-conflict/guide.qmd)
