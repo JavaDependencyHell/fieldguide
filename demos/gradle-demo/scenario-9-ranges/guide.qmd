@@ -50,7 +50,7 @@ Dynamic versions and ranges are the primary cause of "it worked yesterday" failu
 Ranges work but are dynamic.
 
 #### ! Related
-*   [S11](../scenario-11-locking/guide.md)
+*   [S11: Dependency Locking](../scenario-11-locking/guide.qmd)
 
 #### ! Wild
 

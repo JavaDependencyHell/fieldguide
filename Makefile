@@ -85,7 +85,7 @@ force-us-book: check-quarto check-qpdf
 sample: $(PDF_OUTPUT)
 	@echo "Generating Sample PDF..."
 	@if [ -f $(PDF_OUTPUT) ]; then \
-		qpdf $(PDF_OUTPUT) --pages . 1-10,12-32,36-37,40-42,47-57,60-62 -- $(SAMPLE_PDF); \
+		qpdf $(PDF_OUTPUT) --pages . 1-66,z -- $(SAMPLE_PDF); \
 		echo "Sample generation complete. Output in $(SAMPLE_PDF)"; \
 	else \
 		echo "Error: $(PDF_OUTPUT) not found. Run 'make book' first."; \
@@ -96,7 +96,7 @@ sample: $(PDF_OUTPUT)
 us-sample: $(US_PDF_OUTPUT)
 	@echo "Generating US Half-Letter Sample PDF..."
 	@if [ -f $(US_PDF_OUTPUT) ]; then \
-		qpdf $(US_PDF_OUTPUT) --pages . 1-10,12-32,36-37,40-42,47-57,60-62 -- $(US_SAMPLE_PDF); \
+		qpdf $(US_PDF_OUTPUT) --pages . 1-66,z -- $(US_SAMPLE_PDF); \
 		echo "US Sample generation complete. Output in $(US_SAMPLE_PDF)"; \
 	else \
 		echo "Error: $(US_PDF_OUTPUT) not found. Run 'make us-book' first."; \

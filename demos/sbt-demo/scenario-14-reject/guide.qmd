@@ -40,4 +40,4 @@ Version rejection is critical for security compliance. When a CVE is discovered 
 SBT lacks native rejection; use overrides or external plugins to enforce version policies.
 
 #### ! Related
-*   [S6](../scenario-6-forcing/guide.md)
+*   [S6: Forcing a Version](../scenario-6-forcing/guide.qmd)

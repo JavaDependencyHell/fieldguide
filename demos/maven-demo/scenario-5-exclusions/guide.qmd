@@ -5,9 +5,7 @@ type: scenario
 tool: maven
 ---
 
-#### ! Scenario
-
-#### ! Scenario
+#### ! Scenario What to Do When Excluding a Dependency Fixes the Build but Breaks Runtime
 
 
 This scenario demonstrates how to surgically remove a transitive dependency from the graph.

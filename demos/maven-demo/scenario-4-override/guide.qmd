@@ -5,9 +5,7 @@ type: scenario
 tool: maven
 ---
 
-#### ! Scenario
-
-##### What to Do When One Hardcoded Version Overrides Everything Else:
+#### ! Scenario What to Do When One Hardcoded Version Overrides Everything Else:
 
 This scenario shows what happens when you have a conflict between a version defined in a BOM (Dependency Management) and a version explicitly declared in your dependencies.
 

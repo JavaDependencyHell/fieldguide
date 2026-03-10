@@ -5,13 +5,11 @@ type: scenario
 tool: maven
 ---
 
-#### ! Scenario
+#### ! Scenario What to Do When Yesterday's Build and Today's Build Produce Different Results
 
-#### ! Scenario
+This scenario explores how to ensure reproducible builds in Maven, which natively lacks a lockfile mechanism. It demonstrates how dynamic version ranges (S9) or SNAPSHOTs can lead to non-deterministic builds across different environments or times, and identifies the tools and practices developers use to "freeze" the dependency graph.
 
-Dependency Locking
-
-
+#### ! Example
 
 ```{.xml include="/demos/maven-demo/scenario-11-locking/pom.xml" snippet="s11-deps"}
 ```
@@ -24,13 +22,13 @@ Maven assumes explicit, fixed version declarations. Locking only becomes necessa
 
 In practice, however, transitive dependencies may use ranges, and SNAPSHOT versions are common during development. This creates a reproducibility gap that Maven itself does not address.
 
-### How Developers Commonly "Fix" This
+###  ! Fix
 
 - **Avoiding ranges entirely:** Most Maven teams declare exact versions for all direct dependencies and rely on `<dependencyManagement>` to pin transitive versions. This is effective but requires discipline.
 - **The Versions Maven Plugin:** `mvn versions:resolve-ranges` replaces ranges with the currently resolved version, converting dynamic declarations to fixed ones. `mvn versions:lock-snapshots` pins SNAPSHOT versions to their timestamped equivalents.
 - **Third-party lock plugins:** The `dependency-lock-maven-plugin` (se.vandmo) generates a `dependencies-lock.json` file that records the full resolved graph, similar to Gradle's lock file. The `maven-lockfile` plugin (chains-project) provides similar functionality with integrity checking.
 
-### Safer Ways to Take Control
+### ! Control
 
 - Declare exact versions for all direct dependencies.
 - Use `<dependencyManagement>` to pin transitive versions.
@@ -46,15 +44,15 @@ In practice, however, transitive dependencies may use ranges, and SNAPSHOT versi
 
 **Conclusion:** Maven lacks built-in locking; to ensure reproducibility, use fixed versions, `<dependencyManagement>`, or third-party plugins.
 
-### How This Scales in Real Systems
+### ! Scales
 
 Maven's lack of native locking is rarely a problem in well-managed projects because the ecosystem convention of fixed versions is so strong. The issue surfaces in large organisations where teams inherit transitive dependencies from third-party libraries that use ranges, or during active development with SNAPSHOT dependencies. For release builds, the combination of exact versions plus `<dependencyManagement>` achieves the same outcome as a lock file—just through a different mechanism.
 
-### Takeaway
+### ! Takeaway
 
 Maven has no native dependency locking because its philosophy is "declare exact versions." When that isn't sufficient, third-party plugins and the Versions Maven Plugin fill the gap.
 
-### Related
+### ! Related
 
-- S9: Version Ranges — The source of non-determinism that locking addresses.
-- S3: Dependency Management (BOM) — Maven's primary mechanism for pinning transitive versions.
+* [S9: Version Ranges](../scenario-9-ranges/guide.qmd) — The source of non-determinism that locking addresses.
+* [S3: Central Management (BOM)](../scenario-3-mgmt/guide.qmd) — Maven's primary mechanism for pinning transitive versions.

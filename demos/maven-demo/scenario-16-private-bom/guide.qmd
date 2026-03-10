@@ -5,11 +5,9 @@ type: scenario
 tool: maven
 ---
 
-#### ! Scenario
+#### ! Scenario What to Do When You Need Enterprise Support
 
-#### ! Scenario
-
-This scenario shows how to incorporate a private, third-party repository that provides patched or extended-support versions of dependencies.
+This scenario shows how to incorporate a private, third-paty repository that provides patched or extended-support versions of dependencies.
 
 It specifically demonstrates how a third-party Bill of Materials (BOM) can be used to override a publicly available, EOL (End-of-Life) dependency with a patched version from the private repository.
 

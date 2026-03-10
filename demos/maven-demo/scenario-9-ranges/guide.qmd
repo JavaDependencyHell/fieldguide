@@ -6,6 +6,7 @@ tool: maven
 ---
 
 #### ! Scenario What to Do When a Version Range Picks Something You Never Tested
+
 This scenario demonstrates dynamic version resolution using ranges (e.g., `[1.0, 2.0)`).
 
 #### ! Example
@@ -53,7 +54,7 @@ Ranges are common in NPM/pip but less so in Java/Maven ecosystems due to the des
 Ranges trade reproducibility for freshness; use with caution (and locking).
 
 #### ! Related
-*   [S11](../scenario-11-locking/guide.qmd) - How to tame ranges.
+* [S11: Dependency Locking](../scenario-11-locking/guide.qmd) - How to tame ranges.
 
 #### ! Wild
 

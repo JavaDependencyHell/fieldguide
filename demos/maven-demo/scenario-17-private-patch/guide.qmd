@@ -5,9 +5,7 @@ type: scenario
 tool: maven
 ---
 
-#### ! Scenario
-
-#### ! Scenario
+#### ! Scenario What to Do When You Need a One-Off Patch
 
 This scenario shows a more direct way to use a private, third-party repository. Instead of using a vendor-supplied BOM, we explicitly request the patched version of a dependency in our project's `<dependencies>` block.
 
@@ -44,4 +42,4 @@ A direct version declaration in `<dependencies>` is Maven's strongest versioning
 A direct version declaration for a dependency is the most straightforward way to ensure a specific version is used, provided that version is available in one of the configured repositories. This method overrides all other mechanisms like BOMs or transitive versions.
 
 #### ! Related
-*   [S16](../scenario-16-private-bom/guide.qmd) - A more scalable approach using a vendor BOM.
+* [S16: Private Repo (BOM)](../scenario-16-private-bom/guide.qmd) - A more scalable approach using a vendor BOM.

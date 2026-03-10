@@ -59,4 +59,4 @@ In large projects, metadata workarounds accumulate and become hard to track. Doc
 SBT lacks a direct metadata patching API; use exclusions and overrides instead.
 
 #### ! Related
-*   [S5](../scenario-5-exclusions/guide.md)
+*   [S5: Exclusions](../scenario-5-exclusions/guide.qmd)

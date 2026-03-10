@@ -5,9 +5,8 @@ type: scenario
 tool: gradle
 ---
 
-#### ! Scenario
+#### ! Scenario What to Do When Gradle Picks a Newer Version Than Maven Would
 
-*Or what to Do When Gradle Picks a Newer Version Than Maven Would*
 This scenario demonstrates its default "Newest Wins" conflict resolution strategy.
 
 #### ! Example
@@ -55,7 +54,7 @@ Gradle assumes semantic versioning: the newest version is likely backward-compat
 It upgrades you to the newest version found in the graph.
 
 #### ! Related
-*   [S6](../scenario-6-forcing/guide.qmd)
+*   [S6: Forcing a Version](../scenario-6-forcing/guide.qmd)
 
 #### ! Wild
 

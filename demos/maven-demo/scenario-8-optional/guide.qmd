@@ -5,9 +5,7 @@ type: scenario
 tool: maven
 ---
 
-#### ! Scenario
-
-*Or what to Do When “Optional” Dependencies Don’t Show Up*
+#### ! Scenario What to Do When “Optional” Dependencies Don’t Show Up
 
 This scenario demonstrates `<optional>true</optional>` flag.
 
@@ -57,4 +55,4 @@ Used heavily by large frameworks (Spring, Hibernate) to support many integration
 Optional dependencies shift the burden of declaration to the consumer.
 
 #### ! Related
-*   [S7](../scenario-7-scopes/guide.qmd) - `provided` scope is similar but semantically different.
+* [S7: Scopes](../scenario-7-scopes/guide.qmd) - `provided` scope is similar but semantically different.

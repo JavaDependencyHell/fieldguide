@@ -57,7 +57,7 @@ Correct configuration usage is essential for Scala/SBT projects that publish lib
 Configurations control visibility and transitivity. Use `% Test` and `% Provided` to keep your production artifacts clean.
 
 #### ! Related
-*   [S8](../scenario-8-optional/guide.md)
+*   [S8: Optional Dependencies](../scenario-8-optional/guide.qmd)
 
 ::: {.callout}
 **Seen in the Wild**

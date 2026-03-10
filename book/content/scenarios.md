@@ -33,8 +33,9 @@ Scenarios will often be referred to by the shorthand. Sxx. so S10 or S9 etc
 
 ### Scenario make up
 
-Most scenerios follow the same pattern
+Most scenarios follow the same pattern
 
-A title, a scenerio description, a graphical representation of the dependency graph, and. configuration examples to match.
+A title, a scenario description, a graphical representation of the dependency graph, and. configuration examples to match.
 
-Then we've tried to provide a series of infom
+So  we've tried to structure each one to help you quickly navigate around.
+

@@ -5,12 +5,12 @@ type: scenario
 tool: maven
 ---
 
-#### ! Scenario
+#### ! Scenario What to Do When a Specific Version Must Never Appear
 
-*Or what to Do When a Specific Version Must Never Appear*
 This scenario demonstrates how to prevent a specific version of a dependency from appearing anywhere in your build. Maven has no native "reject" keyword, but the Maven Enforcer Plugin provides an effective workaround.
 
 
+#### ! Example
 
 ```{.xml include="/demos/maven-demo/scenario-14-reject/pom.xml" snippet="s14-enforcer"}
 ```
@@ -21,32 +21,32 @@ Prevent a specific version (e.g., due to bugs or CVEs) from appearing anywhere i
 #### ! Why
 Maven lacks native resolution-time "reject" constraints. The Maven Enforcer Plugin fills this gap by performing post-resolution checks during the `validate` phase, failing the build if a banned version is detected. This differs from Gradle's resolution-time rejection, which is why the same graph behaves differently across tools.
 
-### How Developers Commonly "Fix" This
+### ! Fix
 
 - **`bannedDependencies` rule:** As shown above. Supports wildcards (`com.demo:lib-a:[2.0.0,2.1.0)` to ban a range) and allows exceptions via `<includes>`.
 - **`<dependencyManagement>` to force a safe version:** Pin `lib-a` to `1.9.0` (or `2.0.1`) so that the banned version is never resolved in the first place.
 - **Combining both:** Use `<dependencyManagement>` to fix the version and the Enforcer Plugin as a safety net to ensure it stays fixed.
 
-### Safer Ways to Take Control
+### ! Control
 
 - Always combine the Enforcer Plugin with a version fix. The plugin detects violations; `<dependencyManagement>` prevents them.
 - For security policies, the `requireUpperBoundDeps` rule catches accidental downgrades that might reintroduce a vulnerable version.
 - For organisation-wide policies, define Enforcer rules in a parent POM so all projects inherit them.
 
-### Signals to Watch For
+### ! Look
 
 - Build failures from the Enforcer Plugin during the `validate` phase: This is the plugin doing its job. Read the error message to identify which dependency path is pulling in the banned version.
 - If you ban a version but don't provide an alternative (via `<dependencyManagement>`), a transitive dependency may still pull it in and the build will fail without a clear path to resolution.
 
-### How This Scales in Real Systems
+### ! Scales
 
 The Enforcer Plugin is widely used in enterprise environments for security and compliance. Organisations maintain parent POMs with banned-dependency lists that are updated when new CVEs are published. This is particularly effective when combined with automated dependency scanning tools (e.g., Dependabot, Snyk) that identify vulnerable versions.
 
-### Takeaway
+### ! Takeaway
 
 Maven cannot reject versions during resolution, but the Enforcer Plugin's `bannedDependencies` rule provides an effective post-resolution check. Always pair it with a `<dependencyManagement>` fix.
 
-### Related
+### ! Related
 
-- S6: Forcing Transitive Versions — How to redirect resolution to a safe version.
-- S5: Dependency Exclusions — Removing a specific version from a specific path.
+* [S6: Forcing a Version](../scenario-6-forcing/guide.qmd) — How to redirect resolution to a safe version.
+* [S5: Exclusions](../scenario-5-exclusions/guide.qmd) — Removing a specific version from a specific path.

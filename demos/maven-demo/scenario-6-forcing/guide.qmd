@@ -70,6 +70,6 @@ Strict constraints are vital for security compliance (e.g., "Must use OpenSSL >=
 `<dependencyManagement>` overrides transitive version resolution (nearest-wins), making it the primary tool for enforcing version policy across the dependency tree. Note that a direct version in `<dependencies>` will still take precedence (see S4).
 
 #### ! Related
-*   [S3](../scenario-3-mgmt/guide.qmd) - The core mechanism used here.
-*   [S4](../scenario-4-override/guide.qmd) - Understanding the precedence of direct declarations.
-*   [S14](../scenario-14-reject/guide.qmd) - Forcing *away* from a version.
+* [S3: Central Management (BOM)](../scenario-3-mgmt/guide.qmd) - The core mechanism used here.
+* [S4: Direct Override](../scenario-4-override/guide.qmd) - Understanding the precedence of direct declarations.
+* [S14: Rejecting a Version](../scenario-14-reject/guide.qmd) - Forcing *away* from a version.

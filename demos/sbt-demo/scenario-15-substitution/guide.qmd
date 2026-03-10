@@ -49,4 +49,4 @@ Module substitution is particularly important in the Scala ecosystem when migrat
 SBT lacks native substitution; use exclusions and explicit additions.
 
 #### ! Related
-*   [S5](../scenario-5-exclusions/guide.md)
+*   [S5: Exclusions](../scenario-5-exclusions/guide.qmd)

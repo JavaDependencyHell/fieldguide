@@ -1,0 +1,217 @@
+./demos/maven-demo/scenario-11-locking/guide.qmd:### Related
+./demos/maven-demo/scenario-11-locking/guide.qmd-
+./demos/maven-demo/scenario-11-locking/guide.qmd-- S9: Version Ranges — The source of non-determinism that locking addresses.
+./demos/maven-demo/scenario-11-locking/guide.qmd-- S3: Dependency Management (BOM) — Maven's primary mechanism for pinning transitive versions.
+--
+./demos/maven-demo/scenario-10-circular/guide.qmd:#### ! Related
+./demos/maven-demo/scenario-10-circular/guide.qmd-*   [S1](../scenario-1-basic/guide.qmd) - The ideal acyclic graph.
+--
+./demos/maven-demo/scenario-2-conflict/guide.qmd:#### ! Related
+./demos/maven-demo/scenario-2-conflict/guide.qmd- [S3](../scenario-3-mgmt/guide.qmd) - How to fix this centrally.
+./demos/maven-demo/scenario-2-conflict/guide.qmd-
+./demos/maven-demo/scenario-2-conflict/guide.qmd-
+./demos/maven-demo/scenario-2-conflict/guide.qmd-
+./demos/maven-demo/scenario-2-conflict/guide.qmd-#### ! Wild
+--
+./demos/maven-demo/scenario-4-override/guide.qmd:#### ! Related
+./demos/maven-demo/scenario-4-override/guide.qmd-*   [S6: Forcing Transitive Versions via Dependency Management](../scenario-6-forcing/guide.qmd) - How to force a version even against explicit declarations.
+./demos/maven-demo/scenario-4-override/guide.qmd-
+./demos/maven-demo/scenario-4-override/guide.qmd-
+./demos/maven-demo/scenario-4-override/guide.qmd-#### ! Wild
+./demos/maven-demo/scenario-4-override/guide.qmd-
+--
+./demos/maven-demo/scenario-9-ranges/guide.qmd:#### ! Related
+./demos/maven-demo/scenario-9-ranges/guide.qmd-*   [S11](../scenario-11-locking/guide.qmd) - How to tame ranges.
+./demos/maven-demo/scenario-9-ranges/guide.qmd-
+./demos/maven-demo/scenario-9-ranges/guide.qmd-#### ! Wild
+./demos/maven-demo/scenario-9-ranges/guide.qmd-
+./demos/maven-demo/scenario-9-ranges/guide.qmd-A well-known failure mode with version ranges occurs when CI resolves a newly published dependency that developer machines have not yet seen due to local caching.
+--
+./demos/maven-demo/scenario-13-variants/guide.qmd:### Related
+./demos/maven-demo/scenario-13-variants/guide.qmd-
+./demos/maven-demo/scenario-13-variants/guide.qmd-- S7: Dependency Scopes — Scopes are Maven's other mechanism for controlling which artifacts reach which classpaths.
+--
+./demos/maven-demo/scenario-7-scopes/guide.qmd:#### ! Related
+./demos/maven-demo/scenario-7-scopes/guide.qmd-*   [S8](../scenario-8-optional/guide.qmd) - Another way to limit transitivity.
+./demos/maven-demo/scenario-7-scopes/guide.qmd-
+./demos/maven-demo/scenario-7-scopes/guide.qmd-#### ! Wild
+./demos/maven-demo/scenario-7-scopes/guide.qmd-
+./demos/maven-demo/scenario-7-scopes/guide.qmd-A common production failure occurs when a web application works fine in an IDE but fails after deployment with a `NoClassDefFoundError`.
+--
+./demos/maven-demo/scenario-12-metadata/guide.qmd:### Related
+./demos/maven-demo/scenario-12-metadata/guide.qmd-
+./demos/maven-demo/scenario-12-metadata/guide.qmd-- S6: Forcing Transitive Versions — `<dependencyManagement>` as Maven's version enforcement tool.
+./demos/maven-demo/scenario-12-metadata/guide.qmd-- S14: Rejecting a Version — Using the Enforcer Plugin for negative constraints.
+--
+./demos/maven-demo/scenario-17-private-patch/guide.qmd:#### ! Related
+./demos/maven-demo/scenario-17-private-patch/guide.qmd-*   [S16](../scenario-16-private-bom/guide.qmd) - A more scalable approach using a vendor BOM.
+--
+./demos/maven-demo/scenario-14-reject/guide.qmd:### Related
+./demos/maven-demo/scenario-14-reject/guide.qmd-
+./demos/maven-demo/scenario-14-reject/guide.qmd-- S6: Forcing Transitive Versions — How to redirect resolution to a safe version.
+./demos/maven-demo/scenario-14-reject/guide.qmd-- S5: Dependency Exclusions — Removing a specific version from a specific path.
+--
+./demos/maven-demo/scenario-3-mgmt/guide.qmd:#### ! Related
+./demos/maven-demo/scenario-3-mgmt/guide.qmd-[S4: Overriding Management](../scenario-4-override/guide.qmd) - What if I want a different version?
+--
+./demos/maven-demo/scenario-15-substitution/guide.qmd:### Related
+./demos/maven-demo/scenario-15-substitution/guide.qmd-
+./demos/maven-demo/scenario-15-substitution/guide.qmd-- S5: Dependency Exclusions — The underlying mechanism used for substitution.
+./demos/maven-demo/scenario-15-substitution/guide.qmd-- S14: Rejecting a Version — Using the Enforcer Plugin to prevent the old library from returning.
+./demos/maven-demo/scenario-15-substitution/guide.qmd-- S6: Forcing Transitive Versions — An alternative when only the version (not the artifact) needs to change.
+./demos/maven-demo/scenario-15-substitution/guide.qmd-
+--
+./demos/maven-demo/scenario-6-forcing/guide.qmd:#### ! Related
+./demos/maven-demo/scenario-6-forcing/guide.qmd-*   [S3](../scenario-3-mgmt/guide.qmd) - The core mechanism used here.
+./demos/maven-demo/scenario-6-forcing/guide.qmd-*   [S4](../scenario-4-override/guide.qmd) - Understanding the precedence of direct declarations.
+./demos/maven-demo/scenario-6-forcing/guide.qmd-*   [S14](../scenario-14-reject/guide.qmd) - Forcing *away* from a version.
+--
+./demos/maven-demo/scenario-8-optional/guide.qmd:#### ! Related
+./demos/maven-demo/scenario-8-optional/guide.qmd-*   [S7](../scenario-7-scopes/guide.qmd) - `provided` scope is similar but semantically different.
+--
+./demos/maven-demo/scenario-5-exclusions/guide.qmd:#### ! Related
+./demos/maven-demo/scenario-5-exclusions/guide.qmd-*   [S15](../scenario-15-substitution/guide.qmd) - Replacing a library instead of just removing it.
+./demos/maven-demo/scenario-5-exclusions/guide.qmd-
+./demos/maven-demo/scenario-5-exclusions/guide.qmd-#### ! Wild
+./demos/maven-demo/scenario-5-exclusions/guide.qmd-
+./demos/maven-demo/scenario-5-exclusions/guide.qmd-License compliance scans frequently uncover GPL-licensed libraries pulled in transitively.
+--
+./demos/gradle-demo/scenario-11-locking/guide.qmd:#### ! Related
+./demos/gradle-demo/scenario-11-locking/guide.qmd-*   [S9](../scenario-9-ranges/guide.md)
+--
+./demos/gradle-demo/scenario-10-circular/guide.qmd:#### ! Related
+./demos/gradle-demo/scenario-10-circular/guide.qmd-N/A
+--
+./demos/gradle-demo/scenario-1-basic/guide.qmd:#### ! Related
+./demos/gradle-demo/scenario-1-basic/guide.qmd-*   [S2](../scenario-2-conflict/guide.qmd)
+--
+./demos/gradle-demo/scenario-2-conflict/guide.qmd:#### ! Related
+./demos/gradle-demo/scenario-2-conflict/guide.qmd-*   [S6](../scenario-6-forcing/guide.qmd)
+./demos/gradle-demo/scenario-2-conflict/guide.qmd-
+./demos/gradle-demo/scenario-2-conflict/guide.qmd-#### ! Wild
+./demos/gradle-demo/scenario-2-conflict/guide.qmd-
+./demos/gradle-demo/scenario-2-conflict/guide.qmd-In large e-commerce architectures using "newest wins" strategies, minor updates in utility libraries can automatically propagate across dozens of microservices.
+--
+./demos/gradle-demo/scenario-4-override/guide.qmd:#### ! Related
+./demos/gradle-demo/scenario-4-override/guide.qmd-*   [S3](../scenario-3-mgmt/guide.qmd) - How platforms work.
+./demos/gradle-demo/scenario-4-override/guide.qmd-
+./demos/gradle-demo/scenario-4-override/guide.qmd-#### ! Wild
+./demos/gradle-demo/scenario-4-override/guide.qmd-
+./demos/gradle-demo/scenario-4-override/guide.qmd-Teams often use platforms to manage their dependencies while still needing to test new features in specific libraries not yet updated in the platform.
+--
+./demos/gradle-demo/scenario-9-ranges/guide.qmd:#### ! Related
+./demos/gradle-demo/scenario-9-ranges/guide.qmd-*   [S11](../scenario-11-locking/guide.md)
+./demos/gradle-demo/scenario-9-ranges/guide.qmd-
+./demos/gradle-demo/scenario-9-ranges/guide.qmd-#### ! Wild
+./demos/gradle-demo/scenario-9-ranges/guide.qmd-
+./demos/gradle-demo/scenario-9-ranges/guide.qmd-A well-known failure mode with version ranges occurs when CI resolves a newly published dependency that developer machines have not yet seen due to local caching.
+--
+./demos/gradle-demo/scenario-13-variants/guide.qmd:#### ! Related
+./demos/gradle-demo/scenario-13-variants/guide.qmd-*   [S12](../scenario-12-metadata/guide.qmd) - Fixing metadata if attributes are missing.
+--
+./demos/gradle-demo/scenario-7-scopes/guide.qmd:#### ! Related
+./demos/gradle-demo/scenario-7-scopes/guide.qmd-*   [S8](../scenario-8-optional/guide.md)
+./demos/gradle-demo/scenario-7-scopes/guide.qmd-
+./demos/gradle-demo/scenario-7-scopes/guide.qmd-
+./demos/gradle-demo/scenario-7-scopes/guide.qmd-#### ! Wild
+./demos/gradle-demo/scenario-7-scopes/guide.qmd-
+--
+./demos/gradle-demo/scenario-12-metadata/guide.qmd:#### ! Related
+./demos/gradle-demo/scenario-12-metadata/guide.qmd-*   [S15](../scenario-15-substitution/guide.qmd) - Replacing one module with another entirely.
+--
+./demos/gradle-demo/scenario-17-private-patch/guide.qmd:#### ! Related
+./demos/gradle-demo/scenario-17-private-patch/guide.qmd-*   [S16](../scenario-16-private-bom/guide.qmd) - A more scalable approach using a vendor BOM.
+--
+./demos/gradle-demo/scenario-14-reject/guide.qmd:#### ! Related
+./demos/gradle-demo/scenario-14-reject/guide.qmd-*   [S6](../scenario-6-forcing/guide.md) - Forcing a specific version.
+--
+./demos/gradle-demo/scenario-3-mgmt/guide.qmd:#### ! Related
+./demos/gradle-demo/scenario-3-mgmt/guide.qmd-*   [S4](../scenario-4-override/guide.qmd) - What happens when you mix platforms and hardcoded versions.
+--
+./demos/gradle-demo/scenario-15-substitution/guide.qmd:#### ! Related
+./demos/gradle-demo/scenario-15-substitution/guide.qmd-*   [S5](../scenario-5-exclusions/guide.md) - Removing dependencies without replacement.
+./demos/gradle-demo/scenario-15-substitution/guide.qmd-
+./demos/gradle-demo/scenario-15-substitution/guide.qmd-#### ! Wild
+./demos/gradle-demo/scenario-15-substitution/guide.qmd-
+./demos/gradle-demo/scenario-15-substitution/guide.qmd-When developing a new feature in a library used by several other projects, teams can use composite builds to substitute the binary dependency with a local project.
+--
+./demos/gradle-demo/scenario-6-forcing/guide.qmd:#### ! Related
+./demos/gradle-demo/scenario-6-forcing/guide.qmd-*   [S14](../scenario-14-reject/guide.qmd) - How to reject specific versions entirely.
+--
+./demos/gradle-demo/scenario-8-optional/guide.qmd:#### ! Related
+./demos/gradle-demo/scenario-8-optional/guide.qmd-*   [S7](../scenario-7-scopes/guide.qmd)
+--
+./demos/gradle-demo/scenario-5-exclusions/guide.qmd:#### ! Related
+./demos/gradle-demo/scenario-5-exclusions/guide.qmd-*   [S15](../scenario-15-substitution/guide.qmd)
+./demos/gradle-demo/scenario-5-exclusions/guide.qmd-
+./demos/gradle-demo/scenario-5-exclusions/guide.qmd-#### ! Wild
+./demos/gradle-demo/scenario-5-exclusions/guide.qmd-
+./demos/gradle-demo/scenario-5-exclusions/guide.qmd-Mobile teams frequently use exclusions to remove large transitive libraries (such as legacy analytics or duplicate support libraries) in order to reduce final APK size.
+--
+./demos/sbt-demo/scenario-11-locking/guide.qmd:#### ! Related
+./demos/sbt-demo/scenario-11-locking/guide.qmd-*   [S9](../scenario-9-ranges/guide.md) - Using dynamic versions.
+--
+./demos/sbt-demo/scenario-10-circular/guide.qmd:#### ! Related
+./demos/sbt-demo/scenario-10-circular/guide.qmd-N/A
+--
+./demos/sbt-demo/scenario-1-basic/guide.qmd:#### ! Related
+./demos/sbt-demo/scenario-1-basic/guide.qmd-*   [S2](../scenario-2-conflict/guide.md) - What happens when two branches of the tree disagree on a version.
+--
+./demos/sbt-demo/scenario-2-conflict/guide.qmd:#### ! Related
+./demos/sbt-demo/scenario-2-conflict/guide.qmd-*   [S6](../scenario-6-forcing/guide.md) - How to override this behavior.
+./demos/sbt-demo/scenario-2-conflict/guide.qmd-
+./demos/sbt-demo/scenario-2-conflict/guide.qmd-::: {.callout}
+./demos/sbt-demo/scenario-2-conflict/guide.qmd-**Seen in the Wild**
+./demos/sbt-demo/scenario-2-conflict/guide.qmd-
+--
+./demos/sbt-demo/scenario-4-override/guide.qmd:#### ! Related
+./demos/sbt-demo/scenario-4-override/guide.qmd-*   [S6](../scenario-6-forcing/guide.md) - Using `dependencyOverrides` for stricter control.
+./demos/sbt-demo/scenario-4-override/guide.qmd-
+./demos/sbt-demo/scenario-4-override/guide.qmd-::: {.callout}
+./demos/sbt-demo/scenario-4-override/guide.qmd-**Seen in the Wild**
+./demos/sbt-demo/scenario-4-override/guide.qmd-
+--
+./demos/sbt-demo/scenario-9-ranges/guide.qmd:#### ! Related
+./demos/sbt-demo/scenario-9-ranges/guide.qmd-*   [S11](../scenario-11-locking/guide.md) - How to freeze dynamic versions.
+./demos/sbt-demo/scenario-9-ranges/guide.qmd-
+./demos/sbt-demo/scenario-9-ranges/guide.qmd-::: {.callout}
+./demos/sbt-demo/scenario-9-ranges/guide.qmd-**Seen in the Wild**
+./demos/sbt-demo/scenario-9-ranges/guide.qmd-
+--
+./demos/sbt-demo/scenario-13-variants/guide.qmd:#### ! Related
+./demos/sbt-demo/scenario-13-variants/guide.qmd-N/A
+--
+./demos/sbt-demo/scenario-7-scopes/guide.qmd:#### ! Related
+./demos/sbt-demo/scenario-7-scopes/guide.qmd-*   [S8](../scenario-8-optional/guide.md)
+./demos/sbt-demo/scenario-7-scopes/guide.qmd-
+./demos/sbt-demo/scenario-7-scopes/guide.qmd-::: {.callout}
+./demos/sbt-demo/scenario-7-scopes/guide.qmd-**Seen in the Wild**
+./demos/sbt-demo/scenario-7-scopes/guide.qmd-
+--
+./demos/sbt-demo/scenario-12-metadata/guide.qmd:#### ! Related
+./demos/sbt-demo/scenario-12-metadata/guide.qmd-*   [S5](../scenario-5-exclusions/guide.md)
+--
+./demos/sbt-demo/scenario-17-private-patch/guide.qmd:#### ! Related
+./demos/sbt-demo/scenario-17-private-patch/guide.qmd-*   [S16](../scenario-16-private-bom/guide.qmd) - A more scalable approach using a vendor BOM.
+--
+./demos/sbt-demo/scenario-14-reject/guide.qmd:#### ! Related
+./demos/sbt-demo/scenario-14-reject/guide.qmd-*   [S6](../scenario-6-forcing/guide.md)
+--
+./demos/sbt-demo/scenario-3-mgmt/guide.qmd:#### ! Related
+./demos/sbt-demo/scenario-3-mgmt/guide.qmd-*   [S16](../scenario-16-private-bom/guide.md) - Using an external BOM for management.
+--
+./demos/sbt-demo/scenario-15-substitution/guide.qmd:#### ! Related
+./demos/sbt-demo/scenario-15-substitution/guide.qmd-*   [S5](../scenario-5-exclusions/guide.md)
+--
+./demos/sbt-demo/scenario-6-forcing/guide.qmd:#### ! Related
+./demos/sbt-demo/scenario-6-forcing/guide.qmd-N/A
+--
+./demos/sbt-demo/scenario-8-optional/guide.qmd:#### ! Related
+./demos/sbt-demo/scenario-8-optional/guide.qmd-*   [S7](../scenario-7-scopes/guide.md)
+--
+./demos/sbt-demo/scenario-5-exclusions/guide.qmd:#### ! Related
+./demos/sbt-demo/scenario-5-exclusions/guide.qmd-N/A
+./demos/sbt-demo/scenario-5-exclusions/guide.qmd-
+./demos/sbt-demo/scenario-5-exclusions/guide.qmd-::: {.callout}
+./demos/sbt-demo/scenario-5-exclusions/guide.qmd-**Seen in the Wild**
+./demos/sbt-demo/scenario-5-exclusions/guide.qmd-

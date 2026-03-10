@@ -5,9 +5,8 @@ type: scenario
 tool: maven
 ---
 
-#### ! Scenario
+#### ! Scenario What to Do When Your Dependency Graph Turns into a Cycle
 
-*Or what to Do When Your Dependency Graph Turns into a Cycle*
 This scenario demonstrates how build tools handle cycles in the dependency graph (A -> B -> A).
 
 #### ! Example
@@ -57,4 +56,4 @@ Cycles make it impossible to build modules in a linear order, forcing them to be
 Circular dependencies are technically resolvable but architecturally disastrous.
 
 #### ! Related
-*   [S1](../scenario-1-basic/guide.qmd) - The ideal acyclic graph.
+* [S1: Basic Dependency](../scenario-1-basic/guide.qmd) - The ideal acyclic graph.
