@@ -285,7 +285,7 @@ tbody tr:hover {
   border: 1px solid $hd-border;
   border-left-width: 4px;
   border-radius: 4px;
-  padding: 0.8em 1em 0.8em 2.4em;
+  padding: 0.8em 1em 0.8em 3.8em;
   margin: 1em 0;
   background-color: $hd-surface;
   font-size: 0.95rem;
@@ -295,7 +295,7 @@ tbody tr:hover {
   &::before {
     content: attr(data-label);
     position: absolute;
-    left: -0.4em;
+    left: 0.85em;
     top: 50%;
     transform: rotate(-90deg) translateX(-50%);
     transform-origin: left center;
@@ -303,7 +303,7 @@ tbody tr:hover {
     font-size: 0.65rem;
     font-weight: 700;
     letter-spacing: 0.06em;
-    color: rgba(0, 0, 0, 0.35);
+    color: rgba(0, 0, 0, 0.55);
     white-space: nowrap;
     pointer-events: none;
   }
