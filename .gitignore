@@ -39,3 +39,8 @@ guide_files/
 /.quarto/
 **/*.quarto_ipynb
 
+# LaTeX intermediates
+*.aux
+*.tex
+*.toc
+
