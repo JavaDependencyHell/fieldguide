@@ -20,7 +20,7 @@ graph LR
 ```
 
 
-```{.xml include="pom.xml" snippet="s7-deps"}
+```{.xml include="/demos/maven-demo/scenario-7-scopes/pom.xml" snippet="s7-deps"}
 ```
 
 #### ! Expect

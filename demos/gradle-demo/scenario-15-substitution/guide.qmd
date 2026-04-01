@@ -1,10 +1,16 @@
-# Dependency Substitution
+---
+title: "Dependency Substitution"
+tagline: "Or what to Do When One Component Quietly Replaces Another"
+type: scenario
+tool: gradle
+---
 
+#### ! Scenario
 
-::: {.scenario}
 *Or what to Do When One Component Quietly Replaces Another*
 This scenario demonstrates how to completely replace one dependency with another (or a different version of the same dependency) using Gradle's dependency substitution rules.
-:::
+
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -18,43 +24,45 @@ graph LR
 ```{.groovy include="/demos/gradle-demo/scenario-15-substitution/build.gradle" snippet="s15-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 Substituting a module globally replaces it in all transitive paths.
 
-#### Why This Happens
+#### ! Why
 Dependency substitution rewrites the graph on the fly, enabling global replacements—like swapping a binary for a local project—that exclusions cannot match.
 
-#### How Developers Commonly "Fix" This
+#### ! Fix
 *   **Exclusions:** Developers often try to exclude the old dependency and add the new one manually. This is tedious and error-prone.
 *   **Forcing Versions:** Forcing a version works if the group and artifact IDs are the same, but it cannot replace `com.old:lib` with `com.new:lib`.
 
-#### Operational Risk
+#### ! Risk
 
-*   **Low risk:** Replacing a logging framework with a compatible one (e.g., `log4j` with `log4j-over-slf4j`). This is a well-understood and common practice.
-*   **Medium risk:** Replacing a library with a forked or patched version. This is often necessary but introduces the risk that the fork will not be maintained.
-*   **High risk:** Replacing a library with a completely different one that is not a drop-in replacement. This is very likely to cause `NoClassDefFoundError` or `NoSuchMethodError` at runtime.
+* LOW Replacing a logging framework with a compatible one (e.g., `log4j` with `log4j-over-slf4j`). This is a well-understood and common practice.
+* MEDIUM Replacing a library with a forked or patched version. This is often necessary but introduces the risk that the fork will not be maintained.
+* HIGH Replacing a library with a completely different one that is not a drop-in replacement. This is very likely to cause `NoClassDefFoundError` or `NoSuchMethodError` at runtime.
 
-#### Safer Ways to Take Control
+#### ! Control
 *   **Use Substitution:** This is the cleanest way to handle replacements. It applies globally and handles transitive dependencies correctly.
 
-#### Signals to Watch For
+#### ! Look
 *   **Unexpected Swaps:** If you use substitution rules, be careful not to accidentally swap a library that is not fully compatible.
 *   **Build Scans:** Build scans show substitutions clearly, making it easy to debug why a dependency was replaced.
 
-#### How This Scales in Real Systems
+#### ! Scales
 This is essential for multi-repo development (composite builds) where you want to substitute a binary dependency with a local source build. It is also critical for migrating away from deprecated libraries across a large codebase.
 
-#### Key Takeaway
+#### ! Takeaway
 Dependency substitution allows you to swap modules or versions cleanly, handling complex replacements that exclusions cannot.
 
+<<<<<<< Updated upstream
 #### Related Scenarios
 *   [Scenario 5: Exclusions](../scenario-5-exclusions/guide.md) - Removing dependencies without replacement.
+=======
+#### ! Related
+*   [S5: Exclusions](../scenario-5-exclusions/guide.qmd) - Removing dependencies without replacement.
+>>>>>>> Stashed changes
 
-::: {.calloutbox}
-**Seen in the Wild**
+#### ! Wild
 
 When developing a new feature in a library used by several other projects, teams can use composite builds to substitute the binary dependency with a local project.
 
 This allows testing in context without publishing new library versions.
-
-:::

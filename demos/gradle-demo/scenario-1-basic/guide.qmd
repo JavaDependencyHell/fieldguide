@@ -21,7 +21,7 @@ graph LR
 
 
 
-```{.groovy include="build.gradle" snippet="s1-deps"}
+```{.groovy include="/demos/gradle-demo/scenario-1-basic/build.gradle" snippet="s1-deps"}
 ```
 
 #### ! Dot Reader Expectation

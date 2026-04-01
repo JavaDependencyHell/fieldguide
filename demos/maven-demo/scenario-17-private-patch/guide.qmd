@@ -28,7 +28,7 @@ graph LR
 
 The `pom.xml` adds the private repository and then directly declares a dependency on the specific patched version.
 
-```{.xml include="fake-pom.xml"  snippet="s17-deps"}
+```{.xml include="/demos/maven-demo/scenario-17-private-patch/fake-pom.xml"  snippet="s17-deps"}
 ```
 
 

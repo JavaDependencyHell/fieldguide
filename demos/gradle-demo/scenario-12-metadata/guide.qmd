@@ -22,7 +22,7 @@ graph LR
 
 
 
-```{.groovy include="build.gradle" snippet="s12-deps"}
+```{.groovy include="/demos/gradle-demo/scenario-12-metadata/build.gradle" snippet="s12-deps"}
 ```
 
 #### ! Expect

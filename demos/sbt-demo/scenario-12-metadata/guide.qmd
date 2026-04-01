@@ -1,10 +1,16 @@
-# Customizing Metadata
+---
+title: "Customizing Metadata"
+tagline: "Or what to Do When the Upstream POM is Wrong"
+type: scenario
+tool: sbt
+---
 
+#### ! Scenario
 
-::: {.scenario}
 *Or what to Do When the Upstream POM is Wrong*
 This scenario demonstrates how to handle incorrect metadata in SBT.
-:::
+
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -14,43 +20,48 @@ graph LR
     Root -- override --> LibB_Fixed[lib-b:2.0.0]
 ```
 
-#### SBT (build.sbt)
+#### ! Example
 
 ```{.scala include="/demos/sbt-demo/scenario-12-metadata/build.sbt" snippet="s12-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 "The library author made a mistake in their POM. I should be able to patch it locally."
 
-#### Actual Resolution Results
+#### ! Actual
 Resolves `lib-b:2.0.0` (if manually fixed).
 
-#### Classpath Reality
+#### ! Reality
 `lib-b-2.0.0.jar`.
 
-#### Why This Happens
+#### ! Why
 Unlike Gradle, which has a clean Component Metadata Rules API, SBT/Ivy does not provide a first-class mechanism for patching dependency metadata on the fly. When upstream metadata is incorrect (e.g., a library declares a dependency it doesn't actually need, or declares the wrong version), SBT developers must work around it using combinations of exclusions and explicit dependency declarations.
 
-#### How Developers Commonly "Fix" This
+#### ! Fix
 The standard pattern is: exclude the incorrectly declared dependency, then add the correct one explicitly.
 ```scala
 libraryDependencies += "com.demo" % "lib-a" % "1.0.0" exclude("com.demo", "lib-b")
 libraryDependencies += "com.demo" % "lib-b" % "2.0.0"
 ```
 
-#### Safer Ways to Take Control
+#### ! Control
 *   **`dependencyOverrides`:** If the issue is just a wrong version, `dependencyOverrides` is cleaner than exclude+add.
 *   **Custom Ivy Settings:** For advanced users, custom Ivy settings can manipulate metadata, but this is complex and rarely used.
 
-#### Signals to Watch For
+#### ! Look
 *   **Runtime Errors:** `NoSuchMethodError` often indicates that the metadata pulled in an incompatible version.
 *   **Bloated Classpath:** If a library declares unnecessary dependencies (e.g., test dependencies as compile scope), your classpath will be larger than necessary.
 
-#### How This Scales in Real Systems
+#### ! Scales
 In large projects, metadata workarounds accumulate and become hard to track. Document each workaround with a comment explaining why it exists and linking to the upstream issue if one exists. When the upstream library releases a fix, clean up the workaround.
 
-#### Key Takeaway
+#### ! Takeaway
 SBT lacks a direct metadata patching API; use exclusions and overrides instead.
 
+<<<<<<< Updated upstream
 #### Related Scenarios
 *   [Scenario 5: Exclusions](../scenario-5-exclusions/guide.md)
+=======
+#### ! Related
+*   [S5: Exclusions](../scenario-5-exclusions/guide.qmd)
+>>>>>>> Stashed changes

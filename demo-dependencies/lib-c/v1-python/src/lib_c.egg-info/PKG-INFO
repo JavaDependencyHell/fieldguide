@@ -1,5 +1,0 @@
-Metadata-Version: 2.4
-Name: lib-c
-Version: 1.0.0
-Summary: Demo library C v1 - leaf dependency (no transitive deps)
-Requires-Python: >=3.8

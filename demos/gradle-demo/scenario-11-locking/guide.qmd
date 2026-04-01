@@ -1,12 +1,16 @@
-# Dependency Locking
+---
+title: "Dependency Locking"
+tagline: "Or what to Do When Today’s Build Doesn’t Match Yesterday’s"
+type: scenario
+tool: gradle
+---
 
+#### ! Scenario
 
-
-
-::: {.scenario}
 *Or what to Do When Today’s Build Doesn’t Match Yesterday’s*
 This scenario demonstrates Gradle's Dependency Locking feature.
-:::
+
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -19,16 +23,16 @@ graph LR
 ```{.groovy include="/demos/gradle-demo/scenario-11-locking/build.gradle" snippet="s11-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 Build today must match build tomorrow exactly.
 
-#### Why This Happens
+#### ! Why
 Gradle records the resolved graph in a `gradle.lockfile` (per-project or per-configuration). On subsequent runs, it uses these versions instead of performing dynamic resolution, which is why the same graph behaves differently across tools.
 
-#### How This Scales in Real Systems
+#### ! Scales
 Dependency locking is essential for any team that values reproducible builds, which is to say, every professional team. It is particularly critical in CI/CD pipelines, where builds must be deterministic to enable reliable testing, deployment, and rollback. Lock files should be committed to version control. Updating dependencies becomes an explicit action (./gradlew dependencies --write-locks) rather than an accidental side effect of a repository change. Many organisations combine locking with automated dependency update tools (like Dependabot or Renovate) that submit pull requests when new versions are available.
 
-#### Deterministic Checks
+#### ! Check
 **Fast check (Gradle):** `./gradlew dependencies --lock-state`
 **Fast check (Maven):** `mvn dependency:tree`
 **Fast check (SBT):** `sbt dependencyTree`
@@ -37,8 +41,13 @@ Dependency locking is essential for any team that values reproducible builds, wh
 
 **Conclusion:** Locking ensures reproducibility by snapshots of dynamic versions.
 
-#### Key Takeaway
+#### ! Takeaway
 Locking ensures reproducibility.
 
+<<<<<<< Updated upstream
 #### Related Scenarios
 *   [Scenario 9: Ranges](../scenario-9-ranges/guide.md)
+=======
+#### ! Related
+*   [S9: Version Ranges](../scenario-9-ranges/guide.qmd)
+>>>>>>> Stashed changes

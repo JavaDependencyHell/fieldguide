@@ -1,64 +1,73 @@
+<<<<<<< Updated upstream
 # 15. Version Substitution
+=======
+---
+title: "Version Substitution"
+tagline: "Or what to Do When You Need to Swap One Library for Another"
+type: scenario
+tool: maven
+---
+>>>>>>> Stashed changes
 
+#### ! Scenario What to Do When You Need to Swap One Library for Another
 
-::: {.scenario}
-*Or what to Do When You Need to Swap One Library for Another*
 This scenario demonstrates how to replace one dependency with another in Maven. Maven has no native substitution mechanism, but exclusions combined with explicit declarations achieve the same result.
-:::
 
+#### ! Example
 
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 ```{.xml include="/demos/maven-demo/scenario-15-substitution/pom.xml" snippet="s15-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 Substituting one library for another (e.g., swapping `log4j` for `slf4j`) replaces it throughout the entire dependency graph.
 
-#### Why This Happens
+#### ! Why
 Maven lacks a graph-wide substitution mechanism; its exclusions are declaration-scoped. To achieve substitution, you must apply exclusions to every path and declare the replacement explicitly, a manual process that differs from Gradle's global `dependencySubstitution`. This distinction is why the same graph behaves differently across tools.
 
-### How Developers Commonly "Fix" This
+### ! Fix
 
 - **Exclusion on every path:** The brute-force approach. Add `<exclusion>` blocks to every direct dependency that transitively pulls in the unwanted library. This works but is verbose, fragile, and must be maintained as the dependency graph evolves.
 - **Global exclusion via `<dependencyManagement>`:** While `<dependencyManagement>` cannot exclude a dependency outright, you can declare the unwanted artifact with `<scope>provided</scope>` to remove it from the runtime classpath. This is not a true exclusion but achieves a similar practical effect.
 - **Maven Shade Plugin:** For substitutions where the replacement has a different package structure, the Shade Plugin can relocate classes at build time. This is a heavy-handed solution but is used in practice for complex migrations.
 
-#### Operational Risk
+#### ! Risk
 
-*   **Low risk:** Replacing a logging framework with a compatible one (e.g., `log4j` with `log4j-over-slf4j`). This is a well-understood and common practice.
-*   **Medium risk:** Replacing a library with a forked or patched version. This is often necessary but introduces the risk that the fork will not be maintained.
-*   **High risk:** Replacing a library with a completely different one that is not a drop-in replacement. This is very likely to cause `NoClassDefFoundError` or `NoSuchMethodError` at runtime.
+* LOW Replacing a logging framework with a compatible one (e.g., `log4j` with `log4j-over-slf4j`). This is a well-understood and common practice.
+* MEDIUM Replacing a library with a forked or patched version. This is often necessary but introduces the risk that the fork will not be maintained.
+* HIGH Replacing a library with a completely different one that is not a drop-in replacement. This is very likely to cause `NoClassDefFoundError` or `NoSuchMethodError` at runtime.
 
-### Safer Ways to Take Control
+#### ! Control
 
-- Combine exclusions with the Enforcer Plugin: After adding exclusions, use `bannedDependencies` (Scenario 14) to ensure the old library never creeps back in through a new transitive path.
+- Combine exclusions with the Enforcer Plugin: After adding exclusions, use `bannedDependencies` (S14) to ensure the old library never creeps back in through a new transitive path.
 - Document every substitution: Add a comment next to each exclusion explaining what it replaces and why. Future developers (including you in six months) will thank you.
 - Run `mvn dependency:tree` after every substitution to verify that the old library is truly gone from the entire graph.
 
-### Signals to Watch For
+#### ! Look
 
 - `NoClassDefFoundError` or `ClassNotFoundException`: The exclusion removed the old library, but the replacement doesn't provide all the same classes.
 - Both old and new libraries on the classpath: A missed transitive path is still pulling in the original. This often manifests as non-deterministic behaviour depending on classloader ordering.
 - Gradual classpath creep: A new dependency added weeks later reintroduces the excluded library via a different transitive path. This is why the Enforcer Plugin safety net matters.
 
-### How This Scales in Real Systems
+#### ! Scales
 
 The logging framework swap (log4j → SLF4J + Logback) is the canonical example, but the pattern applies to any library migration: moving from `javax.*` to `jakarta.*`, replacing a community library with an internal fork, or swapping an abandoned library for a maintained alternative. In large multi-module Maven projects, the exclusion-based approach becomes a maintenance burden. Some teams centralise substitutions in a parent POM's `<dependencyManagement>`, combining scope overrides and exclusions to approximate what Gradle achieves with a single substitution rule.
 
-### Key Takeaway
+#### ! Takeaway
 
 Maven has no graph-wide substitution mechanism. Use exclusions on each path plus an explicit replacement declaration. Always verify with `dependency:tree` and guard with the Enforcer Plugin.
 
-### Related Scenarios
+#### ! Related
 
-- Scenario 5: Dependency Exclusions — The underlying mechanism used for substitution.
-- Scenario 14: Rejecting a Version — Using the Enforcer Plugin to prevent the old library from returning.
-- Scenario 6: Forcing Transitive Versions — An alternative when only the version (not the artifact) needs to change.
+* [S5: Exclusions](../scenario-5-exclusions/guide.qmd) — The underlying mechanism used for substitution.
+* [S14: Rejecting a Version](../scenario-14-reject/guide.qmd) — Using the Enforcer Plugin to prevent the old library from returning.
+* [S6: Forcing a Version](../scenario-6-forcing/guide.qmd) — An alternative when only the version (not the artifact) needs to change.
 
-::: {.calloutbox}
-**Seen in the Wild**
+#### ! Wild
 
 Large enterprise projects migrating from `javax.servlet` to `jakarta.servlet` often face hundreds of modules that cannot be updated simultaneously.
 
 Using the Maven Shade Plugin to relocate classes at build time allows for incremental migration, one module at a time, without breaking the overall application.
-:::

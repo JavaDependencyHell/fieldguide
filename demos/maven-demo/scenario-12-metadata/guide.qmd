@@ -1,38 +1,48 @@
+<<<<<<< Updated upstream
 # 12. Rich Version Metadata
+=======
+---
+title: "Rich Version Metadata"
+tagline: "Or what to Do When You Can't Express What You Actually Need"
+type: scenario
+tool: maven
+---
+>>>>>>> Stashed changes
 
-::: {.scenario}
-
-*Or what to Do When You Can't Express What You Actually Need*
+#### ! Scenario What to Do When You Can't Express What You Actually Need
 
 This scenario demonstrates a fundamental limitation of Maven's dependency model: the POM format has no way to express rich version constraints like "prefer 1.5 but accept anything in [1.0, 2.0)" or "strictly require exactly 1.3.0."
-:::
 
+#### ! Example
 
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 ```{.xml include="/demos/maven-demo/scenario-12-metadata/pom.xml" snippet="s12-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 Build tools support "strictly," "prefer," and "reject" constraints for fine-grained version control.
 
-#### Why This Happens
+#### ! Why
 Maven's POM schema predates rich versioning; the `<version>` element only supports fixed strings or simple ranges. This lack of expressiveness is why the same graph behaves differently across tools like Gradle, which uses richer Module Metadata.
 
-### How Developers Commonly "Fix" This
+### ! Fix
 
 - **`<dependencyManagement>`:** The closest Maven equivalent to a "prefer" constraint. It sets a default version that can be overridden by a direct declaration but overrides transitive versions.
 - **Hard ranges (`[1.3.0]`):** Forces an exact version and fails the build if any other version is selected. This is the closest equivalent to Gradle's `strictly`.
 - **Maven Enforcer Plugin:** The `requireUpperBoundDeps` rule can fail the build if a transitive dependency is older than a direct one, providing a partial "minimum version" check.
 
-### Safer Ways to Take Control
+### ! Control
 
 Accept that Maven's version model is simpler and work within it. Use `<dependencyManagement>` for version alignment and the Enforcer Plugin for policy enforcement. If your project genuinely needs rich version constraints, this is one of the scenarios where Gradle's model is objectively more capable.
 
-### Key Takeaway
+### ! Takeaway
 
 Maven's POM format does not support rich version metadata (`prefer`, `strictly`, `reject`). Use `<dependencyManagement>` and the Enforcer Plugin to approximate what Gradle achieves natively.
 
-### Related Scenarios
+### ! Related
 
-- Scenario 6: Forcing Transitive Versions — `<dependencyManagement>` as Maven's version enforcement tool.
-- Scenario 14: Rejecting a Version — Using the Enforcer Plugin for negative constraints.
+* [S6: Forcing a Version](../scenario-6-forcing/guide.qmd) — `<dependencyManagement>` as Maven's version enforcement tool.
+* [S14: Rejecting a Version](../scenario-14-reject/guide.qmd) — Using the Enforcer Plugin for negative constraints.

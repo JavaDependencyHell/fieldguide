@@ -32,7 +32,7 @@ graph LR
 #### ! Example
 The `build.sbt` file first adds the private repository to the list of `resolvers`. Then, it imports the vendor's BOM. This typically requires a plugin like `sbt-bom` to provide the `mavenBomImport` setting. The actual dependency is declared without a version, letting the imported BOM control which version is used.
 
-```{.scala include="build.sbt" snippet="repo-and-deps"}
+```{.scala include="/demos/sbt-demo/scenario-16-private-bom/build.sbt" snippet="repo-and-deps"}
 ```
 
 #### ! Expect

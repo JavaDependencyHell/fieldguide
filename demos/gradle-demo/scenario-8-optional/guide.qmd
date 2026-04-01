@@ -20,7 +20,7 @@ graph LR
 
 
 
-```{.groovy include="build.gradle" snippet="s8-deps"}
+```{.groovy include="/demos/gradle-demo/scenario-8-optional/build.gradle" snippet="s8-deps"}
 ```
 
 #### ! Expect

@@ -1,10 +1,16 @@
-# Rejecting Versions
+---
+title: "Rejecting Versions"
+tagline: "Or what to Do When Gradle Refuses a Version on Purpose"
+type: scenario
+tool: gradle
+---
 
+#### ! Scenario
 
-::: {.scenario}
 *Or what to Do When Gradle Refuses a Version on Purpose*
 This scenario demonstrates how to explicitly reject a specific version of a dependency, preventing it from being selected even if it is the newest version.
-:::
+
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -18,27 +24,32 @@ graph LR
 ```{.groovy include="/demos/gradle-demo/scenario-14-reject/build.gradle" snippet="s14-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 Blacklist broken or vulnerable releases without forcing a specific downgrade that might block future patches.
 
-#### Why This Happens
+#### ! Why
 Gradle's engine supports negative constraints. Rejecting a version (e.g., `2.0.0`) removes it from the candidate pool during resolution, allowing upgrades to `2.0.1` while still blocking the known "bad" version. This precision is why the same graph behaves differently across tools.
 
-#### How Developers Commonly "Fix" This
+#### ! Fix
 *   **Forcing an Older Version:** Developers often use `resolutionStrategy.force '1.0.0'` to avoid `2.0.0`. This works, but it also prevents upgrading to `2.0.1` or `2.1.0` later. Rejection is more precise.
 
-#### Safer Ways to Take Control
+#### ! Control
 *   **Reject Specific Versions:** Use `reject` for known bad versions.
 *   **Reject Dynamic Ranges:** You can also reject ranges, e.g., `reject('[2.0, 3.0)')`.
 
-#### Signals to Watch For
+#### ! Look
 *   **Build Failures:** If the rejected version is the *only* version that satisfies other constraints (e.g., another library strictly requires `2.0.0`), the build will fail with a conflict error. This is good—it prevents you from shipping a broken application.
 
-#### How This Scales in Real Systems
+#### ! Scales
 This is a best practice for managing "bad" releases in a large organization. You can publish a platform/BOM that rejects known bad versions of internal libraries, protecting all teams from using them.
 
-#### Key Takeaway
+#### ! Takeaway
 You can blacklist specific versions or ranges using `reject`, which is safer than forcing a downgrade.
 
+<<<<<<< Updated upstream
 #### Related Scenarios
 *   [Scenario 6: Strict Constraints](../scenario-6-forcing/guide.md) - Forcing a specific version.
+=======
+#### ! Related
+*   [S6: Forcing a Version](../scenario-6-forcing/guide.qmd) - Forcing a specific version.
+>>>>>>> Stashed changes

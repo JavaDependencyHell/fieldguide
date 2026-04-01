@@ -1,15 +1,19 @@
-# Dependency Management (BOM)
+---
+title: "Dependency Management (BOM)"
+tagline: "What to Do When Your BOM Isn’t Actually in Control"
+type: scenario
+tool: maven
+---
 
 
-::: {.scenario}
 
-#### What to Do When Your BOM Isn’t Actually in Control:
+#### ! Scenario What to Do When Your BOM Isn’t Actually in Control
 
 This scenario demonstrates how to use a Bill of Materials (BOM) or `<dependencyManagement>` block to centralize version definitions.
 
 This decouples "what I need" from "which version I need".
 
-
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -21,26 +25,23 @@ graph LR
     BOM -. defines .-> LibB_Ver[lib-b:1.0.0]
 ```
 
-:::
 
 ```{.xml include="/demos/maven-demo/scenario-3-mgmt/pom.xml" snippet="s3-deps"}
 ```
 
-#### Reader Expectation:
+#### ! Expect
 Importing a BOM centralizes version control, ensuring consistency across project and transitive dependencies.
 
-#### Why This Happens:
+#### ! Why
 `<dependencyManagement>` provides default versions for dependencies declared without an explicit version and enforces those versions throughout the transitive tree. This central orientation is why the same graph behaves differently across tools.
 
-#### How Developers Commonly "Fix" This:
+#### ! Fix
 Without BOMs, developers copy-paste version numbers across multiple modules, leading to drift and inconsistency.
 
-#### Safer Ways to Take Control:
+#### ! Control
 This *is* the safer way. Always prefer BOMs or centralized version catalogs (Gradle) over scattered version numbers.
 
-#### Deterministic Checks:
-
-**Fast check (Maven):**
+#### !Check
 
 ```bash
 mvn help:effective-pom
@@ -52,11 +53,16 @@ The `<dependencyManagement>` section of the output. It should contain the versio
 **Conclusion:**
 If the versions are present, the BOM is correctly imported and influencing the build.
 
-#### How This Scales:
+#### ! Scales
 Essential for multi-module projects and microservices to ensure all services use the same library versions.
 
-#### Key Takeaway
+#### ! Takeaway
 Centralized dependency management is the single most effective tool for preventing dependency drift.
 
+<<<<<<< Updated upstream
 #### Related Scenarios
 *   [Scenario 4: Overriding Management](../scenario-4-override/guide.qmd) - What if I want a different version?
+=======
+#### ! Related
+* [S4: Overriding Management](../scenario-4-override/guide.qmd) - What if I want a different version?
+>>>>>>> Stashed changes

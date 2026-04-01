@@ -1,31 +1,35 @@
-# Dependency Substitution
+---
+title: "Dependency Substitution"
+tagline: "Or what to Do When You Need to Swap a Library"
+type: scenario
+tool: sbt
+---
 
+#### ! Scenario
 
-::: {.scenario}
 *Or what to Do When You Need to Swap a Library*
 This scenario demonstrates how to substitute dependencies in SBT.
-:::
 
 N/A
 
-#### SBT (build.sbt)
+#### ! Example
 
 ```{.scala include="/demos/sbt-demo/scenario-15-substitution/build.sbt" snippet="s15-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 "I want to replace `old-lib` with `new-lib` everywhere in my build."
 
-#### Actual Resolution Results
+#### ! Actual
 Requires manual exclusion and addition.
 
-#### Classpath Reality
+#### ! Reality
 Depends on the implementation.
 
-#### Why This Happens
+#### ! Why
 SBT does not have a built-in dependency substitution mechanism comparable to Gradle's `dependencySubstitution` rules. Swapping one module for another (e.g., replacing a community library with a forked version) requires a manual approach: exclude the original and add the replacement as a direct dependency.
 
-#### How Developers Commonly "Fix" This
+#### ! Fix
 *   **Exclude + Add:**
 
 ```scala
@@ -35,14 +39,19 @@ libraryDependencies += "com.forked" % "new-lib" % "1.0.0"
 
 This works but must be applied to *every* dependency that transitively pulls in the original library, which is verbose and error-prone.
 
-#### Signals to Watch For
+#### ! Look
 *   **Duplicate Classes:** If you fail to exclude the old library everywhere, you might end up with both the old and new libraries on the classpath, leading to conflicts.
 
-#### How This Scales in Real Systems
+#### ! Scales
 Module substitution is particularly important in the Scala ecosystem when migrating between forks (e.g., when a popular library changes maintainers or organisations). It's also used for local development when you want to test against a locally-published version of a dependency. For the local development case, SBT's `ProjectRef` and project dependencies provide a cleaner solution than exclusion-based substitution.
 
-#### Key Takeaway
+#### ! Takeaway
 SBT lacks native substitution; use exclusions and explicit additions.
 
+<<<<<<< Updated upstream
 #### Related Scenarios
 *   [Scenario 5: Exclusions](../scenario-5-exclusions/guide.md)
+=======
+#### ! Related
+*   [S5: Exclusions](../scenario-5-exclusions/guide.qmd)
+>>>>>>> Stashed changes

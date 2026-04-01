@@ -1,10 +1,16 @@
-# Optional Dependencies
+---
+title: "Optional Dependencies"
+tagline: "Or what to Do When You Need a Library Only Sometimes"
+type: scenario
+tool: sbt
+---
 
+#### ! Scenario
 
-::: {.scenario}
 *Or what to Do When You Need a Library Only Sometimes*
 This scenario demonstrates how SBT handles optional dependencies.
-:::
+
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -13,18 +19,18 @@ graph LR
     LibA -.-> LibB["lib-b:1.0.0 (Optional)"]
 ```
 
-#### SBT (build.sbt)
+#### ! Example
 
 ```{.scala include="/demos/sbt-demo/scenario-8-optional/build.sbt" snippet="s8-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 Optional dependencies are omitted from the consumer's classpath by default.
 
-#### Why This Happens
+#### ! Why
 SBT/Ivy respects the Maven `<optional>true</optional>` flag, excluding those transitives to prevent consumer classpath pollution. Because SBT lacks a native "optional" keyword, simulating this for your own libraries typically requires custom configurations or manual POM editing.
 
-#### Deterministic Checks
+#### ! Check
 
 **Fast check (SBT):**
 
@@ -39,11 +45,16 @@ The optional dependency will be absent from the tree.
 **Conclusion:**
 Optional dependencies are not transitive. Consumers must explicitly declare them if needed.
 
-#### How This Scales in Real Systems
+#### ! Scales
 Large frameworks like Akka and Play use optional dependencies extensively to support many integrations without forcing all of them on every consumer. As a library author in the SBT ecosystem, documenting your optional dependencies clearly is critical, since the tooling won't surface them automatically. Consider providing separate "starter" or "extras" modules that bundle optional dependencies for common use cases.
 
-#### Key Takeaway
+#### ! Takeaway
 SBT respects optional dependencies from Maven POMs but doesn't have a native "optional" keyword for declaring them.
 
+<<<<<<< Updated upstream
 #### Related Scenarios
 *   [Scenario 7: Scopes](../scenario-7-scopes/guide.md)
+=======
+#### ! Related
+*   [S7: Scopes](../scenario-7-scopes/guide.qmd)
+>>>>>>> Stashed changes

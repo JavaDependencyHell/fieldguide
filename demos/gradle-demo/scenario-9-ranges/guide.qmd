@@ -1,10 +1,16 @@
-# Version Ranges
+---
+title: "Version Ranges"
+tagline: "Or what to Do When Gradle Chooses a Version You Didn’t Intend"
+type: scenario
+tool: gradle
+---
 
+#### ! Scenario
 
-::: {.scenario}
 *Or what to Do When Gradle Chooses a Version You Didn’t Intend*
 This scenario demonstrates Gradle's support for version ranges.
-:::
+
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -17,21 +23,21 @@ graph LR
 ```{.groovy include="/demos/gradle-demo/scenario-9-ranges/build.gradle" snippet="s9-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 Resolve the latest version matching the range (e.g., `1.+`).
 
-#### Why This Happens
+#### ! Why
 Gradle supports Maven-style ranges and its own dynamic version syntax like `1.+`. It queries repository metadata for the highest match, making resolution dependent on current repository state. This is why the same graph behaves differently across tools.
 
-#### How This Scales in Real Systems
-Dynamic versions and ranges are the primary cause of "it worked yesterday" failures. If a new version of a library is published to Maven Central between your local build and your CI build, the two builds may resolve different versions. This is why Gradle provides built-in dependency locking (Scenario 11) --- it's specifically designed to tame dynamic versions. In Java/JVM ecosystems, ranges are less common than in npm/pip, precisely because the JVM community has historically valued build reproducibility. Most teams either ban dynamic versions entirely or pair them with strict locking.
+#### ! Scales
+Dynamic versions and ranges are the primary cause of "it worked yesterday" failures. If a new version of a library is published to Maven Central between your local build and your CI build, the two builds may resolve different versions. This is why Gradle provides built-in dependency locking (S11) --- it's specifically designed to tame dynamic versions. In Java/JVM ecosystems, ranges are less common than in npm/pip, precisely because the JVM community has historically valued build reproducibility. Most teams either ban dynamic versions entirely or pair them with strict locking.
 
-#### Operational Risk
-*   **Low risk:** Use ranges for `testImplementation`; allows latest test libraries without affecting production.
-*   **Medium risk:** Use ranges for internal libraries under strict semver.
-*   **High risk:** Use ranges for external libraries; this causes non-reproducible "it worked yesterday" failures.
+#### ! Risk
+* LOW Use ranges for `testImplementation`; allows latest test libraries without affecting production.
+* MEDIUM Use ranges for internal libraries under strict semver.
+* HIGH Use ranges for external libraries; this causes non-reproducible "it worked yesterday" failures.
 
-#### Deterministic Checks
+#### ! Check
 **Fast check (Gradle):** `./gradlew dependencyInsight --dependency <id>`
 **Fast check (Maven):** `mvn dependency:resolve`
 **Fast check (SBT):** `sbt dependencyTree`
@@ -40,16 +46,19 @@ Dynamic versions and ranges are the primary cause of "it worked yesterday" failu
 
 **Conclusion:** Ranges are dynamic and require locking for determinism.
 
-#### Key Takeaway
+#### ! Takeaway
 Ranges work but are dynamic.
 
+<<<<<<< Updated upstream
 #### Related Scenarios
 *   [Scenario 11: Locking](../scenario-11-locking/guide.md)
+=======
+#### ! Related
+*   [S11: Dependency Locking](../scenario-11-locking/guide.qmd)
+>>>>>>> Stashed changes
 
-::: {.calloutbox}
-**Seen in the Wild**
+#### ! Wild
 
 A well-known failure mode with version ranges occurs when CI resolves a newly published dependency that developer machines have not yet seen due to local caching.
 
 The result is a build that suddenly fails without any source changes.
-:::

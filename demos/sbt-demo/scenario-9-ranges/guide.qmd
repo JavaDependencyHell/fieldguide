@@ -1,11 +1,16 @@
-# Version Ranges
+---
+title: "Version Ranges"
+tagline: "Or what to Do When You Want the Latest and Greatest (Until It Breaks)"
+type: scenario
+tool: sbt
+---
 
+#### ! Scenario
 
-
-::: {.scenario}
 *Or what to Do When You Want the Latest and Greatest (Until It Breaks)*
 This scenario demonstrates how to use version ranges in SBT.
-:::
+
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -13,23 +18,23 @@ graph LR
     Root[Project Root] --> LibA[lib-a:1.+]
 ```
 
-#### SBT (build.sbt)
+#### ! Example
 
 ```{.scala include="/demos/sbt-demo/scenario-9-ranges/build.sbt" snippet="s9-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 Automatically resolve the latest patch or version in the 1.x series (e.g., `1.+`).
 
-#### Why This Happens
+#### ! Why
 SBT (via Ivy/Coursier) queries repository metadata and selects the highest version satisfying the range. This makes the build dynamic and dependent on current repository state.
 
-#### Operational Risk
-*   **Low risk:** Use ranges for `Test` dependencies.
-*   **Medium risk:** Use ranges for internal libraries under strict semver.
-*   **High risk:** Use ranges for external libraries; non-deterministic builds risk runtime "AbstractMethodError" failures during automated redeploys.
+#### ! Risk
+* LOW Use ranges for `Test` dependencies.
+* MEDIUM Use ranges for internal libraries under strict semver.
+* HIGH Use ranges for external libraries; non-deterministic builds risk runtime "AbstractMethodError" failures during automated redeploys.
 
-#### Deterministic Checks
+#### ! Check
 **Fast check (SBT):** `sbt dependencyTree`
 **Fast check (Maven):** `mvn dependency:resolve`
 **Fast check (Gradle):** `./gradlew dependencyInsight --dependency <id>`
@@ -38,11 +43,16 @@ SBT (via Ivy/Coursier) queries repository metadata and selects the highest versi
 
 **Conclusion:** Ranges trade build reproducibility for freshness.
 
-#### Key Takeaway
+#### ! Takeaway
 Ranges provide automatic upgrades but sacrifice build reproducibility. Use dependency locking to mitigate the risk.
 
+<<<<<<< Updated upstream
 #### Related Scenarios
 *   [Scenario 11: Locking](../scenario-11-locking/guide.md) - How to freeze dynamic versions.
+=======
+#### ! Related
+*   [S11: Dependency Locking](../scenario-11-locking/guide.qmd) - How to freeze dynamic versions.
+>>>>>>> Stashed changes
 
 ::: {.callout}
 **Seen in the Wild**
