@@ -37,9 +37,7 @@ Gradle configurations are granular. `api` exposes dependencies to consumers; `im
 * HIGH Use `api` when `implementation` suffices; this bloats consumer classpaths and slows builds.
 
 #### ! Check
-**Fast check (Gradle):** `./gradlew dependencies --configuration runtimeClasspath`
-**Fast check (Maven):** `mvn dependency:tree -Dscope=runtime`
-**Fast check (SBT):** `sbt 'show runtime:dependencyClasspath'`
+**Fast check:** `./gradlew dependencies --configuration runtimeClasspath`
 
 **What to look for:** Output showing only dependencies in the selected configuration or scope.
 

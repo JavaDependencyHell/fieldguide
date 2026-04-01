@@ -42,9 +42,7 @@ This *is* the fix for many problems (e.g., excluding `log4j` to use `slf4j`).
 
 #### ! Check
 
-**Fast check (Maven):** `mvn dependency:tree`
-**Fast check (Gradle):** `./gradlew dependencies`
-**Fast check (SBT):** `sbt dependencyTree`
+**Fast check:** `mvn dependency:tree`
 
 **What to look for:** Absence of the dependency under the declaring artifact. If it remains elsewhere, it is being pulled in through another path.
 

@@ -36,9 +36,7 @@ The most common pattern is swapping logging frameworks: excluding log4j and addi
 * HIGH Excluding to "fix" conflicts without technical verification; this risks `NoClassDefFoundError` at runtime.
 
 #### ! Check
-**Fast check (SBT):** `sbt dependencyTree`
-**Fast check (Maven):** `mvn dependency:tree`
-**Fast check (Gradle):** `./gradlew dependencies`
+**Fast check:** `sbt dependencyTree`
 
 **What to look for:** Absence of the dependency under the declaring artifact.
 

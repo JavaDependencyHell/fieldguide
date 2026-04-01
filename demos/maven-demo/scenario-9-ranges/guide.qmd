@@ -39,9 +39,7 @@ Ranges are controversial because they make builds non-deterministic (a new relea
 * HIGH Use ranges for external libraries; this causes non-reproducible builds and "it worked yesterday" failures.
 
 #### ! Check
-**Fast check (Maven):** `mvn dependency:resolve`
-**Fast check (Gradle):** `./gradlew dependencyInsight --dependency <id>`
-**Fast check (SBT):** `sbt dependencyTree`
+**Fast check:** `mvn dependency:resolve`
 
 **What to look for:** Output showing which version resolved from the range.
 

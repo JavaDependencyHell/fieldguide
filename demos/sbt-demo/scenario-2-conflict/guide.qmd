@@ -44,9 +44,7 @@ SBT (using Ivy/Coursier) employs the `latest-revision` conflict manager by defau
 * HIGH Rely on default "latest-revision" without reviewing eviction warnings; this can cause runtime `NoSuchMethodError` if libraries break compatibility.
 
 #### ! Check
-**Fast check (SBT):** `sbt dependencyTree`
-**Fast check (Maven):** `mvn dependency:tree -Dverbose`
-**Fast check (Gradle):** `./gradlew dependencyInsight --dependency <id>`
+**Fast check:** `sbt dependencyTree`
 
 **What to look for:** Evicted nodes (SBT), `omitted for conflict` (Maven), or `(by conflict resolution)` (Gradle).
 

@@ -57,9 +57,7 @@ Reordering dependencies (fragile), adding explicit exclusions (verbose), or mana
 Use `<dependencyManagement>` to fix the version regardless of depth. Gradle uses `constraints` or `platform` (BOM) for similar control.
 
 #### ! Check
-**Fast check (Maven):** `mvn dependency:tree -Dverbose`
-**Fast check (Gradle):** `./gradlew dependencyInsight --dependency <id>`
-**Fast check (SBT):** `sbt dependencyTree`
+**Fast check:** `mvn dependency:tree -Dverbose`
 
 **What to look for:** Lines containing `omitted for conflict` (Maven), `(by conflict resolution)` (Gradle), or evicted nodes (SBT).
 

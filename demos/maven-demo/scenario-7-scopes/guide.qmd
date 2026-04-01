@@ -48,9 +48,7 @@ Scopes trim the fat from distribution. This is why the same graph behaves differ
 Review scopes carefully. `provided` is dangerous if the runtime environment *doesn't* actually provide it.
 
 #### ! Check
-**Fast check (Maven):** `mvn dependency:tree -Dscope=runtime`
-**Fast check (Gradle):** `./gradlew dependencies --configuration runtimeClasspath`
-**Fast check (SBT):** `sbt 'show runtime:dependencyClasspath'`
+**Fast check:** `mvn dependency:tree -Dscope=runtime`
 
 **What to look for:** Tree or classpath output showing only `compile` and `runtime` scope dependencies.
 

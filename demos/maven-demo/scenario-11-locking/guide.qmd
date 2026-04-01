@@ -36,9 +36,7 @@ In practice, however, transitive dependencies may use ranges, and SNAPSHOT versi
 - Consider a lockfile plugin for CI/CD pipelines where reproducibility is critical.
 
 #### ! Check
-**Fast check (Maven):** `mvn dependency:tree`
-**Fast check (Gradle):** `./gradlew dependencies --lock-state`
-**Fast check (SBT):** `sbt dependencyTree`
+**Fast check:** `mvn dependency:tree`
 
 **What to look for:** Compare tree output across different machines or times when using ranges. Discrepancies indicate your build is not reproducible.
 

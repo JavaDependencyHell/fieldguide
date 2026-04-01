@@ -42,9 +42,7 @@ SBT maps dependencies to Ivy configurations. Defaulting to `Compile` makes them 
 * HIGH Use `Compile` for runtime-only libraries; this bloats artifacts and CI/CD pipelines.
 
 #### ! Check
-**Fast check (SBT):** `sbt 'show runtime:dependencyClasspath'`
-**Fast check (Maven):** `mvn dependency:tree -Dscope=runtime`
-**Fast check (Gradle):** `./gradlew dependencies --configuration runtimeClasspath`
+**Fast check:** `sbt 'show runtime:dependencyClasspath'`
 
 **What to look for:** Output showing the classpath for the selected configuration or scope.
 

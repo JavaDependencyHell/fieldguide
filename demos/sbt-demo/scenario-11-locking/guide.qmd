@@ -34,9 +34,7 @@ SBT (1.4.x+) freezes the resolved graph into a lock file. Committed to version c
 *   **Scala Steward:** Automated tools like Scala Steward can send PRs to update hardcoded versions, making manual management easier.
 
 #### ! Check
-**Fast check (SBT):** `sbt dependencyTree`
-**Fast check (Maven):** `mvn dependency:tree`
-**Fast check (Gradle):** `./gradlew dependencies --lock-state`
+**Fast check:** `sbt dependencyTree`
 
 **What to look for:** A lockfile (e.g., `build.sbt.lock` or `gradle.lockfile`) containing the exact resolved versions.
 

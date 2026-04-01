@@ -35,9 +35,7 @@ SBT (via Ivy/Coursier) queries repository metadata and selects the highest versi
 * HIGH Use ranges for external libraries; non-deterministic builds risk runtime "AbstractMethodError" failures during automated redeploys.
 
 #### ! Check
-**Fast check (SBT):** `sbt dependencyTree`
-**Fast check (Maven):** `mvn dependency:resolve`
-**Fast check (Gradle):** `./gradlew dependencyInsight --dependency <id>`
+**Fast check:** `sbt dependencyTree`
 
 **What to look for:** The resolved version in the dependency tree.
 

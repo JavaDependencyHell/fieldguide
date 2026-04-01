@@ -42,9 +42,7 @@ Gradle assumes semantic versioning: the newest version is likely backward-compat
 * HIGH Rely on default "newest wins" without testing; breaking changes in libraries like Guava or Jackson can cause silent failures.
 
 #### ! Check
-**Fast check (Gradle):** `./gradlew dependencyInsight --dependency <id>`
-**Fast check (Maven):** `mvn dependency:tree -Dverbose`
-**Fast check (SBT):** `sbt dependencyTree`
+**Fast check:** `./gradlew dependencyInsight --dependency <id>`
 
 **What to look for:** `(by conflict resolution)` (Gradle), `omitted for conflict` (Maven), or evicted nodes (SBT).
 

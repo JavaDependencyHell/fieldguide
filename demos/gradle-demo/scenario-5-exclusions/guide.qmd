@@ -37,9 +37,7 @@ Gradle honours exclusion metadata, pruning the specified artifact and its descen
 * HIGH Excluding to "fix" conflicts without technical verification; this risks `NoClassDefFoundError` at runtime.
 
 #### ! Check
-**Fast check (Gradle):** `./gradlew dependencies`
-**Fast check (Maven):** `mvn dependency:tree`
-**Fast check (SBT):** `sbt dependencyTree`
+**Fast check:** `./gradlew dependencies`
 
 **What to look for:** Absence of the dependency under the declaring artifact.
 

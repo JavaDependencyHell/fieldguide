@@ -33,9 +33,7 @@ Gradle records the resolved graph in a `gradle.lockfile` (per-project or per-con
 Dependency locking is essential for any team that values reproducible builds, which is to say, every professional team. It is particularly critical in CI/CD pipelines, where builds must be deterministic to enable reliable testing, deployment, and rollback. Lock files should be committed to version control. Updating dependencies becomes an explicit action (./gradlew dependencies --write-locks) rather than an accidental side effect of a repository change. Many organisations combine locking with automated dependency update tools (like Dependabot or Renovate) that submit pull requests when new versions are available.
 
 #### ! Check
-**Fast check (Gradle):** `./gradlew dependencies --lock-state`
-**Fast check (Maven):** `mvn dependency:tree`
-**Fast check (SBT):** `sbt dependencyTree`
+**Fast check:** `./gradlew dependencies --lock-state`
 
 **What to look for:** A lockfile (e.g., `gradle.lockfile` or `build.sbt.lock`) containing the exact resolved versions.
 

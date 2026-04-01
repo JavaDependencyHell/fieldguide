@@ -38,9 +38,7 @@ Dynamic versions and ranges are the primary cause of "it worked yesterday" failu
 * HIGH Use ranges for external libraries; this causes non-reproducible "it worked yesterday" failures.
 
 #### ! Check
-**Fast check (Gradle):** `./gradlew dependencyInsight --dependency <id>`
-**Fast check (Maven):** `mvn dependency:resolve`
-**Fast check (SBT):** `sbt dependencyTree`
+**Fast check:** `./gradlew dependencyInsight --dependency <id>`
 
 **What to look for:** The resolved version and the reason.
 
