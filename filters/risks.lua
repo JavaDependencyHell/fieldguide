@@ -1,19 +1,26 @@
+local function is_html(format)
+  return format == "html" or format == "html5" or format == "html4"
+end
+
 function Para(el)
   local text = pandoc.utils.stringify(el)
+  local fmt = FORMAT or ""
 
-  local map = {
+  local map_latex = {
     LOW = "\\riskLOW{}",
     MEDIUM = "\\riskMEDIUM{}",
     HIGH = "\\riskHIGH{}",
     CRITICAL = "\\riskCRITICAL{}"
   }
 
-  for word, latex in pairs(map) do
-    -- We want to match:
-    -- 1. "^LOW —" (Standard)
-    -- 2. "^* LOW " (Markdown bullet)
-    -- 3. "^LOW " (Simple start)
+  local map_html = {
+    LOW      = '<span class="risk-badge risk-low">LOW</span>',
+    MEDIUM   = '<span class="risk-badge risk-medium">MEDIUM</span>',
+    HIGH     = '<span class="risk-badge risk-high">HIGH</span>',
+    CRITICAL = '<span class="risk-badge risk-critical">CRITICAL</span>'
+  }
 
+  for word, _ in pairs(map_latex) do
     local matched = false
     local rest = ""
 
@@ -29,24 +36,46 @@ function Para(el)
     end
 
     if matched then
-      return pandoc.Para({
-        pandoc.RawInline("latex", latex),
-        pandoc.Space(),
-        pandoc.Str(rest)
-      })
+      if is_html(fmt) then
+        return pandoc.Para({
+          pandoc.RawInline("html", map_html[word]),
+          pandoc.Space(),
+          pandoc.Str(rest)
+        })
+      else
+        return pandoc.Para({
+          pandoc.RawInline("latex", map_latex[word]),
+          pandoc.Space(),
+          pandoc.Str(rest)
+        })
+      end
     end
   end
 end
 
 -- Also handle plain text in other contexts (e.g., inside lists)
 function Str(el)
-  local map = {
+  local fmt = FORMAT or ""
+
+  local map_latex = {
     LOW = "\\riskLOW{}",
     MEDIUM = "\\riskMEDIUM{}",
     HIGH = "\\riskHIGH{}",
     CRITICAL = "\\riskCRITICAL{}"
   }
-  if map[el.text] then
-    return pandoc.RawInline("latex", map[el.text])
+
+  local map_html = {
+    LOW      = '<span class="risk-badge risk-low">LOW</span>',
+    MEDIUM   = '<span class="risk-badge risk-medium">MEDIUM</span>',
+    HIGH     = '<span class="risk-badge risk-high">HIGH</span>',
+    CRITICAL = '<span class="risk-badge risk-critical">CRITICAL</span>'
+  }
+
+  if map_latex[el.text] then
+    if is_html(fmt) then
+      return pandoc.RawInline("html", map_html[el.text])
+    else
+      return pandoc.RawInline("latex", map_latex[el.text])
+    end
   end
 end
