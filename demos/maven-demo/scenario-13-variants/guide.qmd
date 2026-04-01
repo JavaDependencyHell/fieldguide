@@ -7,7 +7,7 @@ This scenario demonstrates how Maven handles (and cannot handle) the concept of 
 
 #### ! Example
 
-```{.xml include="/demos/maven-demo/scenario-13-variants/pom.xml" snippet="s13-deps"}
+```{.xml include="pom.xml" snippet="s13-deps"}
 ```
 
 #### ! Expect

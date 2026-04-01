@@ -33,7 +33,7 @@ graph LR
 
 The `pom.xml` first adds the private repository. Then, it imports the vendor's BOM in the `<dependencyManagement>` section. The actual dependency is declared without a version, letting the imported BOM control which version is used.
 
-```{.xml include="/demos/maven-demo/scenario-16-private-bom/fake-pom.xml" snippet="s16-deps"}
+```{.xml include="fake-pom.xml" snippet="s16-deps"}
 ```
 
 #### ! Expect

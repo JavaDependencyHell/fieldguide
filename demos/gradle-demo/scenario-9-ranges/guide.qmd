@@ -20,7 +20,7 @@ graph LR
 
 
 
-```{.groovy include="/demos/gradle-demo/scenario-9-ranges/build.gradle" snippet="s9-deps"}
+```{.groovy include="build.gradle" snippet="s9-deps"}
 ```
 
 #### ! Expect

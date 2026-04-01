@@ -7,7 +7,7 @@ This scenario demonstrates how to prevent a specific version of a dependency fro
 
 #### ! Example
 
-```{.xml include="/demos/maven-demo/scenario-14-reject/pom.xml" snippet="s14-enforcer"}
+```{.xml include="pom.xml" snippet="s14-enforcer"}
 ```
 
 #### ! Expect

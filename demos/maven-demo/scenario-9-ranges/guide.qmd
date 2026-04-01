@@ -18,7 +18,7 @@ graph LR
 ```
 
 
-```{.xml include="/demos/maven-demo/scenario-9-ranges/pom.xml" snippet="s9-deps"}
+```{.xml include="pom.xml" snippet="s9-deps"}
 ```
 
 #### ! Expect

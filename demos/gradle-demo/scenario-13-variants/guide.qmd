@@ -21,7 +21,7 @@ graph LR
 
 
 
-```{.groovy include="/demos/gradle-demo/scenario-13-variants/build.gradle" snippet="s13-deps"}
+```{.groovy include="build.gradle" snippet="s13-deps"}
 ```
 
 #### ! Expect

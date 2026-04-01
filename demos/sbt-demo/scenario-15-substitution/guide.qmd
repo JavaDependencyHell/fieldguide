@@ -14,7 +14,7 @@ N/A
 
 #### ! Example
 
-```{.scala include="/demos/sbt-demo/scenario-15-substitution/build.sbt" snippet="s15-deps"}
+```{.scala include="build.sbt" snippet="s15-deps"}
 ```
 
 #### ! Expect

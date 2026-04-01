@@ -32,7 +32,7 @@ graph LR
 #### ! Example
 The `build.gradle` file first adds the private repository. Then, it imports the vendor's BOM using the `platform()` function. The actual dependency is declared without a version, letting the imported BOM control which version is used.
 
-```{.groovy include="/demos/gradle-demo/scenario-16-private-bom/build.gradle" snippet="repo-and-deps"}
+```{.groovy include="build.gradle" snippet="repo-and-deps"}
 ```
 
 #### ! Expect

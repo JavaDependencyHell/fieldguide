@@ -20,7 +20,7 @@ graph LR
 
 #### ! Example
 
-```{.scala include="/demos/sbt-demo/scenario-9-ranges/build.sbt" snippet="s9-deps"}
+```{.scala include="build.sbt" snippet="s9-deps"}
 ```
 
 #### ! Expect

@@ -22,7 +22,7 @@ graph LR
 
 
 
-```{.groovy include="/demos/gradle-demo/scenario-5-exclusions/build.gradle" snippet="s5-deps"}
+```{.groovy include="build.gradle" snippet="s5-deps"}
 ```
 
 #### ! Expect
