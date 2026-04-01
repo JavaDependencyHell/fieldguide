@@ -1,0 +1,62 @@
+# Build and deploy the HeroDevs-branded fieldguide site to GitHub Pages
+#
+# Triggers on push to main. Builds the Quarto HTML output using the
+# herodevs profile, then publishes to GitHub Pages.
+#
+# Setup (one time):
+#   1. Go to repo Settings > Pages
+#   2. Set Source to "GitHub Actions"
+#   3. (Optional) Add custom domain: fieldguide.herodevs.com
+#      — then add a CNAME record in your DNS pointing to
+#        <org>.github.io
+
+name: Deploy Fieldguide
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:          # manual trigger from Actions tab
+
+# Only one deploy at a time; cancel in-flight if a new push arrives
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+# Permissions needed for GitHub Pages deployment
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # ── Checkout ──
+      - uses: actions/checkout@v4
+
+      # ── Install Quarto ──
+      - uses: quarto-dev/quarto-actions/setup@v2
+        with:
+          version: "1.6"       # pin to a known-good release
+
+      # ── Build the HeroDevs-branded HTML site ──
+      - name: Build site
+        run: quarto render --profile herodevs --to html
+
+      # ── Upload as Pages artifact ──
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/herodevs-site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
