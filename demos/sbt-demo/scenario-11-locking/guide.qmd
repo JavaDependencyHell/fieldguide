@@ -14,7 +14,7 @@ graph LR
 
 #### SBT (build.sbt)
 
-```{.scala include="build.sbt" snippet="s11-deps"}
+```{.scala include="/demos/sbt-demo/scenario-11-locking/build.sbt" snippet="s11-deps"}
 ```
 
 #### Reader Expectation
@@ -43,4 +43,4 @@ For production systems, reproducibility is non-negotiable. Dependency locking (o
 Dependency locking ensures that dynamic versions don't break your build.
 
 #### Related Scenarios
-*   [Scenario 9: Ranges](../scenario-9-ranges/guide.qmd) - Using dynamic versions.
+*   [Scenario 9: Ranges](../scenario-9-ranges/guide.md) - Using dynamic versions.

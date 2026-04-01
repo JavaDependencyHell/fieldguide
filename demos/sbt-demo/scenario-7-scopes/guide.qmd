@@ -16,7 +16,7 @@ graph LR
 
 #### SBT (build.sbt)
 
-```{.scala include="build.sbt" snippet="s7-deps"}
+```{.scala include="/demos/sbt-demo/scenario-7-scopes/build.sbt" snippet="s7-deps"}
 ```
 
 #### Reader Expectation
@@ -51,7 +51,7 @@ Correct configuration usage is essential for Scala/SBT projects that publish lib
 Configurations control visibility and transitivity. Use `% Test` and `% Provided` to keep your production artifacts clean.
 
 #### Related Scenarios
-*   [Scenario 8: Optional](../scenario-8-optional/guide.qmd)
+*   [Scenario 8: Optional](../scenario-8-optional/guide.md)
 
 ::: {.callout}
 **Seen in the Wild**

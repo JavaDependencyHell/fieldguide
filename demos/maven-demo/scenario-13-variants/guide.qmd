@@ -1,4 +1,4 @@
-# Feature Variants
+# 13. Feature Variants
 
 
 ::: {.scenario}
@@ -8,7 +8,7 @@ This scenario demonstrates how Maven handles (and cannot handle) the concept of 
 
 
 
-```{.xml include="pom.xml" snippet="s13-deps"}
+```{.xml include="/demos/maven-demo/scenario-13-variants/pom.xml" snippet="s13-deps"}
 ```
 
 #### Reader Expectation

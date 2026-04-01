@@ -1,10 +1,16 @@
-# Variant Selection
+---
+title: "Variant Selection"
+tagline: "Or what to Do When the “Correct” Dependency Is Rejected"
+type: scenario
+tool: gradle
+---
 
+#### ! Scenario
 
-::: {.scenario}
 *Or what to Do When the “Correct” Dependency Is Rejected*
 This scenario demonstrates Gradle's attribute-based dependency matching, which allows it to select the correct variant of a library (e.g., Java 8 vs Java 11, debug vs release) based on the consumer's needs.
-:::
+
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -18,28 +24,28 @@ graph LR
 ```{.groovy include="build.gradle" snippet="s13-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 Build tools automatically select the correct JDK or runtime variant (e.g., Java 11).
 
-#### Why This Happens
+#### ! Why
 Gradle matches **Attributes** (e.g., `org.gradle.jvm.version`) from consumers against producer metadata. This variant-aware resolution replaces the opaque "classifiers" used by Maven, which is why the same graph behaves differently across tools.
 
-#### How Developers Commonly "Fix" This
+#### ! Fix
 *   **Classifiers:** In Maven, developers manually add `<classifier>jdk11</classifier>`. This is fragile because if the classifier name changes or if the consumer upgrades their JDK, they have to manually update the dependency.
 
-#### Safer Ways to Take Control
+#### ! Control
 *   **Use Attributes:** Let Gradle handle the selection. Ensure your project defines its own attributes correctly (e.g., `sourceCompatibility = JavaVersion.VERSION_11`).
 *   **Artifact Transforms:** You can even transform artifacts on the fly (e.g., instrumenting classes, unzipping resources) by registering an artifact transform that converts one set of attributes to another.
 
-#### Signals to Watch For
+#### ! Look
 *   **"Cannot choose between..." errors:** This happens when multiple variants match the request equally well. You may need to provide more specific attributes or use a `componentMetadata` rule to disambiguate.
 *   **"No matching variant found":** This means the producer doesn't have a variant that satisfies all your requirements.
 
-#### How This Scales in Real Systems
+#### ! Scales
 This is the future of dependency management in the JVM ecosystem. It allows library authors to publish multi-release jars, different optimization levels, or platform-specific binaries without forcing consumers to manually select artifacts.
 
-#### Key Takeaway
+#### ! Takeaway
 Attributes are more powerful than classifiers. They allow for automatic, context-aware dependency resolution.
 
-#### Related Scenarios
-*   [Scenario 12: Metadata](../scenario-12-metadata/guide.qmd) - Fixing metadata if attributes are missing.
+#### ! Related
+*   [S12](../scenario-12-metadata/guide.qmd) - Fixing metadata if attributes are missing.

@@ -1,0 +1,61 @@
+% ---------------------------------
+% Risk badge base
+% ---------------------------------
+\newtcbox{\riskbadge}[1][]{
+    on line,
+    boxrule=0pt,
+    colback=black!15,
+    colframe=black!15,
+    arc=1.2mm,
+    left=1.2mm,
+    right=1.2mm,
+    top=0.6mm,
+    bottom=0.6mm,
+    fontupper=\bfseries\footnotesize\sffamily,
+    nobeforeafter,
+    #1
+}
+
+% ---------------------------------
+% Severity variants
+% ---------------------------------
+
+\newcommand{\riskLOW}{%
+    \riskbadge[colback=green!20!white]{LOW}%
+}
+
+\newcommand{\riskMEDIUM}{%
+    \riskbadge[colback=yellow!35!white]{MEDIUM}%
+}
+
+\newcommand{\riskHIGH}{%
+    \riskbadge[colback=orange!40!white]{HIGH}%
+}
+
+\newcommand{\riskCRITICAL}{%
+    \riskbadge[colback=red!35!white]{CRITICAL}%
+}
+
+% --------------------------------------------------
+% Scenario badge (inline)
+% --------------------------------------------------
+
+\ifdefined\scenariobadge\else
+\newtcbox{\scenariobadge}{%
+    on line,
+    boxrule=0pt,
+    colback=black!15,
+    colframe=black!15,
+    arc=1.2mm,
+    left=1.2mm,
+    right=1.2mm,
+    top=0.4mm,
+    bottom=0.4mm,
+    fontupper=\sffamily\bfseries\footnotesize,
+    nobeforeafter
+}
+\fi
+
+\ifdefined\scnref\else
+\newcommand{\scnref}[1]{\scenariobadge{S#1}}
+\fi

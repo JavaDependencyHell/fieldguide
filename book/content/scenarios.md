@@ -1,10 +1,11 @@
-# Scenarios
+---
+title: Scenarios
+---
 
-This guide explores dependency management through targeted scenarios. 
+This guide explores dependency management through targeted scenarios.
 All are implemented for Maven, Gradle, and SBT, enabling direct comparison of how each tool resolves the same problem.
 
-Scenarios will often be referred to by the shorthand. Sxx. so S10 or S9 etc 
-
+Scenarios will often be referred to by the shorthand. Sxx. so S10 or S9 etc
 
 |  #  | Scenario | Summary |
 |:---:|:---|:---|
@@ -26,4 +27,15 @@ Scenarios will often be referred to by the shorthand. Sxx. so S10 or S9 etc
 | S16 | Private Repo (BOM) | Overriding public versions via private repo and vendor BOM. |
 | S17 | Private Repo (Patch) | Overriding public versions via private repo and direct patch. |
 
-: Scenario Overview {tbl-colwidths="[10, 30, 60]"}
+: Scenario Overview {tbl-colwidths="[5, 30, 65]"}
+
+---
+
+### Scenario make up
+
+Most scenarios follow the same pattern
+
+A title, a scenario description, a graphical representation of the dependency graph, and. configuration examples to match.
+
+So  we've tried to structure each one to help you quickly navigate around.
+

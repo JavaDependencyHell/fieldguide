@@ -15,7 +15,7 @@ graph LR
 
 #### SBT (build.sbt)
 
-```{.scala include="build.sbt" snippet="s3-deps"}
+```{.scala include="/demos/sbt-demo/scenario-3-mgmt/build.sbt" snippet="s3-deps"}
 ```
 
 #### Reader Expectation
@@ -52,4 +52,4 @@ As projects grow, `build.sbt` files can become messy. Moving dependency definiti
 SBT allows you to use Scala code to manage versions. Use variables or a dedicated `Dependencies` object to keep your build maintainable.
 
 #### Related Scenarios
-*   [Scenario 16: Private BOM](../scenario-16-private-bom/guide.qmd) - Using an external BOM for management.
+*   [Scenario 16: Private BOM](../scenario-16-private-bom/guide.md) - Using an external BOM for management.

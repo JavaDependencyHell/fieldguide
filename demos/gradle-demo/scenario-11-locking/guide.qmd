@@ -16,7 +16,7 @@ graph LR
 
 
 
-```{.groovy include="build.gradle" snippet="s11-deps"}
+```{.groovy include="/demos/gradle-demo/scenario-11-locking/build.gradle" snippet="s11-deps"}
 ```
 
 #### Reader Expectation
@@ -41,4 +41,4 @@ Dependency locking is essential for any team that values reproducible builds, wh
 Locking ensures reproducibility.
 
 #### Related Scenarios
-*   [Scenario 9: Ranges](../scenario-9-ranges/guide.qmd)
+*   [Scenario 9: Ranges](../scenario-9-ranges/guide.md)

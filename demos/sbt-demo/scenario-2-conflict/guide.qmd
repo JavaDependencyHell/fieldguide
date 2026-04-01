@@ -17,7 +17,7 @@ graph LR
 
 #### SBT (build.sbt)
 
-```{.scala include="build.sbt" snippet="s2-deps"}
+```{.scala include="/demos/sbt-demo/scenario-2-conflict/build.sbt" snippet="s2-deps"}
 ```
 
 #### Reader Expectation
@@ -54,7 +54,7 @@ SBT (using Ivy/Coursier) employs the `latest-revision` conflict manager by defau
 SBT defaults to the latest version found in the graph, regardless of depth.
 
 #### Related Scenarios
-*   [Scenario 6: Forcing Versions](../scenario-6-forcing/guide.qmd) - How to override this behavior.
+*   [Scenario 6: Forcing Versions](../scenario-6-forcing/guide.md) - How to override this behavior.
 
 ::: {.callout}
 **Seen in the Wild**

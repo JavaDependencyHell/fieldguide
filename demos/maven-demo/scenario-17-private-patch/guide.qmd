@@ -1,13 +1,17 @@
-# Private Repository & Direct Patch Override
+---
+title: "Private Repository & Direct Patch Override"
+tagline: "What to Do When You Need a One-Off Patch"
+type: scenario
+tool: maven
+---
 
-
-::: {.scenario}
-#### What to Do When You Need a One-Off Patch:
+#### ! Scenario What to Do When You Need a One-Off Patch
 
 This scenario shows a more direct way to use a private, third-party repository. Instead of using a vendor-supplied BOM, we explicitly request the patched version of a dependency in our project's `<dependencies>` block.
 
 This approach is simpler than the BOM method but can be more verbose if many dependencies need to be overridden. It is suitable for one-off patches or when a full BOM is not available.
 
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -21,7 +25,6 @@ graph LR
     Root[Project Root] -- declares --> PatchedStarter
 
 ```
-:::
 
 The `pom.xml` adds the private repository and then directly declares a dependency on the specific patched version.
 
@@ -29,14 +32,14 @@ The `pom.xml` adds the private repository and then directly declares a dependenc
 ```
 
 
-#### Reader Expectation
+#### ! Expect
 Explicitly declaring a patched version from a private repository ensures that specific artifact is chosen over any public release.
 
-#### Why This Happens
+#### ! Why
 A direct version declaration in `<dependencies>` is Maven's strongest versioning directive. When combined with a private repository that makes the artifact available, it overrides all other mechanisms like BOMs or transitive versioning.
 
-#### Key Takeaway
+#### ! Takeaway
 A direct version declaration for a dependency is the most straightforward way to ensure a specific version is used, provided that version is available in one of the configured repositories. This method overrides all other mechanisms like BOMs or transitive versions.
 
-#### Related Scenarios
-*   [Scenario 16: Private Repository & BOM Override](../scenario-16-private-bom/guide.qmd) - A more scalable approach using a vendor BOM.
+#### ! Related
+* [S16: Private Repo (BOM)](../scenario-16-private-bom/guide.qmd) - A more scalable approach using a vendor BOM.

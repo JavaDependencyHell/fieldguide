@@ -1,10 +1,16 @@
-# Component Metadata Rules
+---
+title: "Component Metadata Rules"
+tagline: "Or what to Do When Metadata Changes the Outcome of Resolution"
+type: scenario
+tool: gradle
+---
 
+#### ! Scenario
 
-::: {.scenario}
 *Or what to Do When Metadata Changes the Outcome of Resolution*
 This scenario demonstrates how to fix incorrect or missing metadata in third-party libraries using Gradle's Component Metadata Rules.
-:::
+
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -19,20 +25,20 @@ graph LR
 ```{.groovy include="build.gradle" snippet="s12-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 "I know that `lib-a:1.0.0` has a bug in its POM file—it declares a dependency on `lib-b:1.0.0`, but it actually needs `lib-b:2.0.0` to work. I want to fix this without waiting for the library author to release a patch."
 
-#### Actual Resolution Results
+#### ! Actual
 Resolves `lib-b:2.0.0`.
     *   *Reason*: The component metadata rule intercepts the metadata for `lib-a` as it is being resolved. It removes the dependency on `lib-b` (which would have been `1.0.0`) and adds a new dependency on `lib-b:2.0.0`.
 
-#### Classpath Reality
+#### ! Reality
 The classpath contains `lib-b-2.0.0.jar`.
 
-#### Why This Happens
+#### ! Why
 Gradle allows you to modify the metadata of a component (like a POM file) *in memory* before it is used for dependency resolution. This is incredibly powerful because it lets you fix upstream bugs locally. The rule applies globally to the build, so any module that depends on `lib-a` will see the corrected metadata.
 
-#### How Developers Commonly "Fix" This
+#### ! Fix
 *   **Exclusions:** A common (but brittle) fix is to exclude the bad transitive dependency and manually add the correct one.
     ```groovy
     implementation('com.demo:lib-a:1.0.0') {
@@ -42,18 +48,18 @@ Gradle allows you to modify the metadata of a component (like a POM file) *in me
     ```
     This is brittle because you have to repeat it every time you use `lib-a`.
 
-#### Safer Ways to Take Control
+#### ! Control
 *   **Component Metadata Rules:** As shown in the example, these rules are defined once and apply everywhere. They are the correct way to fix metadata issues permanently for your build.
 
-#### Signals to Watch For
+#### ! Look
 *   **Runtime Errors:** `NoSuchMethodError` or `ClassNotFoundException` often indicate that a library was compiled against a different version of a dependency than the one on your classpath.
 *   **Bad POMs:** Sometimes POMs are just wrong (e.g., declaring a compile-time dependency as `runtime` scope). Metadata rules can fix this too.
 
-#### How This Scales in Real Systems
+#### ! Scales
 In large organizations, you can package these rules into a custom Gradle plugin and apply it to all projects. This allows you to centrally fix bad metadata for all your teams.
 
-#### Key Takeaway
+#### ! Takeaway
 You can patch incorrect metadata on the fly using Component Metadata Rules, avoiding brittle exclusions.
 
-#### Related Scenarios
-*   [Scenario 15: Substitution](../scenario-15-substitution/guide.qmd) - Replacing one module with another entirely.
+#### ! Related
+*   [S15](../scenario-15-substitution/guide.qmd) - Replacing one module with another entirely.

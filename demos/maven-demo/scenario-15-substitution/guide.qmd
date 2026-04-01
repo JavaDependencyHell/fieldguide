@@ -1,4 +1,4 @@
-# Version Substitution
+# 15. Version Substitution
 
 
 ::: {.scenario}
@@ -8,7 +8,7 @@ This scenario demonstrates how to replace one dependency with another in Maven. 
 
 
 
-```{.xml include="pom.xml" snippet="s15-deps"}
+```{.xml include="/demos/maven-demo/scenario-15-substitution/pom.xml" snippet="s15-deps"}
 ```
 
 #### Reader Expectation

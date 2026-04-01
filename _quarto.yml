@@ -4,6 +4,9 @@ project:
 
 filters:
   - include-code.lua
+  - filters/scenario-boxes.lua
+  - filters/scenario_badge.lua
+  - filters/risks.lua
 
 format:
 
@@ -45,6 +48,9 @@ format:
       - latex/chapter-style.tex
       - latex/typography-common.tex
       - latex/a5-tuning.tex
+      - latex/boxes.tex
+      - latex/badges.tex
+
 book:
   title: "Dependency Hell"
   chapters:

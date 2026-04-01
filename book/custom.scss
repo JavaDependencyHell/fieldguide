@@ -18,7 +18,7 @@
 
 /* Watermark for HTML output */
 body::after {
-  content: "DRAFT";
+  // content: "DRAFT";
   position: fixed;
   top: 50%;
   left: 50%;

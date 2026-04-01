@@ -1,10 +1,16 @@
-# Strict Constraints
+---
+title: "Strict Constraints"
+tagline: "Or what to Do When Constraints Stop Resolution Completely"
+type: scenario
+tool: gradle
+---
 
+#### ! Scenario
 
-::: {.scenario}
 *Or what to Do When Constraints Stop Resolution Completely*
 This scenario demonstrates how to force a specific version of a dependency, overriding any other constraints or transitive dependencies.
-:::
+
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -19,13 +25,13 @@ graph LR
 ```{.groovy include="build.gradle" snippet="s6-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 Forced versions override all other constraints or transitive version requests.
 
-#### Why This Happens
+#### ! Why
 Gradle overrides its default conflict resolution through `resolutionStrategy.force` or `strictly` constraints. This ensures a specific version wins regardless of contradictory signals in the graph.
 
-#### How Developers Commonly "Fix" This
+#### ! Fix
 *   **`resolutionStrategy.force`:** As shown in the snippet, this is a common "big hammer" approach to fix version conflicts.
 *   **`strictly`:** The preferred modern approach is:
     ```groovy
@@ -38,27 +44,27 @@ Gradle overrides its default conflict resolution through `resolutionStrategy.for
     }
     ```
 
-#### Operational Risk
+#### ! Risk
 
-*   **Low risk:** Forcing a version to align with a BOM or to patch a known vulnerability. This is a primary use case for this feature.
-*   **Medium risk:** Forcing a version to a newer version that has not been tested with the libraries that depend on it. This can lead to `NoSuchMethodError` if the new version has breaking changes.
-*   **High risk:** Forcing a version to an older version. This is very likely to cause problems, as the libraries that depend on it may be using features only available in the newer version.
+* LOW Forcing a version to align with a BOM or to patch a known vulnerability. This is a primary use case for this feature.
+* MEDIUM Forcing a version to a newer version that has not been tested with the libraries that depend on it. This can lead to `NoSuchMethodError` if the new version has breaking changes.
+* HIGH Forcing a version to an older version. This is very likely to cause problems, as the libraries that depend on it may be using features only available in the newer version.
 
-#### Safer Ways to Take Control
+#### ! Control
 *   **Prefer `strictly`:** Using `strictly` in a `constraints` block is generally safer and more idiomatic in modern Gradle than `resolutionStrategy.force`. It integrates better with dependency insight tools and other plugins.
 
-#### Deterministic Checks
+#### ! Check
 **Fast check (Gradle):** `./gradlew dependencyInsight --dependency lib-c`
 
 **What to look for:** The reason for selection; it will indicate the version was selected `by force` or via constraint.
 
 **Conclusion:** Force or `strictly` directives override all other graph signals.
 
-#### How This Scales in Real Systems
+#### ! Scales
 Forcing versions is essential in large enterprise environments where you need to ensure all applications use a specific, vetted version of a library (e.g., for security compliance), regardless of what transitive dependencies request.
 
-#### Key Takeaway
+#### ! Takeaway
 `resolutionStrategy.force` (and `strictly`) overrides all other version conflict resolution rules. Use it when you need absolute control.
 
-#### Related Scenarios
-*   [Scenario 14: Reject](../scenario-14-reject/guide.qmd) - How to reject specific versions entirely.
+#### ! Related
+*   [S14](../scenario-14-reject/guide.qmd) - How to reject specific versions entirely.

@@ -15,7 +15,7 @@ graph LR
 
 
 
-```{.groovy include="build.gradle" snippet="s15-deps"}
+```{.groovy include="/demos/gradle-demo/scenario-15-substitution/build.gradle" snippet="s15-deps"}
 ```
 
 #### Reader Expectation
@@ -48,7 +48,7 @@ This is essential for multi-repo development (composite builds) where you want t
 Dependency substitution allows you to swap modules or versions cleanly, handling complex replacements that exclusions cannot.
 
 #### Related Scenarios
-*   [Scenario 5: Exclusions](../scenario-5-exclusions/guide.qmd) - Removing dependencies without replacement.
+*   [Scenario 5: Exclusions](../scenario-5-exclusions/guide.md) - Removing dependencies without replacement.
 
 ::: {.calloutbox}
 **Seen in the Wild**

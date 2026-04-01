@@ -1,10 +1,16 @@
-# Hardcoded Version vs Platform
+---
+title: "Hardcoded Version vs Platform"
+tagline: "Or what to Do When a Single Declaration Escapes the Platform"
+type: scenario
+tool: gradle
+---
 
+#### ! Scenario
 
-::: {.scenario}
 *Or what to Do When a Single Declaration Escapes the Platform*
 This scenario demonstrates how an explicit version declaration overrides a `platform()` recommendation.
-:::
+
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -18,20 +24,20 @@ graph LR
 ```{.groovy include="build.gradle" snippet="s4-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 Explicit version declarations take precedence over `platform()` recommendations.
 
-#### Why This Happens
+#### ! Why
 In Gradle, a `platform()` dependency provides version recommendations, which are overridden by direct version declarations—a stronger signal. This priority is why the same graph behaves differently across tools.
 
-#### How Developers Commonly "Fix" This
+#### ! Fix
 *   **Removing the Version:** If the developer *wanted* the BOM version but accidentally left a hardcoded version in, the fix is simply to remove the version from the `implementation` line.
 *   **Using `enforcedPlatform`:** If the goal is to *prevent* developers from overriding the BOM version, the platform should be imported using `enforcedPlatform()`.
 
-#### Safer Ways to Take Control
+#### ! Control
 *   **Check for Overrides:** Be mindful of where you are declaring versions. If you are using a BOM, try to avoid declaring versions for managed dependencies unless you intentionally want to override them.
 
-#### Deterministic Checks
+#### ! Check
 **Fast check (Gradle):** `./gradlew dependencyInsight --dependency <id>`
 **Fast check (Maven):** `mvn dependency:tree`
 **Fast check (SBT):** `sbt dependencyTree`
@@ -40,20 +46,17 @@ In Gradle, a `platform()` dependency provides version recommendations, which are
 
 **Conclusion:** Direct version declarations override standard `platform()` recommendations.
 
-#### How This Scales in Real Systems
+#### ! Scales
 Allowing local overrides of global defaults is a powerful feature. It lets teams use a standard platform (like Spring Boot) but still upgrade or downgrade individual libraries as needed for bug fixes or compatibility. However, it requires discipline to avoid "drift" where many libraries are manually versioned instead of being managed by the platform.
 
-#### Key Takeaway
+#### ! Takeaway
 Explicit versions override standard platforms. Use `enforcedPlatform` if you want the platform to win.
 
-#### Related Scenarios
-*   [Scenario 3: Mgmt](../scenario-3-mgmt/guide.qmd) - How platforms work.
+#### ! Related
+*   [S3](../scenario-3-mgmt/guide.qmd) - How platforms work.
 
-::: {.calloutbox}
-**Seen in the Wild**
+#### ! Wild
 
 Teams often use platforms to manage their dependencies while still needing to test new features in specific libraries not yet updated in the platform.
 
 By overriding the version in their local build file, they can test these new features without waiting for a platform-wide update.
-
-:::

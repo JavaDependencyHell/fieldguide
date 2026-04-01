@@ -1,10 +1,16 @@
-# Forcing Transitive Versions via Dependency Management
+---
+title: "Forcing Transitive Versions via Dependency Management"
+tagline: "Or what to Do When a Transitive Dependency is the Wrong Version"
+type: scenario
+tool: maven
+---
 
+#### ! Scenario
 
-::: {.scenario}
 *Or what to Do When a Transitive Dependency is the Wrong Version*
 This scenario demonstrates how to force a specific version of a transitive dependency, overriding what the intermediate libraries request.
 
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -14,37 +20,36 @@ graph LR
     LibB --> LibC[lib-c:1.0.0]
     Root -- forces --> LibC_Forced[lib-c:2.0.0]
 ```
-:::
 
 
 ```{.xml include="pom.xml" snippet="s6-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 "I said use 2.0.0, so use 2.0.0."
 
-#### Actual Resolution Results
+#### ! Actual
 Using `<dependencyManagement>`, `lib-c` becomes `2.0.0`.
 
-#### Classpath Reality
+#### ! Reality
 `lib-c-2.0.0.jar` is on the classpath.
 
-#### Why This Happens
-This scenario uses the exact same `<dependencyManagement>` mechanism as Scenario 3, but applies it to a *transitive* dependency instead of a direct one. There is no special "forcing" keyword in Maven; it's all handled by `<dependencyManagement>`. It works because Maven evaluates the `<dependencyManagement>` section after building the complete dependency graph but *before* selecting the final versions. This allows the managed versions to override any version chosen by the "nearest-wins" algorithm.
+#### ! Why
+This scenario uses the exact same `<dependencyManagement>` mechanism as S3, but applies it to a *transitive* dependency instead of a direct one. There is no special "forcing" keyword in Maven; it's all handled by `<dependencyManagement>`. It works because Maven evaluates the `<dependencyManagement>` section after building the complete dependency graph but *before* selecting the final versions. This allows the managed versions to override any version chosen by the "nearest-wins" algorithm.
 
-#### How Developers Commonly "Fix" This
+#### ! Fix
 This is often the fix for "Nearest Wins" picking an old version, or to patch a vulnerability deep in the graph.
 
-#### Operational Risk
+#### ! Risk
 
-*   **Low risk:** Forcing a version to align with a BOM or to patch a known vulnerability. This is a primary use case for this feature.
-*   **Medium risk:** Forcing a version to a newer version that has not been tested with the libraries that depend on it. This can lead to `NoSuchMethodError` if the new version has breaking changes.
-*   **High risk:** Forcing a version to an older version. This is very likely to cause problems, as the libraries that depend on it may be using features only available in the newer version.
+* LOW Forcing a version to align with a BOM or to patch a known vulnerability. This is a primary use case for this feature.
+* MEDIUM Forcing a version to a newer version that has not been tested with the libraries that depend on it. This can lead to `NoSuchMethodError` if the new version has breaking changes.
+* HIGH Forcing a version to an older version. This is very likely to cause problems, as the libraries that depend on it may be using features only available in the newer version.
 
-#### Safer Ways to Take Control
+#### ! Control
 This is a safe and recommended pattern for enforcing policy.
 
-#### Deterministic Checks
+#### ! Check
 
 **Fast check (Maven):**
 
@@ -58,13 +63,13 @@ The version of `lib-c` in the tree. It will be `2.0.0`, overriding the `1.0.0` r
 **Conclusion:**
 A version in `<dependencyManagement>` will override any transitive dependency version.
 
-#### How This Scales in Real Systems
+#### ! Scales
 Strict constraints are vital for security compliance (e.g., "Must use OpenSSL >= 3.0").
 
-#### Key Takeaway
-`<dependencyManagement>` overrides transitive version resolution (nearest-wins), making it the primary tool for enforcing version policy across the dependency tree. Note that a direct version in `<dependencies>` will still take precedence (see Scenario 4).
+#### ! Takeaway
+`<dependencyManagement>` overrides transitive version resolution (nearest-wins), making it the primary tool for enforcing version policy across the dependency tree. Note that a direct version in `<dependencies>` will still take precedence (see S4).
 
-#### Related Scenarios
-*   [Scenario 3: Dependency Management (BOM)](../scenario-3-mgmt/guide.qmd) - The core mechanism used here.
-*   [Scenario 4: Hardcoded Version vs Dependency Management](../scenario-4-override/guide.qmd) - Understanding the precedence of direct declarations.
-*   [Scenario 14: Reject](../scenario-14-reject/guide.qmd) - Forcing *away* from a version.
+#### ! Related
+* [S3: Central Management (BOM)](../scenario-3-mgmt/guide.qmd) - The core mechanism used here.
+* [S4: Direct Override](../scenario-4-override/guide.qmd) - Understanding the precedence of direct declarations.
+* [S14: Rejecting a Version](../scenario-14-reject/guide.qmd) - Forcing *away* from a version.

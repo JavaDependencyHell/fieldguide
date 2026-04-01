@@ -13,3 +13,4 @@ Many surprises in dependency management originate from this difference.
 A version conflict that seems to be resolved correctly in the graph can still lead to a `NoClassDefFoundError` at runtime if the wrong version of a class is loaded from the flattened classpath.
 
 :::
+

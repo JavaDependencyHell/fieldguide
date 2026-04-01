@@ -1,10 +1,15 @@
-# Circular Dependencies
+---
+title: "Circular Dependencies"
+tagline: "Or what to Do When Your Dependency Graph Turns into a Cycle"
+type: scenario
+tool: maven
+---
 
+#### ! Scenario What to Do When Your Dependency Graph Turns into a Cycle
 
-::: {.scenario}
-*Or what to Do When Your Dependency Graph Turns into a Cycle*
 This scenario demonstrates how build tools handle cycles in the dependency graph (A -> B -> A).
 
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -13,25 +18,24 @@ graph LR
     LibA --> LibB['lib-circle-b:1.0.0']
     LibB --> LibA
 ```
-:::
 
 
 ```{.xml include="pom.xml" snippet="s10-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 Circular dependencies (e.g., A depends on B, and B depends on A) cause infinite loops or stack overflows.
 
-#### Why This Happens
+#### ! Why
 Build tools maintain a "visited" set during graph traversal to prevent infinite recursion. While resolution succeeds, cycles often signal architectural issues that should be refactored.
 
-#### How Developers Commonly "Fix" This
+#### ! Fix
 Refactoring code to break the cycle (e.g., extracting a common interface to `lib-c`).
 
-#### Safer Ways to Take Control
+#### ! Control
 Avoid cycles. They are a design smell.
 
-#### Deterministic Checks
+#### ! Check
 
 **Fast check (Maven):**
 
@@ -45,11 +49,11 @@ Maven will detect the cycle and print a warning. The tree will show the circular
 **Conclusion:**
 Circular dependencies should be avoided as they indicate a design problem.
 
-#### How This Scales in Real Systems
+#### ! Scales
 Cycles make it impossible to build modules in a linear order, forcing them to be built together or released in lockstep.
 
-#### Key Takeaway
+#### ! Takeaway
 Circular dependencies are technically resolvable but architecturally disastrous.
 
-#### Related Scenarios
-*   [Scenario 1: Basic](../scenario-1-basic/guide.qmd) - The ideal acyclic graph.
+#### ! Related
+* [S1: Basic Dependency](../scenario-1-basic/guide.qmd) - The ideal acyclic graph.

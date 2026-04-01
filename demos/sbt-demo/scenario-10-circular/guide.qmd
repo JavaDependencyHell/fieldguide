@@ -1,10 +1,16 @@
-# Circular Dependencies
+---
+title: "Circular Dependencies"
+tagline: "Or what to Do When A Needs B and B Needs A"
+type: scenario
+tool: sbt
+---
 
+#### ! Scenario
 
-::: {.scenario}
 *Or what to Do When A Needs B and B Needs A*
 This scenario demonstrates how SBT handles circular dependencies between external libraries.
-:::
+
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -14,25 +20,25 @@ graph LR
     LibB --> LibA
 ```
 
-#### SBT (build.sbt)
+#### ! Example
 
 ```{.scala include="build.sbt" snippet="s10-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 "This should fail. A depends on B, and B depends on A. It's an infinite loop."
 
-#### Actual Resolution Results
+#### ! Actual
 Resolves both `lib-circle-a:1.0.0` and `lib-circle-b:1.0.0`.
     *   *Reason*: SBT's dependency resolver (Ivy/Coursier) detects the cycle during graph traversal and stops recursing. It includes both libraries in the result.
 
-#### Classpath Reality
+#### ! Reality
 The classpath contains `lib-circle-a-1.0.0.jar` and `lib-circle-b-1.0.0.jar`.
 
-#### Why This Happens
+#### ! Why
 Circular dependencies between *external* libraries (JARs) are technically allowed by the JVM (classes can refer to each other across JAR boundaries). Build tools tolerate them to support legacy libraries that were split poorly. However, circular dependencies between *internal* modules (sub-projects) in a multi-module build are strictly forbidden and will cause a build error.
 
-#### Deterministic Checks
+#### ! Check
 
 **Fast check (SBT):**
 
@@ -46,11 +52,11 @@ The tree will show the circular relationship, and SBT may print a warning.
 **Conclusion:**
 SBT can resolve circular dependencies between external libraries, but it's a practice to avoid.
 
-#### How This Scales in Real Systems
+#### ! Scales
 Circular dependencies are a design smell. They make the system harder to understand and maintain. In the Scala ecosystem, they sometimes arise when library authors split a project into `api` and `impl` modules but accidentally create cross-dependencies. The fix is usually to extract shared types into a third, independent module.
 
-#### Key Takeaway
+#### ! Takeaway
 SBT tolerates circular dependencies between external libraries but forbids them between internal modules.
 
-#### Related Scenarios
+#### ! Related
 N/A

@@ -15,7 +15,7 @@ graph LR
 
 
 
-```{.groovy include="build.gradle" snippet="s7-deps"}
+```{.groovy include="/demos/gradle-demo/scenario-7-scopes/build.gradle" snippet="s7-deps"}
 ```
 
 #### Reader Expectation
@@ -42,7 +42,7 @@ Gradle configurations are granular. `api` exposes dependencies to consumers; `im
 Configurations control transitivity and packaging.
 
 #### Related Scenarios
-*   [Scenario 8: Optional](../scenario-8-optional/guide.qmd)
+*   [Scenario 8: Optional](../scenario-8-optional/guide.md)
 
 
 ::: {.calloutbox}

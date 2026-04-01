@@ -1,10 +1,16 @@
-# Optional Dependencies
+---
+title: "Optional Dependencies"
+tagline: "Or what to Do When Optional Dependencies Don’t Arrive"
+type: scenario
+tool: gradle
+---
 
+#### ! Scenario
 
-::: {.scenario}
 *Or what to Do When Optional Dependencies Don’t Arrive*
 This scenario demonstrates how Gradle handles optional dependencies (usually via `compileOnly` or feature variants).
-:::
+
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -17,22 +23,22 @@ graph LR
 ```{.groovy include="build.gradle" snippet="s8-deps"}
 ```
 
-#### Reader Expectation
+#### ! Expect
 "I don't want to force this on consumers."
 
-#### Actual Resolution Results
+#### ! Actual
 `compileOnly` dependencies are not transitive.
 
-#### Classpath Reality
+#### ! Reality
 Not transitive.
 
-#### Why This Happens
+#### ! Why
 Gradle doesn't have a direct equivalent of Maven's `<optional>true</optional>` flag in its native dependency model. When consuming Maven dependencies that have optional transitives, Gradle honours the flag and does not include those transitives. For Gradle-native projects, `compileOnly` achieves a similar effect (the dependency is available during compilation but not at runtime and not transitive to consumers). However, the modern and more expressive approach is Feature Variants, introduced in Gradle 6.
 
-#### How This Scales in Real Systems
+#### ! Scales
 Feature Variants let a library declare separate "features" (e.g., a database driver integration, a metrics integration) that consumers can opt into explicitly. This is significantly more powerful than Maven's binary optional flag because consumers can see what optional features are available and declare which ones they need. Large frameworks like Spring use this pattern --- the `spring-boot-starter-data-jpa` starter is essentially a feature variant that pulls in JPA-related dependencies. For library authors, Feature Variants with capabilities are the recommended modern approach.
 
-#### Deterministic Checks
+#### ! Check
 
 **Fast check (Gradle):**
 
@@ -47,8 +53,8 @@ When project `B` depends on project `A` (which has a `compileOnly` dependency on
 **Conclusion:**
 `compileOnly` dependencies are not transitive and are one way to model optional dependencies in Gradle.
 
-#### Key Takeaway
+#### ! Takeaway
 `compileOnly` simulates optionality.
 
-#### Related Scenarios
-*   [Scenario 7: Scopes](../scenario-7-scopes/guide.qmd)
+#### ! Related
+*   [S7: Scopes](../scenario-7-scopes/guide.qmd)

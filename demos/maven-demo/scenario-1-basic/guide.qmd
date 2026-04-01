@@ -1,8 +1,11 @@
-#  Basic Transitive Resolution
+---
+title: "Basic Transitive Resolution"
+tagline: "What to do when a Dependency Brings in Versions You Didn’t Expect"
+type: scenario
+tool: maven
+---
 
-
-::: {.scenario}
-##### What to do when a Dependency Brings in Versions You Didn’t Expect:
+#### ! Scenario What to do when a Dependency Brings in Versions You Didn’t Expect
 
 This scenario demonstrates the fundamental concept of transitive dependency resolution.
 
@@ -10,7 +13,7 @@ It shows how a build tool automatically discovers and includes dependencies of y
 
 This is the "happy path" where no conflicts exist.
 
-
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -20,27 +23,24 @@ graph LR
     LibB --> LibC(lib-c:1.0.0)
 ```
 
-:::
 
 
 ```{.xml include="pom.xml" snippet="s1-deps"}
 ```
 
-#### Reader Expectation:
+#### ! Expect
 Declaring `lib-a` automatically includes its transitive dependencies `lib-b` and `lib-c` on the classpath.
 
-#### Why This Happens:
+#### ! Why
 Build tools traverse the dependency graph and collect all unique nodes. In the absence of version conflicts, resolution is straightforward and follows the project's dependency structure.
 
-#### How Developers Commonly "Fix" This:
+#### ! Fix
 No fix is needed here. This is the desired behavior.
 
-#### Safer Ways to Take Control:
+#### ! Risk
 Even in simple scenarios, using a BOM (Bill of Materials) or dependency constraints can prevent future surprises if new dependencies are added.
 
-#### Deterministic Checks:
-
-**Fast check (Maven):**
+#### ! Check
 
 ```bash
 mvn dependency:tree
@@ -52,8 +52,11 @@ A clean tree with no unexpected versions or `omitted` nodes.
 **Conclusion:**
 The dependency graph is healthy and resolving as expected.
 
-#### How This Scales:
+#### ! Scales
 In large systems, this simple chain `A -> B -> C` is repeated thousands of times, creating a complex web. The "happy path" becomes rare as diamond dependencies emerge.
 
-#### Key Takeaway:
+
+
+#### ! Takeaway
+
 Transitive dependency resolution is the mechanism that allows us to build on top of giants without manually managing every single library.
