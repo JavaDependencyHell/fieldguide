@@ -38,7 +38,7 @@ jobs:
       # ── Install Quarto ──
       - uses: quarto-dev/quarto-actions/setup@v2
         with:
-          version: "1.6"       # pin to a known-good release
+          version: "latest"       # latest stable release
 
       # ── Build the HeroDevs-branded HTML site ──
       - name: Build site
