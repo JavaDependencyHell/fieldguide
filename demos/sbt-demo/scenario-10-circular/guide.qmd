@@ -16,7 +16,7 @@ graph LR
 
 #### SBT (build.sbt)
 
-```{.scala include="/demos/sbt-demo/scenario-10-circular/build.sbt" snippet="s10-deps"}
+```{.scala include="build.sbt" snippet="s10-deps"}
 ```
 
 #### Reader Expectation

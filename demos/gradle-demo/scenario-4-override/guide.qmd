@@ -15,7 +15,7 @@ graph LR
 
 
 
-```{.groovy include="/demos/gradle-demo/scenario-4-override/build.gradle" snippet="s4-deps"}
+```{.groovy include="build.gradle" snippet="s4-deps"}
 ```
 
 #### Reader Expectation

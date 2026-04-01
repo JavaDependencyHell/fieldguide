@@ -16,7 +16,7 @@ graph LR
 
 #### SBT (build.sbt)
 
-```{.scala include="/demos/sbt-demo/scenario-5-exclusions/build.sbt" snippet="s5-deps"}
+```{.scala include="build.sbt" snippet="s5-deps"}
 ```
 
 #### Reader Expectation

@@ -16,7 +16,7 @@ graph LR
 
 #### SBT (build.sbt)
 
-```{.scala include="/demos/sbt-demo/scenario-12-metadata/build.sbt" snippet="s12-deps"}
+```{.scala include="build.sbt" snippet="s12-deps"}
 ```
 
 #### Reader Expectation
@@ -53,4 +53,4 @@ In large projects, metadata workarounds accumulate and become hard to track. Doc
 SBT lacks a direct metadata patching API; use exclusions and overrides instead.
 
 #### Related Scenarios
-*   [Scenario 5: Exclusions](../scenario-5-exclusions/guide.md)
+*   [Scenario 5: Exclusions](../scenario-5-exclusions/guide.qmd)

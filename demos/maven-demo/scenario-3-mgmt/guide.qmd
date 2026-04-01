@@ -23,7 +23,7 @@ graph LR
 
 :::
 
-```{.xml include="/demos/maven-demo/scenario-3-mgmt/pom.xml" snippet="s3-deps"}
+```{.xml include="pom.xml" snippet="s3-deps"}
 ```
 
 #### Reader Expectation:
@@ -57,6 +57,3 @@ Essential for multi-module projects and microservices to ensure all services use
 
 #### Key Takeaway
 Centralized dependency management is the single most effective tool for preventing dependency drift.
-
-#### Related Scenarios
-*   [Scenario 4: Overriding Management](../scenario-4-override/guide.qmd) - What if I want a different version?

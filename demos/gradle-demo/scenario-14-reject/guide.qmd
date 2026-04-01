@@ -15,7 +15,7 @@ graph LR
 
 
 
-```{.groovy include="/demos/gradle-demo/scenario-14-reject/build.gradle" snippet="s14-deps"}
+```{.groovy include="build.gradle" snippet="s14-deps"}
 ```
 
 #### Reader Expectation
@@ -41,4 +41,4 @@ This is a best practice for managing "bad" releases in a large organization. You
 You can blacklist specific versions or ranges using `reject`, which is safer than forcing a downgrade.
 
 #### Related Scenarios
-*   [Scenario 6: Strict Constraints](../scenario-6-forcing/guide.md) - Forcing a specific version.
+*   [Scenario 6: Strict Constraints](../scenario-6-forcing/guide.qmd) - Forcing a specific version.

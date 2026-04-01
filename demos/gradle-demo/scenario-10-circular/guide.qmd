@@ -16,7 +16,7 @@ graph LR
 
 
 
-```{.groovy include="/demos/gradle-demo/scenario-10-circular/build.gradle" snippet="s10-deps"}
+```{.groovy include="build.gradle" snippet="s10-deps"}
 ```
 
 #### Reader Expectation

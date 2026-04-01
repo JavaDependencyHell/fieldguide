@@ -15,7 +15,7 @@ graph LR
 
 #### SBT (build.sbt)
 
-```{.scala include="/demos/sbt-demo/scenario-9-ranges/build.sbt" snippet="s9-deps"}
+```{.scala include="build.sbt" snippet="s9-deps"}
 ```
 
 #### Reader Expectation
@@ -42,7 +42,7 @@ SBT (via Ivy/Coursier) queries repository metadata and selects the highest versi
 Ranges provide automatic upgrades but sacrifice build reproducibility. Use dependency locking to mitigate the risk.
 
 #### Related Scenarios
-*   [Scenario 11: Locking](../scenario-11-locking/guide.md) - How to freeze dynamic versions.
+*   [Scenario 11: Locking](../scenario-11-locking/guide.qmd) - How to freeze dynamic versions.
 
 ::: {.callout}
 **Seen in the Wild**

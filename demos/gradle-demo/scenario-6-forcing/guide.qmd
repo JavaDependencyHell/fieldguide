@@ -16,7 +16,7 @@ graph LR
 
 
 
-```{.groovy include="/demos/gradle-demo/scenario-6-forcing/build.gradle" snippet="s6-deps"}
+```{.groovy include="build.gradle" snippet="s6-deps"}
 ```
 
 #### Reader Expectation

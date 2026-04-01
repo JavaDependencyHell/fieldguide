@@ -1,0 +1,9 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lib-c"
+version = "1.0.0"
+description = "Demo library C v1 - leaf dependency (no transitive deps)"
+requires-python = ">=3.8"

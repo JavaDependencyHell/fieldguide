@@ -13,7 +13,7 @@ BROCHURE_PDF = $(BUILD_DIR)/brochure.pdf
 US_BROCHURE_PDF = $(US_BUILD_DIR)/brochure.pdf
 FRONT_IMAGE = book/content/front-image.pdf
 
-.PHONY: all init utils book book-html book-pdf us-book sample us-sample brochure us-brochure verify verify-maven verify-gradle verify-sbt clean help check-quarto check-qpdf force-book force-us-book
+.PHONY: all init utils init-python book book-html book-pdf us-book herodevs-site sample us-sample brochure us-brochure verify verify-maven verify-gradle verify-sbt verify-python clean help check-quarto check-qpdf force-book force-us-book
 
 # Default target
 all: init book verify
@@ -36,11 +36,18 @@ help:
 	@echo "  verify-maven   - Run Maven-specific verification"
 	@echo "  verify-gradle  - Run Gradle-specific verification"
 	@echo "  verify-sbt     - Run SBT-specific verification"
+	@echo "  verify-python  - Run Python-specific verification"
+	@echo "  init-python    - Build Python demo packages into local wheel repo"
+	@echo "  herodevs-site  - Build HeroDevs-branded HTML site for fieldguide.herodevs.com"
 	@echo "  clean          - Remove build artifacts"
 
 # Initialize the project
-init: utils
+init: utils init-python
 	./install_deps.sh
+
+# Build Python demo packages into local wheel repo
+init-python:
+	./install_python_deps.sh
 
 # Build the demo utilities
 utils:
@@ -63,6 +70,12 @@ force-book: check-quarto check-qpdf
 
 book-html: check-quarto
 	quarto render --to html --output-dir $(BUILD_DIR)
+
+# Render HeroDevs-branded HTML site
+herodevs-site: check-quarto
+	@echo "Generating HeroDevs-branded site..."
+	quarto render --profile herodevs --to html
+	@echo "HeroDevs site generated in build/herodevs-site/"
 
 book-pdf: book
 
@@ -96,7 +109,7 @@ sample: $(PDF_OUTPUT)
 us-sample: $(US_PDF_OUTPUT)
 	@echo "Generating US Half-Letter Sample PDF..."
 	@if [ -f $(US_PDF_OUTPUT) ]; then \
-		qpdf $(US_PDF_OUTPUT) --pages . 1-10,12-32,36-37,40-42,47-57,60-62 -- $(US_SAMPLE_PDF); \
+		qpdf $(US_PDF_OUTPUT) --pages . 1-9,12-13,14-22,33-34,39-41,53-56,57,60-62,69-70,95-98,99-106,z -- $(US_SAMPLE_PDF); \
 		echo "US Sample generation complete. Output in $(US_SAMPLE_PDF)"; \
 	else \
 		echo "Error: $(US_PDF_OUTPUT) not found. Run 'make us-book' first."; \
@@ -145,6 +158,9 @@ verify-gradle: init
 
 verify-sbt: init
 	cd demos/sbt-demo && ./verify.sh
+
+verify-python: init-python
+	cd demos/python-demo && bash verify.sh
 
 # Cleanup
 clean:

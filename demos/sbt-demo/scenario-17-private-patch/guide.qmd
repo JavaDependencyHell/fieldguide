@@ -23,7 +23,7 @@ graph LR
 #### SBT (build.sbt)
 The `build.sbt` adds the private repository to the list of `resolvers` and then directly declares a dependency on the specific patched version.
 
-```{.scala include="/demos/sbt-demo/scenario-17-private-patch/build.sbt" snippet="repo-and-deps"}
+```{.scala include="build.sbt" snippet="repo-and-deps"}
 ```
 
 #### Reader Expectation

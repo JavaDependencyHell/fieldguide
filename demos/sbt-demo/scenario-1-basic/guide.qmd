@@ -16,7 +16,7 @@ graph LR
 
 #### SBT (build.sbt)
 
-```{.scala include="/demos/sbt-demo/scenario-1-basic/build.sbt" snippet="s1-deps"}
+```{.scala include="build.sbt" snippet="s1-deps"}
 ```
 
 #### Reader Expectation
@@ -52,4 +52,4 @@ Transitive resolution is the only way modern software development scales. Withou
 SBT resolves dependencies transitively. You declare the roots; SBT finds the rest of the tree.
 
 #### Related Scenarios
-*   [Scenario 2: Conflict](../scenario-2-conflict/guide.md) - What happens when two branches of the tree disagree on a version.
+*   [Scenario 2: Conflict](../scenario-2-conflict/guide.qmd) - What happens when two branches of the tree disagree on a version.

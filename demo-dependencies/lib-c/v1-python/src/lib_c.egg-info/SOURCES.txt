@@ -1,0 +1,6 @@
+pyproject.toml
+src/lib_c/__init__.py
+src/lib_c.egg-info/PKG-INFO
+src/lib_c.egg-info/SOURCES.txt
+src/lib_c.egg-info/dependency_links.txt
+src/lib_c.egg-info/top_level.txt

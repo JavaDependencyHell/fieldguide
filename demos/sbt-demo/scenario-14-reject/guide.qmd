@@ -10,7 +10,7 @@ N/A
 
 #### SBT (build.sbt)
 
-```{.scala include="/demos/sbt-demo/scenario-14-reject/build.sbt" snippet="s14-deps"}
+```{.scala include="build.sbt" snippet="s14-deps"}
 ```
 
 #### Reader Expectation
@@ -36,4 +36,4 @@ Version rejection is critical for security compliance. When a CVE is discovered 
 SBT lacks native rejection; use overrides or external plugins to enforce version policies.
 
 #### Related Scenarios
-*   [Scenario 6: Forcing Versions](../scenario-6-forcing/guide.md)
+*   [Scenario 6: Forcing Versions](../scenario-6-forcing/guide.qmd)

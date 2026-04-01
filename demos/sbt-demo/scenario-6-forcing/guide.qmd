@@ -15,7 +15,7 @@ graph LR
 
 #### SBT (build.sbt)
 
-```{.scala include="/demos/sbt-demo/scenario-6-forcing/build.sbt" snippet="s6-deps"}
+```{.scala include="build.sbt" snippet="s6-deps"}
 ```
 
 #### Reader Expectation

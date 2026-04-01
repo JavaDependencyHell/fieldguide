@@ -15,7 +15,7 @@ graph LR
 
 #### SBT (build.sbt)
 
-```{.scala include="/demos/sbt-demo/scenario-8-optional/build.sbt" snippet="s8-deps"}
+```{.scala include="build.sbt" snippet="s8-deps"}
 ```
 
 #### Reader Expectation
@@ -46,4 +46,4 @@ Large frameworks like Akka and Play use optional dependencies extensively to sup
 SBT respects optional dependencies from Maven POMs but doesn't have a native "optional" keyword for declaring them.
 
 #### Related Scenarios
-*   [Scenario 7: Scopes](../scenario-7-scopes/guide.md)
+*   [Scenario 7: Scopes](../scenario-7-scopes/guide.qmd)

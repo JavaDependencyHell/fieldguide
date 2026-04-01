@@ -22,7 +22,7 @@ graph LR
 :::
 
 
-```{.xml include="/demos/maven-demo/scenario-5-exclusions/pom.xml" snippet="s5-deps"}
+```{.xml include="pom.xml" snippet="s5-deps"}
 ```
 
 #### Reader Expectation:

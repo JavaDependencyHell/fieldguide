@@ -15,7 +15,7 @@ graph LR
 
 #### SBT (build.sbt)
 
-```{.scala include="/demos/sbt-demo/scenario-4-override/build.sbt" snippet="s4-deps"}
+```{.scala include="build.sbt" snippet="s4-deps"}
 ```
 
 #### Reader Expectation
@@ -50,7 +50,7 @@ Hardcoding versions in `libraryDependencies` is fine for direct dependencies. Ho
 Explicit declarations in `libraryDependencies` are your primary way of requesting versions, but they are subject to conflict resolution. `dependencyOverrides` provides a stronger guarantee.
 
 #### Related Scenarios
-*   [Scenario 6: Forcing Versions](../scenario-6-forcing/guide.md) - Using `dependencyOverrides` for stricter control.
+*   [Scenario 6: Forcing Versions](../scenario-6-forcing/guide.qmd) - Using `dependencyOverrides` for stricter control.
 
 ::: {.callout}
 **Seen in the Wild**

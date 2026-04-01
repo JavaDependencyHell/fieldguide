@@ -14,7 +14,7 @@ graph LR
 
 
 
-```{.groovy include="/demos/gradle-demo/scenario-9-ranges/build.gradle" snippet="s9-deps"}
+```{.groovy include="build.gradle" snippet="s9-deps"}
 ```
 
 #### Reader Expectation
@@ -44,7 +44,7 @@ Dynamic versions and ranges are the primary cause of "it worked yesterday" failu
 Ranges work but are dynamic.
 
 #### Related Scenarios
-*   [Scenario 11: Locking](../scenario-11-locking/guide.md)
+*   [Scenario 11: Locking](../scenario-11-locking/guide.qmd)
 
 ::: {.calloutbox}
 **Seen in the Wild**
