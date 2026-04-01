@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lib-a"
+version = "2.0.0"
+description = "Demo library A v2 - depends on lib-b 2.x"
+requires-python = ">=3.8"
+dependencies = [
+    "lib-b>=2.0.0",
+]

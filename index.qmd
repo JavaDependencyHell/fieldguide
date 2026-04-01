@@ -1,0 +1,703 @@
+---
+pagetitle: "Dependency Hell — A Field Guide"
+toc: false
+number-sections: false
+---
+
+```{=html}
+<style>
+/* ── Pathway Chooser ── */
+.dh-hero {
+  text-align: center;
+  padding: 2.5rem 1rem 1.5rem;
+}
+.dh-hero h1 {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #202020;
+  margin: 0 0 0.3rem;
+  border: none;
+  padding: 0;
+}
+.dh-hero .dh-subtitle {
+  font-size: 1.1rem;
+  color: #6b6b6b;
+  margin: 0 0 0.5rem;
+}
+.dh-hero .dh-tagline {
+  font-size: 0.95rem;
+  color: #888;
+  max-width: 600px;
+  margin: 0 auto 2rem;
+  line-height: 1.6;
+}
+.dh-chooser {
+  max-width: 760px;
+  margin: 0 auto 2rem;
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+/* Step labels */
+.dh-step-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #990187;
+  margin-bottom: 0.6rem;
+}
+
+/* Card rows */
+.dh-cards {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 1.8rem;
+}
+.dh-card {
+  flex: 1 1 140px;
+  max-width: 180px;
+  background: #f9f9f9;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 16px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+.dh-card:hover {
+  border-color: #990187;
+  background: rgba(153, 1, 135, 0.04);
+}
+.dh-card.selected {
+  border-color: #990187;
+  background: rgba(153, 1, 135, 0.08);
+  box-shadow: 0 0 0 3px rgba(153, 1, 135, 0.12);
+}
+.dh-card-icon {
+  font-size: 1.8rem;
+  margin-bottom: 6px;
+}
+.dh-card-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #202020;
+  margin-bottom: 4px;
+}
+.dh-card-desc {
+  font-size: 0.78rem;
+  color: #6b6b6b;
+  line-height: 1.4;
+}
+
+/* Journey cards — wider */
+.dh-journey-cards {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 1.8rem;
+}
+.dh-journey-card {
+  flex: 1 1 200px;
+  max-width: 240px;
+  background: #f9f9f9;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 18px 14px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+.dh-journey-card:hover {
+  border-color: #990187;
+  background: rgba(153, 1, 135, 0.04);
+}
+.dh-journey-card.selected {
+  border-color: #990187;
+  background: rgba(153, 1, 135, 0.08);
+  box-shadow: 0 0 0 3px rgba(153, 1, 135, 0.12);
+}
+.dh-journey-icon {
+  font-size: 1.6rem;
+  margin-bottom: 6px;
+}
+.dh-journey-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #202020;
+  margin-bottom: 4px;
+}
+.dh-journey-desc {
+  font-size: 0.78rem;
+  color: #6b6b6b;
+  line-height: 1.4;
+}
+
+/* Results panel */
+.dh-results {
+  background: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 24px;
+  margin-bottom: 1rem;
+  display: none;
+}
+.dh-results.visible {
+  display: block;
+}
+.dh-results-header {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #202020;
+  margin-bottom: 16px;
+}
+.dh-result-group {
+  margin-bottom: 16px;
+}
+.dh-result-group-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #990187;
+  margin-bottom: 8px;
+}
+.dh-result-link {
+  display: block;
+  padding: 8px 12px;
+  margin-bottom: 4px;
+  border-radius: 6px;
+  color: #202020;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: background 0.12s ease;
+}
+.dh-result-link:hover {
+  background: rgba(153, 1, 135, 0.06);
+  color: #990187;
+}
+.dh-result-link .dh-link-scenario {
+  font-weight: 600;
+  color: #990187;
+  margin-right: 6px;
+}
+.dh-result-link .dh-link-desc {
+  color: #6b6b6b;
+}
+
+/* Reset button */
+.dh-reset {
+  display: inline-block;
+  font-size: 0.82rem;
+  color: #6b6b6b;
+  cursor: pointer;
+  margin-top: 8px;
+  border: none;
+  background: none;
+  text-decoration: underline;
+  font-family: inherit;
+}
+.dh-reset:hover { color: #990187; }
+
+/* Hidden steps */
+.dh-step { display: none; }
+.dh-step.visible { display: block; }
+
+/* Intro text below chooser */
+.dh-about {
+  max-width: 660px;
+  margin: 2.5rem auto 0;
+  text-align: left;
+  color: #202020;
+  line-height: 1.7;
+  font-size: 0.95rem;
+}
+.dh-about h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #202020;
+  border: none;
+  padding: 0;
+  margin: 1.8rem 0 0.6rem;
+}
+.dh-about p {
+  margin: 0 0 0.8rem;
+}
+</style>
+
+<div class="dh-hero">
+  <h1>Dependency Hell</h1>
+  <p class="dh-subtitle">A field guide to dependency management</p>
+  <p class="dh-tagline">
+    When a version changes unexpectedly, a class vanishes at runtime, or "just upgrade it" makes things worse — this guide explains <em>why</em> and shows you a way out.
+  </p>
+</div>
+
+<div class="dh-chooser" id="dh-chooser">
+  <!-- Step 1: Ecosystem -->
+  <div class="dh-step visible" id="dh-step-1">
+    <div class="dh-step-label">Step 1 — Pick your ecosystem</div>
+    <div class="dh-cards" id="dh-eco-cards">
+      <div class="dh-card" data-eco="maven" onclick="dhSelectEco(this)">
+        <div class="dh-card-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#990187" stroke-width="1.5"><path d="M17 8l-1.41 9.88A2 2 0 0113.6 19.5H10.4a2 2 0 01-1.99-1.62L7 8"/><path d="M7 8h10a1 1 0 001-1V6a1 1 0 00-1-1H7a1 1 0 00-1 1v1a1 1 0 001 1z"/></svg></div>
+        <div class="dh-card-name">Maven</div>
+        <div class="dh-card-desc">pom.xml, nearest-wins, BOMs</div>
+      </div>
+      <div class="dh-card" data-eco="gradle" onclick="dhSelectEco(this)">
+        <div class="dh-card-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#990187" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
+        <div class="dh-card-name">Gradle</div>
+        <div class="dh-card-desc">build.gradle, highest-wins, platforms</div>
+      </div>
+      <div class="dh-card" data-eco="python" onclick="dhSelectEco(this)">
+        <div class="dh-card-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#990187" stroke-width="1.5"><path d="M12 2C6.5 2 6 4 6 4v3h6v1H4s-4-.5-4 5 3 5.5 3 5.5h2v-3s0-3 3-3h5s3 0 3-3V4s0-2-5-2z"/><circle cx="9" cy="5.5" r="0.8" fill="#990187"/><path d="M12 22c5.5 0 6-2 6-2v-3h-6v-1h8s4 .5 4-5-3-5.5-3-5.5h-2v3s0 3-3 3h-5s-3 0-3 3v5s0 2 5 2z" opacity="0.5"/><circle cx="15" cy="18.5" r="0.8" fill="#990187" opacity="0.5"/></svg></div>
+        <div class="dh-card-name">Python</div>
+        <div class="dh-card-desc">pip, poetry, uv, requirements.txt</div>
+      </div>
+      <div class="dh-card" data-eco="node" onclick="dhSelectEco(this)">
+        <div class="dh-card-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#990187" stroke-width="1.5"><polygon points="12,2 22,7 22,17 12,22 2,17 2,7"/><polyline points="2,7 12,12 22,7"/><line x1="12" y1="12" x2="12" y2="22"/></svg></div>
+        <div class="dh-card-name">Node</div>
+        <div class="dh-card-desc">npm, yarn, pnpm, package.json</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2: Journey -->
+  <div class="dh-step" id="dh-step-2">
+    <div class="dh-step-label">Step 2 — What are you trying to do?</div>
+    <div class="dh-journey-cards" id="dh-journey-cards">
+      <div class="dh-journey-card" data-journey="trouble" onclick="dhSelectJourney(this)">
+        <div class="dh-journey-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#990187" stroke-width="1.5"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="16.5" r="0.5" fill="#990187"/></svg></div>
+        <div class="dh-journey-name">Something broke</div>
+        <div class="dh-journey-desc">A version changed, a class vanished, or the build is failing — help me fix it</div>
+      </div>
+      <div class="dh-journey-card" data-journey="control" onclick="dhSelectJourney(this)">
+        <div class="dh-journey-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#990187" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
+        <div class="dh-journey-name">Taking control</div>
+        <div class="dh-journey-desc">Align versions, lock builds, enforce policy, or remove unwanted dependencies</div>
+      </div>
+      <div class="dh-journey-card" data-journey="learn" onclick="dhSelectJourney(this)">
+        <div class="dh-journey-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#990187" stroke-width="1.5"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div>
+        <div class="dh-journey-name">Understanding the system</div>
+        <div class="dh-journey-desc">Learn how resolution actually works — start from the fundamentals</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="dh-results" id="dh-results"></div>
+
+  <!-- Reset -->
+  <div style="text-align: center; display: none;" id="dh-reset-wrap">
+    <button class="dh-reset" onclick="dhReset()">↩ Start over</button>
+  </div>
+</div>
+
+<script>
+(function() {
+  // ── Scenario data keyed by ecosystem ──
+  // Each ecosystem has: trouble (symptom→scenarios), control (goal→scenarios), learn (ordered reading path)
+  // Links use Quarto's generated HTML paths
+
+  var data = {
+    maven: {
+      label: "Maven",
+      trouble: {
+        header: "Match your symptom to a scenario",
+        groups: [
+          { title: "Version changed unexpectedly",
+            links: [
+              { id: "S2", name: "Version Conflict Resolution", href: "demos/maven-demo/scenario-2-conflict/guide.html" },
+              { id: "S6", name: "Forcing Transitive Versions", href: "demos/maven-demo/scenario-6-forcing/guide.html" }
+            ]},
+          { title: "Compiles but fails at runtime",
+            links: [
+              { id: "S7", name: "Dependency Scopes", href: "demos/maven-demo/scenario-7-scopes/guide.html" },
+              { id: "S5", name: "Exclusions", href: "demos/maven-demo/scenario-5-exclusions/guide.html" }
+            ]},
+          { title: "Build worked yesterday, broken today",
+            links: [
+              { id: "S9", name: "Version Ranges", href: "demos/maven-demo/scenario-9-ranges/guide.html" },
+              { id: "S11", name: "Dependency Locking", href: "demos/maven-demo/scenario-11-locking/guide.html" }
+            ]},
+          { title: "Unwanted library keeps appearing",
+            links: [
+              { id: "S5", name: "Exclusions", href: "demos/maven-demo/scenario-5-exclusions/guide.html" },
+              { id: "S15", name: "Substitution", href: "demos/maven-demo/scenario-15-substitution/guide.html" }
+            ]},
+          { title: "Dependency tree looks wrong",
+            links: [
+              { id: "S1", name: "Basic Transitive Resolution", href: "demos/maven-demo/scenario-1-basic/guide.html" },
+              { id: "S3", name: "Dependency Management (BOM)", href: "demos/maven-demo/scenario-3-mgmt/guide.html" }
+            ]}
+        ]
+      },
+      control: {
+        header: "Pick the outcome you need",
+        groups: [
+          { title: "Align versions across projects",
+            links: [{ id: "S3", name: "Dependency Management (BOM)", href: "demos/maven-demo/scenario-3-mgmt/guide.html" }] },
+          { title: "Override a transitive version",
+            links: [{ id: "S6", name: "Forcing Transitive Versions", href: "demos/maven-demo/scenario-6-forcing/guide.html" }] },
+          { title: "Remove a transitive dependency",
+            links: [{ id: "S5", name: "Exclusions", href: "demos/maven-demo/scenario-5-exclusions/guide.html" }] },
+          { title: "Ensure reproducible builds",
+            links: [{ id: "S11", name: "Dependency Locking", href: "demos/maven-demo/scenario-11-locking/guide.html" }] },
+          { title: "Block a known-bad version",
+            links: [{ id: "S14", name: "Version Rejection", href: "demos/maven-demo/scenario-14-reject/guide.html" }] },
+          { title: "Use private/patched artifacts",
+            links: [
+              { id: "S16", name: "Private BOM", href: "demos/maven-demo/scenario-16-private-bom/guide.html" },
+              { id: "S17", name: "Private Patch", href: "demos/maven-demo/scenario-17-private-patch/guide.html" }
+            ]}
+        ]
+      },
+      learn: {
+        header: "Recommended reading order",
+        groups: [
+          { title: "Start with the fundamentals",
+            links: [
+              { id: "S1", name: "Basic Transitive Resolution", href: "demos/maven-demo/scenario-1-basic/guide.html" },
+              { id: "S2", name: "Version Conflict Resolution", href: "demos/maven-demo/scenario-2-conflict/guide.html" },
+              { id: "S3", name: "Dependency Management (BOM)", href: "demos/maven-demo/scenario-3-mgmt/guide.html" }
+            ]},
+          { title: "Then explore controls",
+            links: [
+              { id: "S5", name: "Exclusions", href: "demos/maven-demo/scenario-5-exclusions/guide.html" },
+              { id: "S6", name: "Forcing Transitive Versions", href: "demos/maven-demo/scenario-6-forcing/guide.html" },
+              { id: "S7", name: "Dependency Scopes", href: "demos/maven-demo/scenario-7-scopes/guide.html" }
+            ]},
+          { title: "Advanced patterns",
+            links: [
+              { id: "S9", name: "Version Ranges", href: "demos/maven-demo/scenario-9-ranges/guide.html" },
+              { id: "S11", name: "Dependency Locking", href: "demos/maven-demo/scenario-11-locking/guide.html" },
+              { id: "S13", name: "Variants", href: "demos/maven-demo/scenario-13-variants/guide.html" }
+            ]}
+        ]
+      }
+    },
+    gradle: {
+      label: "Gradle",
+      trouble: {
+        header: "Match your symptom to a scenario",
+        groups: [
+          { title: "Version changed unexpectedly",
+            links: [
+              { id: "S2", name: "Version Conflict Resolution", href: "demos/gradle-demo/scenario-2-conflict/guide.html" },
+              { id: "S6", name: "Forcing Transitive Versions", href: "demos/gradle-demo/scenario-6-forcing/guide.html" }
+            ]},
+          { title: "Compiles but fails at runtime",
+            links: [
+              { id: "S7", name: "Dependency Scopes", href: "demos/gradle-demo/scenario-7-scopes/guide.html" },
+              { id: "S5", name: "Exclusions", href: "demos/gradle-demo/scenario-5-exclusions/guide.html" }
+            ]},
+          { title: "Build worked yesterday, broken today",
+            links: [
+              { id: "S9", name: "Version Ranges", href: "demos/gradle-demo/scenario-9-ranges/guide.html" },
+              { id: "S11", name: "Dependency Locking", href: "demos/gradle-demo/scenario-11-locking/guide.html" }
+            ]},
+          { title: "Unwanted library keeps appearing",
+            links: [
+              { id: "S5", name: "Exclusions", href: "demos/gradle-demo/scenario-5-exclusions/guide.html" },
+              { id: "S15", name: "Substitution", href: "demos/gradle-demo/scenario-15-substitution/guide.html" }
+            ]},
+          { title: "Dependency tree looks wrong",
+            links: [
+              { id: "S1", name: "Basic Transitive Resolution", href: "demos/gradle-demo/scenario-1-basic/guide.html" },
+              { id: "S3", name: "Dependency Management (Platform)", href: "demos/gradle-demo/scenario-3-mgmt/guide.html" }
+            ]}
+        ]
+      },
+      control: {
+        header: "Pick the outcome you need",
+        groups: [
+          { title: "Align versions across projects",
+            links: [{ id: "S3", name: "Dependency Management (Platform)", href: "demos/gradle-demo/scenario-3-mgmt/guide.html" }] },
+          { title: "Override a transitive version",
+            links: [{ id: "S6", name: "Forcing Transitive Versions", href: "demos/gradle-demo/scenario-6-forcing/guide.html" }] },
+          { title: "Remove a transitive dependency",
+            links: [{ id: "S5", name: "Exclusions", href: "demos/gradle-demo/scenario-5-exclusions/guide.html" }] },
+          { title: "Ensure reproducible builds",
+            links: [{ id: "S11", name: "Dependency Locking", href: "demos/gradle-demo/scenario-11-locking/guide.html" }] },
+          { title: "Block a known-bad version",
+            links: [{ id: "S14", name: "Version Rejection", href: "demos/gradle-demo/scenario-14-reject/guide.html" }] },
+          { title: "Use private/patched artifacts",
+            links: [
+              { id: "S16", name: "Private BOM", href: "demos/gradle-demo/scenario-16-private-bom/guide.html" },
+              { id: "S17", name: "Private Patch", href: "demos/gradle-demo/scenario-17-private-patch/guide.html" }
+            ]}
+        ]
+      },
+      learn: {
+        header: "Recommended reading order",
+        groups: [
+          { title: "Start with the fundamentals",
+            links: [
+              { id: "S1", name: "Basic Transitive Resolution", href: "demos/gradle-demo/scenario-1-basic/guide.html" },
+              { id: "S2", name: "Version Conflict Resolution", href: "demos/gradle-demo/scenario-2-conflict/guide.html" },
+              { id: "S3", name: "Dependency Management (Platform)", href: "demos/gradle-demo/scenario-3-mgmt/guide.html" }
+            ]},
+          { title: "Then explore controls",
+            links: [
+              { id: "S5", name: "Exclusions", href: "demos/gradle-demo/scenario-5-exclusions/guide.html" },
+              { id: "S6", name: "Forcing Transitive Versions", href: "demos/gradle-demo/scenario-6-forcing/guide.html" },
+              { id: "S7", name: "Dependency Scopes (Configurations)", href: "demos/gradle-demo/scenario-7-scopes/guide.html" }
+            ]},
+          { title: "Advanced patterns",
+            links: [
+              { id: "S9", name: "Version Ranges", href: "demos/gradle-demo/scenario-9-ranges/guide.html" },
+              { id: "S11", name: "Dependency Locking", href: "demos/gradle-demo/scenario-11-locking/guide.html" },
+              { id: "S13", name: "Variants & Capabilities", href: "demos/gradle-demo/scenario-13-variants/guide.html" }
+            ]}
+        ]
+      }
+    },
+    python: {
+      label: "Python",
+      trouble: {
+        header: "Match your symptom to a scenario",
+        groups: [
+          { title: "Version silently changed / downgraded",
+            links: [
+              { id: "P2", name: "Silent Downgrade (Diamond Problem)", href: "demos/python-demo/scenario-2-conflict/guide.html" },
+              { id: "P3", name: "Resolver Strategies", href: "demos/python-demo/scenario-3-resolver/guide.html" }
+            ]},
+          { title: "pip refuses to install (conflict error)",
+            links: [
+              { id: "P2", name: "Silent Downgrade (Diamond Problem)", href: "demos/python-demo/scenario-2-conflict/guide.html" },
+              { id: "P6", name: "Constraints Files", href: "demos/python-demo/scenario-6-constraints/guide.html" }
+            ]},
+          { title: "Works in dev, breaks in production",
+            links: [
+              { id: "P13", name: "Virtual Environment Isolation", href: "demos/python-demo/scenario-13-venv/guide.html" },
+              { id: "P5", name: "Lock Files", href: "demos/python-demo/scenario-5-lock/guide.html" }
+            ]},
+          { title: "Wrong version of a transitive dependency",
+            links: [
+              { id: "P1", name: "Basic Transitive Resolution", href: "demos/python-demo/scenario-1-basic/guide.html" },
+              { id: "P11", name: "Exclusions (The Gap)", href: "demos/python-demo/scenario-11-exclusions/guide.html" }
+            ]}
+        ]
+      },
+      control: {
+        header: "Pick the outcome you need",
+        groups: [
+          { title: "Pin all versions for reproducibility",
+            links: [{ id: "P5", name: "Lock Files (pip freeze, poetry.lock)", href: "demos/python-demo/scenario-5-lock/guide.html" }] },
+          { title: "Constrain versions without editing packages",
+            links: [{ id: "P6", name: "Constraints Files", href: "demos/python-demo/scenario-6-constraints/guide.html" }] },
+          { title: "Remove or block a dependency",
+            links: [
+              { id: "P11", name: "Exclusions (The Gap)", href: "demos/python-demo/scenario-11-exclusions/guide.html" },
+              { id: "P14", name: "Version Rejection", href: "demos/python-demo/scenario-14-reject/guide.html" }
+            ]},
+          { title: "Isolate project environments",
+            links: [{ id: "P13", name: "Virtual Environment Isolation", href: "demos/python-demo/scenario-13-venv/guide.html" }] },
+          { title: "Use a private package index",
+            links: [{ id: "P16", name: "Private Index", href: "demos/python-demo/scenario-16-private/guide.html" }] }
+        ]
+      },
+      learn: {
+        header: "Recommended reading order",
+        groups: [
+          { title: "Start with the fundamentals",
+            links: [
+              { id: "P1", name: "Basic Transitive Resolution", href: "demos/python-demo/scenario-1-basic/guide.html" },
+              { id: "P2", name: "Silent Downgrade (Diamond Problem)", href: "demos/python-demo/scenario-2-conflict/guide.html" },
+              { id: "P3", name: "Resolver Strategies", href: "demos/python-demo/scenario-3-resolver/guide.html" }
+            ]},
+          { title: "Then explore controls",
+            links: [
+              { id: "P5", name: "Lock Files", href: "demos/python-demo/scenario-5-lock/guide.html" },
+              { id: "P6", name: "Constraints Files", href: "demos/python-demo/scenario-6-constraints/guide.html" },
+              { id: "P13", name: "Virtual Environment Isolation", href: "demos/python-demo/scenario-13-venv/guide.html" }
+            ]},
+          { title: "Advanced patterns",
+            links: [
+              { id: "P11", name: "Exclusions (The Gap)", href: "demos/python-demo/scenario-11-exclusions/guide.html" },
+              { id: "P15", name: "Substitution", href: "demos/python-demo/scenario-15-substitution/guide.html" },
+              { id: "P18", name: "Security Audit", href: "demos/python-demo/scenario-18-audit/guide.html" }
+            ]}
+        ]
+      }
+    },
+    node: {
+      label: "Node",
+      trouble: {
+        header: "Match your symptom to a scenario",
+        groups: [
+          { title: "Phantom dependency (works locally, breaks in CI)",
+            links: [
+              { id: "N2", name: "Hoisting & Phantom Dependencies", href: "#" },
+              { id: "N5", name: "Lock Files", href: "#" }
+            ]},
+          { title: "Peer dependency conflict",
+            links: [
+              { id: "N8", name: "Peer Dependencies", href: "#" },
+              { id: "N2", name: "Hoisting & Phantom Dependencies", href: "#" }
+            ]},
+          { title: "Different versions on different machines",
+            links: [
+              { id: "N5", name: "Lock Files", href: "#" },
+              { id: "N14", name: "Deduplication", href: "#" }
+            ]},
+          { title: "Unwanted or duplicate package in node_modules",
+            links: [
+              { id: "N11", name: "Overrides / Resolutions", href: "#" },
+              { id: "N14", name: "Deduplication", href: "#" }
+            ]}
+        ]
+      },
+      control: {
+        header: "Pick the outcome you need",
+        groups: [
+          { title: "Lock all versions for reproducibility",
+            links: [{ id: "N5", name: "Lock Files", href: "#" }] },
+          { title: "Override a transitive version",
+            links: [{ id: "N11", name: "Overrides / Resolutions", href: "#" }] },
+          { title: "Manage a monorepo",
+            links: [{ id: "N13", name: "Workspaces", href: "#" }] },
+          { title: "Reduce bundle / node_modules size",
+            links: [
+              { id: "N14", name: "Deduplication", href: "#" },
+              { id: "N9", name: "Optional Dependencies", href: "#" }
+            ]},
+          { title: "Use a private registry",
+            links: [{ id: "N16", name: "Private Registry", href: "#" }] }
+        ]
+      },
+      learn: {
+        header: "Recommended reading order",
+        groups: [
+          { title: "Start with the fundamentals",
+            links: [
+              { id: "N1", name: "Basic Transitive Resolution", href: "#" },
+              { id: "N2", name: "Hoisting & Phantom Dependencies", href: "#" },
+              { id: "N3", name: "Semver & Range Resolution", href: "#" }
+            ]},
+          { title: "Then explore controls",
+            links: [
+              { id: "N5", name: "Lock Files", href: "#" },
+              { id: "N8", name: "Peer Dependencies", href: "#" },
+              { id: "N11", name: "Overrides / Resolutions", href: "#" }
+            ]},
+          { title: "Advanced patterns",
+            links: [
+              { id: "N13", name: "Workspaces", href: "#" },
+              { id: "N14", name: "Deduplication", href: "#" },
+              { id: "N18", name: "Security Audit", href: "#" }
+            ]}
+        ]
+      }
+    }
+  };
+
+  // ── State ──
+  var selectedEco = null;
+  var selectedJourney = null;
+
+  // ── Functions ──
+  window.dhSelectEco = function(el) {
+    selectedEco = el.getAttribute('data-eco');
+    // highlight
+    var cards = document.querySelectorAll('#dh-eco-cards .dh-card');
+    cards.forEach(function(c) { c.classList.remove('selected'); });
+    el.classList.add('selected');
+    // show step 2
+    document.getElementById('dh-step-2').classList.add('visible');
+    document.getElementById('dh-reset-wrap').style.display = 'block';
+    // clear previous results
+    selectedJourney = null;
+    var jCards = document.querySelectorAll('#dh-journey-cards .dh-journey-card');
+    jCards.forEach(function(c) { c.classList.remove('selected'); });
+    document.getElementById('dh-results').classList.remove('visible');
+    // update Node "coming soon" state
+    updateNodeState();
+    // smooth scroll
+    document.getElementById('dh-step-2').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
+  window.dhSelectJourney = function(el) {
+    selectedJourney = el.getAttribute('data-journey');
+    // highlight
+    var cards = document.querySelectorAll('#dh-journey-cards .dh-journey-card');
+    cards.forEach(function(c) { c.classList.remove('selected'); });
+    el.classList.add('selected');
+    // render results
+    renderResults();
+  };
+
+  function updateNodeState() {
+    // Node scenarios are placeholders — add a "coming soon" badge if Node selected
+    // (No-op for other ecosystems)
+  }
+
+  function renderResults() {
+    if (!selectedEco || !selectedJourney) return;
+    var ecoData = data[selectedEco];
+    var journeyData = ecoData[selectedJourney];
+    var panel = document.getElementById('dh-results');
+
+    var isNode = (selectedEco === 'node');
+    var comingSoon = isNode ? ' <span style="font-size:0.72rem; color:#888; font-weight:400;">(coming soon)</span>' : '';
+
+    var html = '<div class="dh-results-header">' + journeyData.header + ' — ' + ecoData.label + comingSoon + '</div>';
+
+    journeyData.groups.forEach(function(g) {
+      html += '<div class="dh-result-group">';
+      html += '<div class="dh-result-group-title">' + g.title + '</div>';
+      g.links.forEach(function(link) {
+        var isPlaceholder = (link.href === '#');
+        if (isPlaceholder) {
+          html += '<div class="dh-result-link" style="cursor: default; opacity: 0.5;">';
+          html += '<span class="dh-link-scenario">' + link.id + '</span> ';
+          html += link.name + ' <span class="dh-link-desc">(coming soon)</span>';
+          html += '</div>';
+        } else {
+          html += '<a class="dh-result-link" href="' + link.href + '">';
+          html += '<span class="dh-link-scenario">' + link.id + '</span> ';
+          html += link.name;
+          html += '</a>';
+        }
+      });
+      html += '</div>';
+    });
+
+    panel.innerHTML = html;
+    panel.classList.add('visible');
+    panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  window.dhReset = function() {
+    selectedEco = null;
+    selectedJourney = null;
+    // remove all selections
+    document.querySelectorAll('.dh-card, .dh-journey-card').forEach(function(c) { c.classList.remove('selected'); });
+    // hide steps 2 & results
+    document.getElementById('dh-step-2').classList.remove('visible');
+    document.getElementById('dh-results').classList.remove('visible');
+    document.getElementById('dh-reset-wrap').style.display = 'none';
+    document.getElementById('dh-step-1').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+})();
+</script>
+```
+
+::: {.dh-about}
+
+## Who this book is for
+
+Dependency management earns your trust by behaving as you'd expect — until it doesn't. Most trouble comes not from misunderstanding syntax, but from assumptions that conflict with how build tools actually operate. This book is about the mechanical rules that govern those operations.
+
+If you've stared at a dependency tree and thought *"that doesn't make sense,"* this book is for you. It's written for experienced developers, tech leads responsible for build stability, platform and security engineers, and junior developers who want to avoid persistent misconceptions early.
+
+## How to use this guide
+
+Don't read it front to back. Treat it like a field guide: use the pathway chooser above to find the right starting point for your ecosystem and situation, then jump straight to a scenario. Each scenario gives you the expected intuition, the actual results, the underlying mechanism, and a safe resolution.
+
+Alternatively, pick "Understanding the system" above to get a curated reading order that builds your mental model from the ground up.
+
+:::

@@ -48,10 +48,5 @@ Module substitution is particularly important in the Scala ecosystem when migrat
 #### ! Takeaway
 SBT lacks native substitution; use exclusions and explicit additions.
 
-<<<<<<< Updated upstream
 #### Related Scenarios
-*   [Scenario 5: Exclusions](../scenario-5-exclusions/guide.md)
-=======
-#### ! Related
-*   [S5: Exclusions](../scenario-5-exclusions/guide.qmd)
->>>>>>> Stashed changes
+*   [Scenario 5: Exclusions](../scenario-5-exclusions/guide.qmd)

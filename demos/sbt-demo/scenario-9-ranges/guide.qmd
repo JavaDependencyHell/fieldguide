@@ -46,13 +46,8 @@ SBT (via Ivy/Coursier) queries repository metadata and selects the highest versi
 #### ! Takeaway
 Ranges provide automatic upgrades but sacrifice build reproducibility. Use dependency locking to mitigate the risk.
 
-<<<<<<< Updated upstream
 #### Related Scenarios
-*   [Scenario 11: Locking](../scenario-11-locking/guide.md) - How to freeze dynamic versions.
-=======
-#### ! Related
-*   [S11: Dependency Locking](../scenario-11-locking/guide.qmd) - How to freeze dynamic versions.
->>>>>>> Stashed changes
+*   [Scenario 11: Locking](../scenario-11-locking/guide.qmd) - How to freeze dynamic versions.
 
 ::: {.callout}
 **Seen in the Wild**

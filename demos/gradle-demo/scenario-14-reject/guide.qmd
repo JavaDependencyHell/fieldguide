@@ -46,10 +46,5 @@ This is a best practice for managing "bad" releases in a large organization. You
 #### ! Takeaway
 You can blacklist specific versions or ranges using `reject`, which is safer than forcing a downgrade.
 
-<<<<<<< Updated upstream
 #### Related Scenarios
-*   [Scenario 6: Strict Constraints](../scenario-6-forcing/guide.md) - Forcing a specific version.
-=======
-#### ! Related
-*   [S6: Forcing a Version](../scenario-6-forcing/guide.qmd) - Forcing a specific version.
->>>>>>> Stashed changes
+*   [Scenario 6: Strict Constraints](../scenario-6-forcing/guide.qmd) - Forcing a specific version.

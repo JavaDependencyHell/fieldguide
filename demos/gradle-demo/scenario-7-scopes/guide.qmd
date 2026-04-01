@@ -48,13 +48,8 @@ Gradle configurations are granular. `api` exposes dependencies to consumers; `im
 #### ! Takeaway
 Configurations control transitivity and packaging.
 
-<<<<<<< Updated upstream
 #### Related Scenarios
-*   [Scenario 8: Optional](../scenario-8-optional/guide.md)
-=======
-#### ! Related
-*   [S8: Optional Dependencies](../scenario-8-optional/guide.qmd)
->>>>>>> Stashed changes
+*   [Scenario 8: Optional](../scenario-8-optional/guide.qmd)
 
 
 #### ! Wild

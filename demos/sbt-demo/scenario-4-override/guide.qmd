@@ -55,13 +55,8 @@ Hardcoding versions in `libraryDependencies` is fine for direct dependencies. Ho
 #### ! Takeaway
 Explicit declarations in `libraryDependencies` are your primary way of requesting versions, but they are subject to conflict resolution. `dependencyOverrides` provides a stronger guarantee.
 
-<<<<<<< Updated upstream
 #### Related Scenarios
-*   [Scenario 6: Forcing Versions](../scenario-6-forcing/guide.md) - Using `dependencyOverrides` for stricter control.
-=======
-#### ! Related
-*   [S6: Forcing a Version](../scenario-6-forcing/guide.qmd) - Using `dependencyOverrides` for stricter control.
->>>>>>> Stashed changes
+*   [Scenario 6: Forcing Versions](../scenario-6-forcing/guide.qmd) - Using `dependencyOverrides` for stricter control.
 
 ::: {.callout}
 **Seen in the Wild**

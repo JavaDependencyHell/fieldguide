@@ -1,13 +1,4 @@
-<<<<<<< Updated upstream
 # 13. Feature Variants
-=======
----
-title: "Feature Variants"
-tagline: "What to Do When a Library Has Multiple Flavours"
-type: scenario
-tool: maven
----
->>>>>>> Stashed changes
 
 #### ! Scenario What to Do When a Library Has Multiple Flavours
 

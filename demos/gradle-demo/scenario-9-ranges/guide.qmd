@@ -49,13 +49,8 @@ Dynamic versions and ranges are the primary cause of "it worked yesterday" failu
 #### ! Takeaway
 Ranges work but are dynamic.
 
-<<<<<<< Updated upstream
 #### Related Scenarios
-*   [Scenario 11: Locking](../scenario-11-locking/guide.md)
-=======
-#### ! Related
-*   [S11: Dependency Locking](../scenario-11-locking/guide.qmd)
->>>>>>> Stashed changes
+*   [Scenario 11: Locking](../scenario-11-locking/guide.qmd)
 
 #### ! Wild
 

@@ -1,13 +1,4 @@
-<<<<<<< Updated upstream
 # 15. Version Substitution
-=======
----
-title: "Version Substitution"
-tagline: "Or what to Do When You Need to Swap One Library for Another"
-type: scenario
-tool: maven
----
->>>>>>> Stashed changes
 
 #### ! Scenario What to Do When You Need to Swap One Library for Another
 
@@ -15,10 +6,6 @@ This scenario demonstrates how to replace one dependency with another in Maven. 
 
 #### ! Example
 
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
 ```{.xml include="/demos/maven-demo/scenario-15-substitution/pom.xml" snippet="s15-deps"}
 ```
 

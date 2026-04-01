@@ -11,11 +11,7 @@ This scenario explores how to ensure reproducible builds in Maven, which nativel
 
 #### ! Example
 
-<<<<<<< Updated upstream
 ```{.xml include="pom.xml" snippet="s11-deps"}
-=======
-```{.xml include="/demos/maven-demo/scenario-11-locking/pom.xml" snippet="s11-deps"}
->>>>>>> Stashed changes
 ```
 
 #### ! Expect

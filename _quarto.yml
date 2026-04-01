@@ -14,9 +14,9 @@ format:
     toc-depth: 1
     mermaid:
       theme: neutral
-    number-sections: true
+    number-sections: false
   pdf:
-    number-sections: true
+    number-sections: false
     number-depth: 2
     toc-depth: 1
     toc: true
@@ -54,7 +54,7 @@ format:
 book:
   title: "Dependency Hell"
   chapters:
-    - index.md
+    - index.qmd
     - book/content/triage.md
     - book/content/classpath-reality-check.md
     - book/content/scenarios.md

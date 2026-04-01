@@ -44,10 +44,5 @@ Dependency locking is essential for any team that values reproducible builds, wh
 #### ! Takeaway
 Locking ensures reproducibility.
 
-<<<<<<< Updated upstream
 #### Related Scenarios
-*   [Scenario 9: Ranges](../scenario-9-ranges/guide.md)
-=======
-#### ! Related
-*   [S9: Version Ranges](../scenario-9-ranges/guide.qmd)
->>>>>>> Stashed changes
+*   [Scenario 9: Ranges](../scenario-9-ranges/guide.qmd)

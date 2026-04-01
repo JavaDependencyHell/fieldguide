@@ -57,10 +57,5 @@ Transitive resolution is the only way modern software development scales. Withou
 #### ! Takeaway
 SBT resolves dependencies transitively. You declare the roots; SBT finds the rest of the tree.
 
-<<<<<<< Updated upstream
 #### Related Scenarios
-*   [Scenario 2: Conflict](../scenario-2-conflict/guide.md) - What happens when two branches of the tree disagree on a version.
-=======
-#### ! Related
-*   [S2: Version Conflict](../scenario-2-conflict/guide.qmd) - What happens when two branches of the tree disagree on a version.
->>>>>>> Stashed changes
+*   [Scenario 2: Conflict](../scenario-2-conflict/guide.qmd) - What happens when two branches of the tree disagree on a version.

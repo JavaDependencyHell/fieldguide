@@ -51,10 +51,5 @@ Large frameworks like Akka and Play use optional dependencies extensively to sup
 #### ! Takeaway
 SBT respects optional dependencies from Maven POMs but doesn't have a native "optional" keyword for declaring them.
 
-<<<<<<< Updated upstream
 #### Related Scenarios
-*   [Scenario 7: Scopes](../scenario-7-scopes/guide.md)
-=======
-#### ! Related
-*   [S7: Scopes](../scenario-7-scopes/guide.qmd)
->>>>>>> Stashed changes
+*   [Scenario 7: Scopes](../scenario-7-scopes/guide.qmd)

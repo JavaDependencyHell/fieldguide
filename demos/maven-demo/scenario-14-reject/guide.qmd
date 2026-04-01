@@ -1,13 +1,4 @@
-<<<<<<< Updated upstream
 # 14. Rejecting a Version
-=======
----
-title: "Rejecting a Version"
-tagline: "Or what to Do When a Specific Version Must Never Appear"
-type: scenario
-tool: maven
----
->>>>>>> Stashed changes
 
 #### ! Scenario What to Do When a Specific Version Must Never Appear
 

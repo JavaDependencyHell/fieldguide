@@ -59,10 +59,5 @@ Essential for multi-module projects and microservices to ensure all services use
 #### ! Takeaway
 Centralized dependency management is the single most effective tool for preventing dependency drift.
 
-<<<<<<< Updated upstream
 #### Related Scenarios
 *   [Scenario 4: Overriding Management](../scenario-4-override/guide.qmd) - What if I want a different version?
-=======
-#### ! Related
-* [S4: Overriding Management](../scenario-4-override/guide.qmd) - What if I want a different version?
->>>>>>> Stashed changes

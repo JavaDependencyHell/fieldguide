@@ -1,13 +1,4 @@
-<<<<<<< Updated upstream
 # 12. Rich Version Metadata
-=======
----
-title: "Rich Version Metadata"
-tagline: "Or what to Do When You Can't Express What You Actually Need"
-type: scenario
-tool: maven
----
->>>>>>> Stashed changes
 
 #### ! Scenario What to Do When You Can't Express What You Actually Need
 
@@ -15,10 +6,6 @@ This scenario demonstrates a fundamental limitation of Maven's dependency model:
 
 #### ! Example
 
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
 ```{.xml include="/demos/maven-demo/scenario-12-metadata/pom.xml" snippet="s12-deps"}
 ```
 

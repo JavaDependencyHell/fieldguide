@@ -58,10 +58,5 @@ In large projects, metadata workarounds accumulate and become hard to track. Doc
 #### ! Takeaway
 SBT lacks a direct metadata patching API; use exclusions and overrides instead.
 
-<<<<<<< Updated upstream
 #### Related Scenarios
-*   [Scenario 5: Exclusions](../scenario-5-exclusions/guide.md)
-=======
-#### ! Related
-*   [S5: Exclusions](../scenario-5-exclusions/guide.qmd)
->>>>>>> Stashed changes
+*   [Scenario 5: Exclusions](../scenario-5-exclusions/guide.qmd)
