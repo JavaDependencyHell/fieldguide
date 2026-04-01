@@ -41,6 +41,9 @@ book:
   repo-url: https://github.com/herodevs/fieldguide
   repo-actions: [issue]
   search: true
+  sidebar:
+    collapse-level: 1
+    style: floating
   navbar:
     background: "#ffffff"
     foreground: "#202020"

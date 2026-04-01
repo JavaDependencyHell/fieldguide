@@ -103,6 +103,14 @@ h4 { font-size: 1.1rem; color: $hd-text-muted; }
   font-weight: 700;
   font-size: 1.1rem;
   color: $hd-text;
+  padding-bottom: 0.6em;
+  margin-bottom: 0.4em;
+  border-bottom: 1px solid $hd-border;
+}
+
+// Nav items — more breathing room
+.sidebar-item {
+  padding: 0.15em 0;
 }
 
 // Nav links
@@ -110,11 +118,17 @@ h4 { font-size: 1.1rem; color: $hd-text-muted; }
 .sidebar nav a {
   color: $hd-text-muted;
   transition: color 0.15s ease;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  padding: 0.25em 0.6em;
+  display: block;
 }
 
 .sidebar-item-text:hover,
 .sidebar nav a:hover {
   color: $hd-accent;
+  background-color: $hd-accent-glow;
+  border-radius: 4px;
 }
 
 // Active nav item
@@ -124,15 +138,26 @@ h4 { font-size: 1.1rem; color: $hd-text-muted; }
   font-weight: 600;
   border-left: 3px solid $hd-accent;
   padding-left: 0.5em;
+  background-color: $hd-accent-glow;
+  border-radius: 0 4px 4px 0;
 }
 
-// Part headers in sidebar
-.sidebar-item-section .sidebar-item-text {
+// Part headers in sidebar (Maven Scenarios, Gradle Scenarios, etc.)
+.sidebar-item-section > .sidebar-item-text {
   color: $hd-text;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  margin-top: 1em;
+  padding-top: 0.8em;
+  border-top: 1px solid $hd-border-light;
+}
+
+// Scenario items inside collapsed sections — tighter but still readable
+.sidebar-item-section .sidebar-item .sidebar-item-text {
+  font-size: 0.84rem;
+  padding-left: 1em;
 }
 
 // ============================================================================
