@@ -1,0 +1,50 @@
+# ============================================================================
+# _quarto-oreilly.yml
+# O'Reilly-style 7x9 profile — generates a larger-format PDF for comparison
+#
+# Usage:
+#   quarto render --profile oreilly
+#   make oreilly
+# ============================================================================
+
+project:
+  output-dir: build/oreilly
+
+format:
+  pdf:
+    number-sections: false
+    number-depth: 2
+    toc-depth: 1
+    toc: true
+    fontsize: 11pt
+    documentclass: scrbook
+    keep-tex: false
+
+    # O'Reilly standard: 7 x 9 inches
+    papersize: custom
+    classoption:
+      - DIV=12
+      - openany
+    geometry:
+      - paperwidth=7in
+      - paperheight=9in
+      - top=0.8in
+      - bottom=0.8in
+      - left=0.85in
+      - right=0.85in
+
+    fig-width: 5.0
+    fig-height: 3.5
+    mermaid-format: png
+    mermaid:
+      theme: neutral
+
+    # No watermark
+    include-in-header:
+      - latex/cover.tex
+      - latex/back.tex
+      - latex/toc.tex
+      - latex/chapter-style.tex
+      - latex/typography-common.tex
+      - latex/boxes.tex
+      - latex/badges.tex

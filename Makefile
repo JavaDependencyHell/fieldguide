@@ -13,7 +13,7 @@ BROCHURE_PDF = $(BUILD_DIR)/brochure.pdf
 US_BROCHURE_PDF = $(US_BUILD_DIR)/brochure.pdf
 FRONT_IMAGE = book/content/front-image.pdf
 
-.PHONY: all init init-python utils book book-html book-pdf us-book sample us-sample brochure us-brochure herodevs-site verify verify-maven verify-gradle verify-sbt verify-python clean help check-quarto check-qpdf force-book force-us-book
+.PHONY: all init init-python utils book book-html book-pdf us-book sample us-sample brochure us-brochure herodevs-site leanpub leanpub-sample oreilly oreilly-sample verify verify-maven verify-gradle verify-sbt verify-python clean help check-quarto check-qpdf force-book force-us-book
 
 # Default target
 all: init book verify
@@ -39,6 +39,10 @@ help:
 	@echo "  init-python    - Build Python demo wheels"
 	@echo "  verify-python  - Run Python-specific verification"
 	@echo "  herodevs-site  - Build HeroDevs-branded HTML site"
+	@echo "  leanpub        - Build 6x9 PDF for Leanpub upload"
+	@echo "  leanpub-sample - Generate a Leanpub sample PDF"
+	@echo "  oreilly        - Build 7x9 PDF (O'Reilly format)"
+	@echo "  oreilly-sample - Generate a 7x9 sample PDF"
 	@echo "  clean          - Remove build artifacts"
 
 # Initialize the project
@@ -125,6 +129,57 @@ us-brochure: $(US_PDF_OUTPUT)
 		echo "US Brochure generation complete. Output in $(US_BROCHURE_PDF)"; \
 	else \
 		echo "Error: $(US_PDF_OUTPUT) not found. Run 'make us-book' first."; \
+		exit 1; \
+	fi
+
+# ── Leanpub targets ──
+
+LEANPUB_DIR = build/leanpub
+LEANPUB_PDF = $(LEANPUB_DIR)/Dependency-Hell.pdf
+LEANPUB_SAMPLE = $(LEANPUB_DIR)/sample.pdf
+
+leanpub: check-quarto check-qpdf
+	@echo "Building 6x9 PDF for Leanpub..."
+	quarto render --profile leanpub --to pdf
+	@echo "Removing first blank page from PDF..."
+	qpdf $(LEANPUB_PDF) --pages . 2-z -- $(LEANPUB_PDF).tmp && mv $(LEANPUB_PDF).tmp $(LEANPUB_PDF)
+	@echo "Cleaning up intermediate files..."
+	find -L demos -name "guide_files" -type d -exec rm -rf {} +
+	@echo "Leanpub PDF ready: $(LEANPUB_PDF)"
+	@echo "Upload at: leanpub.com → Your Book → Versions → Upload"
+
+leanpub-sample: leanpub
+	@echo "Generating Leanpub sample PDF..."
+	@if [ -f $(LEANPUB_PDF) ]; then \
+		qpdf $(LEANPUB_PDF) --pages . 1-66,z -- $(LEANPUB_SAMPLE); \
+		echo "Sample ready: $(LEANPUB_SAMPLE)"; \
+	else \
+		echo "Error: $(LEANPUB_PDF) not found. Run 'make leanpub' first."; \
+		exit 1; \
+	fi
+
+# ── O'Reilly 7x9 targets ──
+
+OREILLY_DIR = build/oreilly
+OREILLY_PDF = $(OREILLY_DIR)/Dependency-Hell.pdf
+OREILLY_SAMPLE = $(OREILLY_DIR)/sample.pdf
+
+oreilly: check-quarto check-qpdf
+	@echo "Building 7x9 PDF (O'Reilly format)..."
+	quarto render --profile oreilly --to pdf
+	@echo "Removing first blank page from PDF..."
+	qpdf $(OREILLY_PDF) --pages . 2-z -- $(OREILLY_PDF).tmp && mv $(OREILLY_PDF).tmp $(OREILLY_PDF)
+	@echo "Cleaning up intermediate files..."
+	find -L demos -name "guide_files" -type d -exec rm -rf {} +
+	@echo "O'Reilly PDF ready: $(OREILLY_PDF)"
+
+oreilly-sample: oreilly
+	@echo "Generating O'Reilly sample PDF..."
+	@if [ -f $(OREILLY_PDF) ]; then \
+		qpdf $(OREILLY_PDF) --pages . 1-66,z -- $(OREILLY_SAMPLE); \
+		echo "Sample ready: $(OREILLY_SAMPLE)"; \
+	else \
+		echo "Error: $(OREILLY_PDF) not found. Run 'make oreilly' first."; \
 		exit 1; \
 	fi
 

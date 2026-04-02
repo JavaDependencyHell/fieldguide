@@ -1,0 +1,51 @@
+# ============================================================================
+# _quarto-leanpub.yml
+# Leanpub publishing profile — generates a 6x9 PDF for upload
+#
+# Usage:
+#   quarto render --profile leanpub
+#
+# Upload the PDF at: Leanpub → Your Book → Versions → Upload
+# ============================================================================
+
+project:
+  output-dir: build/leanpub
+
+format:
+  pdf:
+    number-sections: false
+    number-depth: 2
+    toc-depth: 1
+    toc: true
+    fontsize: 11pt
+    documentclass: scrbook
+    keep-tex: false
+
+    # Leanpub standard: 6 x 9 inches
+    papersize: custom
+    classoption:
+      - DIV=12
+      - openany
+    geometry:
+      - paperwidth=6in
+      - paperheight=9in
+      - top=0.75in
+      - bottom=0.75in
+      - left=0.7in
+      - right=0.7in
+
+    fig-width: 4.4
+    fig-height: 3.0
+    mermaid-format: png
+    mermaid:
+      theme: neutral
+
+    # No watermark for Leanpub builds
+    include-in-header:
+      - latex/cover.tex
+      - latex/back.tex
+      - latex/toc.tex
+      - latex/chapter-style.tex
+      - latex/typography-common.tex
+      - latex/boxes.tex
+      - latex/badges.tex
