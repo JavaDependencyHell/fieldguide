@@ -1,67 +1,162 @@
 % ==================================================
-% BOXES — canonical, pgfkeys-safe implementation
+% BOXES — 3-tier visual hierarchy
+%
+% Tier 1  scnprimary   Bold box, colored left border, prominent label
+% Tier 2  scnstandard  Light box, thin frame, small inline label
+% Tier 3  \scnminimal  No box — colored label heading, plain content
+% Wild    scnwild      Storytelling box — warm background, italic label
+%
+% Legacy  scncallout   Kept for backward compatibility
 % ==================================================
 
-\usepackage[table,xcdraw,dvipsnames]{xcolor}
-\usepackage[most]{tcolorbox}
+% Guard against double-loading (typography-common.tex may load these first)
+\makeatletter
+\@ifpackageloaded{xcolor}{}{\usepackage[table,xcdraw,dvipsnames]{xcolor}}
+\@ifpackageloaded{tcolorbox}{}{\usepackage[most]{tcolorbox}}
 \tcbuselibrary{skins,breakable}
-\usepackage{tikz}
+\@ifpackageloaded{tikz}{}{\usepackage{tikz}}
+\makeatother
 
 % --------------------------------------------------
-% Storage macros (initially empty)
+% Key storage (shared across all box types)
 % --------------------------------------------------
 
 \newcommand{\scnlabel}{}
 \newcommand{\scnbg}{}
 \newcommand{\scnframe}{}
-
-% --------------------------------------------------
-% Safe fallback resolvers
-% (avoids conditionals inside pgfkeys)
-% --------------------------------------------------
+\newcommand{\scnaccent}{}
 
 \makeatletter
-\newcommand{\scngetbg}{%
-    \ifx\scnbg\empty
-    black!2%
-    \else
-        \scnbg%
-    \fi
-}
-
-\newcommand{\scngetframe}{%
-    \ifx\scnframe\empty
-    black!40%
-    \else
-        \scnframe%
-    \fi
-}
+\newcommand{\scngetbg}{\ifx\scnbg\empty black!2\else\scnbg\fi}
+\newcommand{\scngetframe}{\ifx\scnframe\empty black!40\else\scnframe\fi}
+\newcommand{\scngetaccent}{\ifx\scnaccent\empty black!60\else\scnaccent\fi}
 \makeatother
-
-% --------------------------------------------------
-% Key definitions
-% --------------------------------------------------
 
 \tcbset{
     scn label/.store in=\scnlabel,
     scn label=,
     scn bg/.store in=\scnbg,
-    scn frame/.store in=\scnframe
+    scn frame/.store in=\scnframe,
+    scn accent/.store in=\scnaccent,
+    scn accent=
 }
 
 % ==================================================
-% SCENARIO CALLOUT
+% TIER 1 — PRIMARY (Scenario, Fix, Risk, Control)
+%
+% Bold colored left border (3pt), tinted background,
+% prominent inline label at top in accent color
+% ==================================================
+
+\newtcolorbox{scnprimary}[2][]{%
+    enhanced,
+    breakable,
+    #1,
+    colback/.expanded=\scngetbg,
+    colframe/.expanded=\scngetframe,
+    boxrule=0pt,
+    borderline west/.expanded={3pt}{0pt}{\scngetaccent},
+    arc=0mm,
+    left=8mm,
+    right=3mm,
+    top=2.5mm,
+    bottom=2.5mm,
+    before skip=10pt,
+    after skip=10pt,
+    fonttitle=\sffamily\bfseries\small,
+    coltitle/.expanded=\scngetaccent,
+    title={#2},
+    attach title to upper={\par\vspace{2pt}},
+    toptitle=1.5mm,
+    bottomtitle=0mm,
+}
+
+% ==================================================
+% TIER 2 — STANDARD (Example, Expect, Why, Check…)
+%
+% Thin frame, very light background, small label
+% Visually lighter than Tier 1
+% ==================================================
+
+\newtcolorbox{scnstandard}[2][]{%
+    enhanced,
+    breakable,
+    #1,
+    colback/.expanded=\scngetbg,
+    colframe/.expanded=\scngetframe,
+    boxrule=0.3pt,
+    arc=1mm,
+    left=5mm,
+    right=3mm,
+    top=2mm,
+    bottom=2mm,
+    before skip=8pt,
+    after skip=8pt,
+    fonttitle=\sffamily\footnotesize,
+    coltitle/.expanded=\scngetaccent,
+    title={#2},
+    attach title to upper={\par\vspace{1pt}},
+    toptitle=1mm,
+    bottomtitle=0mm,
+}
+
+% ==================================================
+% TIER 3 — MINIMAL (Related, Scales, Takeaway…)
+%
+% No box at all. Just a small caps label with a
+% thin rule, then normal content follows.
+% ==================================================
+
+\newcommand{\scnminimal}[2]{%
+    \vspace{8pt}%
+    {\sffamily\bfseries\footnotesize\color{#1}\MakeUppercase{#2}}%
+    \par\vspace{-2pt}%
+    {\color{black!20}\hrule height 0.4pt}%
+    \vspace{4pt}%
+}
+
+% ==================================================
+% WILD — STORYTELLING
+%
+% Warm tinted background, dashed left border,
+% italic label to signal "this is a real-world story"
+% ==================================================
+
+\newtcolorbox{scnwild}[2][]{%
+    enhanced,
+    breakable,
+    #1,
+    colback/.expanded=\scngetbg,
+    colframe/.expanded=\scngetframe,
+    boxrule=0pt,
+    borderline west/.expanded={2pt}{0pt}{\scngetaccent},
+    arc=1mm,
+    left=8mm,
+    right=3mm,
+    top=2.5mm,
+    bottom=2.5mm,
+    before skip=10pt,
+    after skip=10pt,
+    fonttitle=\sffamily\bfseries\itshape\small,
+    coltitle/.expanded=\scngetaccent,
+    title={#2},
+    attach title to upper={\par\vspace{2pt}},
+    toptitle=1.5mm,
+    bottomtitle=0mm,
+    before upper={\itshape},
+    after upper={\upshape},
+}
+
+% ==================================================
+% LEGACY — scncallout (backward compatibility)
 % ==================================================
 
 \newtcolorbox{scncallout}[1][]{%
     enhanced,
     breakable,
-% --- apply user parameters first ---
     #1,
-% --- then apply colours (expanded safely) ---
     colback/.expanded=\scngetbg,
     colframe/.expanded=\scngetframe,
-% --- geometry ---
     boxrule=0.35pt,
     arc=1mm,
     left=7mm,
@@ -70,7 +165,6 @@
     bottom=1.6mm,
     before skip=6pt,
     after skip=6pt,
-% --- vertical spine label ---
     overlay={
         \ifx\scnlabel\empty\relax\else
             \node[
@@ -108,7 +202,7 @@
 \fi
 
 % ==================================================
-% OPTIONAL GENERIC BOX (kept for compatibility)
+% GENERIC BOX (kept for compatibility)
 % ==================================================
 
 \ifdefined\sbox\else

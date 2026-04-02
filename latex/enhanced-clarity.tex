@@ -66,39 +66,25 @@
 }
 
 % --------------------------------------------------
-% Scenario block (left rule, low whitespace)
+% Scenario block + calloutbox — now defined in boxes.tex
+% Legacy definitions guarded to avoid conflicts.
 % --------------------------------------------------
 
+\ifdefined\scenario\else
 \newtcolorbox{scenario}{
-  colback=white,
-  colframe=black,
-  boxrule=0pt,
+  colback=white, colframe=black, boxrule=0pt,
   borderline west={1.2pt}{0pt}{black},
-  left=6pt,
-  right=3pt,
-  top=3pt,
-  bottom=3pt,
-  arc=1pt
+  left=6pt, right=3pt, top=3pt, bottom=3pt, arc=1pt
 }
+\fi
 
-% --------------------------------------------------
-% Note / Seen in the Wild / Operational Risk
-% subtle tint, print-safe
-% --------------------------------------------------
+\ifdefined\calloutbox\else
 \newtcolorbox{calloutbox}{
-  colback=black!3,
-  colframe=black!40,
-  boxrule=0.3pt,
-  arc=2pt,
-  left=5pt,
-  right=5pt,
-  top=5pt,
-  bottom=5pt,
-  before upper={
-    \setlength{\parskip}{0.35em}
-    \setlength{\parindent}{0pt}
-  },
+  colback=black!3, colframe=black!40, boxrule=0.3pt, arc=2pt,
+  left=5pt, right=5pt, top=5pt, bottom=5pt,
+  before upper={\setlength{\parskip}{0.35em}\setlength{\parindent}{0pt}},
 }
+\fi
 % --------------------------------------------------
 % Figure spacing — prevent float air gaps
 % --------------------------------------------------
