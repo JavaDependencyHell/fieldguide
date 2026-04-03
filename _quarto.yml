@@ -14,6 +14,7 @@ format:
     toc-depth: 1
     mermaid:
       theme: neutral
+      config: mermaid-config.json
     number-sections: false
   pdf:
     number-sections: false
@@ -42,6 +43,7 @@ format:
       - right=0.7in
     mermaid:
       theme: neutral
+      config: mermaid-config.json
     include-in-header:
       - latex/watermark.tex
       - latex/cover.tex
@@ -63,7 +65,7 @@ book:
     - book/content/start_here_trouble.qmd
     - book/content/start_here_control.qmd
     - book/content/authors.md
-    - book/content/sponsors.md
+    - book/content/acknowledgements.md
     - part: "Maven Scenarios"
       chapters:
         - demos/maven-demo/scenario-1-basic/guide.qmd

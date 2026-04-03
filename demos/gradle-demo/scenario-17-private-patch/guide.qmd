@@ -42,4 +42,4 @@ A direct declaration in the `dependencies` block acts as a powerful resolution s
 A direct version declaration for a dependency is the most straightforward way to ensure a specific version is used, provided that version is available in one of the configured repositories.
 
 #### ! Related
-*   [S16](../scenario-16-private-bom/guide.qmd) - A more scalable approach using a vendor BOM.
+*   [GS16](../scenario-16-private-bom/guide.qmd) - A more scalable approach using a vendor BOM.

@@ -43,5 +43,5 @@ Maven cannot reject versions during resolution, but the Enforcer Plugin's `banne
 
 ### ! Related
 
-* [S6: Forcing a Version](../scenario-6-forcing/guide.qmd) — How to redirect resolution to a safe version.
-* [S5: Exclusions](../scenario-5-exclusions/guide.qmd) — Removing a specific version from a specific path.
+* [MS6: Forcing a Version](../scenario-6-forcing/guide.qmd) — How to redirect resolution to a safe version.
+* [MS5: Exclusions](../scenario-5-exclusions/guide.qmd) — Removing a specific version from a specific path.

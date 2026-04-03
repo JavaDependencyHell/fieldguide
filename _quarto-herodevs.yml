@@ -24,6 +24,7 @@ format:
     include-after-body: book/_herodevs-footer.html
     mermaid:
       theme: default
+      config: mermaid-config.json
     code-block-bg: "#f9f9f9"
     code-block-border-left: "#990187"
     highlight-style: github

@@ -38,6 +38,7 @@ format:
     mermaid-format: png
     mermaid:
       theme: neutral
+      config: mermaid-config.json
 
     # No watermark
     include-in-header:

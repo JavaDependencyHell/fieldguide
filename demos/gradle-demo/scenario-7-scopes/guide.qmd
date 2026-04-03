@@ -47,7 +47,7 @@ Gradle configurations are granular. `api` exposes dependencies to consumers; `im
 Configurations control transitivity and packaging.
 
 #### Related Scenarios
-*   [Scenario 8: Optional](../scenario-8-optional/guide.qmd)
+*   [GS8: Optional](../scenario-8-optional/guide.qmd)
 
 
 #### ! Wild

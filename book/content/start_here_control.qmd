@@ -5,20 +5,22 @@ Then start here. Pick the outcome you want and jump directly to the mechanism th
 
 ### What to do next
 
-- Align versions across projects → S3: Dependency Management (BOM)
+Each scenario is implemented for Maven (MS), Gradle (GS), and SBT (SB). Jump to the version for your build tool.
 
-- Override a transitive version → S6: Forcing Transitive Versions
+- Align versions across projects → MS3/GS3/SB3: Dependency Management (BOM)
 
-- Override what a BOM provides → S4
+- Override a transitive version → MS6/GS6/SB6: Forcing Transitive Versions
 
-- Remove a transitive dependency → S5
+- Override what a BOM provides → MS4/GS4/SB4
 
-- Replace one library with another → S15
+- Remove a transitive dependency → MS5/GS5/SB5
 
-- Ensure reproducible builds → S11
+- Replace one library with another → MS15/GS15/SB15
 
-- Block a known-bad version → S14
+- Ensure reproducible builds → MS11/GS11/SB11
 
-- Reduce runtime/classpath footprint → S7, also S8
+- Block a known-bad version → MS14/GS14/SB14
 
-- Use vendor-patched or private artifacts → S16 or S17
+- Reduce runtime/classpath footprint → MS7/GS7/SB7, also MS8/GS8/SB8
+
+- Use vendor-patched or private artifacts → MS16/GS16/SB16 or MS17/GS17/SB17

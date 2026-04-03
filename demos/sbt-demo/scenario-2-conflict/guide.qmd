@@ -36,7 +36,7 @@ SBT (using Ivy/Coursier) employs the `latest-revision` conflict manager by defau
 
 #### ! Fix
 *   **Explicitly upgrading:** Change the direct dependency to `2.0.0` to match the transitive one.
-*   **Forcing a version:** Using `dependencyOverrides` to force `1.0.0` if `2.0.0` is broken (see S6).
+*   **Forcing a version:** Using `dependencyOverrides` to force `1.0.0` if `2.0.0` is broken (see SB6).
 
 #### ! Risk
 * LOW Use `dependencyOverrides` to pin a version.

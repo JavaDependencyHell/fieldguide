@@ -52,7 +52,7 @@ Gradle assumes semantic versioning: the newest version is likely backward-compat
 It upgrades you to the newest version found in the graph.
 
 #### ! Related
-*   [S6: Forcing a Version](../scenario-6-forcing/guide.qmd)
+*   [GS6: Forcing a Version](../scenario-6-forcing/guide.qmd)
 
 #### ! Wild
 

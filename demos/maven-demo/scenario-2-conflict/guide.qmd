@@ -70,7 +70,7 @@ This is the primary cause of "Dependency Hell." As graphs grow, "nearest" become
 Maven optimizes for "distance", while Gradle and SBT optimize for "freshness" — knowing which strategy your tool uses is critical for stability.
 
 #### ! Related
-* [S3: Central Management (BOM)](../scenario-3-mgmt/guide.qmd) - How to fix this centrally.
+* [MS3: Central Management (BOM)](../scenario-3-mgmt/guide.qmd) - How to fix this centrally.
 
 
 

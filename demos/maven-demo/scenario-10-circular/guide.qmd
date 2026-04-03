@@ -56,4 +56,4 @@ Cycles make it impossible to build modules in a linear order, forcing them to be
 Circular dependencies are technically resolvable but architecturally disastrous.
 
 #### ! Related
-* [S1: Basic Dependency](../scenario-1-basic/guide.qmd) - The ideal acyclic graph.
+* [MS1: Basic Dependency](../scenario-1-basic/guide.qmd) - The ideal acyclic graph.

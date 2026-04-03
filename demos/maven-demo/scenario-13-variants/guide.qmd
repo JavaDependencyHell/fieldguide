@@ -42,4 +42,4 @@ Maven uses classifiers for variants, but they are opaque strings with no automat
 
 ### ! Related
 
-* [S7: Scopes](../scenario-7-scopes/guide.qmd) — Scopes are Maven's other mechanism for controlling which artifacts reach which classpaths.
+* [MS7: Scopes](../scenario-7-scopes/guide.qmd) — Scopes are Maven's other mechanism for controlling which artifacts reach which classpaths.

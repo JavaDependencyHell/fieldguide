@@ -47,7 +47,7 @@ Gradle honours exclusion metadata, pruning the specified artifact and its descen
 Exclusions work as expected.
 
 #### ! Related
-*   [S15: Version Substitution](../scenario-15-substitution/guide.qmd)
+*   [GS15: Version Substitution](../scenario-15-substitution/guide.qmd)
 
 #### ! Wild
 

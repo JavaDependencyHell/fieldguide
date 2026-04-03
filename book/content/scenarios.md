@@ -5,29 +5,29 @@ title: Scenarios
 This guide explores dependency management through targeted scenarios.
 All are implemented for Maven, Gradle, and SBT, enabling direct comparison of how each tool resolves the same problem.
 
-Scenarios will often be referred to by the shorthand. Sxx. so S10 or S9 etc
+Each scenario is implemented for all three tools. References use a tool prefix: MS (Maven), GS (Gradle), SB (SBT) --- so MS2 is the Maven version of scenario 2, GS2 is Gradle, and SB2 is SBT.
 
 ::: {.content-visible when-format="html"}
 
 |  #  | Scenario | Maven | Gradle | SBT |
 |:---:|:---|:---:|:---:|:---:|
-| S1  | Basic Dependency | [Maven](../../demos/maven-demo/scenario-1-basic/guide.html) | [Gradle](../../demos/gradle-demo/scenario-1-basic/guide.html) | [SBT](../../demos/sbt-demo/scenario-1-basic/guide.html) |
-| S2  | Version Conflict | [Maven](../../demos/maven-demo/scenario-2-conflict/guide.html) | [Gradle](../../demos/gradle-demo/scenario-2-conflict/guide.html) | [SBT](../../demos/sbt-demo/scenario-2-conflict/guide.html) |
-| S3  | Central Management (BOM) | [Maven](../../demos/maven-demo/scenario-3-mgmt/guide.html) | [Gradle](../../demos/gradle-demo/scenario-3-mgmt/guide.html) | [SBT](../../demos/sbt-demo/scenario-3-mgmt/guide.html) |
-| S4  | Direct Override | [Maven](../../demos/maven-demo/scenario-4-override/guide.html) | [Gradle](../../demos/gradle-demo/scenario-4-override/guide.html) | [SBT](../../demos/sbt-demo/scenario-4-override/guide.html) |
-| S5  | Exclusions | [Maven](../../demos/maven-demo/scenario-5-exclusions/guide.html) | [Gradle](../../demos/gradle-demo/scenario-5-exclusions/guide.html) | [SBT](../../demos/sbt-demo/scenario-5-exclusions/guide.html) |
-| S6  | Forcing a Version | [Maven](../../demos/maven-demo/scenario-6-forcing/guide.html) | [Gradle](../../demos/gradle-demo/scenario-6-forcing/guide.html) | [SBT](../../demos/sbt-demo/scenario-6-forcing/guide.html) |
-| S7  | Scopes | [Maven](../../demos/maven-demo/scenario-7-scopes/guide.html) | [Gradle](../../demos/gradle-demo/scenario-7-scopes/guide.html) | [SBT](../../demos/sbt-demo/scenario-7-scopes/guide.html) |
-| S8  | Optional Dependencies | [Maven](../../demos/maven-demo/scenario-8-optional/guide.html) | [Gradle](../../demos/gradle-demo/scenario-8-optional/guide.html) | [SBT](../../demos/sbt-demo/scenario-8-optional/guide.html) |
-| S9  | Version Ranges | [Maven](../../demos/maven-demo/scenario-9-ranges/guide.html) | [Gradle](../../demos/gradle-demo/scenario-9-ranges/guide.html) | [SBT](../../demos/sbt-demo/scenario-9-ranges/guide.html) |
-| S10 | Circular Dependencies | [Maven](../../demos/maven-demo/scenario-10-circular/guide.html) | [Gradle](../../demos/gradle-demo/scenario-10-circular/guide.html) | [SBT](../../demos/sbt-demo/scenario-10-circular/guide.html) |
-| S11 | Dependency Locking | [Maven](../../demos/maven-demo/scenario-11-locking/guide.html) | [Gradle](../../demos/gradle-demo/scenario-11-locking/guide.html) | [SBT](../../demos/sbt-demo/scenario-11-locking/guide.html) |
-| S12 | Rich Version Metadata | [Maven](../../demos/maven-demo/scenario-12-metadata/guide.html) | [Gradle](../../demos/gradle-demo/scenario-12-metadata/guide.html) | [SBT](../../demos/sbt-demo/scenario-12-metadata/guide.html) |
-| S13 | Feature Variants | [Maven](../../demos/maven-demo/scenario-13-variants/guide.html) | [Gradle](../../demos/gradle-demo/scenario-13-variants/guide.html) | [SBT](../../demos/sbt-demo/scenario-13-variants/guide.html) |
-| S14 | Rejecting a Version | [Maven](../../demos/maven-demo/scenario-14-reject/guide.html) | [Gradle](../../demos/gradle-demo/scenario-14-reject/guide.html) | [SBT](../../demos/sbt-demo/scenario-14-reject/guide.html) |
-| S15 | Version Substitution | [Maven](../../demos/maven-demo/scenario-15-substitution/guide.html) | [Gradle](../../demos/gradle-demo/scenario-15-substitution/guide.html) | [SBT](../../demos/sbt-demo/scenario-15-substitution/guide.html) |
-| S16 | Private Repo (BOM) | [Maven](../../demos/maven-demo/scenario-16-private-bom/guide.html) | [Gradle](../../demos/gradle-demo/scenario-16-private-bom/guide.html) | [SBT](../../demos/sbt-demo/scenario-16-private-bom/guide.html) |
-| S17 | Private Repo (Patch) | [Maven](../../demos/maven-demo/scenario-17-private-patch/guide.html) | [Gradle](../../demos/gradle-demo/scenario-17-private-patch/guide.html) | [SBT](../../demos/sbt-demo/scenario-17-private-patch/guide.html) |
+| 1  | Basic Dependency | [MS1](../../demos/maven-demo/scenario-1-basic/guide.html) | [GS1](../../demos/gradle-demo/scenario-1-basic/guide.html) | [SB1](../../demos/sbt-demo/scenario-1-basic/guide.html) |
+| 2  | Version Conflict | [MS2](../../demos/maven-demo/scenario-2-conflict/guide.html) | [GS2](../../demos/gradle-demo/scenario-2-conflict/guide.html) | [SB2](../../demos/sbt-demo/scenario-2-conflict/guide.html) |
+| 3  | Central Management (BOM) | [MS3](../../demos/maven-demo/scenario-3-mgmt/guide.html) | [GS3](../../demos/gradle-demo/scenario-3-mgmt/guide.html) | [SB3](../../demos/sbt-demo/scenario-3-mgmt/guide.html) |
+| 4  | Direct Override | [MS4](../../demos/maven-demo/scenario-4-override/guide.html) | [GS4](../../demos/gradle-demo/scenario-4-override/guide.html) | [SB4](../../demos/sbt-demo/scenario-4-override/guide.html) |
+| 5  | Exclusions | [MS5](../../demos/maven-demo/scenario-5-exclusions/guide.html) | [GS5](../../demos/gradle-demo/scenario-5-exclusions/guide.html) | [SB5](../../demos/sbt-demo/scenario-5-exclusions/guide.html) |
+| 6  | Forcing a Version | [MS6](../../demos/maven-demo/scenario-6-forcing/guide.html) | [GS6](../../demos/gradle-demo/scenario-6-forcing/guide.html) | [SB6](../../demos/sbt-demo/scenario-6-forcing/guide.html) |
+| 7  | Scopes | [MS7](../../demos/maven-demo/scenario-7-scopes/guide.html) | [GS7](../../demos/gradle-demo/scenario-7-scopes/guide.html) | [SB7](../../demos/sbt-demo/scenario-7-scopes/guide.html) |
+| 8  | Optional Dependencies | [MS8](../../demos/maven-demo/scenario-8-optional/guide.html) | [GS8](../../demos/gradle-demo/scenario-8-optional/guide.html) | [SB8](../../demos/sbt-demo/scenario-8-optional/guide.html) |
+| 9  | Version Ranges | [MS9](../../demos/maven-demo/scenario-9-ranges/guide.html) | [GS9](../../demos/gradle-demo/scenario-9-ranges/guide.html) | [SB9](../../demos/sbt-demo/scenario-9-ranges/guide.html) |
+| 10 | Circular Dependencies | [MS10](../../demos/maven-demo/scenario-10-circular/guide.html) | [GS10](../../demos/gradle-demo/scenario-10-circular/guide.html) | [SB10](../../demos/sbt-demo/scenario-10-circular/guide.html) |
+| 11 | Dependency Locking | [MS11](../../demos/maven-demo/scenario-11-locking/guide.html) | [GS11](../../demos/gradle-demo/scenario-11-locking/guide.html) | [SB11](../../demos/sbt-demo/scenario-11-locking/guide.html) |
+| 12 | Rich Version Metadata | [MS12](../../demos/maven-demo/scenario-12-metadata/guide.html) | [GS12](../../demos/gradle-demo/scenario-12-metadata/guide.html) | [SB12](../../demos/sbt-demo/scenario-12-metadata/guide.html) |
+| 13 | Feature Variants | [MS13](../../demos/maven-demo/scenario-13-variants/guide.html) | [GS13](../../demos/gradle-demo/scenario-13-variants/guide.html) | [SB13](../../demos/sbt-demo/scenario-13-variants/guide.html) |
+| 14 | Rejecting a Version | [MS14](../../demos/maven-demo/scenario-14-reject/guide.html) | [GS14](../../demos/gradle-demo/scenario-14-reject/guide.html) | [SB14](../../demos/sbt-demo/scenario-14-reject/guide.html) |
+| 15 | Version Substitution | [MS15](../../demos/maven-demo/scenario-15-substitution/guide.html) | [GS15](../../demos/gradle-demo/scenario-15-substitution/guide.html) | [SB15](../../demos/sbt-demo/scenario-15-substitution/guide.html) |
+| 16 | Private Repo (BOM) | [MS16](../../demos/maven-demo/scenario-16-private-bom/guide.html) | [GS16](../../demos/gradle-demo/scenario-16-private-bom/guide.html) | [SB16](../../demos/sbt-demo/scenario-16-private-bom/guide.html) |
+| 17 | Private Repo (Patch) | [MS17](../../demos/maven-demo/scenario-17-private-patch/guide.html) | [GS17](../../demos/gradle-demo/scenario-17-private-patch/guide.html) | [SB17](../../demos/sbt-demo/scenario-17-private-patch/guide.html) |
 
 : Scenario Overview {tbl-colwidths="[5, 28, 22, 22, 22]"}
 
@@ -37,23 +37,23 @@ Scenarios will often be referred to by the shorthand. Sxx. so S10 or S9 etc
 
 |  #  | Scenario | Summary |
 |:---:|:---|:---|
-| S1  | Basic Dependency | Resolving a simple transitive dependency. |
-| S2  | Version Conflict | Handling a "diamond dependency" conflict. |
-| S3  | Central Management (BOM) | Using a Bill of Materials to control versions. |
-| S4  | Direct Override | Overriding a managed version with a direct declaration. |
-| S5  | Exclusions | Excluding a specific transitive dependency. |
-| S6  | Forcing a Version | Forcing a specific version throughout the graph. |
-| S7  | Scopes | Using `compile`, `test`, and `provided` scopes. |
-| S8  | Optional Dependencies | Handling optional dependencies (non-transitive by default). |
-| S9  | Version Ranges | Using ranges and their effect on reproducibility. |
-| S10 | Circular Dependencies | How circular dependencies are handled. |
-| S11 | Dependency Locking | Using lock files for reproducible builds. |
-| S12 | Rich Version Metadata | Using rich metadata for advanced resolution. |
-| S13 | Feature Variants | Consuming different variants of the same library. |
-| S14 | Rejecting a Version | Explicitly rejecting a specific version. |
-| S15 | Version Substitution | Programmatically substituting one version for another. |
-| S16 | Private Repo (BOM) | Overriding public versions via private repo and vendor BOM. |
-| S17 | Private Repo (Patch) | Overriding public versions via private repo and direct patch. |
+| 1  | Basic Dependency | Resolving a simple transitive dependency. |
+| 2  | Version Conflict | Handling a "diamond dependency" conflict. |
+| 3  | Central Management (BOM) | Using a Bill of Materials to control versions. |
+| 4  | Direct Override | Overriding a managed version with a direct declaration. |
+| 5  | Exclusions | Excluding a specific transitive dependency. |
+| 6  | Forcing a Version | Forcing a specific version throughout the graph. |
+| 7  | Scopes | Using `compile`, `test`, and `provided` scopes. |
+| 8  | Optional Dependencies | Handling optional dependencies (non-transitive by default). |
+| 9  | Version Ranges | Using ranges and their effect on reproducibility. |
+| 10 | Circular Dependencies | How circular dependencies are handled. |
+| 11 | Dependency Locking | Using lock files for reproducible builds. |
+| 12 | Rich Version Metadata | Using rich metadata for advanced resolution. |
+| 13 | Feature Variants | Consuming different variants of the same library. |
+| 14 | Rejecting a Version | Explicitly rejecting a specific version. |
+| 15 | Version Substitution | Programmatically substituting one version for another. |
+| 16 | Private Repo (BOM) | Overriding public versions via private repo and vendor BOM. |
+| 17 | Private Repo (Patch) | Overriding public versions via private repo and direct patch. |
 
 : Scenario Overview {tbl-colwidths="[5, 30, 65]"}
 

@@ -178,7 +178,7 @@
 }
 
 % ==================================================
-% INLINE SCENARIO BADGE (S1, S2, …)
+% INLINE SCENARIO BADGE (MS1, GS3, SB7, …)
 % ==================================================
 
 \ifdefined\scenariobadge\else
@@ -197,8 +197,10 @@
 }
 \fi
 
+% \scnref now receives the full label (e.g., MS1, GS3, SB7)
+% from scenario_badge.lua — no prefix prepended here.
 \ifdefined\scnref\else
-\newcommand{\scnref}[1]{\scenariobadge{S#1}}
+\newcommand{\scnref}[1]{\scenariobadge{#1}}
 \fi
 
 % ==================================================

@@ -1,0 +1,8 @@
+{
+  "fontSize": 14,
+  "flowchart": {
+    "useMaxWidth": false,
+    "nodeSpacing": 30,
+    "rankSpacing": 40
+  }
+}

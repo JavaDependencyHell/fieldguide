@@ -31,5 +31,5 @@ Maven's POM format does not support rich version metadata (`prefer`, `strictly`,
 
 ### ! Related
 
-* [S6: Forcing a Version](../scenario-6-forcing/guide.qmd) — `<dependencyManagement>` as Maven's version enforcement tool.
-* [S14: Rejecting a Version](../scenario-14-reject/guide.qmd) — Using the Enforcer Plugin for negative constraints.
+* [MS6: Forcing a Version](../scenario-6-forcing/guide.qmd) — `<dependencyManagement>` as Maven's version enforcement tool.
+* [MS14: Rejecting a Version](../scenario-14-reject/guide.qmd) — Using the Enforcer Plugin for negative constraints.

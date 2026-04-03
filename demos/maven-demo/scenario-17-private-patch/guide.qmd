@@ -42,4 +42,4 @@ A direct version declaration in `<dependencies>` is Maven's strongest versioning
 A direct version declaration for a dependency is the most straightforward way to ensure a specific version is used, provided that version is available in one of the configured repositories. This method overrides all other mechanisms like BOMs or transitive versions.
 
 #### ! Related
-* [S16: Private Repo (BOM)](../scenario-16-private-bom/guide.qmd) - A more scalable approach using a vendor BOM.
+* [MS16: Private Repo (BOM)](../scenario-16-private-bom/guide.qmd) - A more scalable approach using a vendor BOM.

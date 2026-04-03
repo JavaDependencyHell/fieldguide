@@ -8,16 +8,18 @@ Treat it like a field guide: find the symptom that looks closest to your situati
 
 ### What to do next
 
-- Version changed unexpectedly → S2: Version Conflict Resolution
+Each scenario is implemented for Maven (MS), Gradle (GS), and SBT (SB). Jump to the version for your build tool.
 
-- Explicit version not honoured → S2, then S6
+- Version changed unexpectedly → MS2/GS2/SB2: Version Conflict Resolution
 
-- Compiles but fails at runtime → S7: Dependency Scopes, also check S5
+- Explicit version not honoured → MS2/GS2/SB2, then MS6/GS6/SB6
 
-- Build worked yesterday but not today → S9: Version Ranges, then S11
+- Compiles but fails at runtime → MS7/GS7/SB7: Dependency Scopes, also check MS5/GS5/SB5
 
-- Unwanted library keeps appearing → S5, then S15
+- Build worked yesterday but not today → MS9/GS9/SB9: Version Ranges, then MS11/GS11/SB11
 
-- Fixed a version but it keeps reverting → S6, and S14
+- Unwanted library keeps appearing → MS5/GS5/SB5, then MS15/GS15/SB15
 
-- Dependency tree looks wrong but not sure why → S1, then S3
+- Fixed a version but it keeps reverting → MS6/GS6/SB6, and MS14/GS14/SB14
+
+- Dependency tree looks wrong but not sure why → MS1/GS1/SB1, then MS3/GS3/SB3

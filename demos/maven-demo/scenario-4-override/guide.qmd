@@ -53,7 +53,7 @@ Overriding BOMs is common when patching a vulnerability before the BOM maintaine
 Explicit declarations generally trump managed recommendations, allowing for targeted overrides.
 
 #### ! Related
-*   [S6: Forcing Transitive Versions via Dependency Management](../scenario-6-forcing/guide.qmd) - How to force a version even against explicit declarations.
+*   [MS6: Forcing Transitive Versions via Dependency Management](../scenario-6-forcing/guide.qmd) - How to force a version even against explicit declarations.
 
 
 #### ! Wild

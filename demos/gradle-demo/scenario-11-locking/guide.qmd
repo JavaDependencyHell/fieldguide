@@ -43,4 +43,4 @@ Dependency locking is essential for any team that values reproducible builds, wh
 Locking ensures reproducibility.
 
 #### Related Scenarios
-*   [Scenario 9: Ranges](../scenario-9-ranges/guide.qmd)
+*   [GS9: Ranges](../scenario-9-ranges/guide.qmd)

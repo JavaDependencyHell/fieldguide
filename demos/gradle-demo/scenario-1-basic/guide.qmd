@@ -51,4 +51,4 @@ The dependency graph is healthy and resolving as expected.
 It resolves the full graph by default.
 
 #### ! Related
-*   [S2: Version Conflict](../scenario-2-conflict/guide.qmd)
+*   [GS2: Version Conflict](../scenario-2-conflict/guide.qmd)

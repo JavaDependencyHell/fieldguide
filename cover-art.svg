@@ -1,0 +1,270 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 2400" width="1600" height="2400">
+  <defs>
+    <!-- Isometric block faces -->
+    <linearGradient id="topFace" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#5a6a7a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4a5a6a;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="leftFace" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#3a4a5a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2e3e4e;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="rightFace" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#2e3e4e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#253545;stop-opacity:1" />
+    </linearGradient>
+
+    <!-- Amber/warning block gradients -->
+    <linearGradient id="topAmber" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#e8943a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#d4802a;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="leftAmber" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#c06a1a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#a85a14;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="rightAmber" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#a85a14;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#904a10;stop-opacity:1" />
+    </linearGradient>
+
+    <!-- Red/danger block gradients -->
+    <linearGradient id="topRed" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#cc4444;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#b33a3a;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="leftRed" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#992e2e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#802525;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="rightRed" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#802525;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6b1e1e;stop-opacity:1" />
+    </linearGradient>
+
+    <!-- Glow filter for stressed blocks -->
+    <filter id="amberGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feFlood flood-color="#e8943a" flood-opacity="0.4"/>
+      <feComposite in2="blur" operator="in"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="redGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feFlood flood-color="#cc4444" flood-opacity="0.5"/>
+      <feComposite in2="blur" operator="in"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Crack pattern -->
+    <pattern id="crackPattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+      <line x1="20" y1="0" x2="45" y2="50" stroke="#1a2a3a" stroke-width="1.5" opacity="0.6"/>
+      <line x1="45" y1="50" x2="35" y2="55" stroke="#1a2a3a" stroke-width="1" opacity="0.5"/>
+      <line x1="45" y1="50" x2="60" y2="80" stroke="#1a2a3a" stroke-width="1.5" opacity="0.6"/>
+    </pattern>
+
+    <!-- Subtle connection lines pattern -->
+    <pattern id="circuitFaint" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+      <circle cx="10" cy="10" r="1.5" fill="#4a6a8a" opacity="0.15"/>
+      <circle cx="40" cy="30" r="1.5" fill="#4a6a8a" opacity="0.15"/>
+      <circle cx="20" cy="50" r="1.5" fill="#4a6a8a" opacity="0.15"/>
+      <line x1="10" y1="10" x2="40" y2="30" stroke="#4a6a8a" stroke-width="0.5" opacity="0.1"/>
+      <line x1="40" y1="30" x2="20" y2="50" stroke="#4a6a8a" stroke-width="0.5" opacity="0.1"/>
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1600" height="2400" fill="#1a1f2e"/>
+
+  <!-- Subtle circuit/dependency pattern in background -->
+  <rect width="1600" height="2400" fill="url(#circuitFaint)" opacity="0.5"/>
+
+  <!--
+    Isometric block tower - each block is drawn as 3 faces (top, left, right)
+    Base unit: w=120, h=60 (isometric proportions)
+    Tower built from bottom-up, getting slightly offset/precarious toward top
+  -->
+
+  <g transform="translate(800, 1750)">
+
+    <!-- ============ FOUNDATION ROW (3 wide) ============ -->
+    <!-- Block 1 (left) -->
+    <g transform="translate(-180, 0)">
+      <polygon points="0,-30 120,-90 240,-30 120,30" fill="url(#topFace)"/>
+      <polygon points="0,-30 0,30 120,90 120,30" fill="url(#leftFace)"/>
+      <polygon points="120,30 120,90 240,30 240,-30" fill="url(#rightFace)"/>
+    </g>
+    <!-- Block 2 (center) - AMBER stressed -->
+    <g transform="translate(-60, -60)" filter="url(#amberGlow)">
+      <polygon points="0,-30 120,-90 240,-30 120,30" fill="url(#topAmber)"/>
+      <polygon points="0,-30 0,30 120,90 120,30" fill="url(#leftAmber)"/>
+      <polygon points="120,30 120,90 240,30 240,-30" fill="url(#rightAmber)"/>
+    </g>
+    <!-- Block 3 (right) -->
+    <g transform="translate(60, 0)">
+      <polygon points="0,-30 120,-90 240,-30 120,30" fill="url(#topFace)"/>
+      <polygon points="0,-30 0,30 120,90 120,30" fill="url(#leftFace)"/>
+      <polygon points="120,30 120,90 240,30 240,-30" fill="url(#rightFace)"/>
+    </g>
+
+    <!-- ============ ROW 2 (3 wide, offset) ============ -->
+    <!-- Block 4 -->
+    <g transform="translate(-180, -120)">
+      <polygon points="0,-30 120,-90 240,-30 120,30" fill="url(#topFace)"/>
+      <polygon points="0,-30 0,30 120,90 120,30" fill="url(#leftFace)"/>
+      <polygon points="120,30 120,90 240,30 240,-30" fill="url(#rightFace)"/>
+    </g>
+    <!-- Block 5 -->
+    <g transform="translate(-60, -180)">
+      <polygon points="0,-30 120,-90 240,-30 120,30" fill="url(#topFace)"/>
+      <polygon points="0,-30 0,30 120,90 120,30" fill="url(#leftFace)"/>
+      <polygon points="120,30 120,90 240,30 240,-30" fill="url(#rightFace)"/>
+    </g>
+    <!-- Block 6 (cracked) -->
+    <g transform="translate(60, -120)">
+      <polygon points="0,-30 120,-90 240,-30 120,30" fill="url(#topFace)"/>
+      <polygon points="0,-30 0,30 120,90 120,30" fill="url(#leftFace)"/>
+      <polygon points="120,30 120,90 240,30 240,-30" fill="url(#rightFace)"/>
+      <!-- Crack lines -->
+      <line x1="30" y1="-10" x2="60" y2="20" stroke="#1a2a3a" stroke-width="2" opacity="0.7"/>
+      <line x1="60" y1="20" x2="50" y2="35" stroke="#1a2a3a" stroke-width="1.5" opacity="0.5"/>
+      <line x1="60" y1="20" x2="80" y2="50" stroke="#1a2a3a" stroke-width="1.5" opacity="0.6"/>
+    </g>
+
+    <!-- ============ ROW 3 (2.5 wide - gap appearing) ============ -->
+    <!-- Block 7 -->
+    <g transform="translate(-150, -270)">
+      <polygon points="0,-30 120,-90 240,-30 120,30" fill="url(#topFace)"/>
+      <polygon points="0,-30 0,30 120,90 120,30" fill="url(#leftFace)"/>
+      <polygon points="120,30 120,90 240,30 240,-30" fill="url(#rightFace)"/>
+    </g>
+    <!-- Block 8 - RED danger, the problem block -->
+    <g transform="translate(-30, -330)" filter="url(#redGlow)">
+      <polygon points="0,-30 120,-90 240,-30 120,30" fill="url(#topRed)"/>
+      <polygon points="0,-30 0,30 120,90 120,30" fill="url(#leftRed)"/>
+      <polygon points="120,30 120,90 240,30 240,-30" fill="url(#rightRed)"/>
+      <!-- Crack lines on red block -->
+      <line x1="140" y1="-50" x2="170" y2="-20" stroke="#4a1111" stroke-width="2.5" opacity="0.7"/>
+      <line x1="170" y1="-20" x2="155" y2="0" stroke="#4a1111" stroke-width="2" opacity="0.5"/>
+      <line x1="170" y1="-20" x2="200" y2="10" stroke="#4a1111" stroke-width="2" opacity="0.6"/>
+    </g>
+    <!-- MISSING block gap on right - just show a faint outline -->
+    <g transform="translate(90, -270)" opacity="0.15">
+      <polygon points="0,-30 120,-90 240,-30 120,30" fill="none" stroke="#5a7a9a" stroke-width="1" stroke-dasharray="6,6"/>
+      <polygon points="0,-30 0,30 120,90 120,30" fill="none" stroke="#5a7a9a" stroke-width="1" stroke-dasharray="6,6"/>
+      <polygon points="120,30 120,90 240,30 240,-30" fill="none" stroke="#5a7a9a" stroke-width="1" stroke-dasharray="6,6"/>
+    </g>
+
+    <!-- ============ ROW 4 (2 wide, leaning) ============ -->
+    <g transform="translate(-140, -410) rotate(1.5)">
+      <!-- Block 9 -->
+      <g>
+        <polygon points="0,-30 120,-90 240,-30 120,30" fill="url(#topFace)"/>
+        <polygon points="0,-30 0,30 120,90 120,30" fill="url(#leftFace)"/>
+        <polygon points="120,30 120,90 240,30 240,-30" fill="url(#rightFace)"/>
+      </g>
+      <!-- Block 10 - AMBER -->
+      <g transform="translate(120, -60)" filter="url(#amberGlow)">
+        <polygon points="0,-30 120,-90 240,-30 120,30" fill="url(#topAmber)"/>
+        <polygon points="0,-30 0,30 120,90 120,30" fill="url(#leftAmber)"/>
+        <polygon points="120,30 120,90 240,30 240,-30" fill="url(#rightAmber)"/>
+      </g>
+    </g>
+
+    <!-- ============ ROW 5 (2, more lean) ============ -->
+    <g transform="translate(-110, -530) rotate(2.5)">
+      <!-- Block 11 -->
+      <g>
+        <polygon points="0,-30 120,-90 240,-30 120,30" fill="url(#topFace)"/>
+        <polygon points="0,-30 0,30 120,90 120,30" fill="url(#leftFace)"/>
+        <polygon points="120,30 120,90 240,30 240,-30" fill="url(#rightFace)"/>
+      </g>
+      <!-- Block 12 (cracked) -->
+      <g transform="translate(120, -60)">
+        <polygon points="0,-30 120,-90 240,-30 120,30" fill="url(#topFace)"/>
+        <polygon points="0,-30 0,30 120,90 120,30" fill="url(#leftFace)"/>
+        <polygon points="120,30 120,90 240,30 240,-30" fill="url(#rightFace)"/>
+        <line x1="80" y1="-40" x2="100" y2="-10" stroke="#1a2a3a" stroke-width="1.5" opacity="0.6"/>
+        <line x1="100" y1="-10" x2="120" y2="20" stroke="#1a2a3a" stroke-width="1.5" opacity="0.5"/>
+      </g>
+    </g>
+
+    <!-- ============ ROW 6 (1.5, precarious) ============ -->
+    <g transform="translate(-60, -660) rotate(3)">
+      <!-- Block 13 -->
+      <g>
+        <polygon points="0,-30 120,-90 240,-30 120,30" fill="url(#topFace)"/>
+        <polygon points="0,-30 0,30 120,90 120,30" fill="url(#leftFace)"/>
+        <polygon points="120,30 120,90 240,30 240,-30" fill="url(#rightFace)"/>
+      </g>
+      <!-- Half block / fragment -->
+      <g transform="translate(120, -60)" opacity="0.7">
+        <polygon points="0,-30 60,-60 120,-30 60,0" fill="url(#topFace)"/>
+        <polygon points="0,-30 0,0 60,30 60,0" fill="url(#leftFace)"/>
+        <polygon points="60,0 60,30 120,0 120,-30" fill="url(#rightFace)"/>
+      </g>
+    </g>
+
+    <!-- ============ TOP (single block, tilted) ============ -->
+    <g transform="translate(-10, -780) rotate(4)">
+      <!-- Block 14 - the topmost, leaning -->
+      <g>
+        <polygon points="0,-30 120,-90 240,-30 120,30" fill="url(#topFace)"/>
+        <polygon points="0,-30 0,30 120,90 120,30" fill="url(#leftFace)"/>
+        <polygon points="120,30 120,90 240,30 240,-30" fill="url(#rightFace)"/>
+      </g>
+    </g>
+
+    <!-- ============ FALLEN BLOCK (on the ground to the right) ============ -->
+    <g transform="translate(280, 10) rotate(-8)">
+      <polygon points="0,-25 100,-75 200,-25 100,25" fill="url(#topFace)" opacity="0.6"/>
+      <polygon points="0,-25 0,20 100,70 100,25" fill="url(#leftFace)" opacity="0.6"/>
+      <polygon points="100,25 100,70 200,20 200,-25" fill="url(#rightFace)" opacity="0.6"/>
+    </g>
+
+    <!-- ============ DEPENDENCY LINES (faint connections between blocks) ============ -->
+    <g opacity="0.2" stroke="#6a8aaa" stroke-width="1" fill="none">
+      <!-- Lines suggesting dependency connections -->
+      <line x1="-60" y1="-30" x2="-90" y2="-150" stroke-dasharray="4,4"/>
+      <line x1="180" y1="-30" x2="150" y2="-150" stroke-dasharray="4,4"/>
+      <line x1="60" y1="-210" x2="90" y2="-300" stroke-dasharray="4,4"/>
+      <line x1="-30" y1="-210" x2="-60" y2="-300" stroke-dasharray="4,4"/>
+      <line x1="30" y1="-360" x2="0" y2="-440" stroke-dasharray="4,4"/>
+      <line x1="150" y1="-360" x2="180" y2="-440" stroke-dasharray="4,4"/>
+      <!-- Line to fallen block -->
+      <line x1="180" y1="-30" x2="320" y2="0" stroke-dasharray="3,6" opacity="0.15"/>
+    </g>
+
+    <!-- Small floating particles/nodes suggesting a dependency ecosystem -->
+    <g opacity="0.25">
+      <circle cx="-280" cy="-200" r="3" fill="#5a8aaa"/>
+      <circle cx="-300" cy="-350" r="2" fill="#5a8aaa"/>
+      <circle cx="-250" cy="-500" r="2.5" fill="#5a8aaa"/>
+      <circle cx="350" cy="-300" r="3" fill="#5a8aaa"/>
+      <circle cx="380" cy="-150" r="2" fill="#5a8aaa"/>
+      <circle cx="320" cy="-480" r="2.5" fill="#5a8aaa"/>
+      <circle cx="-220" cy="-650" r="2" fill="#5a8aaa"/>
+      <circle cx="280" cy="-600" r="2" fill="#5a8aaa"/>
+      <!-- Faint lines between particles -->
+      <line x1="-280" y1="-200" x2="-300" y2="-350" stroke="#5a8aaa" stroke-width="0.5"/>
+      <line x1="-300" y1="-350" x2="-250" y2="-500" stroke="#5a8aaa" stroke-width="0.5"/>
+      <line x1="350" y1="-300" x2="380" y2="-150" stroke="#5a8aaa" stroke-width="0.5"/>
+      <line x1="350" y1="-300" x2="320" y2="-480" stroke="#5a8aaa" stroke-width="0.5"/>
+    </g>
+
+  </g>
+
+  <!-- Subtle vignette overlay -->
+  <radialGradient id="vignette" cx="50%" cy="45%" r="60%">
+    <stop offset="0%" style="stop-color:#1a1f2e;stop-opacity:0"/>
+    <stop offset="100%" style="stop-color:#0a0f1a;stop-opacity:0.7"/>
+  </radialGradient>
+  <rect width="1600" height="2400" fill="url(#vignette)"/>
+
+</svg>

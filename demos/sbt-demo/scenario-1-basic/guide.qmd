@@ -52,7 +52,7 @@ A clean tree with no unexpected versions or `omitted` nodes.
 The dependency graph is healthy and resolving as expected.
 
 #### ! Scales
-Transitive resolution is the only way modern software development scales. Without it, you would be managing hundreds of jar files manually. However, it also means that adding one small library can pull in a large tree of other libraries, potentially leading to conflicts (see S2).
+Transitive resolution is the only way modern software development scales. Without it, you would be managing hundreds of jar files manually. However, it also means that adding one small library can pull in a large tree of other libraries, potentially leading to conflicts (see SB2).
 
 #### ! Takeaway
 SBT resolves dependencies transitively. You declare the roots; SBT finds the rest of the tree.

@@ -42,4 +42,4 @@ Adding a private resolver makes the artifact available, and a direct `libraryDep
 A direct version declaration for a dependency is the most straightforward way to ensure a specific version is used, provided that version is available in one of the configured resolvers.
 
 #### ! Related
-*   [S16](../scenario-16-private-bom/guide.qmd) - A more scalable approach using a vendor BOM.
+*   [SB16](../scenario-16-private-bom/guide.qmd) - A more scalable approach using a vendor BOM.
