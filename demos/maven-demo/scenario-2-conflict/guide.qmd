@@ -76,9 +76,7 @@ Maven optimizes for "distance", while Gradle and SBT optimize for "freshness" â€
 
 #### ! Wild
 
-A number of financial institutions discovered vulnerable versions of Apache Commons Collections deep in their transitive graphs, often buried three levels deep in vendor SDKs.
+In 2015, a [remote code execution vulnerability in Apache Commons Collections](https://github.com/advisories/GHSA-fjq5-5j5f-mvxh) (CVE-2015-7501) sent shockwaves through the Java ecosystem. The vulnerable library was embedded deep in the transitive dependency graphs of [IBM WebSphere, Oracle WebLogic, and Red Hat JBoss](https://access.redhat.com/security/vulnerabilities/986a8488-052e-46d1-8ede-c55cbfceb822) -- application servers widely deployed in financial services and government.
 
-In many cases, they couldn't upgrade the SDK itself. Because Maven's "nearest wins" logic often favored the older, vulnerable version (due to it being slightly "closer" to the root).
-
-They utilized `<dependencyManagement>` to pin the patched version globally. This allowed them to satisfy security audits without extensive regression testing of the vendor SDK.
+Many organisations couldn't upgrade the affected application server or vendor SDK directly. Maven's "nearest wins" logic often favoured the older, vulnerable version (being slightly "closer" to the root). The practical fix was `<dependencyManagement>` to pin the patched Commons Collections version globally, satisfying security audits without requiring full regression testing of the vendor stack.
 

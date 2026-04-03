@@ -52,6 +52,4 @@ Ranges work but are dynamic.
 
 #### ! Wild
 
-A well-known failure mode with version ranges occurs when CI resolves a newly published dependency that developer machines have not yet seen due to local caching.
-
-The result is a build that suddenly fails without any source changes.
+A well-known failure mode with dynamic versions occurs when CI resolves a newly published dependency that developer machines have not yet seen. Gradle caches dynamic version results for [24 hours by default](https://docs.gradle.org/current/userguide/dynamic_versions.html), controlled by `cacheDynamicVersionsFor`. A developer's Gradle cache holds yesterday's resolution; CI, running with `--refresh-dependencies` or a fresh cache, picks up the new version. The build fails without any source changes. Gradle's [dependency locking](https://docs.gradle.org/current/userguide/dependency_locking.html) feature was introduced specifically to make dynamic version resolution reproducible across environments.

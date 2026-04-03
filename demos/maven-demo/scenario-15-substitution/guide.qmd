@@ -19,7 +19,7 @@ Maven lacks a graph-wide substitution mechanism; its exclusions are declaration-
 
 - **Exclusion on every path:** The brute-force approach. Add `<exclusion>` blocks to every direct dependency that transitively pulls in the unwanted library. This works but is verbose, fragile, and must be maintained as the dependency graph evolves.
 - **Global exclusion via `<dependencyManagement>`:** While `<dependencyManagement>` cannot exclude a dependency outright, you can declare the unwanted artifact with `<scope>provided</scope>` to remove it from the runtime classpath. This is not a true exclusion but achieves a similar practical effect.
-- **Maven Shade Plugin:** For substitutions where the replacement has a different package structure, the Shade Plugin can relocate classes at build time. This is a heavy-handed solution but is used in practice for complex migrations.
+- **Eclipse Transformer:** For substitutions where the replacement has a different package structure (e.g., `javax.*` to `jakarta.*`), the [Eclipse Transformer](https://github.com/eclipse-transformer/transformer) can rewrite bytecode, resources, and nested JARs at build time via its Maven plugin. This is the recommended approach for namespace migrations — the Maven Shade Plugin can relocate packages but [introduces problems with transitive dependencies and IDE debugging](https://tomee.apache.org/javax-to-jakarta.html).
 
 #### ! Risk
 
@@ -55,6 +55,4 @@ Maven has no graph-wide substitution mechanism. Use exclusions on each path plus
 
 #### ! Wild
 
-Large enterprise projects migrating from `javax.servlet` to `jakarta.servlet` often face hundreds of modules that cannot be updated simultaneously.
-
-Using the Maven Shade Plugin to relocate classes at build time allows for incremental migration, one module at a time, without breaking the overall application.
+Large enterprise projects migrating from `javax.servlet` to `jakarta.servlet` often face hundreds of modules that cannot be updated simultaneously. The [Eclipse Transformer](https://github.com/eclipse-transformer/transformer) was created specifically for this problem — it rewrites bytecode and resources to map `javax.*` to `jakarta.*` without requiring source changes. Apache TomEE [initially tried the Maven Shade Plugin's relocation feature](https://tomee.apache.org/javax-to-jakarta.html) for this purpose but abandoned it due to broken transitive dependencies and lost source/javadoc mappings. The Transformer's Maven plugin hooks into the standard build lifecycle, allowing teams to migrate one module at a time while the rest of the application continues to use the old namespace.

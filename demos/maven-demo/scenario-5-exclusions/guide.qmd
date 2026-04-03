@@ -59,6 +59,6 @@ Exclusions are powerful but dangerous; use them only when you know the dependent
 
 #### ! Wild
 
-License compliance scans frequently uncover GPL-licensed libraries pulled in transitively.
+For years, the most common use of exclusions in the Java ecosystem was logging. Prior to Spring Framework 5, any project that wanted to use SLF4J had to explicitly exclude `commons-logging` from Spring's transitive dependencies -- a pattern so widespread that Spring's own [blog documented the problem](https://spring.io/blog/2009/12/04/logging-dependencies-in-spring/) and the [SLF4J FAQ](https://www.slf4j.org/faq.html) devoted a section to it. Spring eventually solved it in 5.0 by replacing `commons-logging` with its own [`spring-jcl` bridge module](https://docs.spring.io/spring-framework/reference/core/spring-jcl.html). The logging exclusion pattern remains common in projects that consolidate multiple logging frameworks (e.g., excluding `log4j` in favour of `logback`, or removing `slf4j-simple` to prevent binding conflicts).
 
-A common enterprise response is to exclude the offending dependency and substitute a permissively licensed alternative, verifying at runtime that the upstream library still functions.
+License compliance scans do frequently uncover GPL-licensed libraries pulled in transitively. However, the fix is rarely as simple as excluding and substituting -- permissively licensed drop-in replacements with compatible APIs are uncommon. More often, teams must get legal to approve the transitive inclusion, restructure the code to avoid the dependency entirely, or accept the license obligation.

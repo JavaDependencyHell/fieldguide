@@ -57,11 +57,6 @@ Configurations control visibility and transitivity. Use `% Test` and `% Provided
 #### Related Scenarios
 *   [Scenario 8: Optional](../scenario-8-optional/guide.qmd)
 
-::: {.callout}
-**Seen in the Wild**
+#### ! Wild
 
-Data engineering teams often find themselves shipping "uber-jars" hundreds of megabytes in size, despite the cluster environment already containing the core Spark libraries.
-
-By switching these dependencies to `% Provided`, the artifact size can drop to tens of megabytes, significantly reducing deployment time and CI/CD overhead.
-
-:::
+Data engineering teams running [Apache Spark](https://spark.apache.org/) often ship uber-jars hundreds of megabytes in size, despite the cluster already containing the core Spark and Hadoop libraries. The fix is straightforward: marking `spark-core`, `spark-sql`, and `hadoop-client` as `% Provided` tells SBT to exclude them from the packaged artifact. In practice, this can shrink a fat JAR from 200+ MB to under 30 MB, dramatically reducing deployment times and CI/CD storage costs. The trap is that `% Provided` dependencies are still available during `sbt test`, so tests pass even if the cluster doesn't actually provide the expected version.

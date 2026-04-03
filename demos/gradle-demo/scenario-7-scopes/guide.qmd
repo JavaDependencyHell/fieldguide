@@ -52,8 +52,4 @@ Configurations control transitivity and packaging.
 
 #### ! Wild
 
-In large multi-module builds, initially using `api` for all internal dependencies can cause dramatic recompile times.
-
-A single change in a low-level utility module can trigger a full project rebuild.
-
-By systematically switching to `implementation`, teams can encapsulate their build graph, reducing compile times from minutes to seconds.
+In large multi-module builds, initially using `api` for all internal dependencies can cause dramatic recompile times. Because `api` exposes a dependency to all consumers' compile classpaths, a single change in a low-level utility module [triggers recompilation of every module that transitively depends on it](https://docs.gradle.org/current/userguide/java_library_plugin.html). Switching to `implementation` limits recompilation to the module itself and its direct consumers. In practice, teams report this change alone reducing incremental build times from minutes to seconds on projects with dozens of modules.

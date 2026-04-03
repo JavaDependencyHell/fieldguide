@@ -58,8 +58,4 @@ Explicit declarations generally trump managed recommendations, allowing for targ
 
 #### ! Wild
 
-Many teams using the Spring Boot BOM encountered cases where a patched library version was required before an updated BOM was available.
-
-By declaring the patched version explicitly in their `<dependencies>` block, they overrode the BOM's "safe" suggestion.
-
-This allowed them to ship a fix in hours rather than waiting days for the platform maintainers to release a synchronized update.
+A common pattern with the [Spring Boot BOM](https://docs.spring.io/spring-boot/appendix/dependency-versions/index.html) is needing a patched library version before the next Boot release bundles it. For example, when Log4Shell (CVE-2021-44228) hit, teams couldn't wait for a coordinated Spring Boot update -- they declared the patched `log4j-core` version directly in `<dependencies>`, overriding the BOM's managed version. Spring's own [documentation](https://docs.spring.io/spring-boot/how-to/build.html#howto.build.customize-dependency-versions) describes this as the intended escape hatch: a direct `<dependency>` declaration always takes precedence over `<dependencyManagement>`.

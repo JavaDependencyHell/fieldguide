@@ -56,6 +56,4 @@ Ranges trade reproducibility for freshness; use with caution (and locking).
 
 #### ! Wild
 
-A well-known failure mode with version ranges occurs when CI resolves a newly published dependency that developer machines have not yet seen due to local caching.
-
-The result is a build that suddenly fails without any source changes.
+A well-known failure mode with version ranges occurs when CI resolves a newly published dependency that developer machines have not yet seen. Maven's local repository caches resolution results and [will not re-attempt resolution until the update interval elapses](https://cwiki.apache.org/confluence/display/MAVEN/Maven+3.x+Compatibility+Notes) (daily by default). A developer's `~/.m2/repository` may hold yesterday's resolution while CI, starting with an empty cache, picks up today's newly published version. The build suddenly fails without any source changes. Maven 3.x further tightened this by [deprecating the `RELEASE` and `LATEST` meta-versions](https://cwiki.apache.org/confluence/display/MAVEN/Maven+3.x+Compatibility+Notes) in POMs, pushing teams toward explicit version declarations or dependency locking.

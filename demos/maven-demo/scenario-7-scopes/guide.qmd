@@ -65,8 +65,4 @@ Scopes control the visibility and transitivity of dependencies; use them to keep
 
 #### ! Wild
 
-A common production failure occurs when a web application works fine in an IDE but fails after deployment with a `NoClassDefFoundError`.
-
-This often happens because `provided` was used for a library that the application server does not actually supply.
-
-Teams then discover that changing the scope to `compile` (the default) correctly bundles the missing JAR into the final artifact.
+A common production failure occurs when a web application works fine in an IDE but fails after deployment with a `NoClassDefFoundError`. IDEs typically add all dependencies (including `provided`) to the runtime classpath, masking the problem. After deployment to an application server like Tomcat or WildFly, `provided` dependencies are excluded from the WAR -- and if the server doesn't actually supply that library, the application crashes. The classic example is marking a JSON library as `provided` because the developer assumed their app server bundled it. The [Maven dependency scope documentation](https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#dependency-scope) is clear on this, but the IDE behaviour makes it a recurring trap.

@@ -51,11 +51,6 @@ Exclusions work.
 #### ! Related
 N/A
 
-::: {.callout}
-**Seen in the Wild**
+#### ! Wild
 
-A recurring issue in Scala ecosystems occurs when libraries depend on different Scala binary versions (for example, 2.12 vs 2.13).
-
-Teams often resolve this by excluding the unwanted variant and adding a direct dependency on the aligned version.
-
-:::
+A recurring issue in Scala ecosystems occurs when libraries depend on different [Scala binary versions](https://docs.scala-lang.org/overviews/core/binary-compatibility-of-scala-releases.html) (for example, 2.12 vs 2.13). Because Scala encodes the binary version into artifact names (e.g., `library_2.12` vs `library_2.13`), mixing versions causes `NoSuchMethodError` or `ClassNotFoundException` at runtime. Teams often resolve this by excluding the unwanted variant and adding a direct dependency on the aligned version. The [sbt cross-building documentation](https://www.scala-sbt.org/1.x/docs/Cross-Build.html) covers the underlying mechanism.

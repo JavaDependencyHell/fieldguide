@@ -56,11 +56,6 @@ Explicit declarations in `libraryDependencies` are your primary way of requestin
 #### Related Scenarios
 *   [Scenario 6: Forcing Versions](../scenario-6-forcing/guide.qmd) - Using `dependencyOverrides` for stricter control.
 
-::: {.callout}
-**Seen in the Wild**
+#### ! Wild
 
-When facing bugs in specific library versions, teams can use `dependencyOverrides` to force a known-good version.
-
-This avoids waiting for a new release of the library while still ensuring the bug doesn't impact production.
-
-:::
+When a critical bug surfaces in a specific library version, teams often can't wait for the upstream maintainer to release a fix. In the Scala ecosystem, `dependencyOverrides` is the standard escape hatch -- pinning a known-good version globally while the team files an issue and waits for a proper release. The risk is that the override is forgotten and becomes stale, so teams typically pair overrides with a comment explaining why and a link to the tracking issue.

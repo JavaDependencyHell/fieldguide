@@ -47,11 +47,6 @@ Ranges provide automatic upgrades but sacrifice build reproducibility. Use depen
 #### Related Scenarios
 *   [Scenario 11: Locking](../scenario-11-locking/guide.qmd) - How to freeze dynamic versions.
 
-::: {.callout}
-**Seen in the Wild**
+#### ! Wild
 
-A well-known failure mode with version ranges occurs when CI resolves a newly published dependency that developer machines have not yet seen due to local caching.
-
-The result is a build that suddenly fails without any source changes.
-
-:::
+A well-known failure mode with version ranges occurs when CI resolves a newly published dependency that developer machines have not yet seen. SBT uses [Coursier](https://get-coursier.io/) for dependency resolution, which maintains its own local cache separate from Maven's. The cache TTL and refresh behaviour differ between developer machines and CI environments, so a version range like `[1.0,2.0)` can resolve to different concrete versions depending on when and where the build runs. The build fails without any source changes. SBT's [`dependencyLock`](https://www.scala-sbt.org/1.x/docs/Library-Management.html) or third-party plugins like sbt-dependency-lock can freeze resolution results to prevent this drift.
