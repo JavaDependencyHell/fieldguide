@@ -13,6 +13,10 @@ It shows how a build tool automatically discovers and includes dependencies of y
 
 This is the "happy path" where no conflicts exist.
 
+::: {.callout-note title="Tool Versions"}
+This scenario was tested with **Maven 3.9**; the behaviour shown applies to Maven 3.x.
+:::
+
 #### ! Example
 
 ```{mermaid}

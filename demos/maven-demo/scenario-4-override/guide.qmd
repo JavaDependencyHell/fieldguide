@@ -9,6 +9,10 @@ tool: maven
 
 This scenario shows what happens when you have a conflict between a version defined in a BOM (Dependency Management) and a version explicitly declared in your dependencies.
 
+::: {.callout-note title="Tool Versions"}
+This scenario was tested with **Maven 3.9**; the behaviour shown applies to Maven 3.x.
+:::
+
 #### ! Example
 
 ```{mermaid}

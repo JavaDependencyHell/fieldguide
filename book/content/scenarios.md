@@ -28,6 +28,7 @@ Each scenario is implemented for all three tools. References use a tool prefix: 
 | 15 | Version Substitution | [MS15](../../demos/maven-demo/scenario-15-substitution/guide.html) | [GS15](../../demos/gradle-demo/scenario-15-substitution/guide.html) | [SB15](../../demos/sbt-demo/scenario-15-substitution/guide.html) |
 | 16 | Private Repo (BOM) | [MS16](../../demos/maven-demo/scenario-16-private-bom/guide.html) | [GS16](../../demos/gradle-demo/scenario-16-private-bom/guide.html) | [SB16](../../demos/sbt-demo/scenario-16-private-bom/guide.html) |
 | 17 | Private Repo (Patch) | [MS17](../../demos/maven-demo/scenario-17-private-patch/guide.html) | [GS17](../../demos/gradle-demo/scenario-17-private-patch/guide.html) | [SB17](../../demos/sbt-demo/scenario-17-private-patch/guide.html) |
+| 18 | Banning a Dependency | [MS18](../../demos/maven-demo/scenario-18-banning/guide.html) | [GS18](../../demos/gradle-demo/scenario-18-banning/guide.html) | [SB18](../../demos/sbt-demo/scenario-18-banning/guide.html) |
 
 : Scenario Overview {tbl-colwidths="[5, 28, 22, 22, 22]"}
 
@@ -54,6 +55,7 @@ Each scenario is implemented for all three tools. References use a tool prefix: 
 | 15 | Version Substitution | Programmatically substituting one version for another. |
 | 16 | Private Repo (BOM) | Overriding public versions via private repo and vendor BOM. |
 | 17 | Private Repo (Patch) | Overriding public versions via private repo and direct patch. |
+| 18 | Banning a Dependency | Keeping an artifact out of the entire build, from any path. |
 
 : Scenario Overview {tbl-colwidths="[5, 30, 65]"}
 

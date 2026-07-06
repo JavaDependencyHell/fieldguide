@@ -9,6 +9,10 @@ tool: maven
 
 This scenario explores how to ensure reproducible builds in Maven, which natively lacks a lockfile mechanism. It demonstrates how dynamic version ranges (MS9) or SNAPSHOTs can lead to non-deterministic builds across different environments or times, and identifies the tools and practices developers use to "freeze" the dependency graph.
 
+::: {.callout-note title="Tool Versions"}
+This scenario was tested with **Maven 3.9**; the behaviour shown applies to Maven 3.x.
+:::
+
 #### ! Example
 
 ```{.xml include="pom.xml" snippet="s11-deps"}

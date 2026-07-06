@@ -10,9 +10,15 @@ lazy val root = (project in file("."))
       "third-party-repo" at "file://" + (ThisBuild / baseDirectory).value / "../../../demo-dependencies/private-repo",
       "central" at "https://repo.maven.apache.org/maven2"
     ),
+    // The public (EOL) version we would otherwise get.
     libraryDependencies ++= Seq(
-      "org.springframework.boot" % "spring-boot-starter"
+      "org.springframework.boot" % "spring-boot-starter" % "2.5.14"
     ),
-    mavenBomImport := "com.thirdparty.springboot" % "patched-bom" % "1.0.0"
+    // sbt 1.x has no native BOM import. We emulate the vendor BOM by pinning
+    // its managed versions with dependencyOverrides — this forces the patched
+    // version even though the dependency above asks for the public release.
+    dependencyOverrides ++= Seq(
+      "org.springframework.boot" % "spring-boot-starter" % "2.5.14.ACME"
+    )
   )
 // end::repo-and-deps[]

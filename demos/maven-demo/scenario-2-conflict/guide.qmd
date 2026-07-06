@@ -12,6 +12,11 @@ This scenario demonstrates the "Diamond Dependency" problem where two different 
 
 It highlights the fundamental difference in resolution strategies between Maven ("Nearest Wins") and Gradle/SBT ("Newest Wins").
 
+::: {.callout-note title="Tool Versions"}
+This scenario was tested with **Maven 3.9**; the behaviour shown applies to Maven 3.x.
+Depth ties broken by declaration order applies since **Maven 2.0.9**.
+:::
+
 #### ! Example
 
 ```{mermaid}

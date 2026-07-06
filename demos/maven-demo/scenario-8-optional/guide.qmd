@@ -9,6 +9,10 @@ tool: maven
 
 This scenario demonstrates `<optional>true</optional>` flag.
 
+::: {.callout-note title="Tool Versions"}
+This scenario was tested with **Maven 3.9**; the behaviour shown applies to Maven 3.x.
+:::
+
 #### ! Example
 
 ```{mermaid}

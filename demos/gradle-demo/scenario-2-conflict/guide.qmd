@@ -9,6 +9,10 @@ tool: gradle
 
 This scenario demonstrates its default "Newest Wins" conflict resolution strategy.
 
+::: {.callout-note title="Tool Versions"}
+This scenario was tested with **Gradle 8.14**.
+:::
+
 #### ! Example
 
 ```{mermaid}

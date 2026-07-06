@@ -12,6 +12,10 @@ This scenario demonstrates how SBT handles variant selection using configuration
 
 N/A
 
+::: {.callout-note title="Tool Versions"}
+This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). Under the older Ivy engine (sbt < 1.3, or `useCoursier := false`) resolution edge cases differ and settings like `conflictManager` behave differently. `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin.
+:::
+
 #### ! Example
 
 ```{.scala include="build.sbt" snippet="s13-deps"}

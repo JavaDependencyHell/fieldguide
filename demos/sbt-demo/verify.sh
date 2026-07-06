@@ -37,8 +37,8 @@ function check_result() {
 echo "Starting SBT verification..."
 
 if ! command -v sbt &> /dev/null; then
-    echo "sbt not found, skipping SBT scenarios."
-    exit 0
+    echo "[FAIL] sbt not found — 0 SBT scenarios verified. Install sbt to run these checks."
+    exit 1
 else
     # Scenario 1: Basic
     echo "Running Scenario 1 (Basic)..."
@@ -62,7 +62,7 @@ else
 
     # Scenario 5: Exclusions
     echo "Running Scenario 5 (Exclusions)..."
-    (cd $SBT_DEMO_DIR/scenario-5-exclusions && sbt "show externalDependencyClasspath" | grep -v -q "com.demo/lib-c")
+    (cd $SBT_DEMO_DIR/scenario-5-exclusions && ! sbt "show externalDependencyClasspath" | grep -q "com.demo/lib-c")
     check_result "Scenario 5 (Exclusions)" "SBT" $?
 
     # Scenario 6: Strict
@@ -127,6 +127,11 @@ else
     echo "Running Scenario 17 (Private Patch)..."
     (cd $SBT_DEMO_DIR/scenario-17-private-patch && sbt "show externalDependencyClasspath" | grep -q "org.springframework.boot/spring-boot-starter/2.5.14.ACME")
     check_result "Scenario 17 (Private Patch)" "SBT" $?
+
+    # Scenario 18: Banning (Global Exclusion)
+    echo "Running Scenario 18 (Banning)..."
+    (cd $SBT_DEMO_DIR/scenario-18-banning && sbt "show externalDependencyClasspath" | grep -q "com.demo/lib-b" && ! sbt "show externalDependencyClasspath" | grep -q "com.demo/lib-c")
+    check_result "Scenario 18 (Banning)" "SBT" $?
 fi
 
 echo "-----------------------------------"

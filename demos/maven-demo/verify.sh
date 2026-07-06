@@ -86,7 +86,7 @@ echo "Running Scenario 5 (Exclusions)..."
 (cd $MAVEN_DEMO_DIR/scenario-5-exclusions && mvn $MVN_OPTS dependency:build-classpath -Dmdep.outputFile=cp.txt > /dev/null)
 CP=$(cat $MAVEN_DEMO_DIR/scenario-5-exclusions/cp.txt)
 run_checker "$CP"
-(cd $MAVEN_DEMO_DIR/scenario-5-exclusions && mvn $MVN_OPTS dependency:tree | grep -v -q "com.demo:lib-c")
+(cd $MAVEN_DEMO_DIR/scenario-5-exclusions && ! mvn $MVN_OPTS dependency:tree | grep -q "com.demo:lib-c")
 check_result "Scenario 5 (Exclusions)" "Maven" $?
 
 # Scenario 6: Strict
@@ -129,8 +129,33 @@ echo "Running Scenario 10 (Circular)..."
 (cd $MAVEN_DEMO_DIR/scenario-10-circular && mvn $MVN_OPTS dependency:build-classpath -Dmdep.outputFile=cp.txt > /dev/null)
 CP=$(cat $MAVEN_DEMO_DIR/scenario-10-circular/cp.txt)
 run_checker "$CP"
-(cd $MAVEN_DEMO_DIR/scenario-10-circular && mvn $MVN_OPTS dependency:tree | grep -q "com.demo:lib-a:jar:1.0.0")
+(cd $MAVEN_DEMO_DIR/scenario-10-circular && mvn $MVN_OPTS dependency:tree | grep -q "com.demo:lib-circle-a:jar:1.0.0")
 check_result "Scenario 10 (Circular)" "Maven" $?
+
+# Scenario 11: Locking (range resolves; Maven has no native lockfile)
+echo "Running Scenario 11 (Locking)..."
+(cd $MAVEN_DEMO_DIR/scenario-11-locking && mvn $MVN_OPTS dependency:tree | grep -q "com.demo:lib-a:jar:1.0.0")
+check_result "Scenario 11 (Locking)" "Maven" $?
+
+# Scenario 12: Metadata (plain pin resolves; POM cannot express rich constraints)
+echo "Running Scenario 12 (Metadata)..."
+(cd $MAVEN_DEMO_DIR/scenario-12-metadata && mvn $MVN_OPTS dependency:tree | grep -q "com.demo:lib-b:jar:1.0.0")
+check_result "Scenario 12 (Metadata)" "Maven" $?
+
+# Scenario 13: Variants (classified artifact resolves)
+echo "Running Scenario 13 (Variants)..."
+(cd $MAVEN_DEMO_DIR/scenario-13-variants && mvn $MVN_OPTS dependency:tree | grep -q "com.demo:lib-a:jar:jdk11:1.0.0")
+check_result "Scenario 13 (Variants)" "Maven" $?
+
+# Scenario 14: Reject (enforcer runs clean; nothing banned present)
+echo "Running Scenario 14 (Reject)..."
+(cd $MAVEN_DEMO_DIR/scenario-14-reject && mvn $MVN_OPTS validate > /dev/null 2>&1)
+check_result "Scenario 14 (Reject)" "Maven" $?
+
+# Scenario 15: Substitution (replacement present, original absent)
+echo "Running Scenario 15 (Substitution)..."
+(cd $MAVEN_DEMO_DIR/scenario-15-substitution && mvn $MVN_OPTS dependency:tree > /tmp/s15tree.txt 2>&1; grep -q "org.slf4j:log4j-over-slf4j" /tmp/s15tree.txt && ! grep -q "log4j:log4j:jar" /tmp/s15tree.txt)
+check_result "Scenario 15 (Substitution)" "Maven" $?
 
 # Scenario 16: Private BOM
 echo "Running Scenario 16 (Private BOM)..."
@@ -147,6 +172,11 @@ CP=$(cat $MAVEN_DEMO_DIR/scenario-17-private-patch/cp.txt)
 run_checker "$CP"
 (cd $MAVEN_DEMO_DIR/scenario-17-private-patch && mvn $MVN_OPTS dependency:tree | grep -q "org.springframework.boot:spring-boot-starter:jar:2.5.14.ACME")
 check_result "Scenario 17 (Private Patch)" "Maven" $?
+
+# Scenario 18: Banning (Global Exclusion)
+echo "Running Scenario 18 (Banning)..."
+(cd $MAVEN_DEMO_DIR/scenario-18-banning && mvn $MVN_OPTS validate > /dev/null 2>&1 && ! mvn $MVN_OPTS dependency:tree | grep -q "com.demo:lib-c")
+check_result "Scenario 18 (Banning)" "Maven" $?
 
 echo "-----------------------------------"
 echo "Maven Verification Complete: $PASSED / $TOTAL scenarios passed."

@@ -10,6 +10,11 @@ tool: gradle
 *Or what to Do When a Single Declaration Escapes the Platform*
 This scenario demonstrates how an explicit version declaration overrides a `platform()` recommendation.
 
+::: {.callout-note title="Tool Versions"}
+This scenario was tested with **Gradle 8.14**.
+`platform()` and `enforcedPlatform()` require **Gradle 5.0+**.
+:::
+
 #### ! Example
 
 ```{mermaid}
@@ -25,14 +30,18 @@ graph LR
 ```
 
 #### ! Expect
-Explicit version declarations take precedence over `platform()` recommendations.
+The explicit `lib-a:2.0.0` wins over the platform's `1.0.0` — because direct declarations outrank the platform.
+
+#### ! Actual
+`lib-a:2.0.0` does win — but not because it is a direct declaration. Both the platform's constraint (`1.0.0`) and the direct declaration (`2.0.0`) enter ordinary conflict resolution, and Gradle picks the **highest** version. Declare `lib-a:0.9.0` directly and the platform still wins: Gradle upgrades it to `1.0.0`.
 
 #### ! Why
-In Gradle, a `platform()` dependency provides version recommendations, which are overridden by direct version declarations—a stronger signal. This priority is why the same graph behaves differently across tools.
+A plain `platform()` contributes version *constraints* that participate in conflict resolution like any other version request — there is no "direct beats platform" precedence rule. Upgrading past a platform therefore works with a plain declaration, but *downgrading* below the platform's version requires a stronger signal: `version { strictly '0.9.0' }`. This distinction matters most exactly when teams try to pin a library back for compatibility.
 
 #### ! Fix
 *   **Removing the Version:** If the developer *wanted* the BOM version but accidentally left a hardcoded version in, the fix is simply to remove the version from the `implementation` line.
 *   **Using `enforcedPlatform`:** If the goal is to *prevent* developers from overriding the BOM version, the platform should be imported using `enforcedPlatform()`.
+*   **Downgrading:** A plain lower version will not win against the platform. Use a strict constraint: `implementation('com.demo:lib-a') { version { strictly '0.9.0' } }`.
 
 #### ! Control
 *   **Check for Overrides:** Be mindful of where you are declaring versions. If you are using a BOM, try to avoid declaring versions for managed dependencies unless you intentionally want to override them.
@@ -40,15 +49,15 @@ In Gradle, a `platform()` dependency provides version recommendations, which are
 #### ! Check
 **Fast check:** `./gradlew dependencyInsight --dependency <id>`
 
-**What to look for:** The reason for selection; it will indicate if the version was chosen via direct declaration.
+**What to look for:** The reason for selection — here "by conflict resolution: between versions 2.0.0 and 1.0.0". The platform's constraint appears alongside the direct declaration.
 
-**Conclusion:** Direct version declarations override standard `platform()` recommendations.
+**Conclusion:** Both requests enter conflict resolution; the highest version wins.
 
 #### ! Scales
 Allowing local overrides of global defaults is a powerful feature. It lets teams use a standard platform (like Spring Boot) but still upgrade or downgrade individual libraries as needed for bug fixes or compatibility. However, it requires discipline to avoid "drift" where many libraries are manually versioned instead of being managed by the platform.
 
 #### ! Takeaway
-Explicit versions override standard platforms. Use `enforcedPlatform` if you want the platform to win.
+Platforms and declarations compete on version number, not on rank: highest wins. Upgrades past a plain `platform()` work; downgrades need `strictly`. Use `enforcedPlatform` if you want the platform to always win.
 
 #### ! Related
 *   [GS3](../scenario-3-mgmt/guide.qmd) - How platforms work.

@@ -10,6 +10,10 @@ tool: sbt
 *Or what to Do When You Need a Library Only Sometimes*
 This scenario demonstrates how SBT handles optional dependencies.
 
+::: {.callout-note title="Tool Versions"}
+This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). Under the older Ivy engine (sbt < 1.3, or `useCoursier := false`) resolution edge cases differ and settings like `conflictManager` behave differently. `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin.
+:::
+
 #### ! Example
 
 ```{mermaid}
@@ -24,11 +28,13 @@ graph LR
 ```{.scala include="build.sbt" snippet="s8-deps"}
 ```
 
+*Note: this demo is illustrative. The `lib-a` fixture in the demo repository declares `lib-b` as a normal (non-optional) dependency, so running this build will show `lib-b` on the classpath. The behaviour described below is what you see when consuming a library whose POM genuinely marks a dependency `<optional>true</optional>`.*
+
 #### ! Expect
 Optional dependencies are omitted from the consumer's classpath by default.
 
 #### ! Why
-SBT/Ivy respects the Maven `<optional>true</optional>` flag, excluding those transitives to prevent consumer classpath pollution. Because SBT lacks a native "optional" keyword, simulating this for your own libraries typically requires custom configurations or manual POM editing.
+SBT respects the Maven `<optional>true</optional>` flag, excluding those transitives to prevent consumer classpath pollution. For your own libraries, sbt's `% Optional` configuration (e.g. `"com.demo" % "lib-b" % "1.0.0" % Optional`) marks a dependency optional in the published POM — though the POM mapping has historical quirks (see [sbt#162](https://github.com/sbt/sbt/issues/162)), so check the generated POM.
 
 #### ! Check
 
@@ -49,7 +55,7 @@ Optional dependencies are not transitive. Consumers must explicitly declare them
 Large frameworks like Akka and Play use optional dependencies extensively to support many integrations without forcing all of them on every consumer. As a library author in the SBT ecosystem, documenting your optional dependencies clearly is critical, since the tooling won't surface them automatically. Consider providing separate "starter" or "extras" modules that bundle optional dependencies for common use cases.
 
 #### ! Takeaway
-SBT respects optional dependencies from Maven POMs but doesn't have a native "optional" keyword for declaring them.
+SBT respects optional dependencies from Maven POMs when consuming, and offers `% Optional` for declaring them when publishing.
 
 #### Related Scenarios
 *   [Scenario 7: Scopes](../scenario-7-scopes/guide.qmd)

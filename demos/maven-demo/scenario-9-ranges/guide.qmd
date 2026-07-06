@@ -9,6 +9,10 @@ tool: maven
 
 This scenario demonstrates dynamic version resolution using ranges (e.g., `[1.0, 2.0)`).
 
+::: {.callout-note title="Tool Versions"}
+This scenario was tested with **Maven 3.9**; the behaviour shown applies to Maven 3.x.
+:::
+
 #### ! Example
 
 ```{mermaid}

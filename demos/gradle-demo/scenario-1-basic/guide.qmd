@@ -9,6 +9,10 @@ tool: gradle
 
 This scenario demonstrates fundamental concept of transitive dependency resolution. It shows how it automatically discovers and includes dependencies of your direct dependencies.
 
+::: {.callout-note title="Tool Versions"}
+This scenario was tested with **Gradle 8.14**.
+:::
+
 #### ! Diagram
 
 ```{mermaid}

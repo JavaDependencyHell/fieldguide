@@ -13,6 +13,10 @@ It specifically demonstrates how a third-party Bill of Materials (BOM) can be us
 
 This is a common enterprise pattern when a vendor provides long-term support for a library (like Spring Boot) after its official EOL date.
 
+::: {.callout-note title="Tool Versions"}
+This scenario was tested with **Maven 3.9**; the behaviour shown applies to Maven 3.x.
+:::
+
 #### ! Example
 
 ```{mermaid}

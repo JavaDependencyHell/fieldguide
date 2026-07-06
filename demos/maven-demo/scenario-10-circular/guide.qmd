@@ -9,6 +9,10 @@ tool: maven
 
 This scenario demonstrates how build tools handle cycles in the dependency graph (A -> B -> A).
 
+::: {.callout-note title="Tool Versions"}
+This scenario was tested with **Maven 3.9**; the behaviour shown applies to Maven 3.x.
+:::
+
 #### ! Example
 
 ```{mermaid}
@@ -44,7 +48,7 @@ mvn dependency:tree
 ```
 
 **What to look for:**
-Maven will detect the cycle and print a warning. The tree will show the circular relationship.
+No warning is printed — Maven's resolver breaks the cycle *silently* by skipping already-visited nodes. The tree simply stops at the repeated artifact (`lib-circle-a` → `lib-circle-b`, with no second `lib-circle-a` beneath it). To spot the cycle you must compare the tree with the libraries' POMs. (Cycles between *reactor modules* are different: those fail the build immediately.)
 
 **Conclusion:**
 Circular dependencies should be avoided as they indicate a design problem.

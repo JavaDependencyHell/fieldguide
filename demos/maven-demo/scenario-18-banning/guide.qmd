@@ -1,0 +1,74 @@
+---
+title: "Banning a Dependency (Global Exclusion)"
+tagline: "Or what to Do When a Library Must Never Appear Anywhere"
+type: scenario
+tool: maven
+---
+
+#### ! Scenario
+
+*Or what to Do When a Library Must Never Appear Anywhere*
+This scenario demonstrates how to keep an artifact out of the *entire* build — not just out of one dependency's subtree ([MS5](../scenario-5-exclusions/guide.qmd)), and not just certain versions of it ([MS14](../scenario-14-reject/guide.qmd)). The classic drivers are security (an EOL library with known CVEs) and licensing (a GPL artifact arriving transitively).
+
+::: {.callout-note title="Tool Versions"}
+This scenario was tested with **Maven 3.9**; the behaviour shown applies to Maven 3.x.
+maven-enforcer-plugin 3.5.0 requires **Maven 3.6.3+**.
+:::
+
+#### ! Example
+
+```{mermaid}
+%%| fig-width: 4.4
+graph LR
+    Root[Project Root] --> LibA[lib-a:1.0.0]
+    LibA --> LibB[lib-b:1.0.0]
+    LibB -.->|banned| LibC[lib-c:1.0.0]
+```
+
+```{.xml include="pom.xml" snippet="s18-deps"}
+```
+
+```{.xml include="pom.xml" snippet="s18-enforcer"}
+```
+
+#### ! Expect
+Maven has a switch that excludes `lib-c` from the whole build, the way Gradle's `configurations.all { exclude ... }` does.
+
+#### ! Actual
+It doesn't. Maven has **no global exclude**. A per-dependency `<exclusion>` only prunes one declaration's subtree; add a new dependency tomorrow that also drags in `lib-c`, and it is back on your classpath — silently. Maven's whole-build tool is the Enforcer Plugin's `bannedDependencies` rule, and it doesn't remove anything: it **fails the build** when the banned artifact appears.
+
+#### ! Why
+Exclusions are metadata on a single dependency edge, so Maven evaluates them per-declaration during graph traversal — there is nowhere in the POM to say "never, from any path". The Enforcer runs *after* resolution (bound to `validate` by default) and inspects the resolved graph, which is exactly what makes it path-independent: however `lib-c` sneaks in, the ban trips. The working pattern is therefore **detection + removal**: the enforcer rule is the tripwire, and per-dependency exclusions (or a version bump of the offender) are the fix each time it fires.
+
+#### ! Fix
+*   **Ban + exclude (shown above):** `bannedDependencies` guarantees `lib-c` can never reappear unnoticed; the `<exclusion>` on `lib-a` satisfies the ban today.
+*   **In a multi-module build**, put the enforcer execution in the parent POM so every module inherits the ban.
+*   **Exceptions:** `<includes>` entries act as exceptions to a broad ban (e.g. ban `com.demo:*` but allow `com.demo:lib-a`).
+
+#### ! Risk
+* LOW Banning an artifact you have verified nothing needs at runtime (or that you replace — see [MS15](../scenario-15-substitution/guide.qmd)).
+* MEDIUM Excluding the banned artifact from many declarations without a runtime replacement; each exclusion is a bet that the code paths needing it are never called.
+* HIGH Satisfying the enforcer by excluding a library that *is* used at runtime — the build goes green and the failure moves to production as `NoClassDefFoundError`.
+
+#### ! Check
+
+**Fast check:** `mvn validate`, then `mvn dependency:tree`
+
+**What to look for:** `validate` succeeds (the ban finds nothing), and `lib-c` is absent from the tree. To see the tripwire fire, remove the `<exclusion>` block and re-run: the build fails with `Banned Dependencies` naming `com.demo:lib-c` and the path that pulled it in.
+
+**Conclusion:** The enforcer guarantees absence; the exclusions deliver it.
+
+#### ! Scales
+At organisation scale, banned-dependency rules live in a shared parent POM and encode policy: forbidden licences, EOL libraries, artifacts replaced by internal forks. Because the rule names the violating *path*, it doubles as a diagnostic when a new transitive smuggles the banned artifact back in. The cost is friction by design — every new offender breaks the build until someone adds an exclusion, which is precisely the review point such policies want.
+
+#### ! Takeaway
+Maven cannot silently remove an artifact build-wide — it can only refuse to build when one appears. Pair `bannedDependencies` (the guarantee) with per-dependency exclusions (the mechanism), and keep both in the parent POM.
+
+#### ! Related
+*   [MS5](../scenario-5-exclusions/guide.qmd) - Excluding a transitive from a single declaration.
+*   [MS14](../scenario-14-reject/guide.qmd) - The same enforcer rule pointed at specific *versions* rather than the whole artifact.
+*   [MS15](../scenario-15-substitution/guide.qmd) - Replacing a banned library instead of just removing it.
+
+#### ! Wild
+
+The archetypal global ban is `log4j:log4j` 1.x. Log4j 1 reached end of life in 2015 with unfixed deserialization CVEs (CVE-2019-17571 among others), yet it kept arriving transitively through older frameworks for years. Post-Log4Shell, many organisations codified "no log4j 1.x anywhere" as an enforcer rule in their corporate parent POM — the rule still fires regularly, because dependencies several hops away keep declaring it.

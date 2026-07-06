@@ -11,6 +11,11 @@ tool: gradle
 This scenario shows how to incorporate a private, third-party repository that provides patched or extended-support versions of dependencies. It specifically demonstrates how a third-party Bill of Materials (BOM) can be used to override a publicly available, EOL (End-of-Life) dependency with a patched version from the private repository.
 This is a common enterprise pattern when a vendor provides long-term support for a library (like Spring Boot) after its official EOL date.
 
+::: {.callout-note title="Tool Versions"}
+This scenario was tested with **Gradle 8.14**.
+`platform()` and `enforcedPlatform()` require **Gradle 5.0+**.
+:::
+
 #### ! Example
 
 ```{mermaid}
@@ -39,7 +44,7 @@ The `build.gradle` file first adds the private repository. Then, it imports the 
 A private repository combined with a `platform()` (BOM) allows seamless overrides of public, EOL dependencies with patched vendor versions.
 
 #### ! Why
-Private repositories provide custom artifacts, and `platform()` constraints enforce their selection. This enterprise pattern ensures builds prioritize supported patches over official, unmaintained releases.
+Private repositories provide custom artifacts, and the `platform()` constraint supplies the patched version to resolution. Note that a plain `platform()` *recommends* rather than enforces: a transitive dependency requesting a newer public release would out-vote the patch under highest-version resolution. Use `enforcedPlatform()` (or `strictly`) when the patched version must win unconditionally.
 
 #### ! Takeaway
 Adding a repository makes its artifacts *available*, but it is the combination of the repository and a version control mechanism (like a BOM imported with `platform()`) that allows you to safely override public dependencies with private, patched versions.

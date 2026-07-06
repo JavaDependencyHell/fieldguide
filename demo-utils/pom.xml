@@ -15,4 +15,24 @@
     <dependencies>
         <!-- No external dependencies needed for this utility -->
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <!-- CRITICAL: this jar is reused as the dummy payload for every
+                             com.demo fixture artifact in install_deps.sh. If it embeds
+                             its own POM under META-INF/maven, modern maven-install-plugin
+                             prefers that embedded POM over -DpomFile, silently installing
+                             a dependency-less POM for lib-a/lib-b/lib-c — which breaks
+                             all transitive resolution in the demos. -->
+                        <addMavenDescriptor>false</addMavenDescriptor>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

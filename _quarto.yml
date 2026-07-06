@@ -85,6 +85,7 @@ book:
         - demos/maven-demo/scenario-15-substitution/guide.qmd
         - demos/maven-demo/scenario-16-private-bom/guide.qmd
         - demos/maven-demo/scenario-17-private-patch/guide.qmd
+        - demos/maven-demo/scenario-18-banning/guide.qmd
     - part: "Gradle Scenarios"
       chapters:
         - demos/gradle-demo/scenario-1-basic/guide.qmd
@@ -104,6 +105,7 @@ book:
         - demos/gradle-demo/scenario-15-substitution/guide.qmd
         - demos/gradle-demo/scenario-16-private-bom/guide.qmd
         - demos/gradle-demo/scenario-17-private-patch/guide.qmd
+        - demos/gradle-demo/scenario-18-banning/guide.qmd
     - part: "SBT Scenarios"
       chapters:
         - demos/sbt-demo/scenario-1-basic/guide.qmd
@@ -123,6 +125,7 @@ book:
         - demos/sbt-demo/scenario-15-substitution/guide.qmd
         - demos/sbt-demo/scenario-16-private-bom/guide.qmd
         - demos/sbt-demo/scenario-17-private-patch/guide.qmd
+        - demos/sbt-demo/scenario-18-banning/guide.qmd
     - book/content/conclusion.md
     - part: "Appendices"
       chapters:

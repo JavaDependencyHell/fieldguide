@@ -14,7 +14,7 @@ Across 17 scenarios and three build tools, a handful of recurring themes emerge.
 
 4. Centralised version management is not optional at scale. Whether you use Maven’s dependencyManagement with BOMs, Gradle’s platforms and version catalogs, or SBT’s dependencyOverrides collected into a shared plugin, centralising version decisions is the single most effective way to prevent dependency drift across modules, services, and teams.
 
-5. Reproducibility requires active effort. Without dependency locking, any build that uses dynamic versions, version ranges, or resolves from a live repository is non-deterministic. The same source code can produce different binaries on different days. Gradle and SBT have built-in locking; Maven requires plugins or discipline. In all cases, lock files belong in version control.
+5. Reproducibility requires active effort. Without dependency locking, any build that uses dynamic versions, version ranges, or resolves from a live repository is non-deterministic. The same source code can produce different binaries on different days. Only Gradle has built-in locking; Maven and SBT require plugins (such as `maven-lockfile` or `sbt-dependency-lock`) or discipline. In all cases, lock files belong in version control.
 
 6. The graph is the system. Dependency management is not a build concern that can be delegated to a tool and forgotten. The dependency graph is a first-class architectural artifact. It determines what runs in production, what security vulnerabilities you’re exposed to, and how fast your builds execute. Treating it with the same attention you give to your source code is not excessive — it’s proportionate.
 

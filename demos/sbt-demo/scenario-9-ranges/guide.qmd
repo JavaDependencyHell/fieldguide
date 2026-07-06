@@ -10,6 +10,10 @@ tool: sbt
 *Or what to Do When You Want the Latest and Greatest (Until It Breaks)*
 This scenario demonstrates how to use version ranges in SBT.
 
+::: {.callout-note title="Tool Versions"}
+This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). Under the older Ivy engine (sbt < 1.3, or `useCoursier := false`) resolution edge cases differ and settings like `conflictManager` behave differently. `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin.
+:::
+
 #### ! Example
 
 ```{mermaid}
@@ -49,4 +53,4 @@ Ranges provide automatic upgrades but sacrifice build reproducibility. Use depen
 
 #### ! Wild
 
-A well-known failure mode with version ranges occurs when CI resolves a newly published dependency that developer machines have not yet seen. SBT uses [Coursier](https://get-coursier.io/) for dependency resolution, which maintains its own local cache separate from Maven's. The cache TTL and refresh behaviour differ between developer machines and CI environments, so a version range like `[1.0,2.0)` can resolve to different concrete versions depending on when and where the build runs. The build fails without any source changes. SBT's [`dependencyLock`](https://www.scala-sbt.org/1.x/docs/Library-Management.html) or third-party plugins like sbt-dependency-lock can freeze resolution results to prevent this drift.
+A well-known failure mode with version ranges occurs when CI resolves a newly published dependency that developer machines have not yet seen. SBT uses [Coursier](https://get-coursier.io/) for dependency resolution, which maintains its own local cache separate from Maven's. The cache TTL and refresh behaviour differ between developer machines and CI environments, so a version range like `[1.0,2.0)` can resolve to different concrete versions depending on when and where the build runs. The build fails without any source changes. sbt has no built-in locking, but third-party plugins like [sbt-dependency-lock](https://github.com/stringbean/sbt-dependency-lock) can freeze resolution results to prevent this drift.

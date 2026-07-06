@@ -11,6 +11,10 @@ tool: gradle
 This scenario shows a more direct way to use a private, third-party repository. Instead of using a vendor-supplied BOM, we explicitly request the patched version of a dependency in our project's `dependencies` block.
 This approach is simpler than the BOM method but can be more verbose if many dependencies need to be overridden. It is suitable for one-off patches or when a full BOM is not available.
 
+::: {.callout-note title="Tool Versions"}
+This scenario was tested with **Gradle 8.14**.
+:::
+
 #### ! Example
 
 ```{mermaid}
@@ -33,13 +37,13 @@ The `build.gradle` adds the private repository and then directly declares a depe
 ```
 
 #### ! Expect
-Directly declaring a patched version from a private repository ensures that exact artifact is used over any public release.
+Directly declaring a patched version from a private repository requests that exact artifact. It wins here because nothing else asks for a newer version — a transitive requesting a higher public release would still out-vote it under highest-version resolution (use `strictly` to make the patch unconditional).
 
 #### ! Why
 A direct declaration in the `dependencies` block acts as a powerful resolution signal. When combined with a private repository that makes the specific patched version available, Gradle selects it to fulfill the project's requirement.
 
 #### ! Takeaway
-A direct version declaration for a dependency is the most straightforward way to ensure a specific version is used, provided that version is available in one of the configured repositories.
+A direct version declaration is the most straightforward way to request a specific version, provided it is available in a configured repository — but it is still subject to conflict resolution. For a guarantee, pair it with `strictly`.
 
 #### ! Related
 *   [GS16](../scenario-16-private-bom/guide.qmd) - A more scalable approach using a vendor BOM.

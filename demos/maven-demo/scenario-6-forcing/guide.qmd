@@ -10,6 +10,10 @@ tool: maven
 *Or what to Do When a Transitive Dependency is the Wrong Version*
 This scenario demonstrates how to force a specific version of a transitive dependency, overriding what the intermediate libraries request.
 
+::: {.callout-note title="Tool Versions"}
+This scenario was tested with **Maven 3.9**; the behaviour shown applies to Maven 3.x.
+:::
+
 #### ! Example
 
 ```{mermaid}

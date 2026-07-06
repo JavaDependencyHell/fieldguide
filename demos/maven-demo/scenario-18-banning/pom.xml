@@ -1,0 +1,64 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.example.demo</groupId>
+    <artifactId>maven-banning</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <repositories>
+        <repository>
+            <id>local-demo-repo</id>
+            <url>file://${project.basedir}/../../../target/local-repo</url>
+        </repository>
+    </repositories>
+
+    <!-- tag::s18-deps[] -->
+    <dependencies>
+        <!-- lib-a pulls in lib-c transitively (via lib-b). Maven has no global
+             exclude, so the banned artifact must be excluded at every
+             declaration that drags it in. -->
+        <dependency>
+            <groupId>com.demo</groupId>
+            <artifactId>lib-a</artifactId>
+            <version>1.0.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.demo</groupId>
+                    <artifactId>lib-c</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
+    <!-- end::s18-deps[] -->
+
+    <!-- tag::s18-enforcer[] -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <id>ban-lib-c-everywhere</id>
+                        <goals><goal>enforce</goal></goals>
+                        <configuration>
+                            <rules>
+                                <bannedDependencies>
+                                    <excludes>
+                                        <!-- No version: every version of lib-c is banned -->
+                                        <exclude>com.demo:lib-c</exclude>
+                                    </excludes>
+                                </bannedDependencies>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <!-- end::s18-enforcer[] -->
+
+</project>

@@ -1,0 +1,23 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    maven {
+        url = uri("../../../target/local-repo")
+    }
+}
+
+// tag::s18-deps[]
+// Global exclusion: lib-c is removed from EVERY configuration and every
+// path — present and future. Unlike a per-dependency exclude (scenario 5),
+// a new dependency that drags lib-c in is pruned too.
+configurations.all {
+    exclude group: 'com.demo', module: 'lib-c'
+}
+
+dependencies {
+    // lib-a pulls in lib-c transitively (via lib-b)
+    implementation 'com.demo:lib-a:1.0.0'
+}
+// end::s18-deps[]

@@ -10,6 +10,11 @@ tool: sbt
 *Or what to Do When You Want Reproducible Builds*
 This scenario demonstrates how to lock dependencies in SBT to ensure that builds are reproducible, even when using dynamic versions.
 
+::: {.callout-note title="Tool Versions"}
+This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). Under the older Ivy engine (sbt < 1.3, or `useCoursier := false`) resolution edge cases differ and settings like `conflictManager` behave differently. `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin.
+Locking requires the third-party **sbt-dependency-lock** plugin (works on any sbt 1.x); sbt has no built-in locking.
+:::
+
 #### ! Example
 
 ```{mermaid}
@@ -27,18 +32,19 @@ graph LR
 Ranges (e.g., `1.+`) provide updates, but the build must remain deterministic unless explicitly updated.
 
 #### ! Why
-SBT (1.4.x+) freezes the resolved graph into a lock file. Committed to version control, this snapshot ensures every developer and CI server uses identical versions, separating resolution from reproduction.
+Unlike Gradle, sbt has no built-in dependency locking. The community `sbt-dependency-lock` plugin fills the gap: `sbt dependencyLockWrite` freezes the resolved graph (including transitives) into `build.sbt.lock`, and `sbt dependencyLockCheck` fails the build if resolution drifts from the lockfile. Committed to version control, this snapshot ensures every developer and CI server uses identical versions, separating resolution from reproduction.
 
 #### ! Fix
-*   **Hardcoding Versions:** Many teams avoid locking features and simply hardcode exact versions in `build.sbt`. This works but requires manual updates.
+*   **Lockfile:** Add `addSbtPlugin("software.purpledragon" % "sbt-dependency-lock" % "1.5.1")` to `project/plugins.sbt`, run `sbt dependencyLockWrite`, commit `build.sbt.lock`, and run `sbt dependencyLockCheck` in CI.
+*   **Hardcoding Versions:** Many teams skip locking and simply hardcode exact versions in `build.sbt`. This works but requires manual updates.
 *   **Scala Steward:** Automated tools like Scala Steward can send PRs to update hardcoded versions, making manual management easier.
 
 #### ! Check
-**Fast check:** `sbt dependencyTree`
+**Fast check:** `sbt dependencyLockWrite`, then `sbt dependencyLockCheck`
 
-**What to look for:** A lockfile (e.g., `build.sbt.lock` or `gradle.lockfile`) containing the exact resolved versions.
+**What to look for:** A `build.sbt.lock` file containing the exact resolved versions; `dependencyLockCheck` reports "Dependency lock check passed".
 
-**Conclusion:** Locking ensures reproducibility by snapshots of dynamic versions.
+**Conclusion:** Locking ensures reproducibility by snapshotting dynamic versions.
 
 #### ! Scales
 For production systems, reproducibility is non-negotiable. Dependency locking (or strict version pinning) is essential to prevent "it works on my machine" issues. It also protects against malicious package updates (supply chain attacks) by ensuring you only use vetted versions.
@@ -46,5 +52,5 @@ For production systems, reproducibility is non-negotiable. Dependency locking (o
 #### ! Takeaway
 Dependency locking ensures that dynamic versions don't break your build.
 
-#### Related Scenarios
+#### ! Related
 *   [Scenario 9: Ranges](../scenario-9-ranges/guide.qmd) - Using dynamic versions.

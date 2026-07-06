@@ -1,8 +1,17 @@
-# 15. Version Substitution
+---
+title: "Version Substitution"
+tagline: "Or what to Do When You Need to Swap One Library for Another"
+type: scenario
+tool: maven
+---
 
 #### ! Scenario What to Do When You Need to Swap One Library for Another
 
 This scenario demonstrates how to replace one dependency with another in Maven. Maven has no native substitution mechanism, but exclusions combined with explicit declarations achieve the same result.
+
+::: {.callout-note title="Tool Versions"}
+This scenario was tested with **Maven 3.9**; the behaviour shown applies to Maven 3.x.
+:::
 
 #### ! Example
 

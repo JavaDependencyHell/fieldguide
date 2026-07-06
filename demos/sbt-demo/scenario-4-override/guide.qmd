@@ -10,6 +10,11 @@ tool: sbt
 *or what to Do When You Need to Break the Rules*
 This scenario demonstrates how explicit version declarations in `libraryDependencies` can override managed versions or defaults.
 
+::: {.callout-note title="Tool Versions"}
+This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). Under the older Ivy engine (sbt < 1.3, or `useCoursier := false`) resolution edge cases differ and settings like `conflictManager` behave differently. `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin.
+Eviction reporting changed in **sbt 1.5**: the blanket eviction warning was replaced by the `evicted` task and versionScheme-aware checks.
+:::
+
 #### ! Example
 
 ```{mermaid}
@@ -17,6 +22,7 @@ This scenario demonstrates how explicit version declarations in `libraryDependen
 graph LR
     Root[Project Root] --> LibA[lib-a:2.0.0]
     Root --> LibB[lib-b:1.0.0]
+    LibA --> LibB2[lib-b:2.0.0]
 ```
 
 #### ! Example
@@ -25,10 +31,13 @@ graph LR
 ```
 
 #### ! Expect
-Explicit versions in `libraryDependencies` win over defaults or transitive suggestions.
+Explicit versions in `libraryDependencies` win over defaults or transitive suggestions — so `lib-b` resolves to the declared `1.0.0`.
+
+#### ! Actual
+`lib-b:2.0.0`. The direct declaration overrides the *managed default* (the `defaultVersion` variable), but it does not outrank conflict resolution: `lib-a:2.0.0` transitively requires `lib-b:2.0.0`, and the highest version wins. The direct `1.0.0` is evicted.
 
 #### ! Why
-In SBT, `libraryDependencies` is a sequence of module definitions; direct additions take precedence during resolution. This mechanism is why the same graph behaves differently across tools.
+In SBT, a version in `libraryDependencies` is a *request*, not a command. All requests — direct and transitive — enter Coursier's conflict resolution, where the highest version wins. To actually pin a version against the graph, you need `dependencyOverrides` (see below).
 
 #### ! Fix
 *   **Explicit Overrides:** If a transitive dependency is pulling in an unwanted version, developers often add the desired version as a direct dependency to force the conflict manager to see it.
@@ -43,9 +52,9 @@ In SBT, `libraryDependencies` is a sequence of module definitions; direct additi
 #### ! Check
 **Fast check:** `sbt dependencyTree`
 
-**What to look for:** The explicitly declared version in the dependency tree.
+**What to look for:** `lib-b:1.0.0` marked as evicted by `2.0.0` (run `sbt evicted` to see it called out explicitly).
 
-**Conclusion:** Versions in `libraryDependencies` represent direct requests that override defaults.
+**Conclusion:** Versions in `libraryDependencies` are direct requests that override defaults — but they remain subject to conflict resolution.
 
 #### ! Scales
 Hardcoding versions in `libraryDependencies` is fine for direct dependencies. However, for enforcing versions across a large project (especially for transitive dependencies you don't directly use), `dependencyOverrides` or a BOM plugin is a more robust solution.

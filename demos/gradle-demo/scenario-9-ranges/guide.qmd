@@ -10,6 +10,10 @@ tool: gradle
 *Or what to Do When Gradle Chooses a Version You Didn’t Intend*
 This scenario demonstrates Gradle's support for version ranges.
 
+::: {.callout-note title="Tool Versions"}
+This scenario was tested with **Gradle 8.14**.
+:::
+
 #### ! Example
 
 ```{mermaid}

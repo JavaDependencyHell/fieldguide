@@ -37,8 +37,8 @@ function check_result() {
 echo "Starting Gradle verification..."
 
 if ! command -v gradlew &> /dev/null && [ ! -f "./gradlew" ] && ! command -v gradle &> /dev/null; then
-    echo "gradle not found, skipping Gradle scenarios."
-    exit 0
+    echo "[FAIL] gradle not found — 0 Gradle scenarios verified. Install Gradle to run these checks."
+    exit 1
 else
     GRADLE_CMD="./gradlew"
     if ! command -v ./gradlew &> /dev/null && command -v gradle &> /dev/null; then
@@ -67,7 +67,7 @@ else
 
     # Scenario 5: Exclusions
     echo "Running Scenario 5 (Exclusions)..."
-    (cd $GRADLE_DEMO_DIR/scenario-5-exclusions && $GRADLE_CMD dependencies --configuration compileClasspath | grep -v -q "com.demo:lib-c")
+    (cd $GRADLE_DEMO_DIR/scenario-5-exclusions && ! $GRADLE_CMD dependencies --configuration compileClasspath | grep -q "com.demo:lib-c")
     check_result "Scenario 5 (Exclusions)" "Gradle" $?
 
     # Scenario 6: Strict
@@ -131,6 +131,11 @@ else
     (cd $GRADLE_DEMO_DIR/scenario-12-metadata && $GRADLE_CMD dependencies --configuration compileClasspath | grep -q "com.demo:lib-b:2.0.0")
     check_result "Scenario 12 (Metadata)" "Gradle" $?
 
+    # Scenario 13: Variants (attribute-decorated dependency still resolves)
+    echo "Running Scenario 13 (Variants)..."
+    (cd $GRADLE_DEMO_DIR/scenario-13-variants && $GRADLE_CMD dependencies --configuration compileClasspath | grep -q "com.demo:lib-a:1.0.0")
+    check_result "Scenario 13 (Variants)" "Gradle" $?
+
     # Scenario 14: Reject
     echo "Running Scenario 14 (Reject)..."
     (cd $GRADLE_DEMO_DIR/scenario-14-reject && $GRADLE_CMD dependencies --configuration compileClasspath | grep -q "com.demo:lib-a:.*1.0.0")
@@ -150,6 +155,11 @@ else
     echo "Running Scenario 17 (Private Patch)..."
     (cd $GRADLE_DEMO_DIR/scenario-17-private-patch && $GRADLE_CMD dependencies --configuration compileClasspath | grep -q "org.springframework.boot:spring-boot-starter:2.5.14.ACME")
     check_result "Scenario 17 (Private Patch)" "Gradle" $?
+
+    # Scenario 18: Banning (Global Exclusion)
+    echo "Running Scenario 18 (Banning)..."
+    (cd $GRADLE_DEMO_DIR/scenario-18-banning && $GRADLE_CMD dependencies --configuration compileClasspath | grep -q "com.demo:lib-b" && ! $GRADLE_CMD dependencies --configuration compileClasspath | grep -q "com.demo:lib-c")
+    check_result "Scenario 18 (Banning)" "Gradle" $?
 fi
 
 echo "-----------------------------------"

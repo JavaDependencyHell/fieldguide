@@ -18,6 +18,7 @@
     </dependency>
 ```
 *   **Force Version:** Add to `<dependencyManagement>`.
+*   **Ban Everywhere (fails build):** Enforcer `bannedDependencies` rule with `<exclude>group:artifact</exclude>` — Maven has no silent global exclude.
 *   **Import BOM:**
 ```xml
     <dependencyManagement>
@@ -52,6 +53,12 @@
     }
 ```
     *   *Better:* Use `strictly` constraint.
+*   **Exclude Everywhere (silent):**
+```groovy
+    configurations.all {
+        exclude group: 'excluded-group', module: 'excluded-artifact'
+    }
+```
 *   **Import BOM:** `implementation platform('group:artifact:version')`
 *   **Enforce BOM:** `implementation enforcedPlatform('group:artifact:version')`
 
@@ -67,7 +74,14 @@
 ```scala
     dependencyOverrides += "group" % "artifact" % "version"
 ```
-*   **Import BOM:** Requires `sbt-bom` plugin.
+*   **Exclude Everywhere (silent):**
 ```scala
-    mavenBomImport := "group" % "artifact" % "version"
+    excludeDependencies += ExclusionRule("excluded-group", "excluded-artifact")
 ```
+*   **Import BOM:** No native support in sbt 1.x. Use the `here-sbt-bom` plugin, or emulate the BOM by pinning its managed versions:
+```scala
+    dependencyOverrides ++= Seq(
+      "group" % "artifact" % "bom-managed-version"
+    )
+```
+*   **Write/Check Lockfile** (requires `sbt-dependency-lock` plugin): `sbt dependencyLockWrite` / `sbt dependencyLockCheck`

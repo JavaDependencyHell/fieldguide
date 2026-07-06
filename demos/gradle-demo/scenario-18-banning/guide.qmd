@@ -1,0 +1,70 @@
+---
+title: "Banning a Dependency (Global Exclusion)"
+tagline: "Or what to Do When a Library Must Never Appear Anywhere"
+type: scenario
+tool: gradle
+---
+
+#### ! Scenario
+
+*Or what to Do When a Library Must Never Appear Anywhere*
+This scenario demonstrates how to keep an artifact out of the *entire* build — not just out of one dependency's subtree ([GS5](../scenario-5-exclusions/guide.qmd)), and not just certain versions of it ([GS14](../scenario-14-reject/guide.qmd)). The classic drivers are security (an EOL library with known CVEs) and licensing (a GPL artifact arriving transitively).
+
+::: {.callout-note title="Tool Versions"}
+This scenario was tested with **Gradle 8.14**.
+:::
+
+#### ! Example
+
+```{mermaid}
+%%| fig-width: 4.4
+graph LR
+    Root[Project Root] --> LibA[lib-a:1.0.0]
+    LibA --> LibB[lib-b:1.0.0]
+    LibB -.->|excluded everywhere| LibC[lib-c:1.0.0]
+```
+
+```{.groovy include="build.gradle" snippet="s18-deps"}
+```
+
+#### ! Expect
+The exclusion behaves like scenario 5: it prunes `lib-c` from `lib-a`'s subtree, and a future dependency could still bring `lib-c` back.
+
+#### ! Actual
+`configurations.all { exclude ... }` is stronger: it removes `lib-c` from **every configuration and every path**, including dependencies added later. Nothing can bring it back through this build script. It is also completely **silent** — there is no error, no warning, and nothing that tells a future maintainer why classes are missing at runtime.
+
+#### ! Why
+An `exclude` placed on a configuration applies to the whole resolution of that configuration, and `configurations.all` applies it to every configuration in the project. This is genuinely global — which is exactly what makes it dangerous: unlike Maven (whose enforcer *fails the build* and names the offending path), Gradle simply makes the artifact vanish. If some library needs `lib-c` at runtime, the first symptom is `NoClassDefFoundError` in production, and the cause is a single line far away in the build script.
+
+#### ! Fix
+*   **Global exclude (shown above):** right when you are certain nothing needs the artifact, or you provide a replacement on the classpath (see [GS15](../scenario-15-substitution/guide.qmd)).
+*   **Fail instead of prune:** if you want Maven-style detection rather than silent removal, resolve then assert — a small verification task that walks `runtimeClasspath` and fails if `lib-c` appears. The exclude *hides* the problem; an assertion *reports* it.
+*   **Multi-project builds:** put the exclude (or the assertion) in a convention plugin so every subproject inherits the policy.
+
+#### ! Risk
+* LOW Excluding an artifact you have verified nothing needs at runtime, or that you replace with a bridge/fork.
+* MEDIUM Global excludes accumulated over years with no comments; nobody remembers which are still needed, and removing one is a leap of faith.
+* HIGH Excluding a library that *is* used at runtime — the build stays green and the failure surfaces in production as `NoClassDefFoundError`, with no build-time hint of the cause.
+
+#### ! Check
+
+**Fast check:** `./gradlew dependencies --configuration runtimeClasspath`
+
+**What to look for:** `lib-c` is absent from every configuration's tree — note that nothing marks the removal; the artifact is simply not there. `./gradlew dependencyInsight --dependency lib-c` reports it cannot be found in the graph.
+
+**Conclusion:** The exclusion silently prunes the artifact build-wide.
+
+#### ! Scales
+At organisation scale, global excludes belong in a shared convention plugin with a comment per entry explaining *why* (CVE number, licence, replacement). Because the mechanism is silent, the comment is the only trace of intent. Teams that want auditability pair the exclude with a CI check that fails if the banned artifact reappears in a resolved configuration — recreating the tripwire Maven users get from the enforcer.
+
+#### ! Takeaway
+Gradle can do what Maven cannot: silently remove an artifact from the entire build with one statement. Use that power with a comment and, for anything policy-driven, a failing check alongside it — silence is the feature *and* the hazard.
+
+#### ! Related
+*   [GS5](../scenario-5-exclusions/guide.qmd) - Excluding a transitive from a single declaration.
+*   [GS14](../scenario-14-reject/guide.qmd) - Rejecting specific *versions* while allowing the artifact.
+*   [GS15](../scenario-15-substitution/guide.qmd) - Replacing a banned library instead of just removing it.
+
+#### ! Wild
+
+The archetypal global exclude is `log4j:log4j` 1.x — EOL since 2015 with unfixed CVEs, yet still arriving transitively through older frameworks. Many Gradle builds carry `configurations.all { exclude group: 'log4j', module: 'log4j' }` (often alongside an exclusion of `commons-logging` in favour of SLF4J bridges). The pattern works precisely because it also covers dependencies nobody has added yet.

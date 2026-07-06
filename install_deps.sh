@@ -24,6 +24,8 @@ mvn install:install-file -Dfile=${dummy_jar} -DpomFile=demo-dependencies/lib-b/v
 mvn install:install-file -Dfile=${dummy_jar} -DpomFile=demo-dependencies/lib-a/v1/pom.xml -DgroupId=com.demo -DartifactId=lib-a -Dversion=1.0.0 -Dpackaging=jar -DlocalRepositoryPath=target/local-repo
 mvn install:install-file -Dfile=${dummy_jar} -DpomFile=demo-dependencies/lib-a/v2/pom.xml -DgroupId=com.demo -DartifactId=lib-a -Dversion=2.0.0 -Dpackaging=jar -DlocalRepositoryPath=target/local-repo
 mvn install:install-file -Dfile=demo-dependencies/bom/v1/pom.xml -DgroupId=com.demo -DartifactId=demo-bom -Dversion=1.0.0 -Dpackaging=pom -DlocalRepositoryPath=target/local-repo
+# Classified variant of lib-a for scenario 13 (jdk11 classifier)
+mvn install:install-file -Dfile=${dummy_jar} -DgroupId=com.demo -DartifactId=lib-a -Dversion=1.0.0 -Dpackaging=jar -Dclassifier=jdk11 -DgeneratePom=false -DlocalRepositoryPath=target/local-repo
 mvn install:install-file -Dfile=${dummy_jar} -DpomFile=demo-dependencies/lib-circle-a/v1/pom.xml -DgroupId=com.demo -DartifactId=lib-circle-a -Dversion=1.0.0 -Dpackaging=jar -DlocalRepositoryPath=target/local-repo
 mvn install:install-file -Dfile=${dummy_jar} -DpomFile=demo-dependencies/lib-circle-b/v1/pom.xml -DgroupId=com.demo -DartifactId=lib-circle-b -Dversion=1.0.0 -Dpackaging=jar -DlocalRepositoryPath=target/local-repo
 
@@ -35,5 +37,8 @@ for artifact in lib-a lib-b lib-c; do
         cp "$METADATA_DIR/maven-metadata-local.xml" "$METADATA_DIR/maven-metadata.xml"
     fi
 done
+
+echo "Populating private repo (scenarios 16/17)..."
+bash "$(dirname "$0")/install_private_repo.sh"
 
 echo "Done."

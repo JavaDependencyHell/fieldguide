@@ -13,6 +13,10 @@ This scenario demonstrates how to use a Bill of Materials (BOM) or `<dependencyM
 
 This decouples "what I need" from "which version I need".
 
+::: {.callout-note title="Tool Versions"}
+This scenario was tested with **Maven 3.9**; the behaviour shown applies to Maven 3.x.
+:::
+
 #### ! Example
 
 ```{mermaid}

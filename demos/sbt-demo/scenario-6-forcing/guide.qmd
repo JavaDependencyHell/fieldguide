@@ -1,9 +1,18 @@
-# Strict Constraints
+---
+title: "Forcing a Version"
+tagline: "Or what to Do When You Must Override the Graph"
+type: scenario
+tool: sbt
+---
 
 #### ! Scenario
 
 
 This scenario demonstrates forcing a version via overrides.
+
+::: {.callout-note title="Tool Versions"}
+This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). Under the older Ivy engine (sbt < 1.3, or `useCoursier := false`) resolution edge cases differ and settings like `conflictManager` behave differently. `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin.
+:::
 
 #### ! Example
 
@@ -12,7 +21,8 @@ This scenario demonstrates forcing a version via overrides.
 graph LR
     Root[Project Root] --> LibA[lib-a:1.0.0]
     LibA --> LibB[lib-b:1.0.0]
-    Root -- override --> LibB_Forced[lib-b:2.0.0]
+    LibB --> LibC[lib-c:1.0.0]
+    Root -- override --> LibC_Forced[lib-c:2.0.0]
 ```
 
 #### ! Example
@@ -21,13 +31,10 @@ graph LR
 ```
 
 #### ! Expect
-2.0.0.
+The graph asks for `lib-c:1.0.0` (via `lib-a` → `lib-b`), so `1.0.0` resolves.
 
 #### ! Actual
-2.0.0.
-
-#### ! Reality
-2.0.0.
+`lib-c:2.0.0`. The override forces the version even though nothing in the graph requests it.
 
 #### ! Why
 dependencyOverrides is SBT's strongest version enforcement mechanism. It overrides the version of any matching artifact anywhere in the dependency graph, regardless of what the transitive graph would otherwise resolve. Unlike Gradle's strictly, SBT's overrides don't have a built-in mechanism to fail the build if the override causes incompatibilities --- they silently force the version.
@@ -47,7 +54,7 @@ sbt dependencyTree
 ```
 
 **What to look for:**
-The version of `lib-b` in the tree. It will be `2.0.0`, and you may see warnings about eviction.
+The version of `lib-c` in the tree. It will be `2.0.0`, with no request for it anywhere in the graph — the tree simply shows the forced version.
 
 **Conclusion:**
 `dependencyOverrides` is the strongest way to enforce a version in SBT.

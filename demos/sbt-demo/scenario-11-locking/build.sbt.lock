@@ -1,0 +1,77 @@
+{
+  "lockVersion" : 1,
+  "timestamp" : "2026-07-06T16:27:26.437529Z",
+  "configurations" : [
+    "compile",
+    "optional",
+    "provided",
+    "runtime",
+    "test"
+  ],
+  "dependencies" : [
+    {
+      "org" : "com.demo",
+      "name" : "lib-a",
+      "version" : "1.0.0",
+      "artifacts" : [
+        {
+          "name" : "lib-a.jar",
+          "hash" : "sha1:48f0281d078aecaa333a61895f2453422480812c"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "com.demo",
+      "name" : "lib-b",
+      "version" : "1.0.0",
+      "artifacts" : [
+        {
+          "name" : "lib-b.jar",
+          "hash" : "sha1:48f0281d078aecaa333a61895f2453422480812c"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "com.demo",
+      "name" : "lib-c",
+      "version" : "1.0.0",
+      "artifacts" : [
+        {
+          "name" : "lib-c.jar",
+          "hash" : "sha1:48f0281d078aecaa333a61895f2453422480812c"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.scala-lang",
+      "name" : "scala-library",
+      "version" : "2.13.12",
+      "artifacts" : [
+        {
+          "name" : "scala-library.jar",
+          "hash" : "sha1:3c51da898af4ebfac356fcde11388afb2ae8ee82"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    }
+  ]
+}

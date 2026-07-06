@@ -13,7 +13,7 @@ BROCHURE_PDF = $(BUILD_DIR)/brochure.pdf
 US_BROCHURE_PDF = $(US_BUILD_DIR)/brochure.pdf
 FRONT_IMAGE = book/content/front-image.pdf
 
-.PHONY: all init init-python utils book book-html book-pdf us-book sample us-sample brochure us-brochure herodevs-site leanpub leanpub-sample oreilly oreilly-sample verify verify-maven verify-gradle verify-sbt verify-python clean help check-quarto check-qpdf force-book force-us-book
+.PHONY: all init init-python utils book book-html book-pdf us-book sample us-sample brochure us-brochure herodevs-site leanpub leanpub-sample oreilly oreilly-sample verify verify-maven verify-gradle verify-sbt verify-python audit clean help check-quarto check-qpdf force-book force-us-book
 
 # Default target
 all: init book verify
@@ -204,12 +204,21 @@ verify-gradle: init
 verify-sbt: init
 	cd demos/sbt-demo && ./verify.sh
 
-# Python targets
-init-python:
-	./install_python_deps.sh
+# Scenario completeness audit — proves every scenario x tool has its
+# directory, guide, build file, README, _quarto.yml entry, verify.sh
+# coverage, and valid snippet/link references.
+audit:
+	python3 scripts/audit_scenarios.py
 
-verify-python: init-python
-	cd demos/python-demo && ./verify.sh
+# Python targets — QUARANTINED 2026-07-06
+# The Python demos were failing and have been moved out of demos/ to
+# ./python-demo pending a from-scratch review. Do not trust or reuse the
+# existing Python content without verifying it against real tool behaviour.
+init-python:
+	@echo "Python demos are quarantined (see ./python-demo). Skipping."
+
+verify-python:
+	@echo "Python demos are quarantined (see ./python-demo). Skipping."
 
 # HeroDevs branded site
 herodevs-site: check-quarto
@@ -221,6 +230,7 @@ herodevs-site: check-quarto
 clean:
 	rm -rf target/
 	rm -rf build/
+	rm -rf demo-dependencies/private-repo/
 	find . -type d -name ".gradle" -exec rm -rf {} +
 	find . -type d -name "target" -not -path "./target*" -exec rm -rf {} +
 	find . -type d -name "project/target" -exec rm -rf {} +

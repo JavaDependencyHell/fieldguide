@@ -11,6 +11,11 @@ tool: sbt
 This scenario shows how to incorporate a private, third-party repository that provides patched or extended-support versions of dependencies. It specifically demonstrates how a third-party Bill of Materials (BOM) can be used to override a publicly available, EOL (End-of-Life) dependency with a patched version from the private repository.
 This is a common enterprise pattern when a vendor provides long-term support for a library (like Spring Boot) after its official EOL date.
 
+::: {.callout-note title="Tool Versions"}
+This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). Under the older Ivy engine (sbt < 1.3, or `useCoursier := false`) resolution edge cases differ and settings like `conflictManager` behave differently. `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin.
+sbt 1.x has no native BOM import; **sbt 2.x** adds it.
+:::
+
 #### ! Example
 
 ```{mermaid}
@@ -30,16 +35,26 @@ graph LR
 ```
 
 #### ! Example
-The `build.sbt` file first adds the private repository to the list of `resolvers`. Then, it imports the vendor's BOM. This typically requires a plugin like `sbt-bom` to provide the `mavenBomImport` setting. The actual dependency is declared without a version, letting the imported BOM control which version is used.
+The `build.sbt` file first adds the private repository to the list of `resolvers`. Unlike Maven and Gradle, sbt 1.x has no native way to import a Maven BOM, so the vendor's BOM is emulated: its managed versions are pinned via `dependencyOverrides`, which forces the patched version even though the declared dependency asks for the public release. (For real BOM consumption, the [`here-sbt-bom`](https://github.com/heremaps/here-sbt-bom) plugin reads a Maven BOM and feeds it into `dependencyOverrides`; sbt 2.x adds native BOM support.)
 
 ```{.scala include="build.sbt" snippet="repo-and-deps"}
 ```
 
 #### ! Expect
-A private repository and an imported BOM enable the build to automatically select vendor-patched versions over public EOL releases.
+A private repository plus BOM-derived version pins enable the build to automatically select vendor-patched versions over public EOL releases.
 
 #### ! Why
-SBT resolves custom artifacts via private `resolvers`, while a BOM plugin (e.g., `sbt-bom`) enforces the specific patched version. This combination is why the same graph behaves differently across tools without centralized management.
+SBT resolves custom artifacts via private `resolvers`, while `dependencyOverrides` forces the specific patched version everywhere in the graph — including direct declarations. The absence of native BOM import is one of the ways the same graph behaves differently across tools.
+
+#### ! Check
+**Fast check:** `sbt "show externalDependencyClasspath"`
+
+**What to look for:** The classpath entry for `spring-boot-starter` resolves to `2.5.14.ACME` from the private repository, not the public `2.5.14`.
+
+**Conclusion:** The override redirects resolution to the vendor-patched artifact.
+
+#### ! Related
+*   [SB17](../scenario-17-private-patch/guide.qmd) - Pinning a patched version directly instead of via a BOM.
 
 #### ! Takeaway
 Adding a repository makes its artifacts *available*, but it is the combination of the repository and a version control mechanism (like an imported BOM) that allows you to safely override public dependencies with private, patched versions.
