@@ -1,0 +1,5 @@
+# tag::p12-deps[]
+# A real, deliberately outdated pin with well-known published CVEs.
+# (Resolved from the real PyPI — this scenario needs network access.)
+urllib3==1.26.4
+# end::p12-deps[]

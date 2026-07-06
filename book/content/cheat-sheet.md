@@ -85,3 +85,26 @@
     )
 ```
 *   **Write/Check Lockfile** (requires `sbt-dependency-lock` plugin): `sbt dependencyLockWrite` / `sbt dependencyLockCheck`
+
+## Python (pip / Poetry / uv)
+
+Always work in a fresh virtual environment — one version per environment.
+
+*   **Isolate:** `python -m venv .venv && . .venv/bin/activate` (pip) · Poetry & uv manage `.venv` automatically
+*   **Show Dependency Tree:** `pipdeptree` · `poetry show --tree` · `uv tree`
+*   **Install:** `pip install -r requirements.txt` · `poetry install` · `uv sync`
+*   **Force / Override a Version:**
+```text
+    # pip — constraints file (BOM-like), applied with -c
+    pip install -r requirements.txt -c constraints.txt
+    # uv — in pyproject.toml
+    [tool.uv]
+    override-dependencies = ["pkg==1.2.3"]
+```
+*   **Reject a Version:** `pkg!=1.2.3` (native PEP 440 operator — no plugin)
+*   **Bound the major:** `pkg~=1.4` (means `>=1.4, <2.0`)
+*   **Exclude a Transitive:** not possible — pin or upgrade it instead
+*   **Lock:** `pip freeze > requirements.txt` (snapshot) or `pip-tools` · `poetry lock` → `poetry.lock` · `uv lock` → `uv.lock` (`uv export --format pylock.toml` for PEP 751)
+*   **Optional deps:** extras `pip install "pkg[extra]"` · dev groups `poetry install --with dev` / `uv sync`
+*   **Audit for CVEs:** `pip-audit` (or `pip-audit -r requirements.txt`)
+*   **Avoid dependency confusion:** never mix a private index into PyPI with `--extra-index-url`; use a single index, or uv `first-index` / Poetry source priority

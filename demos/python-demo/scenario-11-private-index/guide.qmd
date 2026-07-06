@@ -1,0 +1,82 @@
+---
+title: "Private Index & Dependency Confusion"
+tagline: "Or what to Do When a Public Package Impersonates Your Private One"
+type: scenario
+tool: python
+---
+
+#### ! Scenario
+
+*Or what to Do When a Public Package Impersonates Your Private One*
+This is the Python sibling of the private-repo scenarios ([MS16](../../maven-demo/scenario-16-private-bom/guide.qmd)/[MS17](../../maven-demo/scenario-17-private-patch/guide.qmd)) — and the most important security scenario in the book. `acme-internal-tool` exists as `1.0.0` on your private index and, mal/mistakenly, as `9.9.9` on public PyPI. How you point pip at those indexes decides whether you install your own code or an attacker's.
+
+::: {.callout-note title="Tool Versions"}
+Tested with **pip 25.3**, **Poetry 2.4**, **uv 0.11**. The dangerous behaviour is pip's `--extra-index-url` merge semantics (unchanged for years). Poetry source priorities and uv's `index-strategy` (default `first-index`) are the safer models.
+:::
+
+#### ! Example
+
+Dangerous — `--extra-index-url` merges both indexes into one pool:
+
+```{.text include="pip/requirements-vulnerable.txt" snippet="p11-vulnerable"}
+```
+
+Safe (pip) — one index, no merge:
+
+```{.text include="pip/requirements-safe.txt" snippet="p11-safe"}
+```
+
+Safe (uv) — first index that has the package wins:
+
+```{.toml include="uv/pyproject.toml" snippet="p11-uv-indexes"}
+```
+
+#### ! Expect
+Naming your private index first means pip prefers it.
+
+#### ! Actual
+With `--extra-index-url`, **no**. pip pools every configured index and picks the **highest version across all of them**, ignoring which index it came from. So `9.9.9` from public PyPI beats your internal `1.0.0` — you install the impostor. Only using a *single* `--index-url` (or a tool with source priority) installs the genuine `1.0.0`.
+
+#### ! Why
+`--index-url` sets the one index; `--extra-index-url` *adds* indexes to a flat pool with no priority or origin tracking. pip then applies its ordinary "highest compatible version wins" rule across the union. An attacker who learns your internal package name — from a leaked `requirements.txt`, a public error trace, a job ad — can publish that name on PyPI with an absurdly high version, and every `--extra-index-url` build silently prefers it. This is **dependency confusion**, and it is a resolution behaviour, not a bug. Poetry (explicit ordered sources) and uv (`first-index`: the first index that *has* the package wins, version notwithstanding) close it by making origin, not version, decide.
+
+#### ! Fix
+*   **Never mix a private index into public PyPI with `--extra-index-url`.** Use a single index — a proxy/mirror (Artifactory, devpi, Azure Artifacts) that fronts both and enforces precedence server-side.
+*   **uv:** rely on the default `first-index` strategy and list the private index first.
+*   **Poetry:** declare the private source `priority = "primary"` and public as `supplemental`.
+*   **Belt and braces:** claim your internal names on public PyPI (dummy placeholders), and pin hashes so an unexpected artifact fails verification.
+
+#### ! Risk
+* LOW Single-index installs, or a properly configured proxy.
+* MEDIUM Poetry/uv with sources declared but never tested against a name that exists on both indexes.
+* HIGH `--extra-index-url https://pypi.org/simple` alongside a private index in any build — this is the live dependency-confusion configuration.
+
+#### ! Check
+
+**Fast check:**
+
+```bash
+# vulnerable: extra-index-url merges, highest version wins
+pip install -r requirements-vulnerable.txt && pip show acme-internal-tool   # 9.9.9  (the impostor!)
+
+# safe: single index
+pip install -r requirements-safe.txt && pip show acme-internal-tool         # 1.0.0  (genuine)
+
+# safe: uv first-index / poetry priority
+uv lock && grep -A1 'acme-internal-tool' uv.lock                            # 1.0.0
+```
+
+**What to look for:** `9.9.9` from the merged config (the attack landing) versus `1.0.0` from every origin-aware config.
+
+**Conclusion:** With `--extra-index-url`, version beats origin — and that is the whole vulnerability.
+
+#### ! Takeaway
+`--extra-index-url` does not mean "fallback", it means "merge, highest version wins". For anything private, use a single index or an origin-aware tool (uv `first-index`, Poetry source priority). Version-picks-across-indexes is how dependency confusion works.
+
+#### ! Related
+*   [P6](../scenario-6-constraints/guide.qmd) - Pinning, which combined with hashes hardens against a swapped artifact.
+*   [P12](../scenario-12-audit/guide.qmd) - Auditing what actually got installed.
+*   [MS16](../../maven-demo/scenario-16-private-bom/guide.qmd) / [MS17](../../maven-demo/scenario-17-private-patch/guide.qmd) - The JVM private-repo scenarios.
+
+#### ! Wild
+In 2021 researcher Alex Birsan used exactly this mechanism to breach Apple, Microsoft, Shopify and dozens more, collecting over $130,000 in bug bounties. He found internal package names in leaked manifests, published higher-versioned public packages with the same names, and watched corporate builds pull his code — purely because `--extra-index-url` prefers the highest version regardless of origin. The technique now has a name (dependency confusion) and a CWE, and it still works against misconfigured builds today.

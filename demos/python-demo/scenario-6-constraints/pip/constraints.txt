@@ -1,0 +1,5 @@
+# tag::p6-constraints[]
+# The org-wide version pin: applied with 'pip install -c constraints.txt'.
+# Constrains resolution WITHOUT adding a dependency (like a Maven BOM).
+demo-lib-c==1.0.0
+# end::p6-constraints[]

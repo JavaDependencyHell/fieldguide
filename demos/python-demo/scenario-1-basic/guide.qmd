@@ -1,0 +1,64 @@
+---
+title: "Basic Transitive Resolution"
+tagline: "Or what to Do When One Install Brings Three Packages"
+type: scenario
+tool: python
+---
+
+#### ! Scenario
+
+*Or what to Do When One Install Brings Three Packages*
+This scenario shows the ground truth every Python tool shares: installing one package pulls in its dependencies, and theirs, until the graph is satisfied. `demo-lib-a` needs `demo-lib-b`, which needs `demo-lib-c` — one command installs all three. It is the Python sibling of [MS1](../../maven-demo/scenario-1-basic/guide.qmd).
+
+::: {.callout-note title="Tool Versions"}
+Tested with **pip 25.3**, **Poetry 2.4**, **uv 0.11**. All three behave identically here; the differences begin in the next scenario.
+:::
+
+#### ! Example
+
+```{mermaid}
+%%| fig-width: 4.4
+graph LR
+    Root[Your project] --> LibA[demo-lib-a 1.0.0]
+    LibA --> LibB[demo-lib-b 1.0.0]
+    LibB --> LibC[demo-lib-c 1.0.0]
+```
+
+```{.text include="pip/requirements.txt" snippet="p1-deps"}
+```
+
+#### ! Expect
+Declaring only `demo-lib-a` installs `demo-lib-b` and `demo-lib-c` as well.
+
+#### ! Why
+Every tool resolves the graph transitively before installing. The one Python-specific rule to hold onto: the result lands in **one environment**, and that environment can hold only **one version** of each package. There is no classpath and no coexistence — a fact that turns the next scenario from an inconvenience into an impossibility.
+
+#### ! Check
+
+**Fast check (all three tools shown; pick yours):**
+
+```bash
+# pip
+python -m venv .venv && . .venv/bin/activate
+pip install -r requirements.txt && pip list
+
+# poetry
+poetry lock && poetry install && poetry show --tree
+
+# uv
+uv sync && uv tree
+```
+
+**What to look for:** `demo-lib-c` appears in the installed set even though you never named it.
+
+**Conclusion:** Transitive resolution is automatic and identical across tools.
+
+#### ! Takeaway
+One environment, one version per package. Everything else in this part follows from that single constraint.
+
+#### ! Related
+*   [P2](../scenario-2-conflict/guide.qmd) - What happens when two packages need different versions of the same thing.
+*   [MS1](../../maven-demo/scenario-1-basic/guide.qmd) - The JVM equivalent (where multiple versions *can* coexist on a classpath).
+
+#### ! Wild
+Python's "one version per environment" rule is why the virtualenv exists at all. Before venvs were routine, installing two projects with incompatible dependencies into the system Python was a genuine way to break your operating system's own tooling — Debian and Red Hat both ship system utilities written in Python that share that global site-packages.

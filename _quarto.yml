@@ -126,6 +126,20 @@ book:
         - demos/sbt-demo/scenario-16-private-bom/guide.qmd
         - demos/sbt-demo/scenario-17-private-patch/guide.qmd
         - demos/sbt-demo/scenario-18-banning/guide.qmd
+    - part: "Python Scenarios"
+      chapters:
+        - demos/python-demo/scenario-1-basic/guide.qmd
+        - demos/python-demo/scenario-2-conflict/guide.qmd
+        - demos/python-demo/scenario-3-resolver/guide.qmd
+        - demos/python-demo/scenario-4-specifiers/guide.qmd
+        - demos/python-demo/scenario-5-locks/guide.qmd
+        - demos/python-demo/scenario-6-constraints/guide.qmd
+        - demos/python-demo/scenario-7-extras-groups/guide.qmd
+        - demos/python-demo/scenario-8-markers/guide.qmd
+        - demos/python-demo/scenario-9-exclusions-gap/guide.qmd
+        - demos/python-demo/scenario-10-venv/guide.qmd
+        - demos/python-demo/scenario-11-private-index/guide.qmd
+        - demos/python-demo/scenario-12-audit/guide.qmd
     - book/content/conclusion.md
     - part: "Appendices"
       chapters:

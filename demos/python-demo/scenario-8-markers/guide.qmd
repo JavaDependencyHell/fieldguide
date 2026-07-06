@@ -1,0 +1,63 @@
+---
+title: "Environment Markers"
+tagline: "Or what to Do When the Dependency Depends on the Machine"
+type: scenario
+tool: python
+---
+
+#### ! Scenario
+
+*Or what to Do When the Dependency Depends on the Machine*
+No JVM sibling. A Python requirement can carry a **marker** (PEP 508) — a condition on the *installing environment* that decides whether the dependency applies at all. `demo-lib-c; python_version >= "3.8"` installs `demo-lib-c` only on new-enough Python. The resolved graph becomes a function of the machine.
+
+::: {.callout-note title="Tool Versions"}
+Tested with **pip 25.3**, **Poetry 2.4**, **uv 0.11**. Markers are PEP 508, a standard — identical behaviour across all tools and versions.
+:::
+
+#### ! Example
+
+```{.text include="pip/requirements.txt" snippet="p8-deps"}
+```
+
+#### ! Expect
+Both listed dependencies install; a requirements file is a flat list.
+
+#### ! Actual
+Only the dependency whose marker is *true on this machine* installs. On Python ≥ 3.8, `demo-lib-c` installs and `demo-lib-d` is skipped entirely. Run the identical file on Python 3.7 and the result flips. Same declaration, different environment — legitimately, by design.
+
+#### ! Why
+A marker is evaluated against the target interpreter's own facts: `python_version`, `sys_platform`, `platform_machine`, `os_name`, and more. The dependency isn't "included then filtered" — it is included *conditionally*, and the condition is data attached to the requirement. This is how one wheel's metadata says "I need `pywin32` on Windows and nothing on Linux" without shipping two packages. The JVM has no equivalent; the closest is separate classifier artifacts, chosen by hand.
+
+#### ! Fix
+*   **Platform-specific deps:** guard them with `; sys_platform == "win32"` (or `== "darwin"`, `== "linux"`).
+*   **Version-gated backports:** `importlib-metadata; python_version < "3.10"` — pull the backport only where the stdlib lacks it.
+*   **Debugging "it resolved differently on CI":** print the markers. CI on Linux and a laptop on macOS legitimately resolve different graphs.
+
+#### ! Risk
+* LOW A well-scoped platform or version marker.
+* MEDIUM Assuming your lock file is universal — a lock resolved on macOS may omit a Windows-only, marker-gated dependency (uv's cross-platform lock handles this; `pip freeze` does not).
+* HIGH Testing only on the platform where a marker excludes a fragile dependency, then shipping to the platform where it's included and untested.
+
+#### ! Check
+
+**Fast check (on Python ≥ 3.8):**
+
+```bash
+pip install -r requirements.txt
+pip show demo-lib-c   # present  (marker python_version >= "3.8" is true)
+pip show demo-lib-d   # absent   (marker python_version < "3.8" is false)
+```
+
+**What to look for:** exactly one of the two packages present, selected by the interpreter's version.
+
+**Conclusion:** Markers make the dependency set conditional on the environment.
+
+#### ! Takeaway
+A Python requirement can be conditional. The same file resolves to different environments across Python versions and platforms — a feature for portability, a trap for anyone who assumes one lock fits all machines.
+
+#### ! Related
+*   [P5](../scenario-5-locks/guide.qmd) - Why a single-platform lock can miss marker-gated deps.
+*   [P10](../scenario-10-venv/guide.qmd) - Environment isolation, the other half of "works on my machine".
+
+#### ! Wild
+Environment markers are why `pywin32` doesn't wreck your Linux CI. A cross-platform library lists it as `pywin32; sys_platform == "win32"`, and every non-Windows install silently skips a dependency that wouldn't even build there. It is one of packaging's quietest successes — invisible precisely because it works.

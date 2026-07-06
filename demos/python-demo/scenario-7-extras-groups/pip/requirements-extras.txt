@@ -1,0 +1,5 @@
+--index-url http://127.0.0.1:8765/simple/
+# tag::p7-extras[]
+# Opting in to the extra pulls demo-lib-d.
+demo-lib-a[feature]==1.0.0
+# end::p7-extras[]

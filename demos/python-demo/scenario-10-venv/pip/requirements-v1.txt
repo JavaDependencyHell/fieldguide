@@ -1,0 +1,4 @@
+--index-url http://127.0.0.1:8765/simple/
+# tag::p10-v1[]
+demo-lib-a==1.0.0
+# end::p10-v1[]

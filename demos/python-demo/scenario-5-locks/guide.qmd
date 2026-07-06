@@ -1,0 +1,75 @@
+---
+title: "Lock Files"
+tagline: "Or what to Do When You Need the Same Install Twice"
+type: scenario
+tool: python
+---
+
+#### ! Scenario
+
+*Or what to Do When You Need the Same Install Twice*
+Reproducibility is the JVM's [MS11](../../maven-demo/scenario-11-locking/guide.qmd), and it is where Python's tools diverge most sharply — there is no single answer, there are five. This scenario takes one loosely-pinned input and shows what each tool produces to freeze it.
+
+::: {.callout-note title="Tool Versions"}
+Tested with **pip 25.3**, **Poetry 2.4**, **uv 0.11**. The cross-tool standard **PEP 751** (`pylock.toml`) was accepted in 2025; pip's `pip lock` (25.1+) and `uv export --format pylock.toml` produce it, but each tool still prefers its own native format for day-to-day work. Adoption is real but partial.
+:::
+
+#### ! Example
+
+```{.text include="pip/requirements.txt" snippet="p5-deps"}
+```
+
+#### ! Expect
+There is a `lock` command that writes a lock file. One way, like Gradle.
+
+#### ! Actual
+There are at least five, and only some are lock files in the Gradle sense:
+
+- **pip**: no native lockfile. `pip freeze` *snapshots* an already-installed environment into pins; `pip-tools` compiles `requirements.in` → fully-pinned `requirements.txt`. pip 25.1+ adds experimental `pip lock` writing `pylock.toml`.
+- **Poetry**: `poetry.lock`, native and default since 1.0. `poetry lock` writes it, `poetry install` obeys it.
+- **uv**: `uv.lock`, cross-platform and native. `uv lock` writes it; `uv export --format pylock.toml` emits the PEP 751 standard form.
+
+All of them record the transitive `demo-lib-c` you never named directly.
+
+#### ! Why
+A lock file separates *resolution* (slow, non-deterministic, done once) from *installation* (fast, exact, done everywhere). The fragmentation is historical: pip predates the idea and treats the environment as the source of truth (`freeze` reads *out* of it), while Poetry and uv treat the lock file as the source of truth and the environment as derived. PEP 751 is the attempt to give all of them one interchange format — accepted, shipping experimentally, not yet the default anywhere.
+
+#### ! Fix
+*   **pip-only shops:** adopt `pip-tools` — hand-write `requirements.in`, commit the compiled `requirements.txt`, install with `--no-deps` from the compiled file. `pip freeze` alone is a snapshot, not a resolution.
+*   **Poetry / uv:** commit the native lock file; it is the point of the tool.
+*   **Mixed toolchains:** watch PEP 751 — `pylock.toml` is the emerging lingua franca, and exporting to it lets a uv project feed a pip-based deployer.
+
+#### ! Risk
+* LOW Committing a native lock file and installing from it in CI.
+* MEDIUM Treating `pip freeze` output as a lock file — it captures whatever happened to be installed, including local cruft, and encodes no hashes by default.
+* HIGH No lock file at all on a deployable with open ranges: every environment is a fresh roll of the dice ([P3](../scenario-3-resolver/guide.qmd)).
+
+#### ! Check
+
+**Fast check:**
+
+```bash
+# pip: install, then snapshot
+pip install -r requirements.txt && pip freeze | grep demo-lib-c   # demo-lib-c==1.0.0
+
+# poetry: lock records the full graph
+poetry lock && grep demo-lib-c poetry.lock
+
+# uv: native lock + PEP 751 export
+uv lock && uv export --format pylock.toml -o pylock.toml && grep demo-lib-c pylock.toml
+```
+
+**What to look for:** the transitive `demo-lib-c` pinned in each artifact — the resolution captured, not just your direct dependency.
+
+**Conclusion:** Every tool can freeze the graph; they disagree on the file, and pip disagrees on the direction (snapshot vs resolve).
+
+#### ! Takeaway
+"Lock the dependencies" has five answers in Python. pip snapshots, Poetry and uv resolve-then-lock, and PEP 751 is the standard trying to unify them. Commit whichever lock your tool produces — just don't mistake `pip freeze` for a resolver.
+
+#### ! Related
+*   [P3](../scenario-3-resolver/guide.qmd) - Why an unlocked graph isn't reproducible.
+*   [P6](../scenario-6-constraints/guide.qmd) - Constraints files, a lighter-weight cousin of locking.
+*   [MS11](../../maven-demo/scenario-11-locking/guide.qmd) - The JVM story, where only Gradle locks natively.
+
+#### ! Wild
+For years Python's lack of a standard lock file was the single most-cited gap versus Cargo, npm, and Bundler. PEP 751 finally landed `pylock.toml` in 2025 — but because uv and Poetry had each already built faster, richer proprietary formats, the standard arrived into a world that had partly routed around it. A lingua franca is most useful before everyone learns different languages.

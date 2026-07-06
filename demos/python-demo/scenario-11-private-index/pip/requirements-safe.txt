@@ -1,0 +1,5 @@
+# tag::p11-safe[]
+# SAFE: one index, no merge. Only the private index is consulted.
+--index-url http://127.0.0.1:8766/simple/
+acme-internal-tool
+# end::p11-safe[]

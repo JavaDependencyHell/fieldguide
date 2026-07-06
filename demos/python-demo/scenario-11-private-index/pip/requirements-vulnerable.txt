@@ -1,0 +1,7 @@
+# tag::p11-vulnerable[]
+# DANGEROUS: --extra-index-url MERGES indexes. pip picks the highest
+# version across BOTH — the public lookalike 9.9.9 beats internal 1.0.0.
+--index-url http://127.0.0.1:8766/simple/
+--extra-index-url http://127.0.0.1:8765/simple/
+acme-internal-tool
+# end::p11-vulnerable[]

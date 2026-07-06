@@ -1,0 +1,5 @@
+--index-url http://127.0.0.1:8765/simple/
+# tag::p6-deps[]
+# Without the constraints file this resolves to demo-lib-c 2.0.0.
+demo-lib-c>=1.0.0
+# end::p6-deps[]

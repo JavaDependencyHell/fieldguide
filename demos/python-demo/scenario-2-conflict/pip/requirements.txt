@@ -1,0 +1,7 @@
+--index-url http://127.0.0.1:8765/simple/
+# tag::p2-deps[]
+# demo-lib-a 2.0.0 needs demo-lib-c==2.0.0 (via demo-lib-b 2.0.0),
+# but we also demand demo-lib-c==1.0.0. One env, one version: impossible.
+demo-lib-a==2.0.0
+demo-lib-c==1.0.0
+# end::p2-deps[]

@@ -1,0 +1,10 @@
+[project]
+name = "p1-basic"
+version = "0.1.0"
+requires-python = ">=3.9"
+dependencies = ["demo-lib-a==1.0.0"]
+
+[[tool.uv.index]]
+name = "demo-repo"
+url = "http://127.0.0.1:8765/simple/"
+default = true

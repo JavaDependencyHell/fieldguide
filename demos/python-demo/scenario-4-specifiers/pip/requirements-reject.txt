@@ -1,0 +1,5 @@
+--index-url http://127.0.0.1:8765/simple/
+# tag::p4-reject[]
+# != is a native rejection operator: newest allowed version that isn't 2.0.0
+demo-lib-c!=2.0.0
+# end::p4-reject[]

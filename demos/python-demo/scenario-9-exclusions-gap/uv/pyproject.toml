@@ -1,0 +1,18 @@
+[project]
+name = "p9-exclusions-gap"
+version = "0.1.0"
+requires-python = ">=3.9"
+dependencies = ["demo-lib-a==1.0.0"]
+
+# tag::p9-uv-override[]
+[tool.uv]
+# The closest thing to an override in the Python world: force demo-lib-c
+# to 2.0.0 even though demo-lib-b pins ==1.0.0. Note: this REPLACES the
+# version — nothing in Python can REMOVE the package entirely.
+override-dependencies = ["demo-lib-c==2.0.0"]
+# end::p9-uv-override[]
+
+[[tool.uv.index]]
+name = "demo-repo"
+url = "http://127.0.0.1:8765/simple/"
+default = true

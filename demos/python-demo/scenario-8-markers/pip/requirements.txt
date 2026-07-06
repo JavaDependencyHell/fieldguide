@@ -1,0 +1,6 @@
+--index-url http://127.0.0.1:8765/simple/
+# tag::p8-deps[]
+# Conditional dependencies as data (PEP 508 markers).
+demo-lib-c==1.0.0; python_version >= "3.8"
+demo-lib-d==1.0.0; python_version < "3.8"
+# end::p8-deps[]

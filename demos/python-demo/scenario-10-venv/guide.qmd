@@ -1,0 +1,79 @@
+---
+title: "Virtual Environment Isolation"
+tagline: "Or what to Do When It Works in Dev and Breaks in Prod"
+type: scenario
+tool: python
+---
+
+#### ! Scenario
+
+*Or what to Do When It Works in Dev and Breaks in Prod*
+No JVM sibling — the JVM carries its dependencies on a per-build classpath, so two projects never fight over one shared install. Python's default is the opposite: packages go into *an* environment, and if you don't create an isolated one, that's the global interpreter. This scenario installs `demo-lib-a 1.0.0` in one venv and `2.0.0` in another and shows they don't see each other — while the global Python sees neither.
+
+::: {.callout-note title="Tool Versions"}
+Tested with **pip 25.3** + the stdlib `venv` module. Poetry and uv create and manage environments for you (`.venv` in-project); the isolation principle is identical.
+:::
+
+#### ! Example
+
+```{mermaid}
+%%| fig-width: 4.6
+graph TD
+    Sys[System Python — neither installed]
+    V1[".venv-a → demo-lib-a 1.0.0"]
+    V2[".venv-b → demo-lib-a 2.0.0"]
+    Sys -.-> V1
+    Sys -.-> V2
+```
+
+```{.text include="pip/requirements-v1.txt" snippet="p10-v1"}
+```
+
+```{.text include="pip/requirements-v2.txt" snippet="p10-v2"}
+```
+
+#### ! Expect
+Installing a package makes it available to Python.
+
+#### ! Actual
+It makes the package available to *the environment you installed into* — and nowhere else. `demo-lib-a` is 1.0.0 in the first venv, 2.0.0 in the second, and `import demo_lib_a` from the global interpreter fails outright. The environment *is* the resolution result; there is no ambient, shared truth.
+
+#### ! Why
+pip installs into whatever Python is active — a venv if one is activated, otherwise the system site-packages (or the per-user `--user` location). Because [one environment holds one version of each package](../scenario-1-basic/guide.qmd), two projects with different needs *must* live in separate environments or one silently overwrites the other. "Works in dev, breaks in prod" is almost always this: dev ran inside a venv with the right versions; prod ran somewhere else — a different venv, the system Python, a container base image — with different ones.
+
+#### ! Fix
+*   **Always work in a venv.** `python -m venv .venv && . .venv/bin/activate`, one per project. Poetry and uv do this automatically.
+*   **Reproduce prod's environment, not just its code.** Ship the lock file ([P5](../scenario-5-locks/guide.qmd)) and install from it in the deploy image.
+*   **Never `sudo pip install`.** Installing into the system Python is how you break OS tooling and create the "works on my machine" gap in the first place.
+
+#### ! Risk
+* LOW One venv per project, activated before installing.
+* MEDIUM Relying on `--user` installs — they leak across projects for a single OS user.
+* HIGH Installing into the system interpreter, or testing in a venv but deploying to a bare container Python with a different resolved set.
+
+#### ! Check
+
+**Fast check:**
+
+```bash
+python -m venv .venv-a && .venv-a/bin/pip install -r requirements-v1.txt
+python -m venv .venv-b && .venv-b/bin/pip install -r requirements-v2.txt
+.venv-a/bin/pip show demo-lib-a   # 1.0.0
+.venv-b/bin/pip show demo-lib-a   # 2.0.0
+python -c "import demo_lib_a"     # ModuleNotFoundError — global Python has nothing
+```
+
+**What to look for:** two versions coexisting in *separate* environments, and the global interpreter seeing neither.
+
+**Conclusion:** Isolation is per-environment; the global Python is not a fallback, it's just another (empty) environment.
+
+#### ! Takeaway
+In Python the environment is the unit of truth. Two projects, two venvs; dev and prod, the same locked environment. Most "works here, not there" bugs are an environment you forgot to reproduce.
+
+#### ! Related
+*   [P1](../scenario-1-basic/guide.qmd) - The one-version-per-environment rule this enforces.
+*   [P5](../scenario-5-locks/guide.qmd) - Locking, so the environment you test is the environment you ship.
+*   [P8](../scenario-8-markers/guide.qmd) - The *other* cause of "resolved differently over there".
+
+#### ! Wild
+`sudo pip install` has broken so many Linux systems — by overwriting packages the OS itself depends on — that Python 3.11 added PEP 668, which makes system interpreters refuse `pip install` outright with an "externally-managed-environment" error. The ecosystem effectively had to install a guardrail against its own default.

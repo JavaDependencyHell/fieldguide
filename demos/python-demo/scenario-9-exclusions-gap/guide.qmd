@@ -1,0 +1,73 @@
+---
+title: "Exclusions: The Gap"
+tagline: "Or what to Do When You Can't Exclude a Transitive at All"
+type: scenario
+tool: python
+---
+
+#### ! Scenario
+
+*Or what to Do When You Can't Exclude a Transitive at All*
+The JVM has exclusions ([MS5](../../maven-demo/scenario-5-exclusions/guide.qmd)) and global bans ([MS18](../../maven-demo/scenario-18-banning/guide.qmd)). Python, mostly, has *neither* — and the gap is the scenario. `demo-lib-a` → `demo-lib-b` → `demo-lib-c`, and there is no pip or Poetry syntax for "install `demo-lib-a` but drop `demo-lib-c`". The best any tool offers is to *override the version*, never to *remove the package*.
+
+::: {.callout-note title="Tool Versions"}
+Tested with **pip 25.3**, **Poetry 2.4**, **uv 0.11**. pip and Poetry have no transitive-exclusion mechanism at all. uv has `override-dependencies`, which *replaces* a version graph-wide — the closest analogue, shown below.
+:::
+
+#### ! Example
+
+pip / Poetry — no exclusion syntax exists; `demo-lib-c` is unavoidable:
+
+```{.text include="pip/requirements.txt" snippet="p9-deps"}
+```
+
+uv — the one lever available, a version *override* (not a removal):
+
+```{.toml include="uv/pyproject.toml" snippet="p9-uv-override"}
+```
+
+#### ! Expect
+Some equivalent of Maven's `<exclusion>` — a way to prune `demo-lib-c` from the graph.
+
+#### ! Actual
+There isn't one. In pip and Poetry, `demo-lib-c` is installed no matter what; you cannot tell the resolver to omit a package another package requires. uv's `override-dependencies` can *force* `demo-lib-c` to 2.0.0 against `demo-lib-b`'s `==1.0.0` pin — but it is still present. **Nothing in the Python ecosystem removes a required transitive.**
+
+#### ! Why
+The JVM treats the classpath as something you assemble and can prune edge by edge. Python treats the environment as the *closure* of what your dependencies declare they need — if `demo-lib-b` says it imports `demo-lib-c`, then removing `demo-lib-c` would leave `demo-lib-b` broken at import time, so the resolver simply won't do it. Overrides exist because *version* disagreements are common and resolvable; exclusions largely don't exist because *removing* a declared need is, in Python's model, just breaking the package. This is the mirror image of [MS18](../../maven-demo/scenario-18-banning/guide.qmd): where Maven can ban and Gradle/sbt can silently prune, Python can only substitute.
+
+#### ! Fix
+*   **You don't want a transitive's *version*:** override it — uv `override-dependencies`, or a constraints file ([P6](../scenario-6-constraints/guide.qmd)) to pin it to something acceptable.
+*   **You don't want the transitive *at all*:** you can't, cleanly. Options are ugly: fork the intermediate package to drop the dependency, vendor it, or replace the whole dependency with one that doesn't pull the offender ([P11](../scenario-11-private-index/guide.qmd) covers private/patched packages).
+*   **It's a security concern:** don't try to exclude — *audit and upgrade* ([P12](../scenario-12-audit/guide.qmd)). Pin the transitive to a fixed version via constraints.
+
+#### ! Risk
+* LOW Overriding a transitive's version to a compatible, tested release.
+* MEDIUM Overriding to a version the intermediate package wasn't built against — you've recreated the diamond conflict ([P2](../scenario-2-conflict/guide.qmd)) by hand.
+* HIGH Forking or vendoring to "remove" a dependency, then carrying that patch forever with no upstream security updates.
+
+#### ! Check
+
+**Fast check:**
+
+```bash
+# pip / poetry: demo-lib-c is present and cannot be excluded
+pip install -r requirements.txt && pip show demo-lib-c        # present, 1.0.0
+
+# uv: override changes the VERSION but not the presence
+uv sync && python -c "import demo_lib_c; print(demo_lib_c.__version__)"   # 2.0.0
+```
+
+**What to look for:** `demo-lib-c` present in every case — 1.0.0 normally, 2.0.0 under uv's override, never absent.
+
+**Conclusion:** Python can substitute a transitive's version but cannot remove the transitive.
+
+#### ! Takeaway
+There is no `<exclusion>` in Python. Overrides (uv) and constraints (pip) change *which version* of a required package you get; nothing removes a package your dependencies declare they need. When you truly must drop one, the honest fixes live upstream.
+
+#### ! Related
+*   [P6](../scenario-6-constraints/guide.qmd) - Constraints, the pip-side way to pin a transitive.
+*   [P2](../scenario-2-conflict/guide.qmd) - What an over-aggressive override recreates.
+*   [MS5](../../maven-demo/scenario-5-exclusions/guide.qmd) / [MS18](../../maven-demo/scenario-18-banning/guide.qmd) - The JVM exclusion and global-ban mechanisms Python lacks.
+
+#### ! Wild
+This gap is a recurring source of frustration for teams moving from Maven to Python: "how do I just exclude the vulnerable transitive like I do in my POM?" The answer — you can't, you pin or upgrade it — surprises people every time, and is a large part of why Python security tooling leans so hard on *auditing* rather than *excluding*.

@@ -1,0 +1,18 @@
+[project]
+name = "p7-extras-groups"
+version = "0.1.0"
+requires-python = ">=3.9"
+dependencies = ["demo-lib-a==1.0.0"]
+
+[tool.poetry]
+package-mode = false
+
+# tag::p7-poetry-group[]
+[tool.poetry.group.dev.dependencies]
+demo-lib-d = "==1.0.0"
+# end::p7-poetry-group[]
+
+[[tool.poetry.source]]
+name = "demo-repo"
+url = "http://127.0.0.1:8765/simple/"
+priority = "primary"

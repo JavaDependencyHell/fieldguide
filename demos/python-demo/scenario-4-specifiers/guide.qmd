@@ -1,0 +1,76 @@
+---
+title: "Specifiers & Ranges"
+tagline: "Or what to Do When >= Is the Cultural Default"
+type: scenario
+tool: python
+---
+
+#### ! Scenario
+
+*Or what to Do When >= Is the Cultural Default*
+Python version specifiers (PEP 440) look like the JVM's ranges ([MS9](../../maven-demo/scenario-9-ranges/guide.qmd)) but the culture is inverted: open ranges are *normal here*, not discouraged. This scenario walks the operators that matter — `>=`, `~=`, and the native `!=` rejection operator that the JVM needs a whole plugin ([MS14](../../maven-demo/scenario-14-reject/guide.qmd)) to emulate.
+
+::: {.callout-note title="Tool Versions"}
+Tested with **pip 25.3**, **Poetry 2.4**, **uv 0.11**. PEP 440 specifiers are a standard, not a tool feature, so they behave the same across all three and across versions.
+:::
+
+#### ! Example
+
+```{.text include="pip/requirements.txt" snippet="p4-deps"}
+```
+
+```{.text include="pip/requirements-compatible.txt" snippet="p4-compat"}
+```
+
+```{.text include="pip/requirements-reject.txt" snippet="p4-reject"}
+```
+
+#### ! Expect
+All three specifiers land on the same version.
+
+#### ! Actual
+They diverge, and that is the lesson. With `demo-lib-c` available at 1.0.0 and 2.0.0:
+
+- `demo-lib-c>=1.0.0` → **2.0.0** (newest that satisfies).
+- `demo-lib-c~=1.0` → **1.0.0** (compatible release: `>=1.0, <2.0`).
+- `demo-lib-c!=2.0.0` → **1.0.0** (newest that isn't the rejected version).
+
+#### ! Why
+Each operator expresses a different intent. `>=` says "at least this, newer is fine" — the open-ended default that keeps Python projects current but exposes them to surprise majors. `~=` is the compatible-release operator: `~=1.0` means "1.x but not 2.0", the pin most libraries *should* use and often don't. `!=` is a first-class exclusion of a known-bad version — no plugin, no enforcer, just an operator. The JVM has no native equivalent; Maven reaches for the enforcer plugin to ban a version.
+
+#### ! Fix
+*   **Libraries:** prefer `~=` (or `>=x,<next-major`) to bound the blast radius of a dependency's next major release.
+*   **Applications:** pin exactly and lock ([P5](../scenario-5-locks/guide.qmd)); ranges belong in libraries, exact versions in deployables.
+*   **Known-bad release:** `!=1.2.3` excludes exactly that version while allowing everything around it.
+
+#### ! Risk
+* LOW Using `~=` to cap at the next major.
+* MEDIUM Bare `>=` on a fast-moving dependency — you are opting into every future major automatically.
+* HIGH No specifier at all (`demo-lib-c` with no version) in anything you deploy; the version becomes whatever the registry served that day.
+
+#### ! Check
+
+**Fast check:**
+
+```bash
+pip install -r requirements.txt            && pip show demo-lib-c  # 2.0.0
+pip install -r requirements-compatible.txt && pip show demo-lib-c  # 1.0.0
+pip install -r requirements-reject.txt     && pip show demo-lib-c  # 1.0.0
+```
+
+(Run each in a fresh venv — see [P10](../scenario-10-venv/guide.qmd) for why.)
+
+**What to look for:** three different resolved versions from three specifiers over the same two available releases.
+
+**Conclusion:** The operator, not the registry, decides which version you get.
+
+#### ! Takeaway
+`>=` is the Python default and the Python footgun. Reach for `~=` to bound majors and `!=` to reject a bad release — and pin exactly in anything you ship.
+
+#### ! Related
+*   [P6](../scenario-6-constraints/guide.qmd) - Applying pins from outside the requirement, without editing it.
+*   [MS9](../../maven-demo/scenario-9-ranges/guide.qmd) - JVM ranges, where open ranges are discouraged rather than default.
+*   [MS14](../../maven-demo/scenario-14-reject/guide.qmd) - The JVM's plugin-based equivalent of Python's native `!=`.
+
+#### ! Wild
+The `~=` "compatible release" operator is one of the most under-used tools in Python packaging. Surveys of `requirements.txt` files in the wild find bare `>=` vastly outnumbering `~=`, which is a large part of why "I reinstalled and it broke" is such a common Python experience: a transitive dependency shipped a new major overnight and an unbounded `>=` swallowed it.

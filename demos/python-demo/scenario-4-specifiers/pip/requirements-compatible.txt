@@ -1,0 +1,5 @@
+--index-url http://127.0.0.1:8765/simple/
+# tag::p4-compat[]
+# ~=1.0 means >=1.0, <2.0 ("compatible release"): resolves demo-lib-c 1.0.0
+demo-lib-c~=1.0
+# end::p4-compat[]

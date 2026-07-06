@@ -210,15 +210,13 @@ verify-sbt: init
 audit:
 	python3 scripts/audit_scenarios.py
 
-# Python targets — QUARANTINED 2026-07-06
-# The Python demos were failing and have been moved out of demos/ to
-# ./python-demo pending a from-scratch review. Do not trust or reuse the
-# existing Python content without verifying it against real tool behaviour.
+# Python targets. Rebuilt from scratch 2026-07-06; all 12 scenarios verified
+# by execution across pip / Poetry / uv (see demos/python-demo/verify.sh).
 init-python:
-	@echo "Python demos are quarantined (see ./python-demo). Skipping."
+	./install_python_deps.sh
 
-verify-python:
-	@echo "Python demos are quarantined (see ./python-demo). Skipping."
+verify-python: init-python
+	cd demos/python-demo && ./verify.sh
 
 # HeroDevs branded site
 herodevs-site: check-quarto

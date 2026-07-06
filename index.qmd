@@ -466,25 +466,26 @@ number-sections: false
       trouble: {
         header: "Match your symptom to a scenario",
         groups: [
-          { title: "Version silently changed / downgraded",
-            links: [
-              { id: "P2", name: "Silent Downgrade (Diamond Problem)", href: "#" },
-              { id: "P3", name: "Resolver Strategies", href: "#" }
-            ]},
           { title: "pip refuses to install (conflict error)",
             links: [
-              { id: "P2", name: "Silent Downgrade (Diamond Problem)", href: "#" },
-              { id: "P6", name: "Constraints Files", href: "#" }
+              { id: "P2", name: "The Diamond (Conflicting Requirements)", href: "demos/python-demo/scenario-2-conflict/guide.html" },
+              { id: "P3", name: "Resolver Strategies & History", href: "demos/python-demo/scenario-3-resolver/guide.html" }
+            ]},
+          { title: "Got an older version than expected",
+            links: [
+              { id: "P3", name: "Resolver Strategies & History", href: "demos/python-demo/scenario-3-resolver/guide.html" },
+              { id: "P4", name: "Specifiers & Ranges", href: "demos/python-demo/scenario-4-specifiers/guide.html" }
             ]},
           { title: "Works in dev, breaks in production",
             links: [
-              { id: "P13", name: "Virtual Environment Isolation", href: "#" },
-              { id: "P5", name: "Lock Files", href: "#" }
+              { id: "P10", name: "Virtual Environment Isolation", href: "demos/python-demo/scenario-10-venv/guide.html" },
+              { id: "P5", name: "Lock Files", href: "demos/python-demo/scenario-5-locks/guide.html" },
+              { id: "P8", name: "Environment Markers", href: "demos/python-demo/scenario-8-markers/guide.html" }
             ]},
-          { title: "Wrong version of a transitive dependency",
+          { title: "Unwanted transitive dependency",
             links: [
-              { id: "P1", name: "Basic Transitive Resolution", href: "#" },
-              { id: "P11", name: "Exclusions (The Gap)", href: "#" }
+              { id: "P9", name: "Exclusions: The Gap", href: "demos/python-demo/scenario-9-exclusions-gap/guide.html" },
+              { id: "P1", name: "Basic Transitive Resolution", href: "demos/python-demo/scenario-1-basic/guide.html" }
             ]}
         ]
       },
@@ -492,18 +493,22 @@ number-sections: false
         header: "Pick the outcome you need",
         groups: [
           { title: "Pin all versions for reproducibility",
-            links: [{ id: "P5", name: "Lock Files (pip freeze, poetry.lock)", href: "#" }] },
-          { title: "Constrain versions without editing packages",
-            links: [{ id: "P6", name: "Constraints Files", href: "#" }] },
-          { title: "Remove or block a dependency",
+            links: [{ id: "P5", name: "Lock Files", href: "demos/python-demo/scenario-5-locks/guide.html" }] },
+          { title: "Constrain versions centrally (BOM-like)",
+            links: [{ id: "P6", name: "Constraints Files", href: "demos/python-demo/scenario-6-constraints/guide.html" }] },
+          { title: "Reject or override a version",
             links: [
-              { id: "P11", name: "Exclusions (The Gap)", href: "#" },
-              { id: "P14", name: "Version Rejection", href: "#" }
+              { id: "P4", name: "Specifiers & Ranges (!=)", href: "demos/python-demo/scenario-4-specifiers/guide.html" },
+              { id: "P9", name: "Exclusions: The Gap", href: "demos/python-demo/scenario-9-exclusions-gap/guide.html" }
             ]},
+          { title: "Separate optional / dev dependencies",
+            links: [{ id: "P7", name: "Extras & Dependency Groups", href: "demos/python-demo/scenario-7-extras-groups/guide.html" }] },
           { title: "Isolate project environments",
-            links: [{ id: "P13", name: "Virtual Environment Isolation", href: "#" }] },
-          { title: "Use a private package index",
-            links: [{ id: "P16", name: "Private Index", href: "#" }] }
+            links: [{ id: "P10", name: "Virtual Environment Isolation", href: "demos/python-demo/scenario-10-venv/guide.html" }] },
+          { title: "Use a private index safely",
+            links: [{ id: "P11", name: "Private Index & Dependency Confusion", href: "demos/python-demo/scenario-11-private-index/guide.html" }] },
+          { title: "Find vulnerable dependencies",
+            links: [{ id: "P12", name: "Auditing the Environment", href: "demos/python-demo/scenario-12-audit/guide.html" }] }
         ]
       },
       learn: {
@@ -511,21 +516,24 @@ number-sections: false
         groups: [
           { title: "Start with the fundamentals",
             links: [
-              { id: "P1", name: "Basic Transitive Resolution", href: "#" },
-              { id: "P2", name: "Silent Downgrade (Diamond Problem)", href: "#" },
-              { id: "P3", name: "Resolver Strategies", href: "#" }
+              { id: "P1", name: "Basic Transitive Resolution", href: "demos/python-demo/scenario-1-basic/guide.html" },
+              { id: "P2", name: "The Diamond (Conflicting Requirements)", href: "demos/python-demo/scenario-2-conflict/guide.html" },
+              { id: "P3", name: "Resolver Strategies & History", href: "demos/python-demo/scenario-3-resolver/guide.html" }
             ]},
           { title: "Then explore controls",
             links: [
-              { id: "P5", name: "Lock Files", href: "#" },
-              { id: "P6", name: "Constraints Files", href: "#" },
-              { id: "P13", name: "Virtual Environment Isolation", href: "#" }
+              { id: "P4", name: "Specifiers & Ranges", href: "demos/python-demo/scenario-4-specifiers/guide.html" },
+              { id: "P5", name: "Lock Files", href: "demos/python-demo/scenario-5-locks/guide.html" },
+              { id: "P6", name: "Constraints Files", href: "demos/python-demo/scenario-6-constraints/guide.html" },
+              { id: "P7", name: "Extras & Dependency Groups", href: "demos/python-demo/scenario-7-extras-groups/guide.html" }
             ]},
-          { title: "Advanced patterns",
+          { title: "Advanced & security",
             links: [
-              { id: "P11", name: "Exclusions (The Gap)", href: "#" },
-              { id: "P15", name: "Substitution", href: "#" },
-              { id: "P18", name: "Security Audit", href: "#" }
+              { id: "P8", name: "Environment Markers", href: "demos/python-demo/scenario-8-markers/guide.html" },
+              { id: "P9", name: "Exclusions: The Gap", href: "demos/python-demo/scenario-9-exclusions-gap/guide.html" },
+              { id: "P10", name: "Virtual Environment Isolation", href: "demos/python-demo/scenario-10-venv/guide.html" },
+              { id: "P11", name: "Private Index & Dependency Confusion", href: "demos/python-demo/scenario-11-private-index/guide.html" },
+              { id: "P12", name: "Auditing the Environment", href: "demos/python-demo/scenario-12-audit/guide.html" }
             ]}
         ]
       }

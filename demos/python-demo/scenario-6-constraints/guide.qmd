@@ -1,0 +1,66 @@
+---
+title: "Constraints Files: Central Version Control"
+tagline: "Or what to Do When You Want a BOM but pip Has No BOM"
+type: scenario
+tool: python
+---
+
+#### ! Scenario
+
+*Or what to Do When You Want a BOM but pip Has No BOM*
+The JVM centralises versions with a BOM ([MS3](../../maven-demo/scenario-3-mgmt/guide.qmd)). pip's nearest equivalent is the **constraints file**: a list of version pins that *constrain resolution without adding dependencies*. Applied with `-c`, it pins `demo-lib-c` to `1.0.0` even though the requirement asks only for `>=1.0.0` (which would otherwise take 2.0.0).
+
+::: {.callout-note title="Tool Versions"}
+Tested with **pip 25.3**, **Poetry 2.4**, **uv 0.11**. pip constraints files date to pip 7.1 (2015). uv exposes the same idea as `constraint-dependencies`; Poetry has no direct constraints-file equivalent and centralises versions in `pyproject.toml` instead.
+:::
+
+#### ! Example
+
+```{.text include="pip/requirements.txt" snippet="p6-deps"}
+```
+
+```{.text include="pip/constraints.txt" snippet="p6-constraints"}
+```
+
+#### ! Expect
+`demo-lib-c>=1.0.0` installs the newest, 2.0.0.
+
+#### ! Actual
+With `-c constraints.txt` it installs **1.0.0**. The constraint caps the version without itself being a dependency — if nothing required `demo-lib-c`, the constraints file would install nothing at all. That "only applies if already needed" behaviour is exactly a BOM's.
+
+#### ! Why
+A constraints file is a *ceiling on resolution*, not a request. pip reads it as "if you resolve any of these packages, it must satisfy this version" — which is precisely Maven's `dependencyManagement`: versions that apply when a dependency appears, without forcing it to appear. uv's `constraint-dependencies` key is the same mechanism in `pyproject.toml`. Poetry, by contrast, has no separate constraints file; you centralise by pinning in the project's own dependency table, closer to editing the POM than importing a BOM.
+
+#### ! Fix
+*   **pip:** keep an org-wide `constraints.txt`, apply it everywhere with `-c` (or the `PIP_CONSTRAINT` env var). One file pins the whole company's transitive versions.
+*   **uv:** `constraint-dependencies` under `[tool.uv]` does the same within the project.
+*   **Poetry:** pin shared versions in a base `pyproject.toml` / path-dependency and inherit; there is no `-c`.
+
+#### ! Risk
+* LOW A curated constraints file that pins known-good transitive versions.
+* MEDIUM Letting the constraints file drift from reality until it constrains nothing that's actually installed.
+* HIGH Confusing a constraints file with a requirements file — a constraints file must never be the *only* place a dependency appears, or it installs nothing and you wonder why.
+
+#### ! Check
+
+**Fast check:**
+
+```bash
+pip install -r requirements.txt -c constraints.txt && pip show demo-lib-c   # 1.0.0
+# without -c the same requirement resolves to 2.0.0
+```
+
+**What to look for:** `demo-lib-c 1.0.0` with the constraint, `2.0.0` without it — the ceiling doing its job.
+
+**Conclusion:** The constraints file steers resolution the way a BOM does, without adding a dependency.
+
+#### ! Takeaway
+pip's constraints file (and uv's `constraint-dependencies`) is Python's BOM: central version pins that apply only to packages already in the graph. Poetry centralises differently, in the project file itself.
+
+#### ! Related
+*   [P4](../scenario-4-specifiers/guide.qmd) - The specifiers a constraint is built from.
+*   [P5](../scenario-5-locks/guide.qmd) - Locking, the stricter cousin that pins *everything*, not just a curated set.
+*   [MS3](../../maven-demo/scenario-3-mgmt/guide.qmd) - The JVM BOM this mirrors.
+
+#### ! Wild
+The constraints file is one of pip's most powerful and least-known features. A single `PIP_CONSTRAINT` environment variable pointing at a company-wide pin list can quietly enforce "no vulnerable transitive versions" across every `pip install` an organisation runs — a supply-chain control hiding in plain sight since 2015.

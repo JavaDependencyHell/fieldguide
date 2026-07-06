@@ -1,0 +1,5 @@
+--index-url http://127.0.0.1:8765/simple/
+# tag::p4-deps[]
+# >= takes the newest available: resolves demo-lib-c 2.0.0
+demo-lib-c>=1.0.0
+# end::p4-deps[]

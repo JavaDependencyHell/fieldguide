@@ -1,0 +1,22 @@
+[project]
+name = "p11-private-index"
+version = "0.1.0"
+requires-python = ">=3.9"
+dependencies = ["acme-internal-tool"]
+
+[tool.poetry]
+package-mode = false
+
+# tag::p11-poetry-sources[]
+# Poetry sources are ORDERED AND EXPLICIT: the primary private index is
+# consulted first; the public index only supplements what it lacks.
+[[tool.poetry.source]]
+name = "private"
+url = "http://127.0.0.1:8766/simple/"
+priority = "primary"
+
+[[tool.poetry.source]]
+name = "public-demo"
+url = "http://127.0.0.1:8765/simple/"
+priority = "supplemental"
+# end::p11-poetry-sources[]

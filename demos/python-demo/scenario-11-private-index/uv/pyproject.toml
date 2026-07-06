@@ -1,0 +1,17 @@
+[project]
+name = "p11-private-index"
+version = "0.1.0"
+requires-python = ">=3.9"
+dependencies = ["acme-internal-tool"]
+
+# tag::p11-uv-indexes[]
+# uv's default index-strategy is "first-index": the first index that has
+# the package wins — the public 9.9.9 lookalike is never considered.
+[[tool.uv.index]]
+name = "private"
+url = "http://127.0.0.1:8766/simple/"
+
+[[tool.uv.index]]
+name = "public-demo"
+url = "http://127.0.0.1:8765/simple/"
+# end::p11-uv-indexes[]

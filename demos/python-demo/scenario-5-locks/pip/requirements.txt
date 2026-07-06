@@ -1,0 +1,7 @@
+--index-url http://127.0.0.1:8765/simple/
+# tag::p5-deps[]
+# The INPUT: one direct, loosely-pinned dependency.
+# pip has no lockfile — 'pip freeze' snapshots the env after the fact,
+# pip-tools compiles requirements.in -> requirements.txt.
+demo-lib-a==1.0.0
+# end::p5-deps[]

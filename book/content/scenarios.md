@@ -5,7 +5,9 @@ title: Scenarios
 This guide explores dependency management through targeted scenarios.
 All are implemented for Maven, Gradle, and SBT, enabling direct comparison of how each tool resolves the same problem.
 
-Each scenario is implemented for all three tools. References use a tool prefix: MS (Maven), GS (Gradle), SB (SBT) --- so MS2 is the Maven version of scenario 2, GS2 is Gradle, and SB2 is SBT.
+Each JVM scenario is implemented for all three tools. References use a tool prefix: MS (Maven), GS (Gradle), SB (SBT) --- so MS2 is the Maven version of scenario 2, GS2 is Gradle, and SB2 is SBT.
+
+The Python part (prefix **P**) is a separate 12-scenario sequence covering pip, Poetry, and uv. It is numbered on its own because Python's model --- one environment, one version per package --- reshapes which scenarios matter and adds several (resolver history, environment markers, venv isolation, dependency confusion, auditing) that have no JVM equivalent.
 
 ::: {.content-visible when-format="html"}
 

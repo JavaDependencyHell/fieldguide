@@ -1,0 +1,74 @@
+---
+title: "The Diamond: Conflicting Requirements"
+tagline: "Or what to Do When There Is No Winning Version"
+type: scenario
+tool: python
+---
+
+#### ! Scenario
+
+*Or what to Do When There Is No Winning Version*
+This is the Python inversion of the classic diamond ([MS2](../../maven-demo/scenario-2-conflict/guide.qmd)). `demo-lib-a 2.0.0` needs `demo-lib-c 2.0.0`; we also demand `demo-lib-c 1.0.0`. On the JVM this resolves — one version is evicted and the build proceeds. In Python there is no eviction and no classpath, so both requirements must be satisfied in one environment. They can't be. The install *fails*.
+
+::: {.callout-note title="Tool Versions"}
+Tested with **pip 25.3** (backtracking resolver, default since 21.0), **Poetry 2.4**, **uv 0.11**. On **pip < 20.3** the legacy resolver would have installed a broken environment silently instead of erroring — see [P3](../scenario-3-resolver/guide.qmd).
+:::
+
+#### ! Example
+
+```{mermaid}
+%%| fig-width: 4.4
+graph LR
+    Root[Your project] --> LibA[demo-lib-a 2.0.0]
+    Root --> LibCpin[demo-lib-c 1.0.0]
+    LibA --> LibB[demo-lib-b 2.0.0]
+    LibB --> LibC2[demo-lib-c 2.0.0]
+    LibC2 -.->|irreconcilable| LibCpin
+```
+
+```{.text include="pip/requirements.txt" snippet="p2-deps"}
+```
+
+#### ! Expect
+One version of `demo-lib-c` wins and the install succeeds, as it would on the JVM.
+
+#### ! Actual
+The install **fails**. There is no version of `demo-lib-c` that is both `==1.0.0` and `==2.0.0`, and Python cannot install two. pip reports `ResolutionImpossible`; Poetry and uv fail the lock step with a conflict message. Nothing is installed.
+
+#### ! Why
+The JVM flattens conflicts by *picking* a version (nearest- or highest-wins) and dropping the rest — the losing version simply isn't on the classpath. Python has no such escape: the environment is a flat set of installed packages, one version each, and every requirement is a hard constraint on that set. When the constraints have no common solution, the only honest answer is to refuse. This is why "dependency hell" is a sharper phrase in Python than anywhere else.
+
+#### ! Fix
+*   **Loosen a pin:** if the `demo-lib-c==1.0.0` pin is stricter than you need, relax it and let the resolver find a version that satisfies both (see [P3](../scenario-3-resolver/guide.qmd)).
+*   **Upgrade the other side:** find a `demo-lib-a` that accepts `demo-lib-c 1.0.0`.
+*   **Accept there is no solution:** sometimes two dependencies genuinely cannot coexist, and the fix is architectural — split them across services or processes.
+
+#### ! Risk
+* LOW Loosening an over-tight application pin.
+* MEDIUM Upgrading a dependency to escape the conflict without testing the new version.
+* HIGH "Solving" it by installing with `--no-deps` or forcing versions — you get the broken environment the resolver was protecting you from, and the failure moves to import time or runtime.
+
+#### ! Check
+
+**Fast check:**
+
+```bash
+pip install -r requirements.txt      # exits non-zero: ResolutionImpossible
+poetry lock                          # fails: version solving failed
+uv lock                              # fails: no solution found
+```
+
+**What to look for:** a non-zero exit and a message naming `demo-lib-c` and the two incompatible constraints. Crucially, *nothing is installed* — the tool refused rather than guessed.
+
+**Conclusion:** An unsatisfiable graph is a hard failure in Python, not a silent pick.
+
+#### ! Takeaway
+On the JVM a version conflict is resolved; in Python it can be *fatal*. One environment, one version — when two requirements disagree and neither yields, there is no build.
+
+#### ! Related
+*   [P3](../scenario-3-resolver/guide.qmd) - How the resolver searches for a version set that *does* satisfy everyone.
+*   [P6](../scenario-6-constraints/guide.qmd) - Steering resolution with a constraints file.
+*   [MS2](../../maven-demo/scenario-2-conflict/guide.qmd) - The same diamond on the JVM, where it resolves instead of failing.
+
+#### ! Wild
+The reason modern pip can take *minutes* on a hard graph is that "is there any satisfying version set?" is a genuine search problem — pip's resolver and uv's PubGrub both backtrack through combinations. Occasionally the honest answer takes real computation, and a truly unsatisfiable graph is only proven impossible after exhausting the search space.

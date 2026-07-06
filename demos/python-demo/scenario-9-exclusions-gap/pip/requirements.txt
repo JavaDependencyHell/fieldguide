@@ -1,0 +1,6 @@
+--index-url http://127.0.0.1:8765/simple/
+# tag::p9-deps[]
+# demo-lib-a -> demo-lib-b -> demo-lib-c. There is NO pip syntax to say
+# "install demo-lib-a but exclude demo-lib-c". The gap is the scenario.
+demo-lib-a==1.0.0
+# end::p9-deps[]

@@ -1,0 +1,7 @@
+--index-url http://127.0.0.1:8765/simple/
+# tag::p3-deps[]
+# demo-lib-a is unpinned. Newest (2.0.0) conflicts with our demo-lib-c pin,
+# so the resolver must BACKTRACK to demo-lib-a 1.0.0.
+demo-lib-a
+demo-lib-c==1.0.0
+# end::p3-deps[]

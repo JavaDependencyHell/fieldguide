@@ -1,0 +1,64 @@
+---
+title: "Auditing the Environment"
+tagline: "Or what to Do When You Inherit a requirements.txt You Didn't Write"
+type: scenario
+tool: python
+---
+
+#### ! Scenario
+
+*Or what to Do When You Inherit a requirements.txt You Didn't Write*
+This closes the Python part the way triage opens the book: see reality before you touch it. Given an environment — pinned `urllib3 1.26.4` here — `pip-audit` cross-references what's installed against the vulnerability database and tells you what's exposed. It is the answer to the [exclusion gap](../scenario-9-exclusions-gap/guide.qmd): you can't prune a bad transitive, so you *find* it and upgrade.
+
+::: {.callout-note title="Tool Versions"}
+Tested with **pip 25.3** and **pip-audit** (PyPA). This scenario queries the real advisory database, so it **needs network access** and its findings change as new CVEs are published — the guide states the mechanism, not a frozen result.
+:::
+
+#### ! Example
+
+```{.text include="pip/requirements.txt" snippet="p12-deps"}
+```
+
+#### ! Expect
+A clean install means a safe environment.
+
+#### ! Actual
+The install succeeds and the environment is *installable* but not *safe*. `pip-audit` reports known vulnerabilities against `urllib3 1.26.4` (an old pin with published CVEs) and names the fixed versions. "It resolved" and "it's secure" are different questions, and only the audit answers the second.
+
+#### ! Why
+Resolution checks that versions are mutually *compatible*; it says nothing about whether they're *vulnerable*. `pip-audit` walks the installed set (or a requirements/lock file) and matches each package-version against the Python Packaging Advisory Database and OSV. Because Python [can't exclude a transitive](../scenario-9-exclusions-gap/guide.qmd), the practical security workflow is detect-then-pin: audit surfaces the exposed package, and you upgrade it or pin a fixed version via constraints ([P6](../scenario-6-constraints/guide.qmd)).
+
+#### ! Fix
+*   **Run it in CI:** `pip-audit` on every build; fail the pipeline on findings above a threshold.
+*   **Audit the lock, not just the env:** `pip-audit -r requirements.txt` (or against `pylock.toml`) catches issues before install.
+*   **Remediate by pinning up:** bump the vulnerable package, or pin a fixed transitive version in a constraints file — the Python substitute for excluding it.
+
+#### ! Risk
+* LOW Auditing regularly and upgrading flagged packages.
+* MEDIUM Auditing only direct dependencies — most vulnerabilities arrive transitively, several hops down.
+* HIGH Treating a green install as a security signal; nothing in resolution looks at CVEs.
+
+#### ! Check
+
+**Fast check:**
+
+```bash
+python -m venv .venv && . .venv/bin/activate
+pip install pip-audit urllib3==1.26.4
+pip-audit          # lists known vulnerabilities for urllib3 1.26.4 and their fixes
+```
+
+**What to look for:** `pip-audit` naming `urllib3` with one or more advisory IDs and a fixed version. (Exact IDs depend on the current database.)
+
+**Conclusion:** A resolvable environment can still be a vulnerable one; the audit is the only step that checks.
+
+#### ! Takeaway
+Resolution proves compatibility, never safety. Audit the installed set (and the lock file) against advisories, and remediate by upgrading or pinning up — because Python gives you no way to simply remove the bad package.
+
+#### ! Related
+*   [P9](../scenario-9-exclusions-gap/guide.qmd) - Why you pin/upgrade instead of excluding.
+*   [P5](../scenario-5-locks/guide.qmd) - Auditing the lock file before it ever installs.
+*   [P11](../scenario-11-private-index/guide.qmd) - The supply-chain scenario audit complements.
+
+#### ! Wild
+`pip-audit` began life at Trail of Bits and is now a PyPA project — a sign of how recently Python got first-class supply-chain tooling compared with the JVM's long-established scanners. For years the honest answer to "what's vulnerable in my Python environment?" was "grep the CVE feed by hand". A sensitive-topic note: security findings can implicate code people depend on in production — treat audit output as a prompt to plan an upgrade, not a verdict on anyone's work.

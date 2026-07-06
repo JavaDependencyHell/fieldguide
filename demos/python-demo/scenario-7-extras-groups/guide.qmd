@@ -1,0 +1,74 @@
+---
+title: "Extras & Dependency Groups"
+tagline: "Or what to Do When Some Dependencies Are Optional"
+type: scenario
+tool: python
+---
+
+#### ! Scenario
+
+*Or what to Do When Some Dependencies Are Optional*
+Python merges two JVM ideas into one scenario. **Extras** are optional *runtime* features a package offers (`demo-lib-a[feature]`) — the sibling of Maven optional dependencies ([MS8](../../maven-demo/scenario-8-optional/guide.qmd)). **Dependency groups** are optional *development* sets (test, docs, lint) — the sibling of build scopes ([MS7](../../maven-demo/scenario-7-scopes/guide.qmd)). This scenario shows both.
+
+::: {.callout-note title="Tool Versions"}
+Tested with **pip 25.3**, **Poetry 2.4**, **uv 0.11**. Extras are standard (PEP 508) everywhere. Dependency groups differ: Poetry groups arrived in 1.2; uv uses `[dependency-groups]` (PEP 735); pip has no group concept and uses multiple requirements files instead.
+:::
+
+#### ! Example
+
+Extras — opting in pulls the optional `demo-lib-d`:
+
+```{.text include="pip/requirements-extras.txt" snippet="p7-extras"}
+```
+
+Groups — a dev-only set, installed or skipped on demand:
+
+```{.toml include="uv/pyproject.toml" snippet="p7-uv-group"}
+```
+
+#### ! Expect
+Optional dependencies come along by default.
+
+#### ! Actual
+They don't — that's the point of "optional". Plain `demo-lib-a` does **not** install `demo-lib-d`; `demo-lib-a[feature]` does. Likewise the `dev` group is absent from a default install and present only when you ask (`--with dev` in Poetry, the default-but-skippable `--no-dev` in uv). pip has no group mechanism at all: you keep `requirements.txt` and `requirements-dev.txt` as separate files.
+
+#### ! Why
+Extras and groups both answer "don't make everyone pay for what only some need", but at different layers. An extra is published *by the library* as a named bundle of optional runtime deps — consumers opt in with `[name]`. A group is defined *by your project* for its own workflow (tests, docs) and never ships to consumers. The JVM splits these across `<optional>true</optional>` and build scopes; Python's extras + groups cover the same ground with different seams.
+
+#### ! Fix
+*   **Offering optional features in a library:** declare an extra, so consumers write `your-lib[feature]`.
+*   **Separating dev tooling:** use dependency groups (Poetry `group`, uv `[dependency-groups]`); on pip, a second requirements file.
+*   **Installing:** `pip install "pkg[extra]"`; `poetry install --with dev`; `uv sync` (groups) — check what your default install actually pulls.
+
+#### ! Risk
+* LOW Declaring a clean extra for a genuinely optional feature.
+* MEDIUM Putting test/lint tools in main dependencies instead of a group — every consumer and every production image now carries pytest.
+* HIGH Relying on an extra being installed when your deploy step omits it; the feature imports fine locally and `ImportError`s in production.
+
+#### ! Check
+
+**Fast check:**
+
+```bash
+pip install -r requirements.txt        && ! pip show demo-lib-d   # absent
+pip install -r requirements-extras.txt &&   pip show demo-lib-d   # present
+poetry install --without dev  # no demo-lib-d
+poetry install --with dev     # demo-lib-d present
+uv sync --no-dev              # no demo-lib-d
+uv sync                       # demo-lib-d present
+```
+
+**What to look for:** `demo-lib-d` present only when the extra or group is requested.
+
+**Conclusion:** Optional means opt-in — extras for runtime features, groups for dev tooling.
+
+#### ! Takeaway
+Python folds the JVM's optional dependencies and build scopes into extras (runtime, published by the library) and dependency groups (dev, defined by your project). pip has extras but no groups — mind the gap if you switch tools.
+
+#### ! Related
+*   [P4](../scenario-4-specifiers/guide.qmd) - Version specifiers, which apply inside extras and groups too.
+*   [MS7](../../maven-demo/scenario-7-scopes/guide.qmd) - JVM build scopes (the group analogue).
+*   [MS8](../../maven-demo/scenario-8-optional/guide.qmd) - JVM optional dependencies (the extra analogue).
+
+#### ! Wild
+The classic extras example is `pip install "requests[security]"` — for years that pulled cryptography-backed TLS extras that plain `requests` left out. It was also a classic footgun: countless bug reports of "requests can't do X" turned out to be "you installed requests, not requests[the-extra-you-needed]".

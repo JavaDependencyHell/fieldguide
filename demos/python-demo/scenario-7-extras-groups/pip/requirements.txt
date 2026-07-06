@@ -1,0 +1,5 @@
+--index-url http://127.0.0.1:8765/simple/
+# tag::p7-deps[]
+# Base install: the optional 'feature' extra is NOT included.
+demo-lib-a==1.0.0
+# end::p7-deps[]
