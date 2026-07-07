@@ -252,6 +252,11 @@ number-sections: false
         <div class="dh-card-name">Gradle</div>
         <div class="dh-card-desc">build.gradle, highest-wins, platforms</div>
       </div>
+      <div class="dh-card" data-eco="sbt" onclick="dhSelectEco(this)">
+        <div class="dh-card-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#990187" stroke-width="1.5"><path d="M4 4l8-2 8 2v7c0 5-3.5 8-8 9-4.5-1-8-4-8-9V4z"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <div class="dh-card-name">SBT</div>
+        <div class="dh-card-desc">build.sbt, latest-wins, Coursier</div>
+      </div>
       <div class="dh-card" data-eco="python" onclick="dhSelectEco(this)">
         <div class="dh-card-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#990187" stroke-width="1.5"><path d="M12 2C6.5 2 6 4 6 4v3h6v1H4s-4-.5-4 5 3 5.5 3 5.5h2v-3s0-3 3-3h5s3 0 3-3V4s0-2-5-2z"/><circle cx="9" cy="5.5" r="0.8" fill="#990187"/><path d="M12 22c5.5 0 6-2 6-2v-3h-6v-1h8s4 .5 4-5-3-5.5-3-5.5h-2v3s0 3-3 3h-5s-3 0-3 3v5s0 2 5 2z" opacity="0.5"/><circle cx="15" cy="18.5" r="0.8" fill="#990187" opacity="0.5"/></svg></div>
         <div class="dh-card-name">Python</div>
@@ -457,6 +462,85 @@ number-sections: false
               { id: "S9", name: "Version Ranges", href: "demos/gradle-demo/scenario-9-ranges/guide.html" },
               { id: "S11", name: "Dependency Locking", href: "demos/gradle-demo/scenario-11-locking/guide.html" },
               { id: "S13", name: "Variants & Capabilities", href: "demos/gradle-demo/scenario-13-variants/guide.html" }
+            ]}
+        ]
+      }
+    },
+    sbt: {
+      label: "SBT",
+      trouble: {
+        header: "Match your symptom to a scenario",
+        groups: [
+          { title: "Version changed unexpectedly",
+            links: [
+              { id: "S2", name: "Version Conflict Resolution (Latest Wins)", href: "demos/sbt-demo/scenario-2-conflict/guide.html" },
+              { id: "S6", name: "Forcing a Version", href: "demos/sbt-demo/scenario-6-forcing/guide.html" }
+            ]},
+          { title: "Compiles but fails at runtime",
+            links: [
+              { id: "S7", name: "Dependency Configurations", href: "demos/sbt-demo/scenario-7-scopes/guide.html" },
+              { id: "S5", name: "Exclusions", href: "demos/sbt-demo/scenario-5-exclusions/guide.html" }
+            ]},
+          { title: "Build worked yesterday, broken today",
+            links: [
+              { id: "S9", name: "Version Ranges", href: "demos/sbt-demo/scenario-9-ranges/guide.html" },
+              { id: "S11", name: "Dependency Locking", href: "demos/sbt-demo/scenario-11-locking/guide.html" }
+            ]},
+          { title: "Unwanted library keeps appearing",
+            links: [
+              { id: "S5", name: "Exclusions", href: "demos/sbt-demo/scenario-5-exclusions/guide.html" },
+              { id: "S15", name: "Substitution", href: "demos/sbt-demo/scenario-15-substitution/guide.html" }
+            ]},
+          { title: "Dependency tree looks wrong",
+            links: [
+              { id: "S1", name: "Basic Transitive Resolution", href: "demos/sbt-demo/scenario-1-basic/guide.html" },
+              { id: "S3", name: "Dependency Management", href: "demos/sbt-demo/scenario-3-mgmt/guide.html" }
+            ]}
+        ]
+      },
+      control: {
+        header: "Pick the outcome you need",
+        groups: [
+          { title: "Align versions across projects",
+            links: [{ id: "S3", name: "Dependency Management", href: "demos/sbt-demo/scenario-3-mgmt/guide.html" }] },
+          { title: "Override a transitive version",
+            links: [{ id: "S6", name: "Forcing a Version", href: "demos/sbt-demo/scenario-6-forcing/guide.html" }] },
+          { title: "Remove a transitive dependency",
+            links: [
+              { id: "S5", name: "Exclusions", href: "demos/sbt-demo/scenario-5-exclusions/guide.html" },
+              { id: "S18", name: "Banning a Dependency", href: "demos/sbt-demo/scenario-18-banning/guide.html" }
+            ]},
+          { title: "Ensure reproducible builds",
+            links: [{ id: "S11", name: "Dependency Locking", href: "demos/sbt-demo/scenario-11-locking/guide.html" }] },
+          { title: "Block a known-bad version",
+            links: [{ id: "S14", name: "Version Rejection", href: "demos/sbt-demo/scenario-14-reject/guide.html" }] },
+          { title: "Use private/patched artifacts",
+            links: [
+              { id: "S16", name: "Private BOM", href: "demos/sbt-demo/scenario-16-private-bom/guide.html" },
+              { id: "S17", name: "Private Patch", href: "demos/sbt-demo/scenario-17-private-patch/guide.html" }
+            ]}
+        ]
+      },
+      learn: {
+        header: "Recommended reading order",
+        groups: [
+          { title: "Start with the fundamentals",
+            links: [
+              { id: "S1", name: "Basic Transitive Resolution", href: "demos/sbt-demo/scenario-1-basic/guide.html" },
+              { id: "S2", name: "Version Conflict Resolution (Latest Wins)", href: "demos/sbt-demo/scenario-2-conflict/guide.html" },
+              { id: "S3", name: "Dependency Management", href: "demos/sbt-demo/scenario-3-mgmt/guide.html" }
+            ]},
+          { title: "Then explore controls",
+            links: [
+              { id: "S5", name: "Exclusions", href: "demos/sbt-demo/scenario-5-exclusions/guide.html" },
+              { id: "S6", name: "Forcing a Version", href: "demos/sbt-demo/scenario-6-forcing/guide.html" },
+              { id: "S7", name: "Dependency Configurations", href: "demos/sbt-demo/scenario-7-scopes/guide.html" }
+            ]},
+          { title: "Advanced patterns",
+            links: [
+              { id: "S9", name: "Version Ranges", href: "demos/sbt-demo/scenario-9-ranges/guide.html" },
+              { id: "S11", name: "Dependency Locking", href: "demos/sbt-demo/scenario-11-locking/guide.html" },
+              { id: "S13", name: "Variants", href: "demos/sbt-demo/scenario-13-variants/guide.html" }
             ]}
         ]
       }
