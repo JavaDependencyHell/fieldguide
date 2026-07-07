@@ -73,4 +73,4 @@ pip install -r requirements-reject.txt     && pip show demo-lib-c  # 1.0.0
 *   [MS14](../../maven-demo/scenario-14-reject/guide.qmd) - The JVM's plugin-based equivalent of Python's native `!=`.
 
 #### ! Wild
-The `~=` "compatible release" operator is one of the most under-used tools in Python packaging. Surveys of `requirements.txt` files in the wild find bare `>=` vastly outnumbering `~=`, which is a large part of why "I reinstalled and it broke" is such a common Python experience: a transitive dependency shipped a new major overnight and an unbounded `>=` swallowed it.
+The `~=` "compatible release" operator is one of the most under-used tools in Python packaging. Skim almost any public `requirements.txt` and you'll find bare `>=` everywhere and `~=` almost nowhere — a large part of why "I reinstalled and it broke" is such a common Python experience: a transitive dependency shipped a new major overnight and an unbounded `>=` swallowed it.

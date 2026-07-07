@@ -8,7 +8,7 @@ tool: python
 #### ! Scenario
 
 *Or what to Do When a Public Package Impersonates Your Private One*
-This is the Python sibling of the private-repo scenarios ([MS16](../../maven-demo/scenario-16-private-bom/guide.qmd)/[MS17](../../maven-demo/scenario-17-private-patch/guide.qmd)) — and the most important security scenario in the book. `acme-internal-tool` exists as `1.0.0` on your private index and, mal/mistakenly, as `9.9.9` on public PyPI. How you point pip at those indexes decides whether you install your own code or an attacker's.
+This is the Python sibling of the private-repo scenarios ([MS16](../../maven-demo/scenario-16-private-bom/guide.qmd)/[MS17](../../maven-demo/scenario-17-private-patch/guide.qmd)) — and the most important security scenario in the book. `acme-internal-tool` exists as `1.0.0` on your private index and — maliciously or by accident — as `9.9.9` on public PyPI. How you point pip at those indexes decides whether you install your own code or an attacker's.
 
 ::: {.callout-note title="Tool Versions"}
 Tested with **pip 25.3**, **Poetry 2.4**, **uv 0.11**. The dangerous behaviour is pip's `--extra-index-url` merge semantics (unchanged for years). Poetry source priorities and uv's `index-strategy` (default `first-index`) are the safer models.
@@ -79,4 +79,4 @@ uv lock && grep -A1 'acme-internal-tool' uv.lock                            # 1.
 *   [MS16](../../maven-demo/scenario-16-private-bom/guide.qmd) / [MS17](../../maven-demo/scenario-17-private-patch/guide.qmd) - The JVM private-repo scenarios.
 
 #### ! Wild
-In 2021 researcher Alex Birsan used exactly this mechanism to breach Apple, Microsoft, Shopify and dozens more, collecting over $130,000 in bug bounties. He found internal package names in leaked manifests, published higher-versioned public packages with the same names, and watched corporate builds pull his code — purely because `--extra-index-url` prefers the highest version regardless of origin. The technique now has a name (dependency confusion) and a CWE, and it still works against misconfigured builds today.
+In 2021 researcher Alex Birsan used exactly this mechanism to breach Apple, Microsoft, Shopify and dozens more, collecting over $130,000 in bug bounties. He found internal package names in leaked manifests, published higher-versioned public packages with the same names, and watched corporate builds pull his code — purely because `--extra-index-url` prefers the highest version regardless of origin. The technique now has a name — dependency confusion — and it still works against misconfigured builds today.

@@ -57,6 +57,7 @@ Ranges trade reproducibility for freshness; use with caution (and locking).
 
 #### ! Related
 * [MS11: Dependency Locking](../scenario-11-locking/guide.qmd) - How to tame ranges.
+* [P4](../../python-demo/scenario-4-specifiers/guide.qmd) - Python specifiers, where open ranges are the cultural default rather than discouraged.
 
 #### ! Wild
 

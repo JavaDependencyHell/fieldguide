@@ -11,7 +11,7 @@ tool: python
 This is the Python inversion of the classic diamond ([MS2](../../maven-demo/scenario-2-conflict/guide.qmd)). `demo-lib-a 2.0.0` needs `demo-lib-c 2.0.0`; we also demand `demo-lib-c 1.0.0`. On the JVM this resolves — one version is evicted and the build proceeds. In Python there is no eviction and no classpath, so both requirements must be satisfied in one environment. They can't be. The install *fails*.
 
 ::: {.callout-note title="Tool Versions"}
-Tested with **pip 25.3** (backtracking resolver, default since 21.0), **Poetry 2.4**, **uv 0.11**. On **pip < 20.3** the legacy resolver would have installed a broken environment silently instead of erroring — see [P3](../scenario-3-resolver/guide.qmd).
+Tested with **pip 25.3** (backtracking resolver, default since 20.3), **Poetry 2.4**, **uv 0.11**. On **pip < 20.3** the legacy resolver would have installed a broken environment silently instead of erroring — see [P3](../scenario-3-resolver/guide.qmd).
 :::
 
 #### ! Example
@@ -71,4 +71,4 @@ On the JVM a version conflict is resolved; in Python it can be *fatal*. One envi
 *   [MS2](../../maven-demo/scenario-2-conflict/guide.qmd) - The same diamond on the JVM, where it resolves instead of failing.
 
 #### ! Wild
-The reason modern pip can take *minutes* on a hard graph is that "is there any satisfying version set?" is a genuine search problem — pip's resolver and uv's PubGrub both backtrack through combinations. Occasionally the honest answer takes real computation, and a truly unsatisfiable graph is only proven impossible after exhausting the search space.
+The reason modern pip can take *minutes* on a hard graph is that "is there any satisfying version set?" is a genuine search problem — pip's resolver and uv's PubGrub both backtrack through combinations. Occasionally the honest answer takes real computation: a truly unsatisfiable graph is only declared impossible once the resolver has ruled out every combination — whether by trying them all or, as PubGrub does, by learning conflicts that eliminate whole branches at once.

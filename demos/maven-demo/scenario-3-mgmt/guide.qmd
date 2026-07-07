@@ -65,3 +65,4 @@ Centralized dependency management is the single most effective tool for preventi
 
 #### Related Scenarios
 *   [Scenario 4: Overriding Management](../scenario-4-override/guide.qmd) - What if I want a different version?
+*   [P6](../../python-demo/scenario-6-constraints/guide.qmd) - Python's nearest BOM equivalent: pip's constraints file.

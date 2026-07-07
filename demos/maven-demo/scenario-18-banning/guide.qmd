@@ -68,6 +68,7 @@ Maven cannot silently remove an artifact build-wide — it can only refuse to bu
 *   [MS5](../scenario-5-exclusions/guide.qmd) - Excluding a transitive from a single declaration.
 *   [MS14](../scenario-14-reject/guide.qmd) - The same enforcer rule pointed at specific *versions* rather than the whole artifact.
 *   [MS15](../scenario-15-substitution/guide.qmd) - Replacing a banned library instead of just removing it.
+*   [P9](../../python-demo/scenario-9-exclusions-gap/guide.qmd) - Python, which can override a transitive's version but can neither ban nor remove the package.
 
 #### ! Wild
 

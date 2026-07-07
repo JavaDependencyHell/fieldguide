@@ -61,4 +61,4 @@ Resolution proves compatibility, never safety. Audit the installed set (and the 
 *   [P11](../scenario-11-private-index/guide.qmd) - The supply-chain scenario audit complements.
 
 #### ! Wild
-`pip-audit` began life at Trail of Bits and is now a PyPA project — a sign of how recently Python got first-class supply-chain tooling compared with the JVM's long-established scanners. For years the honest answer to "what's vulnerable in my Python environment?" was "grep the CVE feed by hand". A sensitive-topic note: security findings can implicate code people depend on in production — treat audit output as a prompt to plan an upgrade, not a verdict on anyone's work.
+`pip-audit` began life at Trail of Bits and is now a PyPA project — a sign of how recently Python got first-class supply-chain tooling compared with the JVM's long-established scanners. For years the honest answer to "what's vulnerable in my Python environment?" was "grep the CVE feed by hand".

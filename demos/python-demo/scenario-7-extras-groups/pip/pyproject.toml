@@ -1,0 +1,9 @@
+# pip (25.1+) reads the standard PEP 735 [dependency-groups] table directly:
+#   pip install --group dev
+# It installs ONLY the group — project dependencies still come from
+# requirements files (or a pip install of the project itself).
+
+# tag::p7-pip-group[]
+[dependency-groups]
+dev = ["demo-lib-d==1.0.0"]
+# end::p7-pip-group[]

@@ -11,7 +11,7 @@ tool: python
 There is no JVM sibling for this one — it is pure Python. The same input can produce a *different* installed environment depending on which resolver, and which resolver *version*, processes it. Here `demo-lib-a` is unpinned but `demo-lib-c` is pinned to `1.0.0`; the newest `demo-lib-a` (2.0.0) needs `demo-lib-c 2.0.0`, so a correct resolver must **backtrack** to `demo-lib-a 1.0.0`.
 
 ::: {.callout-note title="Tool Versions"}
-Tested with **pip 25.3**, **Poetry 2.4**, **uv 0.11** — all three backtrack correctly. The history matters: **pip < 20.3** used a greedy "first found wins" resolver that did *not* backtrack and would install a broken environment. Backtracking became opt-in at 20.3, default at 21.0, and the only option from 22.2.
+Tested with **pip 25.3**, **Poetry 2.4**, **uv 0.11** — all three backtrack correctly. The history matters: **pip < 20.3** used a greedy "first found wins" resolver that did *not* backtrack and would install a broken environment. Backtracking arrived as an opt-in beta in 20.2 (July 2020, `--use-feature=2020-resolver`), became the default in 20.3 (November 2020), and the legacy resolver has been deprecated and unsupported since 21.0 — though it still lurks behind `--use-deprecated=legacy-resolver` even in current pip.
 :::
 
 #### ! Example
@@ -23,7 +23,7 @@ graph TD
         A1[take demo-lib-a 2.0.0] --> B1[needs demo-lib-c 2.0.0]
         B1 --> X1[clash with pin 1.0.0 — installed anyway, broken]
     end
-    subgraph backtrack["Backtracking (pip 21+, poetry, uv)"]
+    subgraph backtrack["Backtracking (pip 20.3+, poetry, uv)"]
         A2[try demo-lib-a 2.0.0] --> B2[needs demo-lib-c 2.0.0: clash]
         B2 --> C2[backtrack: demo-lib-a 1.0.0] --> D2[needs demo-lib-c 1.0.0: OK]
     end
@@ -42,7 +42,7 @@ graph TD
 Dependency resolution is a search, and the resolver's strategy decides the answer. Greedy resolution takes the first candidate and never reconsiders — fast, but it can paint itself into a corner and (pre-20.3) install the corner anyway. Backtracking treats the whole graph as a constraint problem and searches for a version set that satisfies all of it. This is exactly the book's thesis made concrete: **resolution is mechanical, not semantic** — change the mechanism and the same declaration yields a different world.
 
 #### ! Fix
-*   **Be on a modern resolver.** pip ≥ 21.0, any Poetry, any uv. If you are stuck on ancient pip, `--use-feature=2020-resolver` (20.3–21) or just upgrade.
+*   **Be on a modern resolver.** pip ≥ 20.3, any Poetry, any uv. If you are stuck on pip 20.2, `--use-feature=2020-resolver` opts in; anything older, just upgrade.
 *   **Pin what you actually depend on.** Backtracking finds *a* solution; a lock file (see [P5](../scenario-5-locks/guide.qmd)) records *which* one so it's reproducible.
 
 #### ! Risk
@@ -72,4 +72,4 @@ The same `requirements.txt` is not one environment — it is one environment *pe
 *   [P5](../scenario-5-locks/guide.qmd) - Freezing the resolved set so it stops depending on the resolver.
 
 #### ! Wild
-The 2020 pip resolver change was one of the most consequential — and most disruptive — events in Python packaging. Funded by a grant and years in the making, it broke countless CI pipelines that had been quietly relying on the greedy resolver installing mutually incompatible packages. "It used to work" was true; it had just never been *correct*.
+The 2020 pip resolver change was one of the most consequential — and most disruptive — events in Python packaging. Funded by a grant and years in the making, it broke countless CI pipelines that had been quietly relying on the greedy resolver installing mutually incompatible packages. "It used to work" was true; it had just never been *correct*. You can still watch the old behaviour today: run this scenario's install with `--use-deprecated=legacy-resolver` on modern pip and it will "successfully" install the broken graph — warning you about the incompatibility in the same breath.

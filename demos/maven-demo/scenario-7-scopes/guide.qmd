@@ -66,6 +66,7 @@ Scopes control the visibility and transitivity of dependencies; use them to keep
 
 #### ! Related
 * [MS8: Optional Dependencies](../scenario-8-optional/guide.qmd) - Another way to limit transitivity.
+* [P7](../../python-demo/scenario-7-extras-groups/guide.qmd) - Python's dependency groups, the group analogue of build scopes.
 
 #### ! Wild
 

@@ -48,3 +48,6 @@ Private repositories make custom artifacts available, while `<dependencyManageme
 
 #### ! Takeaway
 Adding a repository makes its artifacts *available*, but it is the combination of the repository and a version control mechanism (like a BOM in `<dependencyManagement>`) that allows you to safely override public dependencies with private, patched versions. The order of repository declaration can also matter if the same artifact exists in multiple repositories.
+
+#### ! Related
+* [P11](../../python-demo/scenario-11-private-index/guide.qmd) - The Python private-index story — where mixing indexes carelessly enables the dependency-confusion attack.

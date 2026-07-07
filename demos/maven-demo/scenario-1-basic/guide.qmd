@@ -64,3 +64,6 @@ In large systems, this simple chain `A -> B -> C` is repeated thousands of times
 #### ! Takeaway
 
 Transitive dependency resolution is the mechanism that allows us to build on top of giants without manually managing every single library.
+
+#### ! Related
+* [P1](../../python-demo/scenario-1-basic/guide.qmd) - The Python sibling: the same transitive pull, but into an environment that can hold only one version of each package.

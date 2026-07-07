@@ -60,6 +60,7 @@ Exclusions are powerful but dangerous; use them only when you know the dependent
 
 #### ! Related
 *   [MS15](../scenario-15-substitution/guide.qmd) - Replacing a library instead of just removing it.
+*   [P9](../../python-demo/scenario-9-exclusions-gap/guide.qmd) - Python, where no exclusion mechanism exists at all — the gap is the scenario.
 
 #### ! Wild
 

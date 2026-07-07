@@ -212,6 +212,16 @@ if run_scenario 7 "Extras/Groups"; then
     [ $R1 -eq 0 ] && [ $R2 -eq 0 ]
     check_result "Scenario 7 (extra opt-in)" "pip" $?
 
+    # pip 25.1+ reads the standard PEP 735 [dependency-groups] table directly.
+    # The venv's bundled pip may predate --group, so upgrade it first
+    # (needs PyPI, like scenario 12; an offline run fails loudly here).
+    V=$(new_venv s7-pip3)
+    "$V/bin/pip" install -q --upgrade "pip>=25.1" \
+        && (cd scenario-7-extras-groups/pip \
+            && "$V/bin/pip" install -q --group dev -i http://127.0.0.1:8765/simple/) \
+        && "$V/bin/pip" show -q demo-lib-d > /dev/null 2>&1
+    check_result "Scenario 7 (pip install --group, 25.1+)" "pip" $?
+
     W=$(work_copy scenario-7-extras-groups/poetry)
     (cd "$W" && poetry lock -q \
         && poetry sync -q --no-root --without dev && ! .venv/bin/pip show -q demo-lib-d > /dev/null 2>&1 \

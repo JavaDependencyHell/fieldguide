@@ -76,6 +76,7 @@ Maven optimizes for "distance", while Gradle and SBT optimize for "freshness" â€
 
 #### ! Related
 * [MS3: Central Management (BOM)](../scenario-3-mgmt/guide.qmd) - How to fix this centrally.
+* [P2](../../python-demo/scenario-2-conflict/guide.qmd) - The same diamond in Python, where there is no eviction and the install fails outright.
 
 
 

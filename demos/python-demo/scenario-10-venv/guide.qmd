@@ -76,4 +76,4 @@ In Python the environment is the unit of truth. Two projects, two venvs; dev and
 *   [P8](../scenario-8-markers/guide.qmd) - The *other* cause of "resolved differently over there".
 
 #### ! Wild
-`sudo pip install` has broken so many Linux systems — by overwriting packages the OS itself depends on — that Python 3.11 added PEP 668, which makes system interpreters refuse `pip install` outright with an "externally-managed-environment" error. The ecosystem effectively had to install a guardrail against its own default.
+`sudo pip install` has broken so many Linux systems — by overwriting packages the OS itself depends on — that the ecosystem built a guardrail: PEP 668 lets a distro mark its system interpreter as *externally managed*, and pip (23.0+) refuses to install into it with an "externally-managed-environment" error. Debian 12 and Ubuntu 23.04 onwards ship the marker. The default had to be defended against itself.

@@ -11,7 +11,7 @@ tool: python
 Reproducibility is the JVM's [MS11](../../maven-demo/scenario-11-locking/guide.qmd), and it is where Python's tools diverge most sharply — there is no single answer, there are five. This scenario takes one loosely-pinned input and shows what each tool produces to freeze it.
 
 ::: {.callout-note title="Tool Versions"}
-Tested with **pip 25.3**, **Poetry 2.4**, **uv 0.11**. The cross-tool standard **PEP 751** (`pylock.toml`) was accepted in 2025; pip's `pip lock` (25.1+) and `uv export --format pylock.toml` produce it, but each tool still prefers its own native format for day-to-day work. Adoption is real but partial.
+Tested with **pip 25.3**, **Poetry 2.4**, **uv 0.11**. The cross-tool standard **PEP 751** (`pylock.toml`) was accepted in 2025; pip's `pip lock` (25.1+) and `uv export --format pylock.toml` (0.6.15+) produce it, and Poetry exports it via poetry-plugin-export ≥ 1.10 (Poetry ≥ 2.3) — but every tool still prefers its own native format for day-to-day work. Adoption is real but partial.
 :::
 
 #### ! Example

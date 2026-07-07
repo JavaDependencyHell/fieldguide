@@ -55,3 +55,4 @@ Maven cannot reject versions during resolution, but the Enforcer Plugin's `banne
 
 * [MS6: Forcing a Version](../scenario-6-forcing/guide.qmd) — How to redirect resolution to a safe version.
 * [MS5: Exclusions](../scenario-5-exclusions/guide.qmd) — Removing a specific version from a specific path.
+* [P4](../../python-demo/scenario-4-specifiers/guide.qmd) — Python's native `!=` operator: rejection without a plugin.
