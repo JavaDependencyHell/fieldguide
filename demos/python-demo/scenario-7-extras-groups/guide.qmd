@@ -30,7 +30,13 @@ Groups — a dev-only set, installed or skipped on demand. This is the standard 
 Optional dependencies come along by default.
 
 #### ! Actual
-They don't — that's the point of "optional". Plain `demo-lib-a` does **not** install `demo-lib-d`; `demo-lib-a[feature]` does. Likewise the `dev` group is absent unless you ask for it: Poetry needs `--with dev`; uv *does* install the dev group by default and `--no-dev` skips it; pip installs a group only when told to (`pip install --group dev`, 25.1+). The older pip idiom — `requirements.txt` plus `requirements-dev.txt` as separate files — still dominates in the wild.
+They don't — that's the point of "optional". Plain `demo-lib-a` does **not** install `demo-lib-d`; `demo-lib-a[feature]` does. The `dev` group is similarly absent by default — but each tool's default differs:
+
+*   **Poetry** — absent by default; needs `--with dev` to include it.
+*   **uv** — present by default; `--no-dev` excludes it.
+*   **pip** — absent unless requested; `pip install --group dev` (25.1+) includes it.
+
+The older pip idiom — `requirements.txt` plus `requirements-dev.txt` as separate files — still dominates in the wild.
 
 #### ! Why
 Extras and groups both answer "don't make everyone pay for what only some need", but at different layers. An extra is published *by the library* as a named bundle of optional runtime deps — consumers opt in with `[name]`. A group is defined *by your project* for its own workflow (tests, docs) and never ships to consumers. The JVM splits these across `<optional>true</optional>` and build scopes; Python's extras + groups cover the same ground with different seams.
@@ -70,6 +76,7 @@ Python folds the JVM's optional dependencies and build scopes into extras (runti
 *   [P4](../scenario-4-specifiers/guide.qmd) - Version specifiers, which apply inside extras and groups too.
 *   [MS7](../../maven-demo/scenario-7-scopes/guide.qmd) - JVM build scopes (the group analogue).
 *   [MS8](../../maven-demo/scenario-8-optional/guide.qmd) - JVM optional dependencies (the extra analogue).
+*   [N7](../../node-demo/scenario-7-dep-types/guide.qmd) - Node's dependency types, covering the same ground as fields in one file.
 
 #### ! Wild
 The classic extras example is `pip install "requests[security]"` — for years that pulled cryptography-backed TLS extras that plain `requests` left out. It was also a classic footgun: countless bug reports of "requests can't do X" turned out to be "you installed requests, not requests[the-extra-you-needed]".

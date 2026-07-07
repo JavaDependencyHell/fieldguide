@@ -1,0 +1,9 @@
+{
+  "name": "n11-pnpm-scoped",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@acme/internal-tool": "*"
+  },
+  "packageManager": "pnpm@11.10.0"
+}

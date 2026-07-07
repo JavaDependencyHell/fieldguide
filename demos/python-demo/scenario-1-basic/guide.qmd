@@ -59,6 +59,7 @@ One environment, one version per package. Everything else in this part follows f
 #### ! Related
 *   [P2](../scenario-2-conflict/guide.qmd) - What happens when two packages need different versions of the same thing.
 *   [MS1](../../maven-demo/scenario-1-basic/guide.qmd) - The JVM equivalent (where multiple versions *can* coexist on a classpath).
+*   [N1](../../node-demo/scenario-1-basic/guide.qmd) - The Node equivalent, where the tree holds as many versions as it needs.
 
 #### ! Wild
 Python's "one version per environment" rule is why the virtualenv exists at all. Before venvs were routine, installing two projects with incompatible dependencies into the system Python was a genuine way to break your operating system's own tooling — Debian and Red Hat both ship system utilities written in Python that share that global site-packages.

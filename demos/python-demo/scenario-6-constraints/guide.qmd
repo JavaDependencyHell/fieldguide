@@ -61,6 +61,7 @@ pip's constraints file (and uv's `constraint-dependencies`) is Python's BOM: cen
 *   [P4](../scenario-4-specifiers/guide.qmd) - The specifiers a constraint is built from.
 *   [P5](../scenario-5-locks/guide.qmd) - Locking, the stricter cousin that pins *everything*, not just a curated set.
 *   [MS3](../../maven-demo/scenario-3-mgmt/guide.qmd) - The JVM BOM this mirrors.
+*   [N6](../../node-demo/scenario-6-overrides/guide.qmd) - Node's central forcing: `overrides` / `resolutions`, blunter than a constraint.
 
 #### ! Wild
-The constraints file is one of pip's most powerful and least-known features. A single `PIP_CONSTRAINT` environment variable pointing at a company-wide pin list can quietly enforce "no vulnerable transitive versions" across every `pip install` an organisation runs — a supply-chain control hiding in plain sight since 2015.
+A single `PIP_CONSTRAINT` environment variable pointing at a company-wide pin list enforces "no vulnerable transitive versions" across every `pip install` an organisation runs — set it in the base CI image and every pipeline inherits the policy without per-project changes. Available since pip 7.1 (2015).

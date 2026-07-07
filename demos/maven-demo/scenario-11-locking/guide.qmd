@@ -59,3 +59,4 @@ Maven has no native dependency locking because its philosophy is "declare exact 
 * [MS9: Version Ranges](../scenario-9-ranges/guide.qmd) — The source of non-determinism that locking addresses.
 * [MS3: Central Management (BOM)](../scenario-3-mgmt/guide.qmd) — Maven's primary mechanism for pinning transitive versions.
 * [P5](../../python-demo/scenario-5-locks/guide.qmd) — Python's five answers to locking, from `pip freeze` to `pylock.toml`.
+* [N5](../../node-demo/scenario-5-locks/guide.qmd) — Node, where every tool locks by default and has for years.

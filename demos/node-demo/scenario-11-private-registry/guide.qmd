@@ -1,0 +1,85 @@
+---
+title: "Private Registry & Dependency Confusion"
+tagline: "Or what to Do When a Public Package Wears Your Internal Name"
+type: scenario
+tool: node
+---
+
+#### ! Scenario
+
+*Or what to Do When a Public Package Wears Your Internal Name*
+The Node sibling of [MS16](../../maven-demo/scenario-16-private-bom/guide.qmd)/[MS17](../../maven-demo/scenario-17-private-patch/guide.qmd) and [P11](../../python-demo/scenario-11-private-index/guide.qmd) — except this ecosystem isn't a sibling, it's the **origin**: Alex Birsan's 2021 dependency-confusion research was demonstrated primarily against npm. `acme-internal-tool` exists as `1.0.0` on your private registry and — maliciously — as `9.9.9` on the public one. What installs depends entirely on registry configuration, and Node has a structural defence the other ecosystems lack: **scopes**.
+
+::: {.callout-note title="Tool Versions"}
+Tested with **npm 10.9.8**, **pnpm 11.10.0**, **Yarn 4.17.0**. Unlike pip, npm-family tools consult **one registry per package name** (global default, or per-scope) — there is no cross-registry version merge. The confusion risk lives in *which* registry a name routes to, and unscoped internal names route to whatever the default is.
+:::
+
+#### ! Example
+
+Vulnerable — an unscoped internal name, and the build's default registry is public:
+
+```{.ini include="npm-vulnerable/.npmrc" snippet="n11-vulnerable"}
+```
+
+Safe — a single private registry:
+
+```{.ini include="npm-safe/.npmrc" snippet="n11-safe"}
+```
+
+Safer still — the npm-native fix, a **scoped** name routed per-scope:
+
+```{.ini include="npm-scoped/.npmrc" snippet="n11-scoped"}
+```
+
+Yarn spells the same routing in `.yarnrc.yml`:
+
+```{.yaml include="yarn/.yarnrc.yml" snippet="n11-yarn-scopes"}
+```
+
+#### ! Expect
+The build somehow knows `acme-internal-tool` is yours.
+
+#### ! Actual
+It knows nothing of the sort. Verified against both local registries:
+
+- **Vulnerable config** (public default, unscoped name): installs **9.9.9 — the impostor**. The name routed to the public registry, and the registry answered.
+- **Single private registry**: installs the genuine **1.0.0**.
+- **Scoped `@acme/internal-tool`** with `@acme:registry=private` (npm/pnpm) or `npmScopes` (Yarn): genuine **1.0.0**, *even though the default registry stays public*. The scope, not the version number, decides the origin.
+
+#### ! Why
+Resolution routes each name to exactly one registry, so the attack here isn't pip's highest-version-wins merge — it's **name capture**: an internal, unscoped name leaks (a manifest in a public image, an error trace, a job ad), an attacker publishes it publicly, and every build whose config doesn't explicitly route that name privately fetches the attacker's code, `postinstall` scripts and all. Scopes close the hole structurally: `@acme/*` names route wherever `@acme` is pinned, and the public registry's `@acme` scope can itself be claimed by your organisation so nobody else can publish into it. Python has no equivalent of this ([P11](../../python-demo/scenario-11-private-index/guide.qmd) leans on index priority instead); it is npm's best security idea.
+
+#### ! Fix
+*   **Scope everything internal:** `@acme/...` for every private package, with the scope claimed on the public registry too — squatting your own name before someone else does.
+*   **Route explicitly:** `@acme:registry=` in a committed `.npmrc` / `npmScopes` in `.yarnrc.yml`, so the routing travels with the repo, not with whoever configured the laptop.
+*   **Retire unscoped internal names.** Each one is a standing invitation; if migration is slow, claim placeholder names publicly, and let the lockfile + [N12](../scenario-12-audit/guide.qmd) watch for the day a "private" package suddenly resolves publicly.
+
+#### ! Risk
+* LOW Scoped names, per-scope routing committed to the repo, public scope claimed.
+* MEDIUM Unscoped internal names on a correctly configured private registry — one un-configured laptop or CI job away from the vulnerable column.
+* HIGH Unscoped internal names in a build whose default registry is public: the live Birsan configuration, one `npm publish` (by someone else) from compromise.
+
+#### ! Check
+
+**Fast check:**
+
+```bash
+cd npm-vulnerable && npm install && node -e "console.log(require('acme-internal-tool').version)"   # 9.9.9 !
+cd npm-safe      && npm install && node -e "console.log(require('acme-internal-tool').version)"    # 1.0.0
+cd npm-scoped    && npm install && node -e "console.log(require('@acme/internal-tool').version)"   # 1.0.0
+```
+
+**What to look for:** `9.9.9` exactly where the config left the name publicly routable, `1.0.0` everywhere origin is pinned.
+
+**Conclusion:** In Node, dependency confusion is a routing problem — and scopes are the routing fix.
+
+#### ! Takeaway
+Never let an internal name be resolvable from a registry you don't control. Scope your private packages, pin the scope's registry in the repo, claim the scope publicly — the version number never enters into it.
+
+#### ! Related
+*   [N12](../scenario-12-audit/guide.qmd) - Auditing what actually got installed, whoever published it.
+*   [N10](../scenario-10-workspaces/guide.qmd) - `workspace:*`, the same never-fall-back-to-public principle inside a repo.
+*   [P11](../../python-demo/scenario-11-private-index/guide.qmd) / [MS16](../../maven-demo/scenario-16-private-bom/guide.qmd) / [MS17](../../maven-demo/scenario-17-private-patch/guide.qmd) - The same attack surface in ecosystems without scopes.
+
+#### ! Wild
+Birsan's 2021 research — which breached Apple, Microsoft, Shopify and others via exactly this mechanism — started from npm package names found in leaked manifests. It generalises the lesson of left-pad (2016), where an unscoped name *vanishing* broke builds worldwide: in a global flat namespace, the name itself is the attack surface, whether it disappears or gets claimed by someone else. Scoped packages exist to close both holes; the mitigations in the Fix are not optional hardening, they are the current baseline.

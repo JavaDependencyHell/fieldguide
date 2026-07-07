@@ -70,6 +70,7 @@ uv lock && uv export --format pylock.toml -o pylock.toml && grep demo-lib-c pylo
 *   [P3](../scenario-3-resolver/guide.qmd) - Why an unlocked graph isn't reproducible.
 *   [P6](../scenario-6-constraints/guide.qmd) - Constraints files, a lighter-weight cousin of locking.
 *   [MS11](../../maven-demo/scenario-11-locking/guide.qmd) - The JVM story, where only Gradle locks natively.
+*   [N5](../../node-demo/scenario-5-locks/guide.qmd) - Node, the ecosystem that locked by default before anyone else.
 
 #### ! Wild
-For years Python's lack of a standard lock file was the single most-cited gap versus Cargo, npm, and Bundler. PEP 751 finally landed `pylock.toml` in 2025 — but because uv and Poetry had each already built faster, richer proprietary formats, the standard arrived into a world that had partly routed around it. A lingua franca is most useful before everyone learns different languages.
+PEP 751 landed `pylock.toml` in 2025, years after uv and Poetry had each built richer native formats — which is why adoption is export-level rather than native: the standard is an interchange format between tools, not a replacement for their lockfiles. Expect to *produce* pylock.toml for cross-tool consumers while your own tool keeps its native lock as the source of truth.

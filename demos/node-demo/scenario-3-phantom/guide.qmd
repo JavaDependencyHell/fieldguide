@@ -1,0 +1,76 @@
+---
+title: "Hoisting & Phantom Dependencies"
+tagline: "Or what to Do When You Can Import What You Never Declared"
+type: scenario
+tool: node
+---
+
+#### ! Scenario
+
+*Or what to Do When You Can Import What You Never Declared*
+No JVM or Python sibling — this one is pure Node, and it is the direct consequence of npm 3's flattening. We declare only `demo-lib-a`, but our code does `require("demo-lib-b")` — a package that arrives transitively and appears nowhere in our package.json. Whether that line works depends entirely on which package manager laid out the tree. This is the **phantom dependency**: the import that works by accident.
+
+::: {.callout-note title="Tool Versions"}
+Tested with **npm 10.9.8**, **pnpm 11.10.0**, **Yarn 4.17.0**. Maximum divergence: npm **allows** the phantom, pnpm **rejects** it, and Yarn's default Plug'n'Play mode rejects it with the most descriptive error in the business. (Yarn with `nodeLinker: node-modules` hoists like npm and allows it — the layout, not the brand, decides.)
+:::
+
+#### ! Example
+
+```{.json include="npm/package.json"}
+```
+
+```{.js include="npm/app.js"}
+```
+
+#### ! Expect
+Requiring an undeclared package fails everywhere — you can only import what you declared.
+
+#### ! Actual
+Three tools, three answers to the same two files:
+
+- **npm**: *works.* Hoisting flattens `demo-lib-b` up to `node_modules/demo-lib-b`, where root code happens to find it. Exit 0.
+- **pnpm**: *fails* with `MODULE_NOT_FOUND`. The root node_modules contains only what you declared — transitives live behind symlinks in `.pnpm/` where root code can't reach them.
+- **Yarn (PnP)**: *fails* with a precise diagnosis: the PnP resolver knows the full graph and reports that `n3-phantom-yarn` tried to access `demo-lib-b` without listing it as a dependency.
+
+#### ! Why
+npm's hoisted layout is an *optimisation*, not a contract — packages get lifted to the highest conflict-free position to save disk and path length, and Node's walk-up `require` can then see them from anywhere above. Your undeclared import works until the day the tree reshapes: `demo-lib-a` drops or renames its dependency, a second package forces `demo-lib-b` to nest instead of hoist ([N9](../scenario-9-tree-shape/guide.qmd)), or a colleague installs with pnpm. Nothing in *your* code changed; the accident you were standing on did. pnpm and PnP turn that accident into an immediate, local error — strictness as a feature.
+
+#### ! Fix
+*   **Declare what you import.** If your code requires `demo-lib-b`, put it in your dependencies — the fix is one line, and it's the same line all three tools then agree on.
+*   **Adopt a strict layout to find phantoms early:** run the codebase once under pnpm (or Yarn PnP); every phantom fails fast with a nameable culprit.
+*   **In monorepos**, phantoms multiply across workspace hoisting — see [N10](../scenario-10-workspaces/guide.qmd).
+
+#### ! Risk
+* LOW Declaring every direct import explicitly, even ones that "already work".
+* MEDIUM Relying on a phantom in test code — it survives CI until a lockfile refresh reshapes the tree.
+* HIGH Shipping a library with a phantom import: it works in your repo (where the hoist happens to exist) and breaks in consumers' repos (where it doesn't). "Works locally, breaks downstream" made structural.
+
+#### ! Check
+
+**Fast check:**
+
+```bash
+# npm — the phantom import WORKS (that's the bug)
+cd npm && npm install && node app.js       # prints: phantom import worked
+
+# pnpm — fails fast
+cd pnpm && pnpm install && node app.js     # MODULE_NOT_FOUND
+
+# yarn (PnP) — fails with the full explanation
+cd yarn && yarn install && yarn node app.js
+```
+
+**What to look for:** identical code, opposite outcomes — success under npm, refusal under pnpm and PnP.
+
+**Conclusion:** The phantom is a property of the tree layout, and only strict layouts make it visible.
+
+#### ! Takeaway
+If you import it, declare it. Hoisting makes undeclared imports work by coincidence, and coincidences don't survive tree changes, tool changes, or your users.
+
+#### ! Related
+*   [N2](../scenario-2-diamond/guide.qmd) - The nesting rules that decide what gets hoisted where.
+*   [N9](../scenario-9-tree-shape/guide.qmd) - Why the tree shape (and thus your phantom) can change without you touching anything.
+*   [P10](../../python-demo/scenario-10-venv/guide.qmd) - Python's version of "works here, breaks there" — same disease, different anatomy.
+
+#### ! Wild
+Phantoms are also a supply-chain blind spot: audit tooling scans *declared* dependencies, but phantom code paths run *undeclared* ones — packages nobody listed, pinned, or reviewed. When a deep transitive changes or vanishes, the phantom import breaks with no line in any package.json to explain why.

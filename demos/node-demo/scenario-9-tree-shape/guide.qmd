@@ -1,0 +1,78 @@
+---
+title: "Tree Shape & Deduplication"
+tagline: "Or what to Do When the Same package.json Grows Two Different Trees"
+type: scenario
+tool: node
+---
+
+#### ! Scenario
+
+*Or what to Do When the Same package.json Grows Two Different Trees*
+No JVM or Python sibling — flat models can't have this problem. In npm, the node_modules layout depends not just on *what* you depend on but on the **order in which installs happened**. This scenario takes one package.json, runs one add-then-remove detour, and ends with a different tree than a fresh install produces — same declaration, same lockfile discipline, different disk. It is [P3](../../python-demo/scenario-3-resolver/guide.qmd)'s lesson again — resolution is mechanical, not semantic — with install history as the mechanism.
+
+::: {.callout-note title="Tool Versions"}
+Tested with **npm 10.9.8** and **pnpm 11.10.0** — this scenario is a two-tool comparison by design: npm demonstrates the problem, pnpm demonstrates the structural fix. (Yarn's node-modules linker hoists npm-style; its PnP mode sidesteps trees entirely — see [N3](../scenario-3-phantom/guide.qmd).)
+:::
+
+#### ! Example
+
+```{.json include="npm/package.json"}
+```
+
+The detour, verified step by step (`demo-lib-b 1.0.0` needs `demo-lib-c 1.0.0`):
+
+```bash
+npm install                        # c@1 HOISTED: node_modules/demo-lib-c
+npm install demo-lib-c@2.0.0       # direct c@2 takes the root slot;
+                                   # c@1 demoted to node_modules/demo-lib-b/node_modules/demo-lib-c
+npm uninstall demo-lib-c           # back to the original package.json, BUT:
+```
+
+#### ! Expect
+After the uninstall, the tree returns to what a fresh install produces — declarations are back to square one, so the tree should be too.
+
+#### ! Actual
+It doesn't return. `demo-lib-c 1.0.0` **stays nested** under `demo-lib-b`; the root slot it once occupied stays empty. npm removed what you uninstalled and touched nothing else — it does not re-hoist. Delete node_modules and the lockfile, install fresh from the identical package.json, and `demo-lib-c` sits hoisted at the root again. Two trees, one declaration, distinguished only by their history.
+
+pnpm, given the same detour, ends both runs in the same place: every package lives in the content-addressed `.pnpm` store, the root gains no undeclared entries either way, and history leaves no residue.
+
+#### ! Why
+Hoisting is a greedy, incremental placement algorithm: each operation finds the highest free slot *given the tree as it stands*, and later operations never revisit earlier placements. The layout is therefore a fold over your install history, not a function of your declaration. Mostly this is invisible — `require` finds a working copy either way. It stops being invisible exactly when combined with [N3](../scenario-3-phantom/guide.qmd): a phantom import that worked against yesterday's hoisted copy dies against today's nested one, in a commit that changed nothing related. pnpm's answer is to make layout a pure function of the lockfile — same inputs, same tree, no history.
+
+#### ! Fix
+*   **Reinstall clean when the tree matters:** `rm -rf node_modules && npm ci` — CI does this implicitly, which is why "works in CI, broken locally" is often *this* scenario.
+*   **`npm dedupe`** re-runs placement over the whole tree, collapsing history-driven nesting.
+*   **Remove the sensitivity instead:** no phantoms ([N3](../scenario-3-phantom/guide.qmd)) means no code that can observe the tree's shape — at which point the shape is harmless trivia. pnpm enforces exactly this.
+
+#### ! Risk
+* LOW Fresh installs in CI; local trees treated as disposable.
+* MEDIUM Long-lived local node_modules accumulating months of incremental installs — the tree nobody can reproduce.
+* HIGH Code (or jest/webpack config) that depends on a package's *position* in node_modules, working purely because of the install order that built this particular checkout.
+
+#### ! Check
+
+**Fast check:**
+
+```bash
+npm install && npm install demo-lib-c@2.0.0 && npm uninstall demo-lib-c
+ls node_modules/demo-lib-c 2>/dev/null || echo "root: gone"
+ls node_modules/demo-lib-b/node_modules/demo-lib-c && echo "nested: still here"
+
+rm -rf node_modules package-lock.json && npm install
+ls node_modules/demo-lib-c && echo "fresh install: hoisted again"
+```
+
+**What to look for:** nested-after-detour, hoisted-after-fresh — the same package.json growing two different trees.
+
+**Conclusion:** npm's tree is a record of how you got here; pnpm's is a function of what you declared.
+
+#### ! Takeaway
+node_modules has memory. Treat it as a disposable build artifact — never as state worth preserving — and the memory can't hurt you; let it live for months and you own a tree no one can reproduce.
+
+#### ! Related
+*   [N3](../scenario-3-phantom/guide.qmd) - The imports that make tree shape observable, and therefore breaking.
+*   [N5](../scenario-5-locks/guide.qmd) - What the lockfile pins (versions) versus what it doesn't fully determine under incremental installs (shape).
+*   [P3](../../python-demo/scenario-3-resolver/guide.qmd) - Python's version of "the mechanism, not the declaration, decides".
+
+#### ! Wild
+This is why "delete node_modules and reinstall" works as a debugging step: it erases install history, replacing an accumulation of incremental placements with a pure function of the lockfile. It is a manual implementation of what pnpm's layout provides structurally on every install.

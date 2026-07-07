@@ -1,0 +1,85 @@
+---
+title: "The Diamond: Everyone Wins"
+tagline: "Or what to Do When Both Versions Get Installed"
+type: scenario
+tool: node
+---
+
+#### ! Scenario
+
+*Or what to Do When Both Versions Get Installed*
+The classic diamond, third model. `demo-lib-a 2.0.0` needs `demo-lib-c 2.0.0`; we also depend on `demo-lib-c 1.0.0` directly. On the JVM this resolves by eviction ([MS2](../../maven-demo/scenario-2-conflict/guide.qmd)); in Python it fails outright ([P2](../../python-demo/scenario-2-conflict/guide.qmd)). In Node there is no conflict at all: **both versions install**, each consumer gets the one it asked for, and nobody is evicted or refused.
+
+::: {.callout-note title="Tool Versions"}
+Tested with **npm 10.9.8**, **pnpm 11.10.0**, **Yarn 4.17.0**. All three produce the same *resolution* (both versions present); the on-disk layout differs — npm and Yarn nest one copy under `demo-lib-b`, pnpm keeps every copy in its store and symlinks.
+:::
+
+#### ! Example
+
+```{mermaid}
+%%| fig-width: 4.4
+graph LR
+    Root[Your project] --> LibA[demo-lib-a 2.0.0]
+    Root --> LibC1[demo-lib-c 1.0.0]
+    LibA --> LibB[demo-lib-b 2.0.0]
+    LibB --> LibC2[demo-lib-c 2.0.0]
+```
+
+```{.json include="npm/package.json"}
+```
+
+#### ! Expect
+A conflict: one version wins (JVM instinct) or the install fails (Python instinct).
+
+#### ! Actual
+The install succeeds and **both versions are present**. Your code gets `1.0.0`; `demo-lib-b`'s code gets `2.0.0` — simultaneously, in one process:
+
+```bash
+node -e "
+const c = require('demo-lib-c');       // your copy
+const a = require('demo-lib-a');       // a -> b -> its own copy
+console.log(c.version, a.b.c.version); // 1.0.0 2.0.0
+"
+```
+
+Under npm the direct dependency sits at `node_modules/demo-lib-c` and the other copy nests at `node_modules/demo-lib-b/node_modules/demo-lib-c` — `require` finds the nearest one walking up from the requiring file.
+
+#### ! Why
+Node resolves `require` *per consumer, at runtime*, walking up the directory tree for the nearest matching node_modules entry (or consulting the PnP map). Because lookup is positional, two versions can coexist as long as each sits where its consumer finds it. The diamond that defines dependency hell elsewhere simply dissolves. The costs arrive later: twice the code in memory, twice the security surface, and chaos when the duplicated package holds shared state or does `instanceof` checks across copies — that's [N8](../scenario-8-peers/guide.qmd)'s territory.
+
+#### ! Fix
+Nothing is broken, so nothing needs fixing — but when duplication itself is the problem:
+
+*   **Converge the graph:** align ranges so one version satisfies everyone; check with `npm ls demo-lib-c` / `pnpm why` / `yarn why`.
+*   **Force it:** overrides/resolutions pick one version for the whole tree ([N6](../scenario-6-overrides/guide.qmd)) — accepting that `demo-lib-b` now runs against a version it never declared.
+*   **Singletons:** if the package genuinely must not be duplicated, that is what peer dependencies are for ([N8](../scenario-8-peers/guide.qmd)).
+
+#### ! Risk
+* LOW Two versions of a stateless utility library coexisting.
+* MEDIUM Duplicates of large packages multiplying install size and audit surface — every copy is a separate CVE exposure.
+* HIGH Duplicating a package that holds module-level state or exports classes checked with `instanceof` — two copies means two states, and "same class" comparisons silently fail across them.
+
+#### ! Check
+
+**Fast check:**
+
+```bash
+npm install
+npm ls demo-lib-c        # shows BOTH 1.0.0 and 2.0.0 in the tree
+node -e "console.log(require('demo-lib-c').version, require('demo-lib-a').b.c.version)"
+```
+
+**What to look for:** `1.0.0 2.0.0` — two versions, one process, no error.
+
+**Conclusion:** Node resolves the diamond by duplication, not selection.
+
+#### ! Takeaway
+The JVM picks a winner, Python refuses to play, Node lets everyone win. Duplication is Node's answer to dependency hell — and its price is paid in size, security surface, and singleton bugs.
+
+#### ! Related
+*   [N8](../scenario-8-peers/guide.qmd) - The one place Node *does* demand a single copy.
+*   [N6](../scenario-6-overrides/guide.qmd) - Forcing one version tree-wide when duplication hurts.
+*   [MS2](../../maven-demo/scenario-2-conflict/guide.qmd) / [P2](../../python-demo/scenario-2-conflict/guide.qmd) - The same diamond, evicted (JVM) and fatal (Python).
+
+#### ! Wild
+npm 2 nested fully: every package carried its own complete dependency subtree, so duplication was maximal and node_modules paths grew deep enough to break Windows' 260-character MAX_PATH limit. npm 3 (2015) introduced the flattened, hoisted layout to fix that — and in doing so created the phantom dependency problem covered next.

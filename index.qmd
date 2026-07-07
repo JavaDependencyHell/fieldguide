@@ -545,23 +545,23 @@ number-sections: false
         groups: [
           { title: "Phantom dependency (works locally, breaks in CI)",
             links: [
-              { id: "N2", name: "Hoisting & Phantom Dependencies", href: "#" },
-              { id: "N5", name: "Lock Files", href: "#" }
+              { id: "N3", name: "Hoisting & Phantom Dependencies", href: "demos/node-demo/scenario-3-phantom/guide.html" },
+              { id: "N9", name: "Tree Shape & Deduplication", href: "demos/node-demo/scenario-9-tree-shape/guide.html" }
             ]},
-          { title: "Peer dependency conflict",
+          { title: "Peer dependency conflict (ERESOLVE)",
             links: [
-              { id: "N8", name: "Peer Dependencies", href: "#" },
-              { id: "N2", name: "Hoisting & Phantom Dependencies", href: "#" }
+              { id: "N8", name: "Peer Dependencies", href: "demos/node-demo/scenario-8-peers/guide.html" },
+              { id: "N2", name: "The Diamond: Everyone Wins", href: "demos/node-demo/scenario-2-diamond/guide.html" }
             ]},
           { title: "Different versions on different machines",
             links: [
-              { id: "N5", name: "Lock Files", href: "#" },
-              { id: "N14", name: "Deduplication", href: "#" }
+              { id: "N5", name: "Lock Files", href: "demos/node-demo/scenario-5-locks/guide.html" },
+              { id: "N4", name: "Semver & the ^ Culture", href: "demos/node-demo/scenario-4-semver/guide.html" }
             ]},
           { title: "Unwanted or duplicate package in node_modules",
             links: [
-              { id: "N11", name: "Overrides / Resolutions", href: "#" },
-              { id: "N14", name: "Deduplication", href: "#" }
+              { id: "N6", name: "Overrides & Resolutions", href: "demos/node-demo/scenario-6-overrides/guide.html" },
+              { id: "N9", name: "Tree Shape & Deduplication", href: "demos/node-demo/scenario-9-tree-shape/guide.html" }
             ]}
         ]
       },
@@ -569,18 +569,15 @@ number-sections: false
         header: "Pick the outcome you need",
         groups: [
           { title: "Lock all versions for reproducibility",
-            links: [{ id: "N5", name: "Lock Files", href: "#" }] },
+            links: [{ id: "N5", name: "Lock Files", href: "demos/node-demo/scenario-5-locks/guide.html" }] },
           { title: "Override a transitive version",
-            links: [{ id: "N11", name: "Overrides / Resolutions", href: "#" }] },
+            links: [{ id: "N6", name: "Overrides & Resolutions", href: "demos/node-demo/scenario-6-overrides/guide.html" }] },
           { title: "Manage a monorepo",
-            links: [{ id: "N13", name: "Workspaces", href: "#" }] },
-          { title: "Reduce bundle / node_modules size",
-            links: [
-              { id: "N14", name: "Deduplication", href: "#" },
-              { id: "N9", name: "Optional Dependencies", href: "#" }
-            ]},
-          { title: "Use a private registry",
-            links: [{ id: "N16", name: "Private Registry", href: "#" }] }
+            links: [{ id: "N10", name: "Workspaces & Monorepos", href: "demos/node-demo/scenario-10-workspaces/guide.html" }] },
+          { title: "Keep dev tooling out of production",
+            links: [{ id: "N7", name: "Dependency Types", href: "demos/node-demo/scenario-7-dep-types/guide.html" }] },
+          { title: "Use a private registry safely",
+            links: [{ id: "N11", name: "Private Registry & Dependency Confusion", href: "demos/node-demo/scenario-11-private-registry/guide.html" }] }
         ]
       },
       learn: {
@@ -588,21 +585,24 @@ number-sections: false
         groups: [
           { title: "Start with the fundamentals",
             links: [
-              { id: "N1", name: "Basic Transitive Resolution", href: "#" },
-              { id: "N2", name: "Hoisting & Phantom Dependencies", href: "#" },
-              { id: "N3", name: "Semver & Range Resolution", href: "#" }
+              { id: "N1", name: "Basic Transitive Resolution", href: "demos/node-demo/scenario-1-basic/guide.html" },
+              { id: "N2", name: "The Diamond: Everyone Wins", href: "demos/node-demo/scenario-2-diamond/guide.html" },
+              { id: "N3", name: "Hoisting & Phantom Dependencies", href: "demos/node-demo/scenario-3-phantom/guide.html" },
+              { id: "N4", name: "Semver & the ^ Culture", href: "demos/node-demo/scenario-4-semver/guide.html" }
             ]},
           { title: "Then explore controls",
             links: [
-              { id: "N5", name: "Lock Files", href: "#" },
-              { id: "N8", name: "Peer Dependencies", href: "#" },
-              { id: "N11", name: "Overrides / Resolutions", href: "#" }
+              { id: "N5", name: "Lock Files", href: "demos/node-demo/scenario-5-locks/guide.html" },
+              { id: "N6", name: "Overrides & Resolutions", href: "demos/node-demo/scenario-6-overrides/guide.html" },
+              { id: "N7", name: "Dependency Types", href: "demos/node-demo/scenario-7-dep-types/guide.html" },
+              { id: "N8", name: "Peer Dependencies", href: "demos/node-demo/scenario-8-peers/guide.html" }
             ]},
           { title: "Advanced patterns",
             links: [
-              { id: "N13", name: "Workspaces", href: "#" },
-              { id: "N14", name: "Deduplication", href: "#" },
-              { id: "N18", name: "Security Audit", href: "#" }
+              { id: "N9", name: "Tree Shape & Deduplication", href: "demos/node-demo/scenario-9-tree-shape/guide.html" },
+              { id: "N10", name: "Workspaces & Monorepos", href: "demos/node-demo/scenario-10-workspaces/guide.html" },
+              { id: "N11", name: "Private Registry & Dependency Confusion", href: "demos/node-demo/scenario-11-private-registry/guide.html" },
+              { id: "N12", name: "Auditing the Tree", href: "demos/node-demo/scenario-12-audit/guide.html" }
             ]}
         ]
       }

@@ -1,0 +1,7 @@
+# tag::n6-pnpm-override[]
+# pnpm 11: overrides live in pnpm-workspace.yaml (the old package.json
+# "pnpm.overrides" location is no longer read here).
+overrides:
+  demo-lib-c: 2.0.0
+# end::n6-pnpm-override[]
+minimumReleaseAge: 0

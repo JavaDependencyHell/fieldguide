@@ -59,6 +59,7 @@ Resolution proves compatibility, never safety. Audit the installed set (and the 
 *   [P9](../scenario-9-exclusions-gap/guide.qmd) - Why you pin/upgrade instead of excluding.
 *   [P5](../scenario-5-locks/guide.qmd) - Auditing the lock file before it ever installs.
 *   [P11](../scenario-11-private-index/guide.qmd) - The supply-chain scenario audit complements.
+*   [N12](../../node-demo/scenario-12-audit/guide.qmd) - Node's built-in audit — a decade older, and a lesson in alert fatigue.
 
 #### ! Wild
-`pip-audit` began life at Trail of Bits and is now a PyPA project — a sign of how recently Python got first-class supply-chain tooling compared with the JVM's long-established scanners. For years the honest answer to "what's vulnerable in my Python environment?" was "grep the CVE feed by hand".
+`pip-audit` began life at Trail of Bits and is now a PyPA project — Python's first-party supply-chain tooling is recent compared with the JVM's long-established scanners, which matters when auditing older projects: their CI predates the tool, so assume nothing has ever been scanned.

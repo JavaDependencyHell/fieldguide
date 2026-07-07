@@ -1,0 +1,8 @@
+{
+  "name": "n11-npm-safe",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "acme-internal-tool": "*"
+  }
+}

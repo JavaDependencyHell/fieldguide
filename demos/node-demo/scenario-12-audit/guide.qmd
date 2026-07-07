@@ -1,0 +1,64 @@
+---
+title: "Auditing the Tree"
+tagline: "Or what to Do When You Inherit a package.json You Didn't Write"
+type: scenario
+tool: node
+---
+
+#### ! Scenario
+
+*Or what to Do When You Inherit a package.json You Didn't Write*
+This closes the Node part the way triage opens the book: see reality before touching it. Given an inherited project — pinned `lodash 4.17.20` here — `npm audit` cross-references the installed tree against the registry's advisory database and reports what's exposed. The Node sibling of [P12](../../python-demo/scenario-12-audit/guide.qmd), with one twist the JVM and Python don't have: the audit is built into the package manager itself, runs against the *whole* tree including every duplicated copy ([N2](../scenario-2-diamond/guide.qmd)), and has been ambient long enough that developers have learned to ignore it.
+
+::: {.callout-note title="Tool Versions"}
+Tested with **npm 10.9.8** (`npm audit`); pnpm (`pnpm audit`) and Yarn (`yarn npm audit`) query the same advisory endpoint. This scenario talks to the **real npm registry** — it needs network, and its findings change as advisories are published. The guide states the mechanism, not a frozen result.
+:::
+
+#### ! Example
+
+```{.json include="npm/package.json"}
+```
+
+#### ! Expect
+A clean install means a safe project.
+
+#### ! Actual
+The install succeeds; the project is *installable*, not *safe*. `npm audit` exits non-zero and reports known vulnerabilities against `lodash 4.17.20` (an old pin with published advisories), naming severities and the fixed versions. "It resolved" and "it's secure" remain different questions, and only the audit asks the second one.
+
+#### ! Why
+Resolution checks compatibility; advisories are someone reporting exploitability after the fact — no install-time check can see them. `npm audit` walks the lockfile/tree and matches every package-version against the registry's advisory database (npm has bundled this since npm 6, 2018 — GitHub's advisory data under the hood). Because the Node answer to conflicts is duplication, one CVE can appear several times in one tree: every copy of a vulnerable package is a separate exposure, which is also why audit output pairs so naturally with overrides ([N6](../scenario-6-overrides/guide.qmd)) — the tree-wide "make every copy the fixed version" lever. And because audit only sees *declared* reality, phantom imports ([N3](../scenario-3-phantom/guide.qmd)) are its blind spot.
+
+#### ! Fix
+*   **Run it in CI with a threshold:** `npm audit --audit-level=high` fails the build on serious findings without drowning in noise; pnpm and Yarn take the same flag idea.
+*   **Remediate in order:** upgrade the direct dependency; if the vulnerable version arrives transitively, override it ([N6](../scenario-6-overrides/guide.qmd)); treat `npm audit fix --force` with suspicion — it applies semver-major changes on your behalf.
+*   **Abandoned dependencies are findings too:** a package with no maintainer will carry its next CVE forever; audit tools won't say "EOL", so someone must — that's a policy question, not a tooling one.
+
+#### ! Risk
+* LOW Auditing in CI at a sane threshold, remediating by upgrade or scoped override.
+* MEDIUM Audit-fatigue: warnings scrolling past in every install log until the one that matters scrolls past too.
+* HIGH Treating a green install as a security signal — or silencing audit in CI because it's always red, which amounts to the same decision.
+
+#### ! Check
+
+**Fast check (needs network — real registry):**
+
+```bash
+npm install
+npm audit                     # exits non-zero; lists lodash advisories + fixed versions
+npm audit --audit-level=high  # the CI-friendly form
+```
+
+**What to look for:** `lodash` named with one or more advisories and a fix version. (Exact findings depend on the advisory database on the day you run it.)
+
+**Conclusion:** A resolvable tree can still be a vulnerable one; the audit is the only step that checks.
+
+#### ! Takeaway
+Resolution proves compatibility, never safety. Audit the tree in CI, gate on severity, remediate with upgrades and overrides — and remember every duplicated copy in the tree is its own exposure.
+
+#### ! Related
+*   [N6](../scenario-6-overrides/guide.qmd) - The remediation lever for transitive findings.
+*   [N11](../scenario-11-private-registry/guide.qmd) - The supply-chain scenario audit complements.
+*   [P12](../../python-demo/scenario-12-audit/guide.qmd) - Python's version, where the audit tool arrived a decade later.
+
+#### ! Wild
+Since npm 6, `npm audit` runs as part of `install` itself, which has a practical consequence for this scenario: the raw audit output is high-volume by design, and unfiltered it trains teams to ignore it. That is why the Fix gates on `--audit-level` rather than on "any finding" — the threshold, not the scan, is what makes the signal actionable in CI.

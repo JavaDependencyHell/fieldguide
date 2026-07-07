@@ -1,0 +1,12 @@
+{
+  "name": "n7-deptypes-yarn",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "demo-lib-a": "1.0.0"
+  },
+  "packageManager": "yarn@4.17.0",
+  "devDependencies": {
+    "demo-lib-d": "1.0.0"
+  }
+}

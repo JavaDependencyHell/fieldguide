@@ -1,0 +1,11 @@
+{
+  "name": "n6-overrides",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "demo-lib-a": "1.0.0"
+  },
+  "overrides": {
+    "demo-lib-c": "2.0.0"
+  }
+}

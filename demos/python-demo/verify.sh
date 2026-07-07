@@ -320,9 +320,15 @@ except OSError:
     sys.exit(1)
 PY
     then
+        # pip-audit must NOT share a venv with the package it's auditing:
+        # installing urllib3==1.26.4 alongside pip-audit makes pip-audit's own
+        # `import requests -> import urllib3` pick up that ancient pin, whose
+        # vendored `six` shim can crash on newer Pythons (e.g. 3.14) before the
+        # audit ever runs. Keep pip-audit's own env clean and point it at the
+        # requirements file instead — it only needs to read name+version pins.
         V=$(new_venv s12)
-        "$V/bin/pip" install -q pip-audit "urllib3==1.26.4" 2>/dev/null
-        "$V/bin/pip-audit" 2>/dev/null | grep -qi "urllib3"
+        "$V/bin/pip" install -q pip-audit 2>/dev/null
+        "$V/bin/pip-audit" -r scenario-12-audit/pip/requirements.txt 2>/dev/null | grep -qi "urllib3"
         check_result "Scenario 12 (pip-audit flags urllib3 1.26.4)" "pip" $?
     else
         echo -e "${RED}[----]${NC} pip - Scenario 12 NOT RUN: pypi.org unreachable (needs network)."

@@ -108,3 +108,23 @@ Always work in a fresh virtual environment — one version per environment.
 *   **Optional deps:** extras `pip install "pkg[extra]"` · dev groups `poetry install --with dev` / `uv sync`
 *   **Audit for CVEs:** `pip-audit` (or `pip-audit -r requirements.txt`)
 *   **Avoid dependency confusion:** never mix a private index into PyPI with `--extra-index-url`; use a single index, or uv `first-index` / Poetry source priority
+
+## Node (npm / pnpm / Yarn 4)
+
+The tree can hold many versions of one package — most conflicts dissolve into duplicates; peers are where they return.
+
+*   **Show Dependency Tree:** `npm ls <pkg>` · `pnpm why <pkg>` · `yarn why <pkg>`
+*   **Install exactly the lock (CI):** `npm ci` · `pnpm install --frozen-lockfile` · `yarn install --immutable`
+*   **Force / Override a Version:**
+```text
+    # npm — package.json                # yarn — package.json
+    "overrides": {"pkg": "1.2.3"}       "resolutions": {"pkg": "1.2.3"}
+    # pnpm — pnpm-workspace.yaml (v11+)
+    overrides: {pkg: 1.2.3}
+```
+*   **Find phantoms:** run the repo once under pnpm or Yarn PnP — undeclared imports fail fast
+*   **Production install:** `npm install --omit=dev` · `pnpm install --prod` · `yarn workspaces focus --production`
+*   **Peer conflict:** read the `ERESOLVE` report; fix the shared version — `--legacy-peer-deps` is a debt, not a fix
+*   **Reset a history-shaped tree:** `rm -rf node_modules && npm ci` (or `npm dedupe`)
+*   **Audit for CVEs:** `npm audit --audit-level=high` · `pnpm audit` · `yarn npm audit`
+*   **Avoid dependency confusion:** scope private packages (`@org/...`), pin `@org:registry=` in a committed `.npmrc`, claim the scope publicly

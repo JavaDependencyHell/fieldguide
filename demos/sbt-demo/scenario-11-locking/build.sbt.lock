@@ -1,6 +1,6 @@
 {
   "lockVersion" : 1,
-  "timestamp" : "2026-07-06T17:08:31.820443Z",
+  "timestamp" : "2026-07-07T11:37:53.990221Z",
   "configurations" : [
     "compile",
     "optional",
@@ -16,7 +16,7 @@
       "artifacts" : [
         {
           "name" : "lib-a.jar",
-          "hash" : "sha1:e22ceb63f2ae4944f5707100beaed8dd4643d9c1"
+          "hash" : "sha1:c67db0b0adbebac1ae2b9d20eec1823fd79ec910"
         }
       ],
       "configurations" : [
@@ -32,7 +32,7 @@
       "artifacts" : [
         {
           "name" : "lib-b.jar",
-          "hash" : "sha1:e22ceb63f2ae4944f5707100beaed8dd4643d9c1"
+          "hash" : "sha1:c67db0b0adbebac1ae2b9d20eec1823fd79ec910"
         }
       ],
       "configurations" : [
@@ -48,7 +48,7 @@
       "artifacts" : [
         {
           "name" : "lib-c.jar",
-          "hash" : "sha1:e22ceb63f2ae4944f5707100beaed8dd4643d9c1"
+          "hash" : "sha1:c67db0b0adbebac1ae2b9d20eec1823fd79ec910"
         }
       ],
       "configurations" : [

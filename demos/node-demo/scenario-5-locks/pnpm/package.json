@@ -1,0 +1,9 @@
+{
+  "name": "n5-locks-pnpm",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "demo-lib-a": "^1.0.0"
+  },
+  "packageManager": "pnpm@11.10.0"
+}

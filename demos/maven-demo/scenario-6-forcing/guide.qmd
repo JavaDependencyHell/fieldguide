@@ -77,3 +77,4 @@ Strict constraints are vital for security compliance (e.g., "Must use OpenSSL >=
 * [MS3: Central Management (BOM)](../scenario-3-mgmt/guide.qmd) - The core mechanism used here.
 * [MS4: Direct Override](../scenario-4-override/guide.qmd) - Understanding the precedence of direct declarations.
 * [MS14: Rejecting a Version](../scenario-14-reject/guide.qmd) - Forcing *away* from a version.
+* [N6](../../node-demo/scenario-6-overrides/guide.qmd) - Node's version of the same lever: `overrides` / `resolutions`, equally blunt.

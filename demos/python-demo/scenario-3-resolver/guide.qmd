@@ -70,6 +70,7 @@ The same `requirements.txt` is not one environment — it is one environment *pe
 #### ! Related
 *   [P2](../scenario-2-conflict/guide.qmd) - When backtracking runs out of options and there is no solution at all.
 *   [P5](../scenario-5-locks/guide.qmd) - Freezing the resolved set so it stops depending on the resolver.
+*   [N9](../../node-demo/scenario-9-tree-shape/guide.qmd) - Node's version of "the mechanism decides": same declaration, different tree, depending on install history.
 
 #### ! Wild
-The 2020 pip resolver change was one of the most consequential — and most disruptive — events in Python packaging. Funded by a grant and years in the making, it broke countless CI pipelines that had been quietly relying on the greedy resolver installing mutually incompatible packages. "It used to work" was true; it had just never been *correct*. You can still watch the old behaviour today: run this scenario's install with `--use-deprecated=legacy-resolver` on modern pip and it will "successfully" install the broken graph — warning you about the incompatibility in the same breath.
+The 2020 resolver change broke many CI pipelines that had been relying, unknowingly, on the greedy resolver installing mutually incompatible packages — "it used to work" was true, but it had never been correct. You can still reproduce the old behaviour: run this scenario's install with `--use-deprecated=legacy-resolver` on modern pip and it will "successfully" install the broken graph, warning about the incompatibility in the same output. Useful when you need to demonstrate to a team exactly what their pre-20.3 pipeline was silently doing.

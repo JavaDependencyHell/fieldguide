@@ -71,6 +71,7 @@ pip install -r requirements-reject.txt     && pip show demo-lib-c  # 1.0.0
 *   [P6](../scenario-6-constraints/guide.qmd) - Applying pins from outside the requirement, without editing it.
 *   [MS9](../../maven-demo/scenario-9-ranges/guide.qmd) - JVM ranges, where open ranges are discouraged rather than default.
 *   [MS14](../../maven-demo/scenario-14-reject/guide.qmd) - The JVM's plugin-based equivalent of Python's native `!=`.
+*   [N4](../../node-demo/scenario-4-semver/guide.qmd) - Node's `^` culture: the same openness, written by the tools themselves.
 
 #### ! Wild
 The `~=` "compatible release" operator is one of the most under-used tools in Python packaging. Skim almost any public `requirements.txt` and you'll find bare `>=` everywhere and `~=` almost nowhere — a large part of why "I reinstalled and it broke" is such a common Python experience: a transitive dependency shipped a new major overnight and an unbounded `>=` swallowed it.

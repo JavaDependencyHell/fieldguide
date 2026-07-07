@@ -1,0 +1,71 @@
+---
+title: "Peer Dependencies: Where Flat Returns"
+tagline: "Or what to Do When a Package Refuses Its Own Copy"
+type: scenario
+tool: node
+---
+
+#### ! Scenario
+
+*Or what to Do When a Package Refuses Its Own Copy*
+No JVM or Python sibling — because this is Node re-inventing *their* problem on purpose. [N2](../scenario-2-diamond/guide.qmd) showed Node dissolving conflicts by duplication. But some packages must **not** be duplicated: plugins that register into a host, frameworks whose components compare `instanceof` across modules, anything with singleton state. For those, a package declares a **peerDependency**: "I don't bring my own `demo-lib-c` — I use *yours*, and it must satisfy `^1.0.0`." Our project supplies `demo-lib-c 2.0.0`. The contract is violated, and the flat-world conflict Node dodged in N2 comes straight back.
+
+::: {.callout-note title="Tool Versions"}
+Tested with **npm 10.9.8**, **pnpm 11.10.0**, **Yarn 4.17.0**. Maximum divergence in *enforcement*: npm hard-fails (`ERESOLVE`), pnpm and Yarn install-and-warn. npm has auto-installed missing peers and enforced their ranges since npm 7 (2020) — the single most build-breaking behaviour change in npm's history.
+:::
+
+#### ! Example
+
+```{.json include="npm/package.json"}
+```
+
+(`demo-plugin` declares `"peerDependencies": { "demo-lib-c": "^1.0.0" }` — the fixture mirrors any plugin/host pair.)
+
+#### ! Expect
+Node installs both versions side by side, as in the diamond — everyone wins.
+
+#### ! Actual
+Three tools, three enforcement policies, one broken contract:
+
+- **npm**: refuses outright — exit 1, `ERESOLVE unable to resolve dependency tree`, naming the peer and both versions. `npm install --legacy-peer-deps` waves it through, unchecked, npm-6-style.
+- **pnpm**: installs, then warns — `Issues with peer dependencies found` (and `pnpm peers check` itemises them; its `strictPeerDependencies` setting upgrades the warning to a failure).
+- **Yarn**: installs, then warns — `YN0060: … provides demo-lib-c (…) with version 2.0.0, which doesn't satisfy what demo-plugin requests`.
+
+#### ! Why
+A peer dependency inverts the arrow: instead of "install this for me", it says "the consumer already has this, and here's the range I can live with". That re-creates exactly the situation the JVM and Python live in permanently — one shared slot, multiple constraints on it ([P2](../../python-demo/scenario-2-conflict/guide.qmd) is this scenario's Python twin). The enforcement split is real policy divergence: npm stops the build on an unsatisfiable contract (Python's answer); pnpm and Yarn make it visible but survivable (closer to the JVM's warn-and-pick). Know which policy your CI runs — the same violated contract is a hard failure on one machine and a scrolled-past warning on another.
+
+#### ! Fix
+*   **Align the shared version:** move your direct `demo-lib-c` into the plugin's accepted range, or use a plugin release that accepts yours. This is the real fix; the rest are escapes.
+*   **`--legacy-peer-deps` is a debt, not a fix:** it installs a combination the plugin explicitly disclaims. If you must ship with it, record why and when it dies.
+*   **Library authors:** declare peers with the *widest honest range*, and use `peerDependenciesMeta.optional` for genuinely optional integrations.
+
+#### ! Risk
+* LOW Satisfying the peer range properly.
+* MEDIUM Relying on pnpm/Yarn warnings — unread warnings are how violated contracts reach production.
+* HIGH `--legacy-peer-deps` in CI config, permanently: every future peer conflict is silently accepted, restoring the exact npm-6 behaviour npm 7 was built to end.
+
+#### ! Check
+
+**Fast check:**
+
+```bash
+npm install                       # exits non-zero: ERESOLVE, names demo-plugin's peer
+npm install --legacy-peer-deps    # installs anyway — the escape hatch
+pnpm install                      # exit 0 + peer warning
+yarn install                      # exit 0 + YN0060
+```
+
+**What to look for:** one violated contract, three enforcement policies — and *nothing installed twice*: no tool nested a private `demo-lib-c` for the plugin.
+
+**Conclusion:** Peers restore the single-slot model, and each tool enforces it differently.
+
+#### ! Takeaway
+Peer dependencies are where Node stops duplicating and starts negotiating one shared slot. Know your tool's policy — npm refuses, pnpm and Yarn warn — and treat `--legacy-peer-deps` as a temporary bypass with a removal date.
+
+#### ! Related
+*   [N2](../scenario-2-diamond/guide.qmd) - The duplication model peers deliberately opt out of.
+*   [N7](../scenario-7-dep-types/guide.qmd) - The other dependency types, which do install for you.
+*   [P2](../../python-demo/scenario-2-conflict/guide.qmd) / [MS2](../../maven-demo/scenario-2-conflict/guide.qmd) - The flat-world conflict this scenario reintroduces by contract.
+
+#### ! Wild
+npm 6 treated peer ranges as advisory; npm 7 (2020) made them enforced, and `--legacy-peer-deps` shipped as the transition flag. The practical consequence today: the flag is still present in many CI configs and READMEs, where it silently disables peer checking for *every* install, not just the conflict it was added for. Grep your pipelines for it — each occurrence is a check that no longer runs.

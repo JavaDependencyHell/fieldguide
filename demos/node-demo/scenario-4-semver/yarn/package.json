@@ -1,0 +1,9 @@
+{
+  "name": "n4-semver-yarn",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "demo-lib-c": "^1.0.0"
+  },
+  "packageManager": "yarn@4.17.0"
+}

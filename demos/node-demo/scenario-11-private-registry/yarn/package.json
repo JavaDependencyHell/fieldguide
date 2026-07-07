@@ -1,0 +1,9 @@
+{
+  "name": "n11-yarn-scoped",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@acme/internal-tool": "*"
+  },
+  "packageManager": "yarn@4.17.0"
+}

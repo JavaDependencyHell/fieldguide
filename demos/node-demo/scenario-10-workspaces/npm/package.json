@@ -1,0 +1,6 @@
+{
+  "name": "n10-workspaces",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": ["packages/*"]
+}

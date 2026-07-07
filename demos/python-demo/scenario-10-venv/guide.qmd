@@ -74,6 +74,7 @@ In Python the environment is the unit of truth. Two projects, two venvs; dev and
 *   [P1](../scenario-1-basic/guide.qmd) - The one-version-per-environment rule this enforces.
 *   [P5](../scenario-5-locks/guide.qmd) - Locking, so the environment you test is the environment you ship.
 *   [P8](../scenario-8-markers/guide.qmd) - The *other* cause of "resolved differently over there".
+*   [N3](../../node-demo/scenario-3-phantom/guide.qmd) - Node's "works here, breaks there": the phantom import, same disease, different anatomy.
 
 #### ! Wild
-`sudo pip install` has broken so many Linux systems — by overwriting packages the OS itself depends on — that the ecosystem built a guardrail: PEP 668 lets a distro mark its system interpreter as *externally managed*, and pip (23.0+) refuses to install into it with an "externally-managed-environment" error. Debian 12 and Ubuntu 23.04 onwards ship the marker. The default had to be defended against itself.
+`sudo pip install` breaks Linux systems by overwriting packages the OS itself depends on, so the ecosystem built a guardrail: PEP 668 lets a distro mark its system interpreter as *externally managed*, and pip (23.0+) refuses to install into it with an "externally-managed-environment" error. Debian 12 and Ubuntu 23.04 onwards ship the marker — if you hit that error, it is working as designed: use a venv.

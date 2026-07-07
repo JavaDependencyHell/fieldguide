@@ -1,0 +1,11 @@
+# Verdaccio config — PRIVATE demo registry (the genuine acme packages)
+storage: ../../../target/node-private-repo
+listen: 127.0.0.1:4874
+web:
+  enable: false
+uplinks: {}
+packages:
+  '**':
+    access: $all
+    publish: $all
+log: { type: stdout, level: error }

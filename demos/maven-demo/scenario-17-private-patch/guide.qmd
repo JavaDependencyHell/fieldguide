@@ -48,3 +48,4 @@ A direct version declaration for a dependency is the most straightforward way to
 #### ! Related
 * [MS16: Private Repo (BOM)](../scenario-16-private-bom/guide.qmd) - A more scalable approach using a vendor BOM.
 * [P11](../../python-demo/scenario-11-private-index/guide.qmd) - Python's version: private patched packages, and why index configuration is a security decision.
+* [N11](../../node-demo/scenario-11-private-registry/guide.qmd) - Node's version: registry routing by scope, born from the original attack.

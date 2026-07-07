@@ -1,0 +1,70 @@
+---
+title: "Lock Files"
+tagline: "Or what to Do When the Whole Ecosystem Already Locks"
+type: scenario
+tool: node
+---
+
+#### ! Scenario
+
+*Or what to Do When the Whole Ecosystem Already Locks*
+Reproducibility is the JVM's [MS11](../../maven-demo/scenario-11-locking/guide.qmd) and Python's most fragmented answer ([P5](../../python-demo/scenario-5-locks/guide.qmd) counts five). Node is the culture that got there first and hardest: **every mainstream tool writes a lockfile by default, on every install**. This scenario takes one open-ranged input and shows what each tool freezes, and how to install *from* the freeze.
+
+::: {.callout-note title="Tool Versions"}
+Tested with **npm 10.9.8** (`package-lock.json`, lockfileVersion 3), **pnpm 11.10.0** (`pnpm-lock.yaml`), **Yarn 4.17.0** (`yarn.lock`). Three formats, one philosophy — the divergence is in the *files*, not the *stance*.
+:::
+
+#### ! Example
+
+```{.json include="npm/package.json"}
+```
+
+#### ! Expect
+Locking is something you opt into, as on the JVM or with pip-tools.
+
+#### ! Actual
+You already opted in by running install. Each tool wrote its lockfile unprompted, and each lockfile pins the **transitive** `demo-lib-c` you never named:
+
+- **npm**: `package-lock.json` — and `npm ci` installs *exactly* the lock (deleting node_modules first), failing if lock and package.json disagree. `npm install` re-resolves and may rewrite the lock.
+- **pnpm**: `pnpm-lock.yaml`, the source of truth for its content-addressed layout; `pnpm install --frozen-lockfile` is the CI form.
+- **Yarn**: `yarn.lock`; in CI Yarn defaults to `--immutable`, *refusing* to proceed if the lock would change.
+
+#### ! Why
+A lockfile splits *resolution* (slow, floating, done once) from *installation* (exact, repeatable, done everywhere) — the same separation Python's tools converged on a decade later. Node needed it earlier because of [N4](../scenario-4-semver/guide.qmd): with `^` on everything, an unlocked install is a different tree every publish cycle. The remaining sharp edge is the verb: `npm install` *maintains* the lock, `npm ci` *obeys* it. CI pipelines running `npm install` are quietly re-resolving.
+
+#### ! Fix
+*   **Commit the lockfile.** Always, applications especially. It is the build's actual bill of materials.
+*   **Install from it in CI:** `npm ci` / `pnpm install --frozen-lockfile` / `yarn install --immutable`.
+*   **One tool per repo:** two lockfiles (a `package-lock.json` *and* a `pnpm-lock.yaml`) means two versions of the truth; delete the one you don't obey.
+
+#### ! Risk
+* LOW Committed lockfile + frozen install in CI.
+* MEDIUM `npm install` in CI — works until a transitive publishes something new mid-release-week.
+* HIGH No committed lockfile with `^` ranges: every environment resolves its own tree ([N4](../scenario-4-semver/guide.qmd)), and "works on my machine" is now the *expected* outcome.
+
+#### ! Check
+
+**Fast check:**
+
+```bash
+npm install && grep '"demo-lib-c"' package-lock.json     # transitive, pinned
+rm -rf node_modules && npm ci && node -e "console.log(require('demo-lib-a').b.c.version)"  # 1.0.0
+
+pnpm install && grep 'demo-lib-c@' pnpm-lock.yaml
+yarn install && grep '"demo-lib-c@' yarn.lock
+```
+
+**What to look for:** the transitive `demo-lib-c` pinned in every lockfile — the resolution captured, not just your direct dependency — and `npm ci` rebuilding the exact tree.
+
+**Conclusion:** All three tools lock by default; the discipline is committing the file and using the frozen verb in CI.
+
+#### ! Takeaway
+Node solved lockfile culture before most ecosystems knew they needed one: lock on every install, commit it, and know the difference between the verb that *updates* the lock and the verb that *obeys* it.
+
+#### ! Related
+*   [N4](../scenario-4-semver/guide.qmd) - The `^` culture that makes unlocked installs non-deterministic.
+*   [N9](../scenario-9-tree-shape/guide.qmd) - What the lockfile does *not* fully pin: the shape of the tree.
+*   [MS11](../../maven-demo/scenario-11-locking/guide.qmd) / [P5](../../python-demo/scenario-5-locks/guide.qmd) - The JVM and Python stories this one inverts.
+
+#### ! Wild
+npm didn't lock by default until npm 5 (May 2017), in direct response to Yarn launching with `yarn.lock` in late 2016. Relevant when reading old projects: a pre-2017 repository with no lockfile isn't necessarily negligent — it predates the default — but its installs are unreproducible until one is generated and committed.

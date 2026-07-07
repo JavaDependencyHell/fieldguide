@@ -1,0 +1,8 @@
+{
+  "name": "n4-semver",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "demo-lib-c": "^1.0.0"
+  }
+}

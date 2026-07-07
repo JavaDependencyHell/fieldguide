@@ -1,0 +1,76 @@
+---
+title: "Workspaces & Monorepos"
+tagline: "Or what to Do When Your Dependency Is Sitting in the Next Directory"
+type: scenario
+tool: node
+---
+
+#### ! Scenario
+
+*Or what to Do When Your Dependency Is Sitting in the Next Directory*
+An `app` package depends on a `shared` package that lives in the same repository, two directories over. Without workspaces you'd publish `shared` to a registry (or `npm link` it by hand) just to consume your own code. Workspaces teach the package manager that the repo *is* a small registry: `app`'s dependency on `shared` resolves to a symlink into the sibling directory, while `shared`'s own dependency (`demo-lib-c`) still arrives from the real registry. The JVM's multi-module build, in Node idiom; Python's closest kin is uv's workspaces.
+
+::: {.callout-note title="Tool Versions"}
+Tested with **npm 10.9.8** (`"workspaces"` in root package.json), **pnpm 11.10.0** (`pnpm-workspace.yaml`), **Yarn 4.17.0** (`"workspaces"` field). pnpm and Yarn support the `workspace:*` protocol — an *explicit* "this must come from the workspace" — npm matches local packages by name/version instead.
+:::
+
+#### ! Example
+
+npm — the root declares where packages live:
+
+```{.json include="npm/package.json"}
+```
+
+pnpm and Yarn — `app` declares the dependency as workspace-only:
+
+```{.json include="pnpm/packages/app/package.json"}
+```
+
+#### ! Expect
+`app`'s dependency on `shared` needs `shared` published somewhere first.
+
+#### ! Actual
+One install at the root wires everything: `shared` appears in node_modules **as a symlink to `packages/shared`** (verified: `node_modules/shared -> ../packages/shared` under npm), `app` resolves it like any other package, and edits to `packages/shared` are live in `app` with no publish, no version bump, no reinstall:
+
+```bash
+cd packages/app && node -e "const s = require('shared'); console.log(s.version, s.c.version)"
+# 1.0.0 1.0.0   — local package, registry transitive, one resolution
+```
+
+#### ! Why
+A workspace install resolves the whole repo as one graph: local names short-circuit to symlinks, everything else goes to the registry, and shared external dependencies get hoisted to the root node_modules once instead of per-package. The `workspace:*` protocol (pnpm/Yarn) adds a safety property npm's by-name matching lacks: it can *never* silently fall back to a registry copy of `shared` — if the local package is missing, the install fails instead of quietly fetching someone else's package with your internal name, which is [N11](../scenario-11-private-registry/guide.qmd)'s attack in miniature. At publish time the tools rewrite `workspace:*` into real version ranges.
+
+#### ! Fix
+*   **One root install, always.** Running installs inside individual packages recreates exactly the split-brain trees workspaces exist to prevent.
+*   **Prefer `workspace:*`** (pnpm/Yarn) for internal deps — explicit, fail-fast, and immune to name-shadowing from the registry.
+*   **Mind cross-workspace hoisting on npm:** package A's dependencies get hoisted where package B can phantom-import them ([N3](../scenario-3-phantom/guide.qmd) at monorepo scale); pnpm's strict layout closes this per-package.
+
+#### ! Risk
+* LOW Root-level installs, `workspace:*` protocol, per-package dependencies declared honestly.
+* MEDIUM npm workspaces where an internal package name also exists publicly — by-name resolution makes the registry a fallback you didn't ask for.
+* HIGH Phantom imports between workspace packages: `app` uses `shared`'s dependencies without declaring them, works via root hoisting, and shatters the day any package is extracted from the monorepo.
+
+#### ! Check
+
+**Fast check:**
+
+```bash
+npm install                                  # once, at the root
+ls -l node_modules/shared                    # -> ../packages/shared (symlink)
+cd packages/app && node -e "const s=require('shared'); console.log(s.version, s.c.version)"
+```
+
+**What to look for:** the symlink, and `app` resolving both the local package and its registry transitive in one graph.
+
+**Conclusion:** Workspaces make the repo part of the resolution universe — local by symlink, external by registry, one install.
+
+#### ! Takeaway
+Workspaces are Node's multi-module build: one root install, symlinked internal packages, shared external ones. Use `workspace:*` where your tool offers it — internal names should never be resolvable from the public registry by accident.
+
+#### ! Related
+*   [N3](../scenario-3-phantom/guide.qmd) - Phantom imports, which monorepo hoisting industrialises.
+*   [N11](../scenario-11-private-registry/guide.qmd) - What happens when internal names leak to public registries.
+*   [MS1](../../maven-demo/scenario-1-basic/guide.qmd) - The JVM, where multi-module resolution is the build tool's native mode.
+
+#### ! Wild
+Workspace support arrived unevenly — Yarn in 2017, pnpm shortly after, npm not until npm 7 in 2020 — so older monorepos often carry `npm link` scripts or Lerna configuration predating native support; both are workspace mechanisms in disguise and usually migrate cleanly. At large workspace counts, disk cost is also why pnpm's content-addressed store is popular in monorepo setups: each external package is stored once, however many workspace packages depend on it.

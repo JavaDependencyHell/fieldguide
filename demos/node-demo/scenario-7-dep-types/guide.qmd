@@ -1,0 +1,73 @@
+---
+title: "Dependency Types"
+tagline: "Or what to Do When Some Dependencies Shouldn't Ship"
+type: scenario
+tool: node
+---
+
+#### ! Scenario
+
+*Or what to Do When Some Dependencies Shouldn't Ship*
+Node's answer to JVM scopes ([MS7](../../maven-demo/scenario-7-scopes/guide.qmd)) and optional dependencies ([MS8](../../maven-demo/scenario-8-optional/guide.qmd)), and the sibling of Python's extras and groups ([P7](../../python-demo/scenario-7-extras-groups/guide.qmd)). `demo-lib-a` is a real dependency; `demo-lib-d` is dev tooling. package.json separates them — `dependencies` versus `devDependencies` — and the install *mode* decides which set materialises.
+
+::: {.callout-note title="Tool Versions"}
+Tested with **npm 10.9.8** (`--omit=dev`), **pnpm 11.10.0** (`--prod`), **Yarn 4.17.0** (`yarn workspaces focus --production` — Yarn Berry dropped the old `--production` install flag; the focus command is the modern equivalent, verified working in 4.17).
+:::
+
+#### ! Example
+
+```{.json include="npm/package.json"}
+```
+
+#### ! Expect
+Everything in package.json installs everywhere.
+
+#### ! Actual
+A default install brings both sets — `demo-lib-d` is present for development. A production install drops the dev set:
+
+- `npm install --omit=dev` → `demo-lib-d` absent.
+- `pnpm install --prod` → absent.
+- `yarn workspaces focus --production` → absent.
+
+And crucially: when someone *else* depends on your package, your `devDependencies` never install for them at all — dev deps are local to the package being developed, like Maven's `test` scope never leaking downstream.
+
+#### ! Why
+Each dependency type answers a different "who needs this, when": `dependencies` follow the package everywhere; `devDependencies` exist only at development time of *this* package; `optionalDependencies` may fail to install without failing the build (native add-ons with platform limits, mostly); and `peerDependencies` are a contract about the *consumer's* tree, sharp enough to get their own scenario ([N8](../scenario-8-peers/guide.qmd)). Python needed two mechanisms (extras + groups) for this ground; Node covers it with fields in one file.
+
+#### ! Fix
+*   **Test tools, linters, bundlers → `devDependencies`.** If it doesn't run in production, it doesn't belong in `dependencies`.
+*   **Production images install with the production verb** — smaller, faster, and every skipped package is CVE surface you no longer carry ([N12](../scenario-12-audit/guide.qmd)).
+*   **Libraries:** audit your `dependencies` list hardest; it is the part of your package.json your users inherit.
+
+#### ! Risk
+* LOW Clean dev/prod separation, production installs in deploy images.
+* MEDIUM Dev tooling in `dependencies` — every consumer and every production image now carries your linter.
+* HIGH A runtime import living in `devDependencies`: works in dev (everything installs), crashes in production (`--omit=dev` removed it). The phantom's respectable cousin.
+
+#### ! Check
+
+**Fast check:**
+
+```bash
+npm install                 && node -e "require('demo-lib-d')" && echo dev-present
+rm -rf node_modules
+npm install --omit=dev      && node -e "require('demo-lib-d')" || echo dev-absent
+
+pnpm install --prod         # same result via pnpm
+yarn workspaces focus --production   # same result via Yarn 4
+```
+
+**What to look for:** `demo-lib-d` present by default, gone in production mode; `demo-lib-a` present in both.
+
+**Conclusion:** The dependency *type* plus the install *mode* decide what ships.
+
+#### ! Takeaway
+Node splits "needed to run" from "needed to build" in package.json itself. Keep the split honest and install production-mode in deploys — the discipline is free and the attack surface it removes isn't.
+
+#### ! Related
+*   [N8](../scenario-8-peers/guide.qmd) - The fourth type, strange enough to earn its own scenario.
+*   [MS7](../../maven-demo/scenario-7-scopes/guide.qmd) / [MS8](../../maven-demo/scenario-8-optional/guide.qmd) - The JVM's scope and optional machinery.
+*   [P7](../../python-demo/scenario-7-extras-groups/guide.qmd) - Python's extras and groups covering the same ground.
+
+#### ! Wild
+The failure mode worth memorising is directional. Dev tooling in `dependencies` costs size and audit surface but nothing breaks, so it persists unnoticed. A runtime import in `devDependencies` is the reverse: green in every CI job (which installs everything), fatal in the first `--omit=dev` production image. When production crashes with a module-not-found that dev can't reproduce, check which side of the split the module sits on before anything else.

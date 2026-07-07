@@ -1,0 +1,8 @@
+{
+  "name": "n9-tree-shape",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "demo-lib-b": "1.0.0"
+  }
+}

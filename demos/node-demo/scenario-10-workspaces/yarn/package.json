@@ -1,0 +1,9 @@
+{
+  "name": "n10-workspaces-yarn",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "packageManager": "yarn@4.17.0"
+}

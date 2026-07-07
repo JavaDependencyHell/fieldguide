@@ -77,12 +77,13 @@ Maven optimizes for "distance", while Gradle and SBT optimize for "freshness" â€
 #### ! Related
 * [MS3: Central Management (BOM)](../scenario-3-mgmt/guide.qmd) - How to fix this centrally.
 * [P2](../../python-demo/scenario-2-conflict/guide.qmd) - The same diamond in Python, where there is no eviction and the install fails outright.
+* [N2](../../node-demo/scenario-2-diamond/guide.qmd) - The same diamond in Node, where both versions simply install.
 
 
 
 #### ! Wild
 
-In 2015, a [remote code execution vulnerability in Apache Commons Collections](https://github.com/advisories/GHSA-fjq5-5j5f-mvxh) (CVE-2015-7501) sent shockwaves through the Java ecosystem. The vulnerable library was embedded deep in the transitive dependency graphs of [IBM WebSphere, Oracle WebLogic, and Red Hat JBoss](https://access.redhat.com/security/vulnerabilities/986a8488-052e-46d1-8ede-c55cbfceb822) -- application servers widely deployed in financial services and government.
+In 2015, a [remote code execution vulnerability in Apache Commons Collections](https://github.com/advisories/GHSA-fjq5-5j5f-mvxh) (CVE-2015-7501) affected a large part of the Java ecosystem. The vulnerable library was embedded deep in the transitive dependency graphs of [IBM WebSphere, Oracle WebLogic, and Red Hat JBoss](https://access.redhat.com/security/vulnerabilities/986a8488-052e-46d1-8ede-c55cbfceb822) -- application servers widely deployed in financial services and government.
 
 Many organisations couldn't upgrade the affected application server or vendor SDK directly. Maven's "nearest wins" logic often favoured the older, vulnerable version (being slightly "closer" to the root). The practical fix was `<dependencyManagement>` to pin the patched Commons Collections version globally, satisfying security audits without requiring full regression testing of the vendor stack.
 

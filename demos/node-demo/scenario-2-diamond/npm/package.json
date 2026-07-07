@@ -1,0 +1,9 @@
+{
+  "name": "n2-diamond",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "demo-lib-a": "2.0.0",
+    "demo-lib-c": "1.0.0"
+  }
+}

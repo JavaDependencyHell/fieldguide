@@ -1,0 +1,75 @@
+---
+title: "Semver & the ^ Culture"
+tagline: "Or what to Do When Every Default Is an Open Range"
+type: scenario
+tool: node
+---
+
+#### ! Scenario
+
+*Or what to Do When Every Default Is an Open Range*
+Node's sibling of JVM ranges ([MS9](../../maven-demo/scenario-9-ranges/guide.qmd)) and Python specifiers ([P4](../../python-demo/scenario-4-specifiers/guide.qmd)) — with the strongest open-range culture of the three, because the tools *write the ranges for you*. Every plain `npm install <pkg>` saves `^x.y.z` to package.json. With `demo-lib-c` available at 1.0.0, 1.1.0 and 2.0.0, this scenario shows what `^` and `~` actually select.
+
+::: {.callout-note title="Tool Versions"}
+Tested with **npm 10.9.8**, **pnpm 11.10.0**, **Yarn 4.17.0**. Range semantics are identical across the three. One modern wrinkle observed during verification: pnpm (`minimumReleaseAge`) and Yarn (`npmMinimalAgeGate`) now apply **release-age cooldowns by default**, so a fresh enough release may be skipped or quarantined during resolution — see the Wild.
+:::
+
+#### ! Example
+
+Caret — minor and patch float, majors don't:
+
+```{.json include="npm/package.json"}
+```
+
+Tilde — only patch floats:
+
+```{.json include="npm-tilde/package.json"}
+```
+
+#### ! Expect
+All ranges land on the same version.
+
+#### ! Actual
+With 1.0.0, 1.1.0 and 2.0.0 available:
+
+- `^1.0.0` → **1.1.0** (newest below the next major; 2.0.0 excluded).
+- `~1.0.0` → **1.0.0** (newest patch of 1.0.x; 1.1.0 excluded).
+
+Same registry, same day, different operator, different tree.
+
+#### ! Why
+`^` says "any compatible-per-semver release": semver promises no breaking changes below the next major, and the entire npm ecosystem is built on believing that promise. `~` narrows the trust to patches. The catch is that *the promise is social, not mechanical* — nothing verifies that 1.1.0 is actually compatible with 1.0.0; the resolver takes the newest allowed version whenever the lockfile doesn't pin one ([N5](../scenario-5-locks/guide.qmd)). Python shares the open-range culture but makes you type it; npm's `^`-by-default made floating ranges the ecosystem's ground state.
+
+#### ! Fix
+*   **Keep `^` but lock:** the range expresses intent, the lockfile ([N5](../scenario-5-locks/guide.qmd)) pins reality. This is the ecosystem's working equilibrium.
+*   **Drop to `~` or exact pins** for dependencies with a history of breaking minors.
+*   **Force a known-bad version out** with overrides ([N6](../scenario-6-overrides/guide.qmd)) — Node's blunt equivalent of Python's `!=`.
+
+#### ! Risk
+* LOW `^` ranges plus a committed lockfile.
+* MEDIUM `^` ranges with no lockfile in CI — every build re-rolls the dice ([N9](../scenario-9-tree-shape/guide.qmd) shows the dice have memory, too).
+* HIGH `*` or `latest` as a version in anything deployable; the registry's newest publish becomes your dependency, attacker included ([N11](../scenario-11-private-registry/guide.qmd)).
+
+#### ! Check
+
+**Fast check:**
+
+```bash
+cd npm       && npm install && node -e "console.log(require('demo-lib-c').version)"  # 1.1.0
+cd npm-tilde && npm install && node -e "console.log(require('demo-lib-c').version)"  # 1.0.0
+```
+
+**What to look for:** two resolved versions from two operators over the same three releases.
+
+**Conclusion:** The operator decides how far your dependency floats; the lockfile decides whether it floats at all.
+
+#### ! Takeaway
+npm made open ranges the default keystroke, and semver the ecosystem's load-bearing social contract. Trust `^`, but commit the lockfile — the range is a request, not a result.
+
+#### ! Related
+*   [N5](../scenario-5-locks/guide.qmd) - Pinning what the range resolved to.
+*   [MS9](../../maven-demo/scenario-9-ranges/guide.qmd) - JVM ranges, where the culture discourages what npm defaults to.
+*   [P4](../../python-demo/scenario-4-specifiers/guide.qmd) - Python's specifiers: same openness, hand-written.
+
+#### ! Wild
+Range resolution is growing a time dimension. pnpm's `minimumReleaseAge` and Yarn's `npmMinimalAgeGate` now hold back freshly published releases *by default* (this book's verification harness has to switch the gates off to install its own minutes-old fixtures), and pip offers the same idea as `--uploaded-prior-to`. Factor it in when a range resolves to something older than you expected.

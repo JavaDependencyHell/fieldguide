@@ -140,6 +140,20 @@ book:
         - demos/python-demo/scenario-10-venv/guide.qmd
         - demos/python-demo/scenario-11-private-index/guide.qmd
         - demos/python-demo/scenario-12-audit/guide.qmd
+    - part: "Node Scenarios"
+      chapters:
+        - demos/node-demo/scenario-1-basic/guide.qmd
+        - demos/node-demo/scenario-2-diamond/guide.qmd
+        - demos/node-demo/scenario-3-phantom/guide.qmd
+        - demos/node-demo/scenario-4-semver/guide.qmd
+        - demos/node-demo/scenario-5-locks/guide.qmd
+        - demos/node-demo/scenario-6-overrides/guide.qmd
+        - demos/node-demo/scenario-7-dep-types/guide.qmd
+        - demos/node-demo/scenario-8-peers/guide.qmd
+        - demos/node-demo/scenario-9-tree-shape/guide.qmd
+        - demos/node-demo/scenario-10-workspaces/guide.qmd
+        - demos/node-demo/scenario-11-private-registry/guide.qmd
+        - demos/node-demo/scenario-12-audit/guide.qmd
     - book/content/conclusion.md
     - part: "Appendices"
       chapters:

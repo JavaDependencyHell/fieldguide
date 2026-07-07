@@ -1,0 +1,11 @@
+{
+  "name": "n7-deptypes",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "demo-lib-a": "1.0.0"
+  },
+  "devDependencies": {
+    "demo-lib-d": "1.0.0"
+  }
+}

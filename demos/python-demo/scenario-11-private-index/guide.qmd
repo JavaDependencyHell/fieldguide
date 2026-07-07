@@ -77,6 +77,7 @@ uv lock && grep -A1 'acme-internal-tool' uv.lock                            # 1.
 *   [P6](../scenario-6-constraints/guide.qmd) - Pinning, which combined with hashes hardens against a swapped artifact.
 *   [P12](../scenario-12-audit/guide.qmd) - Auditing what actually got installed.
 *   [MS16](../../maven-demo/scenario-16-private-bom/guide.qmd) / [MS17](../../maven-demo/scenario-17-private-patch/guide.qmd) - The JVM private-repo scenarios.
+*   [N11](../../node-demo/scenario-11-private-registry/guide.qmd) - The npm original of this attack — and scopes, the structural fix Python's flat namespace lacks.
 
 #### ! Wild
 In 2021 researcher Alex Birsan used exactly this mechanism to breach Apple, Microsoft, Shopify and dozens more, collecting over $130,000 in bug bounties. He found internal package names in leaked manifests, published higher-versioned public packages with the same names, and watched corporate builds pull his code — purely because `--extra-index-url` prefers the highest version regardless of origin. The technique now has a name — dependency confusion — and it still works against misconfigured builds today.

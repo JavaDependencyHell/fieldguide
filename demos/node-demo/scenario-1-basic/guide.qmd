@@ -1,0 +1,65 @@
+---
+title: "Basic Transitive Resolution"
+tagline: "Or what to Do When One Install Brings a Whole Tree"
+type: scenario
+tool: node
+---
+
+#### ! Scenario
+
+*Or what to Do When One Install Brings a Whole Tree*
+The ground truth all three Node tools share: installing one package pulls in its dependencies, and theirs, until the graph is satisfied. `demo-lib-a` needs `demo-lib-b`, which needs `demo-lib-c` — one command installs all three. It is the Node sibling of [MS1](../../maven-demo/scenario-1-basic/guide.qmd) and [P1](../../python-demo/scenario-1-basic/guide.qmd) — with one structural difference that shapes this entire part: the result is not a flat classpath or a flat environment but a **tree**, and a tree can hold *more than one version of the same package*.
+
+::: {.callout-note title="Tool Versions"}
+Tested with **npm 10.9.8** (Node 22.22.3), **pnpm 11.10.0**, **Yarn 4.17.0**. All three behave identically here; the differences begin the moment the graph gets interesting.
+:::
+
+#### ! Example
+
+```{mermaid}
+%%| fig-width: 4.4
+graph LR
+    Root[Your project] --> LibA[demo-lib-a 1.0.0]
+    LibA --> LibB[demo-lib-b 1.0.0]
+    LibB --> LibC[demo-lib-c 1.0.0]
+```
+
+```{.json include="npm/package.json"}
+```
+
+#### ! Expect
+Declaring only `demo-lib-a` installs `demo-lib-b` and `demo-lib-c` as well.
+
+#### ! Why
+Every tool resolves the graph transitively before installing. The Node-specific rule to hold onto: packages resolve through the **node_modules tree** (or Yarn's Plug'n'Play map), and Node's `require` walks that structure at *runtime*. Where the JVM picks one winner per conflict and Python demands one version per environment, Node can simply give each consumer its own copy. That single design choice creates and cures most of what follows.
+
+#### ! Check
+
+**Fast check (all three tools shown; pick yours):**
+
+```bash
+npm install && npm ls
+pnpm install && pnpm why demo-lib-c
+yarn install && yarn why demo-lib-c
+```
+
+Then prove the chain end to end:
+
+```bash
+node -e "console.log(require('demo-lib-a').b.c.version)"   # 1.0.0
+```
+
+**What to look for:** `demo-lib-c` appears in the installed tree even though you never named it.
+
+**Conclusion:** Transitive resolution is automatic and identical across tools.
+
+#### ! Takeaway
+One project, one tree — and a tree can hold many versions. Everything else in this part follows from that.
+
+#### ! Related
+*   [N2](../scenario-2-diamond/guide.qmd) - What happens when two packages need different versions of the same thing.
+*   [MS1](../../maven-demo/scenario-1-basic/guide.qmd) - The JVM equivalent (flat classpath, one winner).
+*   [P1](../../python-demo/scenario-1-basic/guide.qmd) - The Python equivalent (flat environment, one version per package).
+
+#### ! Wild
+npm's culture of small, single-purpose packages makes transitive closure the dominant factor in tree size: a typical application's node_modules holds hundreds of packages, of which only a handful are direct dependencies. This is why the tree-inspection commands in the Check matter — most of what you run, you never chose.

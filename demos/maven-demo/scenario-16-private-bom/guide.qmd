@@ -51,3 +51,4 @@ Adding a repository makes its artifacts *available*, but it is the combination o
 
 #### ! Related
 * [P11](../../python-demo/scenario-11-private-index/guide.qmd) - The Python private-index story — where mixing indexes carelessly enables the dependency-confusion attack.
+* [N11](../../node-demo/scenario-11-private-registry/guide.qmd) - The Node original: dependency confusion, and scopes as the structural fix.

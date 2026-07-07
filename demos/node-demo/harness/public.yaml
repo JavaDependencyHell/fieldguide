@@ -1,0 +1,12 @@
+# Verdaccio config — PUBLIC demo registry (impostor lives here too)
+# Storage is repo-root target/node-repo (relative to this file).
+storage: ../../../target/node-repo
+listen: 127.0.0.1:4873
+web:
+  enable: false
+uplinks: {}
+packages:
+  '**':
+    access: $all
+    publish: $all
+log: { type: stdout, level: error }

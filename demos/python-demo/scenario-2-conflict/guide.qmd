@@ -69,6 +69,7 @@ On the JVM a version conflict is resolved; in Python it can be *fatal*. One envi
 *   [P3](../scenario-3-resolver/guide.qmd) - How the resolver searches for a version set that *does* satisfy everyone.
 *   [P6](../scenario-6-constraints/guide.qmd) - Steering resolution with a constraints file.
 *   [MS2](../../maven-demo/scenario-2-conflict/guide.qmd) - The same diamond on the JVM, where it resolves instead of failing.
+*   [N2](../../node-demo/scenario-2-diamond/guide.qmd) - The same diamond in Node, where both versions install — and [N8](../../node-demo/scenario-8-peers/guide.qmd), where Node reinvents this exact conflict on purpose.
 
 #### ! Wild
 The reason modern pip can take *minutes* on a hard graph is that "is there any satisfying version set?" is a genuine search problem — pip's resolver and uv's PubGrub both backtrack through combinations. Occasionally the honest answer takes real computation: a truly unsatisfiable graph is only declared impossible once the resolver has ruled out every combination — whether by trying them all or, as PubGrub does, by learning conflicts that eliminate whole branches at once.

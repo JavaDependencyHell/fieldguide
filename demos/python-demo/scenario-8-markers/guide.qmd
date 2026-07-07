@@ -60,4 +60,4 @@ A Python requirement can be conditional. The same file resolves to different env
 *   [P10](../scenario-10-venv/guide.qmd) - Environment isolation, the other half of "works on my machine".
 
 #### ! Wild
-Environment markers are why `pywin32` doesn't wreck your Linux CI. A cross-platform library lists it as `pywin32; sys_platform == "win32"`, and every non-Windows install silently skips a dependency that wouldn't even build there. It is one of packaging's quietest successes — invisible precisely because it works.
+Environment markers are why `pywin32` doesn't break your Linux CI: a cross-platform library lists it as `pywin32; sys_platform == "win32"`, and every non-Windows install skips a dependency that wouldn't even build there. When a dependency appears on one platform's lock and not another's, look for a marker before suspecting the resolver.

@@ -1,0 +1,9 @@
+{
+  "name": "n8-peers",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "demo-plugin": "1.0.0",
+    "demo-lib-c": "2.0.0"
+  }
+}

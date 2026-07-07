@@ -61,3 +61,4 @@ Optional dependencies shift the burden of declaration to the consumer.
 #### ! Related
 * [MS7: Scopes](../scenario-7-scopes/guide.qmd) - `provided` scope is similar but semantically different.
 * [P7](../../python-demo/scenario-7-extras-groups/guide.qmd) - Python extras: the optional-dependency analogue, opted into with `pkg[name]`.
+* [N7](../../node-demo/scenario-7-dep-types/guide.qmd) - Node's `optionalDependencies` and friends — the same ground, as package.json fields.

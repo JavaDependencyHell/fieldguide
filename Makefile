@@ -13,7 +13,7 @@ BROCHURE_PDF = $(BUILD_DIR)/brochure.pdf
 US_BROCHURE_PDF = $(US_BUILD_DIR)/brochure.pdf
 FRONT_IMAGE = book/content/front-image.pdf
 
-.PHONY: all init init-python utils book book-html book-pdf us-book sample us-sample brochure us-brochure herodevs-site leanpub leanpub-sample oreilly oreilly-sample verify verify-maven verify-gradle verify-sbt verify-python audit clean help check-quarto check-qpdf force-book force-us-book
+.PHONY: all init init-python init-node utils book book-html book-pdf us-book sample us-sample brochure us-brochure herodevs-site leanpub leanpub-sample oreilly oreilly-sample verify verify-maven verify-gradle verify-sbt verify-python verify-node audit clean help check-quarto check-qpdf force-book force-us-book
 
 # Default target
 all: init book verify
@@ -38,6 +38,8 @@ help:
 	@echo "  verify-sbt     - Run SBT-specific verification"
 	@echo "  init-python    - Build Python demo wheels"
 	@echo "  verify-python  - Run Python-specific verification"
+	@echo "  init-node      - Build Node demo registries (Verdaccio + fixtures)"
+	@echo "  verify-node    - Run Node-specific verification"
 	@echo "  herodevs-site  - Build HeroDevs-branded HTML site"
 	@echo "  leanpub        - Build 6x9 PDF for Leanpub upload"
 	@echo "  leanpub-sample - Generate a Leanpub sample PDF"
@@ -217,6 +219,14 @@ init-python:
 
 verify-python: init-python
 	cd demos/python-demo && ./verify.sh
+
+# Node targets. Built 2026-07-07; all 12 scenarios verified by execution
+# across npm / pnpm / Yarn 4 (see demos/node-demo/verify.sh).
+init-node:
+	./install_node_deps.sh
+
+verify-node: init-node
+	cd demos/node-demo && ./verify.sh
 
 # HeroDevs branded site
 herodevs-site: check-quarto

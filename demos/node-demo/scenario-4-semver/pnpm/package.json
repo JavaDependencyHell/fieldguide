@@ -1,0 +1,9 @@
+{
+  "name": "n4-semver-pnpm",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "demo-lib-c": "^1.0.0"
+  },
+  "packageManager": "pnpm@11.10.0"
+}

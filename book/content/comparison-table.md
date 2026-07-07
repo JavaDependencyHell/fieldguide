@@ -20,7 +20,7 @@ Python resolves into a single environment that holds **one version of each packa
 
 | Feature | pip | Poetry | uv |
 | :--- | :--- | :--- | :--- |
-| **Conflict Resolution** | Backtracking (21.0+); unsatisfiable graph *fails* | Backtracking; fails on conflict | PubGrub; fails on conflict |
+| **Conflict Resolution** | Backtracking (default since 20.3); unsatisfiable graph *fails* | Backtracking; fails on conflict | PubGrub; fails on conflict |
 | **Version Conflict Outcome** | Hard error — no version can be evicted | Hard error | Hard error |
 | **Excluding a Transitive** | Not possible | Not possible | Not possible (only `override-dependencies`, which *replaces* a version) |
 | **Forcing / Overriding a Version** | Constraints file (`-c`) | Pin in `pyproject.toml` | `override-dependencies` / `constraint-dependencies` |
@@ -32,3 +32,22 @@ Python resolves into a single environment that holds **one version of each packa
 | **Conditional Dependencies** | Environment markers (PEP 508) | Markers | Markers |
 | **Environment Isolation** | Manual `venv` | Managed `.venv` | Managed `.venv` |
 | **Dependency Confusion Guard** | Unsafe: `--extra-index-url` merges, highest version wins | Source priority | `index-strategy = first-index` (default) |
+
+## Node (npm / pnpm / Yarn 4)
+
+Node resolves into a **tree** that can hold *multiple versions of the same package* — the JVM picks a winner, Python demands agreement, Node duplicates. Conflicts mostly dissolve; the costs move to tree size, phantom imports, and singletons (peers). This table stands on its own for the same reason Python's does.
+
+| Feature | npm | pnpm | Yarn 4 |
+| :--- | :--- | :--- | :--- |
+| **Conflict Resolution** | Duplicate & nest — both versions install | Duplicate (content-addressed store) | Duplicate (PnP map or node_modules) |
+| **Version Conflict Outcome** | No conflict — per-consumer copies | Same | Same |
+| **Where Conflict Returns** | Peer dependencies: hard `ERESOLVE` failure (npm 7+) | Peers: installs + warning (`strictPeerDependencies` to fail) | Peers: installs + `YN0060` warning |
+| **Layout / Hoisting** | Hoisted, history-dependent (phantoms possible) | Strict symlinks — no hoisting, no phantoms | PnP (default): no node_modules, phantoms impossible; `nodeLinker: node-modules` hoists like npm |
+| **Forcing / Overriding a Version** | `overrides` (npm 8.3+) | `overrides` in `pnpm-workspace.yaml` (11+) | `resolutions` |
+| **Version Ranges** | Semver; `^` written by default | Same | Same |
+| **Lock File** | `package-lock.json` by default (npm 5+); `npm ci` obeys it | `pnpm-lock.yaml`; `--frozen-lockfile` | `yarn.lock`; `--immutable` (CI default) |
+| **Dev / Prod Separation** | `devDependencies` + `--omit=dev` | `--prod` | `yarn workspaces focus --production` |
+| **Workspaces** | Native (npm 7+), by-name matching | `pnpm-workspace.yaml` + `workspace:` protocol | Native + `workspace:` protocol |
+| **Dependency Confusion Guard** | Scopes: `@org:registry=` routing (one registry per name — no version merge) | Same `.npmrc` scope routing | `npmScopes` (age-gate is per-scope) |
+| **Release-Age Cooldown** | — | `minimumReleaseAge` (default on, 11+) | `npmMinimalAgeGate` (default on, 4.17) |
+| **Built-in Audit** | `npm audit` (npm 6+) | `pnpm audit` | `yarn npm audit` |
