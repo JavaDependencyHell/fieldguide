@@ -1,17 +1,17 @@
 ---
 title: "Customizing Metadata"
-tagline: "Or what to Do When the Upstream POM is Wrong"
+tagline: "Or what to do when the upstream POM is wrong"
 type: scenario
 tool: sbt
 ---
 
 #### ! Scenario
 
-*Or what to Do When the Upstream POM is Wrong*
-This scenario demonstrates how to handle incorrect metadata in SBT.
+*Or what to do when the upstream POM is wrong*
+This scenario demonstrates how to correct a library's declared dependencies from your own build when the published metadata is wrong.
 
 ::: {.callout-note title="Tool Versions"}
-This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). Under the older Ivy engine (sbt < 1.3, or `useCoursier := false`) resolution edge cases differ and settings like `conflictManager` behave differently. `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin.
+This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). On sbt 1.x the older Ivy engine can still be selected with `useCoursier := false`; under Ivy, resolution edge cases differ and Ivy-only settings such as `conflictManager` apply (Coursier ignores them). `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin. sbt 2.0 (June 2026) keeps these resolution rules, removes the Ivy opt-out, adds native BOM import, and turns Test-configuration eviction warnings into errors; the demos here target sbt 1.x.
 :::
 
 #### ! Example
@@ -20,11 +20,10 @@ This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver
 %%| fig-width: 4.4
 graph LR
     Root[Project Root] --> LibA[lib-a:1.0.0]
-    LibA -.-> LibB[lib-b:1.0.0]
-    Root -- override --> LibB_Fixed[lib-b:2.0.0]
+    LibA -.->|excluded| LibB1[lib-b:1.0.0]
+    Root --> LibB2[lib-b:2.0.0]
+    LibB2 --> LibC2[lib-c:2.0.0]
 ```
-
-#### ! Example
 
 ```{.scala include="build.sbt" snippet="s12-deps"}
 ```
@@ -33,34 +32,42 @@ graph LR
 "The library author made a mistake in their POM. I should be able to patch it locally."
 
 #### ! Actual
-Resolves `lib-b:2.0.0` (if manually fixed).
-
-#### ! Reality
-`lib-b-2.0.0.jar`.
+You can, but not by editing the metadata. sbt has no metadata-rules API; the correction is expressed as an exclusion plus a direct declaration. The classpath ends up with `lib-a:1.0.0`, `lib-b:2.0.0` and `lib-c:2.0.0`, and `lib-b:1.0.0` never appears.
 
 #### ! Why
-Unlike Gradle, which has a clean Component Metadata Rules API, SBT/Ivy does not provide a first-class mechanism for patching dependency metadata on the fly. When upstream metadata is incorrect (e.g., a library declares a dependency it doesn't actually need, or declares the wrong version), SBT developers must work around it using combinations of exclusions and explicit dependency declarations.
+Gradle lets you rewrite a module's metadata as it is read (component metadata rules, GS12). Maven and sbt do not; they take the POM as published. In sbt the workaround composes two existing mechanisms: `.exclude` removes the declaration you disagree with (SB5), and a direct `libraryDependencies` entry supplies the one you want. If only the *version* is wrong, `dependencyOverrides` (SB6) is simpler and does not need the exclusion.
 
 #### ! Fix
-The standard pattern is: exclude the incorrectly declared dependency, then add the correct one explicitly.
-```scala
-libraryDependencies += "com.demo" % "lib-a" % "1.0.0" exclude("com.demo", "lib-b")
-libraryDependencies += "com.demo" % "lib-b" % "2.0.0"
-```
+*   **Wrong dependency:** exclude it and declare the right one, as shown.
+*   **Wrong version only:** `dependencyOverrides += "com.demo" % "lib-b" % "2.0.0"`.
+*   **Upstream:** file the issue against the library. Every local workaround is debt until the published POM is fixed.
+
+#### ! Risk
+* LOW A commented exclude-and-add pair with a link to the upstream issue.
+* MEDIUM The workaround outliving the upstream fix, so the build keeps overriding a POM that is now correct.
+* HIGH Patching a dependency's declared version to something the library was never built against; `NoSuchMethodError` at runtime.
 
 #### ! Control
-*   **`dependencyOverrides`:** If the issue is just a wrong version, `dependencyOverrides` is cleaner than exclude+add.
-*   **Custom Ivy Settings:** For advanced users, custom Ivy settings can manipulate metadata, but this is complex and rarely used.
+Keep metadata workarounds together, each with the upstream issue number. When the library ships a corrected POM, remove the workaround in the same pull request that upgrades it.
 
-#### ! Look
-*   **Runtime Errors:** `NoSuchMethodError` often indicates that the metadata pulled in an incompatible version.
-*   **Bloated Classpath:** If a library declares unnecessary dependencies (e.g., test dependencies as compile scope), your classpath will be larger than necessary.
+#### ! Check
+**Fast check:** `sbt dependencyTree`
+
+**What to look for:** `lib-a:1.0.0` with no `lib-b` beneath it, and `lib-b:2.0.0` → `lib-c:2.0.0` as a direct branch from the root.
+
+**Conclusion:** The exclude-and-add pair rewrites the effective graph without touching the published POM.
 
 #### ! Scales
-In large projects, metadata workarounds accumulate and become hard to track. Document each workaround with a comment explaining why it exists and linking to the upstream issue if one exists. When the upstream library releases a fix, clean up the workaround.
+In large projects metadata workarounds accumulate and become hard to track. Document each one with the reason and the upstream issue; when the library releases a fix, clean up the workaround.
 
 #### ! Takeaway
-SBT lacks a direct metadata patching API; use exclusions and overrides instead.
+sbt cannot edit metadata on the way in. Exclude the wrong declaration and add the right one, and record why.
 
-#### Related Scenarios
-*   [Scenario 5: Exclusions](../scenario-5-exclusions/guide.qmd)
+#### ! Related
+*   [SB5](../scenario-5-exclusions/guide.qmd) - The exclusion half of the workaround.
+*   [SB6](../scenario-6-forcing/guide.qmd) - The override to use when only the version is wrong.
+*   [MS12](../../maven-demo/scenario-12-metadata/guide.qmd) / [GS12](../../gradle-demo/scenario-12-metadata/guide.qmd) - Maven's enforcer checks and Gradle's component metadata rules.
+
+#### ! Wild
+
+The classic wrong POM is `log4j:log4j:1.2.15`, which declared dependencies on `javax.jms:jms`, `com.sun.jdmk:jmxtools` and `com.sun.jmx:jmxri`, artifacts that were never published to Maven Central. Every build that pulled in log4j 1.2.15 transitively failed to resolve until it excluded those three, which is how a generation of Java and Scala developers learned the exclude-and-add pattern. The fix shipped in 1.2.16 with the dependencies marked optional; the exclusions lived on in build files for years afterwards.

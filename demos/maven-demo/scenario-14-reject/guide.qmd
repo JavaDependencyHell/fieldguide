@@ -1,14 +1,14 @@
 ---
 title: "Rejecting a Version"
-tagline: "Or what to Do When a Specific Version Must Never Appear"
+tagline: "Or what to do when a specific version must never appear"
 type: scenario
 tool: maven
 ---
 
-#### ! Scenario What to Do When a Specific Version Must Never Appear
+#### ! Scenario
 
-This scenario demonstrates how to prevent a specific version of a dependency from appearing anywhere in your build. Maven has no native "reject" keyword, but the Maven Enforcer Plugin provides an effective workaround.
-
+*Or what to do when a specific version must never appear*
+This scenario demonstrates how to keep one specific version of a dependency out of the build, wherever it comes from. Maven has no "reject" keyword; the Maven Enforcer Plugin's `bannedDependencies` rule is the working substitute. Here `lib-b:2.0.0` is the version we have decided is unacceptable, and `lib-a:2.0.0` drags it in.
 
 ::: {.callout-note title="Tool Versions"}
 This scenario was tested with **Maven 3.9**; the behaviour shown applies to Maven 3.x.
@@ -17,42 +17,73 @@ maven-enforcer-plugin 3.5.0 requires **Maven 3.6.3+**.
 
 #### ! Example
 
+```{mermaid}
+%%| fig-width: 4.4
+graph LR
+    Root[Project Root] --> LibA[lib-a:2.0.0]
+    LibA --> LibB2["lib-b:2.0.0 (banned)"]
+    Root -- enforcer: ban --> LibB2
+```
+
+```{.xml include="pom.xml" snippet="s14-deps"}
+```
+
 ```{.xml include="pom.xml" snippet="s14-enforcer"}
 ```
 
 #### ! Expect
-Prevent a specific version (e.g., due to bugs or CVEs) from appearing anywhere in the dependency graph.
+The resolver sees that `2.0.0` is rejected and picks another version of `lib-b`.
+
+#### ! Actual
+Resolution picks `lib-b:2.0.0` exactly as before; the ban does not take part in choosing versions. The build then fails at `validate`:
+
+```
+com.demo:lib-a:jar:2.0.0
+   com.demo:lib-b:jar:2.0.0 <--- banned via the exclude/include list
+```
 
 #### ! Why
-Maven lacks native resolution-time "reject" constraints. The Maven Enforcer Plugin fills this gap by performing post-resolution checks during the `validate` phase, failing the build if a banned version is detected. This differs from Gradle's resolution-time rejection, which is why the same graph behaves differently across tools.
+Maven has no resolution-time rejection. The Enforcer Plugin runs *after* the graph is resolved, inspects it, and fails the build if a banned coordinate is present. That makes the rule path-independent (it does not matter who pulled the version in) but also means it cannot steer resolution; it only reports. Gradle's `reject` takes part in version selection ([GS14](../../gradle-demo/scenario-14-reject/guide.qmd)).
 
-### ! Fix
+#### ! Fix
 
-- **`bannedDependencies` rule:** As shown above. Supports wildcards (`com.demo:lib-a:[2.0.0,2.1.0)` to ban a range) and allows exceptions via `<includes>`.
-- **`<dependencyManagement>` to force a safe version:** Pin `lib-a` to `1.9.0` (or `2.0.1`) so that the banned version is never resolved in the first place.
-- **Combining both:** Use `<dependencyManagement>` to fix the version and the Enforcer Plugin as a safety net to ensure it stays fixed.
+```{.xml include="pom.xml" snippet="s14-fix"}
+```
 
-### ! Control
+*   **Steer resolution to an acceptable version** with `<dependencyManagement>` (`mvn validate -Pfixed` here manages `lib-b` to `1.0.0`). The ban then never trips.
+*   **Keep the ban** as the safety net that fails the build the day a new transitive brings `2.0.0` back.
+*   **Ban a range, not a point**, when a whole series is bad: `com.demo:lib-b:[2.0.0,2.1.0)` is a version range in the `exclude`.
 
-- Always combine the Enforcer Plugin with a version fix. The plugin detects violations; `<dependencyManagement>` prevents them.
-- For security policies, the `requireUpperBoundDeps` rule catches accidental downgrades that might reintroduce a vulnerable version.
-- For organisation-wide policies, define Enforcer rules in a parent POM so all projects inherit them.
+#### ! Risk
+* LOW Banning a version with a published replacement and managing the graph to the replacement.
+* MEDIUM Managing a library *down* past what a dependency asked for, as this demo does. `lib-a:2.0.0` was built against `lib-b:2.0.0`; test it against `1.0.0` before shipping.
+* HIGH Banning without steering. The build fails on every machine with no path to green until someone finds the transitive and manages it.
 
-### ! Look
+#### ! Control
+*   Always combine the ban with a version fix. The plugin detects; `<dependencyManagement>` prevents.
+*   For organisation-wide policy, put the enforcer execution in a parent POM so every module inherits it.
+*   Pair with `requireUpperBoundDeps` ([MS12](../scenario-12-metadata/guide.qmd)) so the fix itself cannot silently downgrade something else.
 
-- Build failures from the Enforcer Plugin during the `validate` phase: This is the plugin doing its job. Read the error message to identify which dependency path is pulling in the banned version.
-- If you ban a version but don't provide an alternative (via `<dependencyManagement>`), a transitive dependency may still pull it in and the build will fail without a clear path to resolution.
+#### ! Check
+**Fast check:** `mvn validate`, then `mvn validate -Pfixed`
 
-### ! Scales
+**What to look for:** The first run fails naming `com.demo:lib-b:jar:2.0.0` and the path through `lib-a`; the second succeeds and `mvn dependency:tree -Pfixed` shows `lib-b:jar:1.0.0`.
 
-The Enforcer Plugin is widely used in enterprise environments for security and compliance. Organisations maintain parent POMs with banned-dependency lists that are updated when new CVEs are published. This is particularly effective when combined with automated dependency scanning tools (e.g., Dependabot, Snyk) that identify vulnerable versions.
+**Conclusion:** The enforcer refuses the banned version; `<dependencyManagement>` is what actually removes it.
 
-### ! Takeaway
+#### ! Scales
+The Enforcer Plugin is widely used in enterprise environments for security and compliance. Organisations maintain parent POMs with banned-dependency lists updated as CVEs are published, usually fed by scanning tools (Dependabot, Snyk, OWASP Dependency-Check) that identify the versions to ban.
 
-Maven cannot reject versions during resolution, but the Enforcer Plugin's `bannedDependencies` rule provides an effective post-resolution check. Always pair it with a `<dependencyManagement>` fix.
+#### ! Takeaway
+Maven cannot reject a version during resolution. `bannedDependencies` turns the presence of a bad version into a build failure; `<dependencyManagement>` is the part that makes it go away.
 
-### ! Related
+#### ! Related
+*   [MS6](../scenario-6-forcing/guide.qmd) - How to redirect resolution to a safe version.
+*   [MS18](../scenario-18-banning/guide.qmd) - The same rule pointed at a whole artifact rather than one version.
+*   [MS5](../scenario-5-exclusions/guide.qmd) - Removing a specific artifact from a specific path.
+*   [GS14](../../gradle-demo/scenario-14-reject/guide.qmd) - Gradle's resolution-time `reject`.
+*   [SB14](../../sbt-demo/scenario-14-reject/guide.qmd) - sbt, which also has no native reject.
+*   [P4](../../python-demo/scenario-4-specifiers/guide.qmd) - Python's native `!=` operator: rejection without a plugin.
 
-* [MS6: Forcing a Version](../scenario-6-forcing/guide.qmd) — How to redirect resolution to a safe version.
-* [MS5: Exclusions](../scenario-5-exclusions/guide.qmd) — Removing a specific version from a specific path.
-* [P4](../../python-demo/scenario-4-specifiers/guide.qmd) — Python's native `!=` operator: rejection without a plugin.
+#### ! Wild
+After Log4Shell, the most copied enforcer rule in corporate parent POMs banned `org.apache.logging.log4j:log4j-core:[2.0,2.17.1)`: every 2.x release before the fixed ones, as a range. It did nothing to fix any build on its own. What it did was make every module that still resolved a vulnerable version fail loudly in CI, with the path printed, which turned a company-wide audit into a list of red builds that each owning team could fix with one managed version.

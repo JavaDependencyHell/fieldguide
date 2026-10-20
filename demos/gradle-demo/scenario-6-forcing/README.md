@@ -1,18 +1,17 @@
-### Gradle Scenario 6: Strict Constraints / Forced Versions
+### Gradle Scenario 6: Forcing a Version
 
-This scenario demonstrates Gradle's rich version constraints, specifically the `strictly` keyword.
+This scenario demonstrates forcing a transitive dependency to a version nothing in the graph requested.
 
 #### What's happening:
-1.  We depend on `lib-a:2.0.0`, which transitively depends on `lib-c:2.0.0`.
-2.  We want to force the project to use version **1.0.0** of `lib-c` regardless of what other libraries request.
-3.  We use a `constraints` block with the `strictly` keyword.
-4.  The `strictly` constraint is one of Gradle's "Rich Version" features. It tells Gradle: "Use this version exactly. Do not upgrade even if another dependency requests a higher version."
+1.  We depend on `lib-a:1.0.0`, which transitively brings `lib-b:1.0.0` and `lib-c:1.0.0`.
+2.  `configurations.all { resolutionStrategy { force 'com.demo:lib-c:2.0.0' } }` replaces every request for `lib-c` with `2.0.0`.
+3.  The modern equivalent is a `strictly` constraint in a `constraints` block; it is scoped to the dependency and published with your module metadata.
 
 #### How to verify:
-Run the following command in this directory:
 ```bash
-./gradlew dependencies --configuration compileClasspath
+gradle dependencies --configuration compileClasspath
+gradle dependencyInsight --dependency lib-c --configuration compileClasspath
 ```
 
 #### Expected Output:
-In the dependency tree, you will see `com.demo:lib-c:2.0.0 -> 1.0.0`. This shows that the transitive version 2.0.0 was downgraded to 1.0.0 because of the strict constraint. You will also see the reason: `forcing a downgrade to a known stable version`.
+The tree shows `com.demo:lib-c:1.0.0 -> 2.0.0` under `lib-b`. The insight report shows `com.demo:lib-c:2.0.0 (forced)`. Comment out the `force` line and `lib-c` returns to `1.0.0`.

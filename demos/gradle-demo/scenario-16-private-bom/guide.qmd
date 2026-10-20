@@ -1,19 +1,19 @@
 ---
 title: "Private Repository & BOM Override"
-tagline: "Or what to Do When You Need Enterprise Support"
+tagline: "Or what to do when you need enterprise support"
 type: scenario
 tool: gradle
 ---
 
 #### ! Scenario
 
-*Or what to Do When You Need Enterprise Support*
-This scenario shows how to incorporate a private, third-party repository that provides patched or extended-support versions of dependencies. It specifically demonstrates how a third-party Bill of Materials (BOM) can be used to override a publicly available, EOL (End-of-Life) dependency with a patched version from the private repository.
-This is a common enterprise pattern when a vendor provides long-term support for a library (like Spring Boot) after its official EOL date.
+*Or what to do when you need enterprise support*
+This scenario shows how to consume a private, third-party repository that provides patched or extended-support versions of public dependencies, using the vendor's Bill of Materials to override an end-of-life public release. It is a common enterprise pattern when a vendor supports a library (such as Spring Boot 2.5) after its official end of life.
 
 ::: {.callout-note title="Tool Versions"}
 This scenario was tested with **Gradle 8.14**.
 `platform()` and `enforcedPlatform()` require **Gradle 5.0+**.
+Re-verified on Gradle 9.3 (October 2026): Gradle 9 raised the runtime floor to JDK 17 and changed defaults such as the configuration cache, not the resolution rules shown here.
 :::
 
 #### ! Example
@@ -22,29 +22,64 @@ This scenario was tested with **Gradle 8.14**.
 %%| fig-width: 4.4
 graph LR
     subgraph Public Repos
-        SpringBoot["org.springframework.boot:spring-boot-starter:2.5.14 (EOL)"]
+        SpringBoot["spring-boot-starter:2.5.14 (EOL)"]
     end
     subgraph Private Repo
-        PatchedStarter["org.springframework.boot:spring-boot-starter:2.5.14.ACME"]
-        VendorBOM["com.thirdparty.springboot:patched-bom:1.0.0"]
-        VendorBOM -. manages .-> PatchedStarter
+        VendorBOM["patched-bom:1.0.0"]
+        PatchedStarter["spring-boot-starter:2.5.14.ACME"]
+        VendorBOM -. constrains .-> PatchedStarter
     end
-    Root[Project Root] -- imports --> VendorBOM
-    Root --> SpringBoot_Declared("spring-boot-starter (version from BOM)")
-
+    Root[Project Root] -- platform --> VendorBOM
+    Root --> Declared["spring-boot-starter (no version)"]
 ```
 
-#### ! Example
-The `build.gradle` file first adds the private repository. Then, it imports the vendor's BOM using the `platform()` function. The actual dependency is declared without a version, letting the imported BOM control which version is used.
+The build adds the private repository, imports the vendor's BOM with `platform()`, and declares the dependency without a version so the BOM supplies it:
 
 ```{.groovy include="build.gradle" snippet="repo-and-deps"}
 ```
 
 #### ! Expect
-A private repository combined with a `platform()` (BOM) allows seamless overrides of public, EOL dependencies with patched vendor versions.
+Adding the private repository is enough: once Gradle can see `2.5.14.ACME`, it uses it.
+
+#### ! Actual
+Adding the repository makes the artifact *available*; nothing asks for it until the BOM does. With the platform imported, `spring-boot-starter` resolves to `2.5.14.ACME`. The repository supplies the file; the BOM supplies the version.
 
 #### ! Why
-Private repositories provide custom artifacts, and the `platform()` constraint supplies the patched version to resolution. Note that a plain `platform()` *recommends* rather than enforces: a transitive dependency requesting a newer public release would out-vote the patch under highest-version resolution. Use `enforcedPlatform()` (or `strictly`) when the patched version must win unconditionally.
+Gradle searches repositories in the order declared, but it only looks for the versions the graph requests. A plain `platform()` contributes the vendor's versions as constraints, which then compete in ordinary highest-wins resolution ([GS3](../scenario-3-mgmt/guide.qmd), [GS4](../scenario-4-override/guide.qmd)). Here nothing else requests `spring-boot-starter`, so the BOM's constraint is the only candidate and `2.5.14.ACME` is selected. A transitive dependency requesting a newer public release (`2.6.0`, say) would out-vote the patch; when the vendor version must win unconditionally, import with `enforcedPlatform()` or add a `strictly` constraint.
+
+#### ! Fix
+*   **Vendor BOM via `platform()`** (shown above) when the vendor's versions are recommendations your other dependencies are unlikely to contradict.
+*   **`enforcedPlatform()`** when the patched versions must win over anything else in the graph.
+*   **Direct declaration** of the patched version for a one-off ([GS17](../scenario-17-private-patch/guide.qmd)).
+
+#### ! Risk
+* LOW A vendor BOM that tracks the public one and adds patched versions on top; most teams can swap it in with no other change.
+* MEDIUM Mixing the vendor BOM with a public framework BOM that still lists the EOL versions; which wins depends on the version strings, not on intent.
+* HIGH A private repository declared *before* the public one with no content filtering, so every request for every library is first sent to the vendor: slow at best, and a dependency-confusion surface at worst.
+
+#### ! Control
+*   **Filter the private repository** to the groups it actually serves (`content { includeGroup 'com.thirdparty.springboot'; includeGroup 'org.springframework.boot' }`) so other lookups never reach it.
+*   **Version suffixes make the override visible:** `2.5.14.ACME` sorts above `2.5.14` and announces itself in every dependency report.
+
+#### ! Check
+**Fast check:** `gradle dependencies --configuration compileClasspath` (run `bash ../../../install_private_repo.sh` once first, or `install_deps.sh`, which calls it)
+
+**What to look for:** `com.thirdparty.springboot:patched-bom:1.0.0` listed as a platform, then `org.springframework.boot:spring-boot-starter -> 2.5.14.ACME`.
+
+**Conclusion:** The private repository supplied the artifact and the BOM supplied the version.
+
+#### ! Scales
+Extended-support programmes exist precisely because large organisations cannot migrate every application off an EOL framework on the vendor's schedule. A vendor BOM lets a platform team adopt the patched line once and roll it out to hundreds of services through the existing platform mechanism, instead of editing each build. The same mechanism carries the risk: a BOM that quietly pins fifty libraries needs the same review as fifty direct declarations.
 
 #### ! Takeaway
-Adding a repository makes its artifacts *available*, but it is the combination of the repository and a version control mechanism (like a BOM imported with `platform()`) that allows you to safely override public dependencies with private, patched versions.
+A repository makes artifacts available; a BOM makes them selected. Private patches need both, and `enforcedPlatform()` when the patch must beat whatever else the graph requests.
+
+#### ! Related
+*   [GS17](../scenario-17-private-patch/guide.qmd) - The same override as a direct declaration.
+*   [GS3](../scenario-3-mgmt/guide.qmd) / [GS4](../scenario-4-override/guide.qmd) - How platform constraints compete.
+*   [MS16](../../maven-demo/scenario-16-private-bom/guide.qmd) / [SB16](../../sbt-demo/scenario-16-private-bom/guide.qmd) - The same vendor BOM in Maven and emulated in sbt.
+*   [P11](../../python-demo/scenario-11-private-index/guide.qmd) / [N11](../../node-demo/scenario-11-private-registry/guide.qmd) - Private indexes and registries in Python and Node, and the dependency-confusion risk that comes with them.
+
+#### ! Wild
+
+Spring Boot 2.5 reached the end of open-source support in 2022, and Boot 2.x as a whole in 2023, while a great many production systems still run on them. Commercial extended-support offerings (from the framework's own vendor and from third parties such as HeroDevs) deliver patched builds of the EOL line under a private repository, typically with a BOM so consumers change one line. The `.ACME` suffix in this demo stands in for the version qualifiers those programmes use to keep their builds distinguishable from the public ones they replace.

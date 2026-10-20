@@ -1,14 +1,14 @@
 ---
 title: "Feature Variants"
-tagline: "Or what to Do When a Library Has Multiple Flavours"
+tagline: "Or what to do when a library has multiple flavours"
 type: scenario
 tool: maven
 ---
 
-#### ! Scenario What to Do When a Library Has Multiple Flavours
+#### ! Scenario
 
-This scenario demonstrates how Maven handles (and cannot handle) the concept of library variants—where a single library publishes multiple artifacts for different contexts (e.g., Java 8 vs Java 11 builds, debug vs release, different database drivers).
-
+*Or what to do when a library has multiple flavours*
+This scenario demonstrates how Maven handles (and cannot handle) library variants: a single library publishing multiple artifacts for different contexts, such as Java 8 vs Java 11 builds, native code per operating system, or different database drivers.
 
 ::: {.callout-note title="Tool Versions"}
 This scenario was tested with **Maven 3.9**; the behaviour shown applies to Maven 3.x.
@@ -16,39 +16,57 @@ This scenario was tested with **Maven 3.9**; the behaviour shown applies to Mave
 
 #### ! Example
 
+```{mermaid}
+%%| fig-width: 4.4
+graph LR
+    Root[Project Root] --> LibA["lib-a:1.0.0 (classifier jdk11)"]
+    LibA --> LibB[lib-b:1.0.0]
+    Repo[("repository: lib-a-1.0.0.jar, lib-a-1.0.0-jdk11.jar")] -.-> LibA
+```
+
 ```{.xml include="pom.xml" snippet="s13-deps"}
 ```
 
 #### ! Expect
-Classifiers like `jdk11` enable the tool to select the correct variant of a library.
+The build tool notices we are compiling for Java 11 and picks the Java 11 flavour of `lib-a` by itself.
+
+#### ! Actual
+It picks whatever classifier we wrote. `mvn dependency:tree` shows `com.demo:lib-a:jar:jdk11:1.0.0`; delete the `<classifier>` and it shows the plain jar. Nothing about the build's own JDK, operating system or architecture influences the choice.
 
 #### ! Why
-Maven treats classifiers as opaque strings. It lacks attribute-based selection (like Gradle) or capabilities to detect competing implementations (e.g., `log4j-core` vs `logback-classic`). This limitation is why the same graph behaves differently across tools.
+Maven treats a classifier as an opaque suffix on the file name. It has no notion of attributes ("this artifact targets Java 11") or capabilities ("these two artifacts provide the same API"), so it cannot match a variant to the consumer's needs or detect that two competing implementations are both on the classpath. Gradle's variant model does both ([GS13](../../gradle-demo/scenario-13-variants/guide.qmd)); in Maven the knowledge lives in the developer's head and in documentation.
 
-### ! Fix
+#### ! Fix
+*   **Name the classifier explicitly**, as above. Fragile, because nothing adapts when the build environment changes.
+*   **Switch classifiers with a profile:** a `jdk11` profile that sets a `lib.classifier` property, activated by `<jdk>` or an environment variable.
+*   **Separate artifact IDs:** many library authors sidestep classifiers by publishing `lib-a-jdk8` and `lib-a-jdk11` as distinct artifacts. Verbose but unambiguous.
+*   **Multi-release JARs** (JEP 238) let one jar carry per-Java-version classes, which removes the need for a JDK variant altogether; they do not help with native code or driver flavours.
 
-- **Manual classifier selection:** Developers must know which classifier to use and hard-code it. This is fragile because it does not adapt to changes in the build environment.
-- **Maven profiles:** Teams sometimes use profiles to switch classifiers based on environment variables or build properties. For example, activating a "jdk11" profile that sets classifier properties.
-- **Separate artifact IDs:** Many library authors sidestep classifiers entirely by publishing separate artifacts: `lib-a-jdk8` and `lib-a-jdk11` as different artifactIds. This is verbose but unambiguous.
+#### ! Risk
+* LOW A classifier chosen once, documented, and matched to a build that never changes platform.
+* MEDIUM Native-code classifiers (`linux-x86_64`, `osx-aarch_64`) selected by profile. Works until CI runs on a new architecture.
+* HIGH Two artifacts that implement the same API both on the classpath (two SLF4J bindings, two JSON providers). Maven will not notice; the JVM picks whichever loads first.
 
-### ! Control
+#### ! Control
+If you need automatic variant selection based on context (JDK version, OS, CPU architecture), Maven cannot provide it natively. Use explicit classifiers or separate artifact IDs, and make the choice visible in the POM. For projects where this is a significant pain point, Gradle's variant-aware resolution is the more capable model.
 
-If you need automatic variant selection based on context (JDK version, OS, CPU architecture), Maven cannot provide it natively. The safest approach is to use explicit classifiers or separate artifact IDs. For projects where this limitation is a significant pain point, Gradle's variant-aware resolution is the more capable model.
+#### ! Check
+**Fast check:** `mvn dependency:tree`
 
-### ! LOOK
+**What to look for:** The classifier in the coordinates, `com.demo:lib-a:jar:jdk11:1.0.0`. If a classifier you expect is missing, no profile or property selected it.
 
-- `UnsupportedClassVersionError` at runtime: You may have the wrong JDK variant on the classpath.
-- Duplicate classes from competing implementations: Two libraries providing the same API without Maven detecting the conflict.
-- "Artifact not found" errors when a classifier doesn't exist for a particular version.
+**Conclusion:** Maven resolves exactly the classifier you asked for and never chooses one for you.
 
-### ! Scales
+#### ! Scales
+As platform-specific native code (gRPC, Netty, JavaFX) and modular Java become more common, the gap between Maven's classifier model and Gradle's attribute model widens. Most Maven projects work around it through convention and documentation rather than tooling.
 
-The lack of automatic variant selection is one of Maven's most significant limitations for modern JVM projects. As multi-release JARs, platform-specific native code (e.g., gRPC, Netty), and modular Java become more common, the gap between Maven's classifier model and Gradle's attribute model widens. Most Maven projects work around this through convention and documentation rather than tooling.
+#### ! Takeaway
+Classifiers are Maven's only variant mechanism, and they are opaque strings with no automatic matching. Choose the variant yourself and make the choice visible.
 
-### ! Takeaway
+#### ! Related
+*   [MS7](../scenario-7-scopes/guide.qmd) - Scopes, Maven's other mechanism for controlling which artifacts reach which classpaths.
+*   [GS13](../../gradle-demo/scenario-13-variants/guide.qmd) - Gradle's attribute-based variant selection.
+*   [SB13](../../sbt-demo/scenario-13-variants/guide.qmd) - sbt, which inherits Maven's classifier model.
 
-Maven uses classifiers for variants, but they are opaque strings with no automatic matching. The build tool cannot select variants based on context. Use explicit classifiers or separate artifact IDs.
-
-### ! Related
-
-* [MS7: Scopes](../scenario-7-scopes/guide.qmd) — Scopes are Maven's other mechanism for controlling which artifacts reach which classpaths.
+#### ! Wild
+Netty ships its native transports as classified artifacts: `netty-transport-native-epoll` with classifier `linux-x86_64` or `linux-aarch_64`, `netty-transport-native-kqueue` with `osx-x86_64` or `osx-aarch_64`. A Maven project has to name the classifier, and the usual pattern is the `os-maven-plugin` extension, which detects the platform at build time and exposes `${os.detected.classifier}` so the POM can say `<classifier>${os.detected.classifier}</classifier>`. That is variant selection reconstructed outside the resolver, which is the most Maven can offer.

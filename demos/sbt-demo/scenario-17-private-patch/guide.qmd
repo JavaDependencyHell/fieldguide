@@ -1,18 +1,17 @@
 ---
 title: "Private Repository & Direct Patch Override"
-tagline: "Or what to Do When You Need a One-Off Patch"
+tagline: "Or what to do when you need a one-off patch"
 type: scenario
 tool: sbt
 ---
 
 #### ! Scenario
 
-*Or what to Do When You Need a One-Off Patch*
-This scenario shows a more direct way to use a private, third-party repository. Instead of using a vendor-supplied BOM, we explicitly request the patched version of a dependency in our project's `libraryDependencies`.
-This approach is simpler than the BOM method but can be more verbose if many dependencies need to be overridden. It is suitable for one-off patches or when a full BOM is not available.
+*Or what to do when you need a one-off patch*
+This scenario shows the direct way to use a private repository: instead of a vendor BOM, the build names the patched version explicitly in `libraryDependencies`. It is simpler than SB16 and suits one-off patches, at the cost of being an ordinary declaration with an ordinary declaration's weaknesses.
 
 ::: {.callout-note title="Tool Versions"}
-This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). Under the older Ivy engine (sbt < 1.3, or `useCoursier := false`) resolution edge cases differ and settings like `conflictManager` behave differently. `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin.
+This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). On sbt 1.x the older Ivy engine can still be selected with `useCoursier := false`; under Ivy, resolution edge cases differ and Ivy-only settings such as `conflictManager` apply (Coursier ignores them). `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin. sbt 2.0 (June 2026) keeps these resolution rules, removes the Ivy opt-out, adds native BOM import, and turns Test-configuration eviction warnings into errors; the demos here target sbt 1.x.
 :::
 
 #### ! Example
@@ -21,29 +20,60 @@ This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver
 %%| fig-width: 4.4
 graph LR
     subgraph Public Repos
-        SpringBoot["org.springframework.boot:spring-boot-starter:2.5.14 (EOL)"]
+        SpringBoot["spring-boot-starter:2.5.14 (EOL)"]
     end
     subgraph Private Repo
-        PatchedStarter["org.springframework.boot:spring-boot-starter:2.5.14.ACME"]
+        PatchedStarter["spring-boot-starter:2.5.14.ACME"]
     end
     Root[Project Root] -- declares --> PatchedStarter
-
 ```
 
-#### ! Example
-The `build.sbt` adds the private repository to the list of `resolvers` and then directly declares a dependency on the specific patched version.
+The `build.sbt` adds the private repository to `resolvers` and declares the patched version directly.
 
 ```{.scala include="build.sbt" snippet="repo-and-deps"}
 ```
 
 #### ! Expect
-Directly declaring a patched version from a private repository ensures the build tool resolves that specific artifact over public alternatives.
+Declaring the patched version from the private repository guarantees the build uses that artifact.
+
+#### ! Actual
+It does, here, because nothing else in the graph asks for `spring-boot-starter`. The declaration is still only a request (SB4): if a transitive dependency asked for a higher public version, highest-wins would evict `2.5.14.ACME` for it, and the patch would silently disappear. Note that `2.5.14.ACME` sorts *above* `2.5.14` for Coursier, which is why it also wins against a transitive request for the plain public release.
 
 #### ! Why
-Adding a private resolver makes the artifact available, and a direct `libraryDependencies` declaration serves as the primary resolution signal. SBT selects the requested version to fulfill the project requirement.
+A private resolver makes the artifact available; a direct declaration asks for it. That is enough while the request is uncontested. The BOM emulation in SB16 uses `dependencyOverrides` precisely so that the patched version is *forced* rather than requested, which is the difference between a one-off patch and a policy.
+
+#### ! Fix
+*   **One-off patch:** the direct declaration, as shown, with a comment naming the CVE or vendor ticket.
+*   **Policy:** promote the pin to `dependencyOverrides` (SB16) so a transitive request cannot evict it.
+*   **Detect drift:** `sbt evicted` after any dependency change, and a CI assertion that `2.5.14.ACME` is on `Runtime / fullClasspath`.
+
+#### ! Risk
+* LOW One patched artifact, commented, in a graph where nothing else requests it.
+* MEDIUM Several patched artifacts declared directly; one of them loses a future eviction and nobody notices.
+* HIGH A patched version string that sorts *below* the public one; the public release wins every conflict and the patch never applies.
+
+#### ! Control
+Keep private-repository pins in one block with the reason for each. Review `sbt evicted` as part of every dependency upgrade so a lost patch shows up in the pull request, not in production.
+
+#### ! Check
+**Fast check:** `sbt "show externalDependencyClasspath"`
+
+**What to look for:** `spring-boot-starter-2.5.14.ACME.jar` on the classpath, from the private repository.
+
+**Conclusion:** A direct declaration is enough while it is uncontested; make it an override when it must hold.
+
+#### ! Scales
+Direct patches do not scale: each is a request that any new dependency can out-vote, and each needs its own comment and its own check. Past two or three, move to the override list of SB16 and manage them as a set.
 
 #### ! Takeaway
-A direct version declaration for a dependency is the most straightforward way to ensure a specific version is used, provided that version is available in one of the configured resolvers.
+A direct declaration from a private repository is the simplest way to use a patched artifact, and the weakest. Use it for one-offs; use `dependencyOverrides` for policy.
 
 #### ! Related
-*   [SB16](../scenario-16-private-bom/guide.qmd) - A more scalable approach using a vendor BOM.
+*   [SB16](../scenario-16-private-bom/guide.qmd) - Forcing the patched version with an emulated BOM.
+*   [SB4](../scenario-4-override/guide.qmd) - Why a direct declaration can lose.
+*   [MS17](../../maven-demo/scenario-17-private-patch/guide.qmd) / [GS17](../../gradle-demo/scenario-17-private-patch/guide.qmd) - The same direct patch in Maven and Gradle.
+*   [P11](../../python-demo/scenario-11-private-index/guide.qmd) / [N11](../../node-demo/scenario-11-private-registry/guide.qmd) - Private indexes and registries in Python and Node.
+
+#### ! Wild
+
+In December 2021, Log4Shell (CVE-2021-44228) sent every JVM team to the same place: pin `log4j-core` to the patched release, that day, ahead of whatever the frameworks shipped. In sbt that meant a direct declaration of `2.17.0` and, for anyone who checked `sbt evicted` the following week, the discovery that a transitive from a logging bridge still asked for `2.14.1` and had been quietly out-voted only because `2.17.0` happened to be higher. The teams that promoted the pin to `dependencyOverrides` did not have to think about it again when `2.17.1` followed.

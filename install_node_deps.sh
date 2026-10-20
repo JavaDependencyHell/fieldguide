@@ -9,8 +9,10 @@
 #   target/node-repo              public registry storage  (served on :4873)
 #   target/node-private-repo      private registry storage (served on :4874)
 #
-# Needs: node >= 22, npm (bundled). Network on first run only (Verdaccio
-# install + Corepack tool downloads); everything after is local.
+# Needs: node >= 22, npm (bundled), and Corepack — bundled with Node 22/24,
+# but NOT with Node 25+ (run `npm install -g corepack` there). Network on
+# first run only (Verdaccio install + Corepack tool downloads); everything
+# after is local.
 
 set -e
 cd "$(dirname "$0")"

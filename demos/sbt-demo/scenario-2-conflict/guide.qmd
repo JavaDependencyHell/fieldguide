@@ -1,18 +1,18 @@
 ---
-title: "Version Conflict Resolution (Latest Wins)"
-tagline: "Or what to Do When it Always Picks the Latest Version"
+title: "Version Conflict Resolution (Highest Wins)"
+tagline: "Or what to do when it always picks the newest version"
 type: scenario
 tool: sbt
 ---
 
 #### ! Scenario
 
-*Or what to Do When it Always Picks the Latest Version*
-This scenario demonstrates SBT's "Latest Wins" strategy for resolving version conflicts.
+*Or what to do when it always picks the newest version*
+This scenario demonstrates sbt's default conflict resolution: when two paths in the graph ask for different versions of the same artifact, the highest version wins, wherever it sits in the tree.
 
 ::: {.callout-note title="Tool Versions"}
-This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). Under the older Ivy engine (sbt < 1.3, or `useCoursier := false`) resolution edge cases differ and settings like `conflictManager` behave differently. `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin.
-Eviction reporting changed in **sbt 1.5**: the blanket eviction warning was replaced by the `evicted` task and versionScheme-aware checks.
+This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). On sbt 1.x the older Ivy engine can still be selected with `useCoursier := false`; under Ivy, resolution edge cases differ and Ivy-only settings such as `conflictManager` apply (Coursier ignores them). `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin. sbt 2.0 (June 2026) keeps these resolution rules, removes the Ivy opt-out, adds native BOM import, and turns Test-configuration eviction warnings into errors; the demos here target sbt 1.x.
+Eviction reporting changed in **sbt 1.5**: the blanket eviction warning was replaced by the `evicted` task and versionScheme-aware checks (see SB14).
 :::
 
 #### ! Example
@@ -25,45 +25,47 @@ graph LR
     LibA --> LibB_Transitive[lib-b:2.0.0]
 ```
 
-#### ! Example
-
 ```{.scala include="build.sbt" snippet="s2-deps"}
 ```
 
 #### ! Expect
-SBT users expect `2.0.0` (latest), whereas Maven users expect `1.0.0` (nearest).
+Maven users expect `lib-b:1.0.0`, because the direct declaration is nearest. Gradle and sbt users expect `2.0.0`, because it is the highest.
 
 #### ! Actual
-Resolves `lib-b:2.0.0` (via `latest-revision` conflict manager).
+`lib-b:2.0.0`. The direct `1.0.0` is evicted; `sbt evicted` reports it.
 
 #### ! Why
-SBT (using Ivy/Coursier) employs the `latest-revision` conflict manager by default. It assumes newer versions are backward-compatible and prioritizes freshness over distance.
+Coursier collects every version requested for an artifact, from any depth, and selects the highest. Distance from the root plays no part. The assumption behind the rule is that newer versions are backward compatible, so taking the newest satisfies everyone. When that assumption fails, the failure is a runtime `NoSuchMethodError` in whichever library wanted the older API.
 
 #### ! Fix
-*   **Explicitly upgrading:** Change the direct dependency to `2.0.0` to match the transitive one.
-*   **Forcing a version:** Using `dependencyOverrides` to force `1.0.0` if `2.0.0` is broken (see SB6).
+*   **Upgrade the direct declaration:** change `lib-b` to `2.0.0` so the graph agrees and nothing is evicted.
+*   **Force the version:** use `dependencyOverrides` to pin `1.0.0` if `2.0.0` is known to be broken (see SB6). Then `lib-a:2.0.0` runs against a version it never asked for; test it.
 
 #### ! Risk
-* LOW Use `dependencyOverrides` to pin a version.
-* MEDIUM Explicitly upgrade the direct dependency to match the transitive one.
-* HIGH Rely on default "latest-revision" without reviewing eviction warnings; this can cause runtime `NoSuchMethodError` if libraries break compatibility.
+* LOW Pinning with `dependencyOverrides` and documenting why.
+* MEDIUM Upgrading the direct dependency without reading the changelog of the version you are jumping to.
+* HIGH Relying on highest-wins without reviewing `sbt evicted`; an incompatible upgrade surfaces as `NoSuchMethodError` in production.
 
 #### ! Check
-**Fast check:** `sbt dependencyTree`
+**Fast check:** `sbt evicted`, or `sbt dependencyTree`
 
-**What to look for:** Evicted nodes (SBT), `omitted for conflict` (Maven), or `(by conflict resolution)` (Gradle).
+**What to look for:** `lib-b:1.0.0 (evicted by: 2.0.0)` in the tree; the `evicted` task names the direct declaration as the loser.
 
-**Conclusion:** SBT selects the newest version found in the graph.
+**Conclusion:** sbt selects the newest version found anywhere in the graph.
 
 #### ! Scales
-"Latest wins" is generally safer for semantic versioning because it ensures bug fixes and security patches (which are usually in newer versions) are included. However, it relies on library authors strictly adhering to semantic versioning. If a library breaks compatibility in a minor release, "latest wins" can break your build.
+Highest-wins is the safer default under strict semantic versioning: bug fixes and security patches live in newer versions, so they are taken automatically. It relies entirely on library authors honouring compatibility. In the Scala ecosystem, where binary compatibility is a first-class concern, sbt 1.5+ pairs this rule with versionScheme-aware eviction errors (SB14) so that an incompatible upgrade can fail the build instead of the runtime.
 
 #### ! Takeaway
-SBT defaults to the latest version found in the graph, regardless of depth.
+sbt picks the highest version in the graph regardless of depth. The direct declaration is a request, not a veto.
 
-#### Related Scenarios
-*   [Scenario 6: Forcing Versions](../scenario-6-forcing/guide.qmd) - How to override this behavior.
+#### ! Related
+*   [SB6](../scenario-6-forcing/guide.qmd) - How to override this behaviour with `dependencyOverrides`.
+*   [SB14](../scenario-14-reject/guide.qmd) - Making an incompatible eviction fail the build.
+*   [MS2](../../maven-demo/scenario-2-conflict/guide.qmd) / [GS2](../../gradle-demo/scenario-2-conflict/guide.qmd) - The same diamond under nearest-wins (Maven) and highest-wins (Gradle).
+*   [P2](../../python-demo/scenario-2-conflict/guide.qmd) - The same diamond in Python, where there is no eviction and the install fails.
+*   [N2](../../node-demo/scenario-2-diamond/guide.qmd) / [N8](../../node-demo/scenario-8-peers/guide.qmd) - The same diamond in Node, where both versions install, and the one place Node demands a single copy.
 
 #### ! Wild
 
-Data engineering teams running Spark or Flink jobs often encounter `NoSuchMethodError` at runtime when a new library pulls in a newer AWS SDK, evicting the version required by the core storage layer (e.g., Hadoop's S3A connector). Since these failures typically only surface during heavy production jobs -- not in unit tests -- many teams use `dependencyOverrides` to pin critical SDKs, preferring build-time friction over runtime crashes.
+Data engineering teams running Spark or Flink jobs often encounter `NoSuchMethodError` at runtime when a new library pulls in a newer AWS SDK, evicting the version required by the core storage layer (for example Hadoop's S3A connector). Because these failures typically surface only during heavy production jobs, not in unit tests, many teams use `dependencyOverrides` to pin critical SDKs, preferring build-time friction over runtime crashes.

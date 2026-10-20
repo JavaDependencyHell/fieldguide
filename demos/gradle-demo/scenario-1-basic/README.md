@@ -10,7 +10,7 @@ This scenario demonstrates how Gradle handles basic transitive dependencies.
 #### How to verify:
 Run the following command in this directory:
 ```bash
-./gradlew dependencies --configuration compileClasspath
+gradle dependencies --configuration compileClasspath
 ```
 
 #### Expected Output:

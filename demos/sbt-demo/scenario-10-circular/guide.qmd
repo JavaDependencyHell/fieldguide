@@ -1,17 +1,17 @@
 ---
 title: "Circular Dependencies"
-tagline: "Or what to Do When A Needs B and B Needs A"
+tagline: "Or what to do when your dependency graph turns into a cycle"
 type: scenario
 tool: sbt
 ---
 
 #### ! Scenario
 
-*Or what to Do When A Needs B and B Needs A*
-This scenario demonstrates how SBT handles circular dependencies between external libraries.
+*Or what to do when your dependency graph turns into a cycle*
+This scenario demonstrates how sbt handles a cycle between external libraries, and how differently it treats a cycle between its own sub-projects.
 
 ::: {.callout-note title="Tool Versions"}
-This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). Under the older Ivy engine (sbt < 1.3, or `useCoursier := false`) resolution edge cases differ and settings like `conflictManager` behave differently. `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin.
+This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). On sbt 1.x the older Ivy engine can still be selected with `useCoursier := false`; under Ivy, resolution edge cases differ and Ivy-only settings such as `conflictManager` apply (Coursier ignores them). `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin. sbt 2.0 (June 2026) keeps these resolution rules, removes the Ivy opt-out, adds native BOM import, and turns Test-configuration eviction warnings into errors; the demos here target sbt 1.x.
 :::
 
 #### ! Example
@@ -24,8 +24,6 @@ graph LR
     LibB --> LibA
 ```
 
-#### ! Example
-
 ```{.scala include="build.sbt" snippet="s10-deps"}
 ```
 
@@ -33,34 +31,39 @@ graph LR
 "This should fail. A depends on B, and B depends on A. It's an infinite loop."
 
 #### ! Actual
-Resolves both `lib-circle-a:1.0.0` and `lib-circle-b:1.0.0`.
-    *   *Reason*: SBT's dependency resolver (Ivy/Coursier) detects the cycle during graph traversal and stops recursing. It includes both libraries in the result.
-
-#### ! Reality
-The classpath contains `lib-circle-a-1.0.0.jar` and `lib-circle-b-1.0.0.jar`.
+Both `lib-circle-a:1.0.0` and `lib-circle-b:1.0.0` resolve and the build succeeds. Coursier notices it has already visited `lib-circle-a`, stops recursing, and says nothing about it.
 
 #### ! Why
-Circular dependencies between *external* libraries (JARs) are technically allowed by the JVM (classes can refer to each other across JAR boundaries). Build tools tolerate them to support legacy libraries that were split poorly. However, circular dependencies between *internal* modules (sub-projects) in a multi-module build are strictly forbidden and will cause a build error.
+A cycle between *external* artifacts is legal for the JVM: classes in two JARs can reference each other freely, because the classpath is flat. Resolvers tolerate it to support legacy libraries that were split badly, and they break the cycle silently; there is no warning, no eviction entry, nothing in `sbt evicted`. A cycle between *sub-projects* in a multi-project build is different: sbt must order project loading and compilation, so it refuses with a "cyclic reference" error.
+
+#### ! Fix
+There is nothing to fix at the build level; resolution works. If the cycle is in code you own, extract the shared types into a third module that both depend on, which removes the cycle at the design level. If it is in a third-party library, note it and move on.
+
+#### ! Risk
+* LOW Consuming two third-party artifacts that reference each other; the JVM does not care.
+* MEDIUM Treating the silence as proof that the graph is healthy; cycles usually mean one artifact was split without a clean boundary.
+* HIGH Introducing a cycle between your own sub-projects and discovering it as a build-load failure after a large refactor.
+
+#### ! Control
+Run `sbt dependencyTree` after adding a dependency and look for an artifact that appears beneath itself. Keep sub-project dependencies acyclic by design; sbt will enforce it for you, but late.
 
 #### ! Check
+**Fast check:** `sbt dependencyTree`
 
-**Fast check (SBT):**
+**What to look for:** `lib-circle-b` beneath `lib-circle-a` with no further expansion, and no warning anywhere in the output.
 
-```bash
-sbt dependencyTree
-```
-
-**What to look for:**
-The tree will show the circular relationship, and SBT may print a warning.
-
-**Conclusion:**
-SBT can resolve circular dependencies between external libraries, but it's a practice to avoid.
+**Conclusion:** sbt resolves external cycles silently and forbids project cycles outright.
 
 #### ! Scales
-Circular dependencies are a design smell. They make the system harder to understand and maintain. In the Scala ecosystem, they sometimes arise when library authors split a project into `api` and `impl` modules but accidentally create cross-dependencies. The fix is usually to extract shared types into a third, independent module.
+Circular dependencies are a design smell. In the Scala ecosystem they sometimes arise when library authors split a project into `api` and `impl` modules and accidentally create cross-dependencies. The fix is to extract shared types into a third, independent module.
 
 #### ! Takeaway
-SBT tolerates circular dependencies between external libraries but forbids them between internal modules.
+sbt tolerates cycles between external libraries silently, and forbids them between sub-projects.
 
 #### ! Related
-N/A
+*   [SB1](../scenario-1-basic/guide.qmd) - The ordinary transitive walk that the cycle short-circuits.
+*   [MS10](../../maven-demo/scenario-10-circular/guide.qmd) / [GS10](../../gradle-demo/scenario-10-circular/guide.qmd) - The same cycle in Maven and Gradle: external cycles silent, project cycles fatal, in all three.
+
+#### ! Wild
+
+The project-level version of this failure is familiar to anyone who has grown an sbt build: `lazy val core = project.dependsOn(util)` and, months later, someone adds `lazy val util = project.dependsOn(core)` to reach a helper. sbt refuses to load the build with a cyclic-reference error, which is the better outcome. The external version never announces itself, which is why a cycle between two third-party JARs can sit in a production classpath for years without anyone noticing.

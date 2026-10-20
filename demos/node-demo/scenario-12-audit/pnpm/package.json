@@ -1,0 +1,9 @@
+{
+  "name": "n12-audit-pnpm",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "lodash": "4.17.20"
+  },
+  "packageManager": "pnpm@11.10.0"
+}

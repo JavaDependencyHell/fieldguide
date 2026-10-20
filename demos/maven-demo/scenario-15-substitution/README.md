@@ -1,14 +1,20 @@
 ### Maven Scenario 15: Version Substitution
 
-This scenario demonstrates replacing one library with another: exclusion + explicit replacement (Maven has no substitution mechanism).
+This scenario demonstrates replacing one library with another. Maven has no substitution rule; the pattern is exclusion + explicit replacement + an enforcer guard.
 
 #### What's happening:
-1.  `log4j:log4j` is excluded from `lib-a`.
-2.  `org.slf4j:log4j-over-slf4j` is declared as the drop-in replacement (fetched from Maven Central — first run needs network).
+1.  `lib-a:1.0.0` normally pulls in `lib-b` (and through it `lib-c`). We treat `lib-b` as abandoned.
+2.  `lib-b` is excluded from the `lib-a` declaration.
+3.  `lib-d:1.0.0` is declared directly as the stand-in replacement.
+4.  A `bannedDependencies` rule for `com.demo:lib-b` fails the build if any other path ever brings `lib-b` back.
+
+All artifacts come from the local demo repository; no network is needed.
 
 #### How to verify:
-1.  Run `mvn dependency:tree`.
-2.  `log4j-over-slf4j` is present; `log4j:log4j` is absent.
+```bash
+mvn validate          # BUILD SUCCESS (ban finds nothing)
+mvn dependency:tree   # lib-a with no children, lib-d beside it
+```
 
 #### Expected Output:
-`org.slf4j:log4j-over-slf4j` in the tree, no `log4j:log4j`.
+`com.demo:lib-a:jar:1.0.0` and `com.demo:lib-d:jar:1.0.0`; no `lib-b` or `lib-c` anywhere. Remove the `<exclusion>` and `mvn validate` fails naming `lib-b`.

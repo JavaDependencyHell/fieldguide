@@ -1,17 +1,17 @@
 ---
 title: "The Diamond: Everyone Wins"
-tagline: "Or what to Do When Both Versions Get Installed"
+tagline: "Or what to do when both versions get installed"
 type: scenario
 tool: node
 ---
 
 #### ! Scenario
 
-*Or what to Do When Both Versions Get Installed*
-The classic diamond, third model. `demo-lib-a 2.0.0` needs `demo-lib-c 2.0.0`; we also depend on `demo-lib-c 1.0.0` directly. On the JVM this resolves by eviction ([MS2](../../maven-demo/scenario-2-conflict/guide.qmd)); in Python it fails outright ([P2](../../python-demo/scenario-2-conflict/guide.qmd)). In Node there is no conflict at all: **both versions install**, each consumer gets the one it asked for, and nobody is evicted or refused.
+*Or what to do when both versions get installed*
+The classic diamond, third model. `demo-lib-a 2.0.0` needs `demo-lib-b 2.0.0`, which needs `demo-lib-c 2.0.0`; we also depend on `demo-lib-c 1.0.0` directly. On the JVM one version wins — Maven's nearest-wins ([MS2](../../maven-demo/scenario-2-conflict/guide.qmd)), Gradle's and sbt's highest-wins ([GS2](../../gradle-demo/scenario-2-conflict/guide.qmd), [SB2](../../sbt-demo/scenario-2-conflict/guide.qmd)); in Python it fails outright ([P2](../../python-demo/scenario-2-conflict/guide.qmd)). In Node there is no conflict at all: **both versions install**, each consumer gets the one it asked for, and nobody is evicted or refused.
 
 ::: {.callout-note title="Tool Versions"}
-Tested with **npm 10.9.8**, **pnpm 11.10.0**, **Yarn 4.17.0**. All three produce the same *resolution* (both versions present); the on-disk layout differs — npm and Yarn nest one copy under `demo-lib-b`, pnpm keeps every copy in its store and symlinks.
+Tested with **npm 12.0.1**, **pnpm 11.10.0**, **Yarn 4.17.0**. All three produce the same *resolution* (both versions present); the on-disk layout differs — npm and Yarn nest one copy under `demo-lib-b`, pnpm keeps every copy in its store and symlinks.
 :::
 
 #### ! Example
@@ -79,7 +79,7 @@ The JVM picks a winner, Python refuses to play, Node lets everyone win. Duplicat
 #### ! Related
 *   [N8](../scenario-8-peers/guide.qmd) - The one place Node *does* demand a single copy.
 *   [N6](../scenario-6-overrides/guide.qmd) - Forcing one version tree-wide when duplication hurts.
-*   [MS2](../../maven-demo/scenario-2-conflict/guide.qmd) / [P2](../../python-demo/scenario-2-conflict/guide.qmd) - The same diamond, evicted (JVM) and fatal (Python).
+*   [MS2](../../maven-demo/scenario-2-conflict/guide.qmd) / [GS2](../../gradle-demo/scenario-2-conflict/guide.qmd) / [SB2](../../sbt-demo/scenario-2-conflict/guide.qmd) / [P2](../../python-demo/scenario-2-conflict/guide.qmd) - The same diamond, one winner (JVM) and fatal (Python).
 
 #### ! Wild
 npm 2 nested fully: every package carried its own complete dependency subtree, so duplication was maximal and node_modules paths grew deep enough to break Windows' 260-character MAX_PATH limit. npm 3 (2015) introduced the flattened, hoisted layout to fix that — and in doing so created the phantom dependency problem covered next.

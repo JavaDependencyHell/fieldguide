@@ -1,17 +1,19 @@
 ---
-title: "Strict Constraints"
-tagline: "Or what to Do When Constraints Stop Resolution Completely"
+title: "Forcing a Version"
+tagline: "Or what to do when newest-wins picks the wrong version"
 type: scenario
 tool: gradle
 ---
 
 #### ! Scenario
 
-*Or what to Do When Constraints Stop Resolution Completely*
-This scenario demonstrates how to force a specific version of a dependency, overriding any other constraints or transitive dependencies.
+*Or what to do when newest-wins picks the wrong version*
+This scenario demonstrates how to force a specific version of a transitive dependency, overriding what the graph would otherwise select.
 
 ::: {.callout-note title="Tool Versions"}
 This scenario was tested with **Gradle 8.14**.
+Rich version constraints (`strictly`) require **Gradle 5.0+**; `resolutionStrategy.force` is older.
+Re-verified on Gradle 9.3 (October 2026): Gradle 9 raised the runtime floor to JDK 17 and changed defaults such as the configuration cache, not the resolution rules shown here.
 :::
 
 #### ! Example
@@ -20,24 +22,26 @@ This scenario was tested with **Gradle 8.14**.
 %%| fig-width: 4.4
 graph LR
     Root[Project Root] --> LibA[lib-a:1.0.0]
-    LibA --> LibC[lib-c:1.0.0]
-    Root -- force --> LibC_Forced[lib-c:2.0.0]
+    LibA --> LibB[lib-b:1.0.0]
+    LibB --> LibC[lib-c:1.0.0]
+    Root -- force 2.0.0 --> LibC
 ```
-
-
 
 ```{.groovy include="build.gradle" snippet="s6-deps"}
 ```
 
 #### ! Expect
-Forced versions override all other constraints or transitive version requests.
+`lib-a:1.0.0` brings `lib-c:1.0.0`; nothing in the graph asks for anything newer, so `1.0.0` is what you get.
+
+#### ! Actual
+The tree shows `com.demo:lib-c:1.0.0 -> 2.0.0`. The forced version replaced the transitive request even though no dependency anywhere asked for `2.0.0`.
 
 #### ! Why
-Gradle overrides its default conflict resolution through `resolutionStrategy.force` or `strictly` constraints. This ensures a specific version wins regardless of contradictory signals in the graph.
+`resolutionStrategy.force` and a `strictly` constraint are the two signals that sit above ordinary conflict resolution. Where a platform or a direct declaration merely adds a candidate to the highest-wins pool ([GS4](../scenario-4-override/guide.qmd)), a forced version replaces every request for that module with the one you named. The only thing that can contradict it is another strict signal: two different `strictly` versions for the same module fail resolution rather than picking one.
 
 #### ! Fix
-*   **`resolutionStrategy.force`:** As shown in the snippet, this is a common "big hammer" approach to fix version conflicts.
-*   **`strictly`:** The preferred modern approach is:
+*   **`resolutionStrategy.force`** (shown above): the older, build-script-wide hammer. Simple, but invisible to consumers of a published library.
+*   **`strictly`**: the modern form, declared as a constraint and published in your module metadata so downstream builds see it too:
     ```groovy
     dependencies {
         constraints {
@@ -49,26 +53,34 @@ Gradle overrides its default conflict resolution through `resolutionStrategy.for
     ```
 
 #### ! Risk
-
-* LOW Forcing a version to align with a BOM or to patch a known vulnerability. This is a primary use case for this feature.
-* MEDIUM Forcing a version to a newer version that has not been tested with the libraries that depend on it. This can lead to `NoSuchMethodError` if the new version has breaking changes.
-* HIGH Forcing a version to an older version. This is very likely to cause problems, as the libraries that depend on it may be using features only available in the newer version.
+* LOW Forcing a version to align with a platform or to apply a security patch. This is the feature's primary purpose.
+* MEDIUM Forcing a *newer* version that the libraries depending on it were never tested with.
+* HIGH Forcing an *older* version. The libraries that depend on it may use APIs that only exist in the newer release, and the failure is a `NoSuchMethodError` at runtime.
 
 #### ! Control
-*   **Prefer `strictly`:** Using `strictly` in a `constraints` block is generally safer and more idiomatic in modern Gradle than `resolutionStrategy.force`. It integrates better with dependency insight tools and other plugins.
+*   **Prefer `strictly`** over `force`: it is scoped to a dependency, shows up in `dependencyInsight` with a clear reason, and travels with published metadata.
+*   **Record why:** a forced version with no comment will outlive the reason for it.
 
 #### ! Check
-**Fast check (Gradle):** `./gradlew dependencyInsight --dependency lib-c`
+**Fast check:** `gradle dependencyInsight --dependency lib-c --configuration compileClasspath`
 
-**What to look for:** The reason for selection; it will indicate the version was selected `by force` or via constraint.
+**What to look for:** `com.demo:lib-c:2.0.0 (forced)` at the top, and beneath it `com.demo:lib-c:1.0.0 -> 2.0.0` under `lib-b`, the request that was overridden.
 
-**Conclusion:** Force or `strictly` directives override all other graph signals.
+**Conclusion:** The forced version replaced the graph's request.
 
 #### ! Scales
-Forcing versions is essential in large enterprise environments where you need to ensure all applications use a specific, vetted version of a library (e.g., for security compliance), regardless of what transitive dependencies request.
+Forcing versions is how large organisations guarantee that every application uses a vetted release of a library (for compliance, or after a CVE) regardless of what transitives request. At that scale the force belongs in a shared platform or convention plugin, not in individual build files, and it should be reviewed each time the underlying reason changes.
 
 #### ! Takeaway
-`resolutionStrategy.force` (and `strictly`) overrides all other version conflict resolution rules. Use it when you need absolute control.
+`force` and `strictly` replace the graph's request outright; they are the signals that out-rank newest-wins and platforms alike. Use them when you need control, and write down why.
 
 #### ! Related
-*   [GS14](../scenario-14-reject/guide.qmd) - How to reject specific versions entirely.
+*   [GS14](../scenario-14-reject/guide.qmd) - Rejecting specific versions instead of forcing one.
+*   [GS4](../scenario-4-override/guide.qmd) - Why a plain declaration is not a force.
+*   [MS6](../../maven-demo/scenario-6-forcing/guide.qmd) / [SB6](../../sbt-demo/scenario-6-forcing/guide.qmd) - Forcing via `<dependencyManagement>` and `dependencyOverrides`.
+*   [P6](../../python-demo/scenario-6-constraints/guide.qmd) - Python's constraints file and uv's `override-dependencies`.
+*   [N6](../../node-demo/scenario-6-overrides/guide.qmd) - Node's overrides and resolutions.
+
+#### ! Wild
+
+Gradle's own advice during Log4Shell was a `strictly` constraint on `org.apache.logging.log4j:log4j-core` at the patched version, applied to every configuration, precisely because a plain upgrade could be out-voted or missed on some path. Teams that already had `resolutionStrategy.force` in place for other reasons simply added one more line. The incident is the clearest public example of why a force is sometimes the right tool: when the requirement is "this version, everywhere, now", candidate-pool semantics are not good enough.

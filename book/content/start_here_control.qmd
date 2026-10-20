@@ -1,26 +1,38 @@
 # Start Here for Implementing Dependency Controls
 
-f your build is stable but you’re trying to deliberately control or improve dependency behaviour: align versions, remove a library, enforce policy, or make builds reproducible.
-Then start here. Pick the outcome you want and jump directly to the mechanism that provides that control.
+If your build is stable but you want to take deliberate control of it, to align versions, remove a library, enforce a policy, or make builds reproducible, start here. Pick the outcome you want and jump to the mechanism that provides it.
 
-### What to do next
+### JVM: Maven (MS), Gradle (GS), sbt (SB)
 
-Each scenario is implemented for Maven (MS), Gradle (GS), and SBT (SB). Jump to the version for your build tool.
+Each scenario is implemented for all three tools. Jump to the version for your build tool.
 
-- Align versions across projects → MS3/GS3/SB3: Dependency Management (BOM)
+- Align versions across projects → MS3/GS3/SB3: Dependency Management (BOM / Platform)
+- Override a transitive version → MS6/GS6/SB6: Forcing a Version
+- Override what a BOM provides → MS4/GS4/SB4: Hardcoded Version vs Managed Version
+- Remove a transitive dependency from one path → MS5/GS5/SB5: Exclusions
+- Keep an artifact out of the whole build → MS18/GS18/SB18: Banning a Dependency
+- Replace one library with another → MS15/GS15/SB15: Substitution
+- Ensure reproducible builds → MS11/GS11/SB11: Dependency Locking
+- Block a known-bad version → MS14/GS14/SB14: Rejecting a Version
+- Reduce runtime or classpath footprint → MS7/GS7/SB7: Scopes, also MS8/GS8/SB8: Optional Dependencies
+- Use vendor-patched or private artifacts → MS16/GS16/SB16 (BOM) or MS17/GS17/SB17 (direct patch)
 
-- Override a transitive version → MS6/GS6/SB6: Forcing Transitive Versions
+### Python: pip, Poetry, uv (P)
 
-- Override what a BOM provides → MS4/GS4/SB4
+- Pin all versions for reproducibility → P5: Lock Files
+- Constrain versions centrally → P6: Constraints Files
+- Reject or override a version → P4: Specifiers (`!=`), P9: Exclusions: The Gap (uv overrides and exclusions)
+- Separate optional and dev dependencies → P7: Extras and Dependency Groups
+- Isolate project environments → P10: Virtual Environment Isolation
+- Use a private index safely → P11: Private Index and Dependency Confusion
+- Find vulnerable dependencies → P12: Auditing the Environment
 
-- Remove a transitive dependency → MS5/GS5/SB5
+### Node: npm, pnpm, Yarn (N)
 
-- Replace one library with another → MS15/GS15/SB15
-
-- Ensure reproducible builds → MS11/GS11/SB11
-
-- Block a known-bad version → MS14/GS14/SB14
-
-- Reduce runtime/classpath footprint → MS7/GS7/SB7, also MS8/GS8/SB8
-
-- Use vendor-patched or private artifacts → MS16/GS16/SB16 or MS17/GS17/SB17
+- Lock all versions for reproducibility → N5: Lock Files
+- Override a transitive version → N6: Overrides and Resolutions
+- Manage a monorepo → N10: Workspaces and Monorepos
+- Keep dev tooling out of production → N7: Dependency Types
+- Enforce a single shared copy of a library → N8: Peer Dependencies
+- Use a private registry safely → N11: Private Registry and Dependency Confusion
+- Find vulnerable or abandoned packages → N12: Auditing the Tree

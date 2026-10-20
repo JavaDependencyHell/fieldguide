@@ -1,17 +1,17 @@
 ---
 title: "Optional Dependencies"
-tagline: "Or what to Do When You Need a Library Only Sometimes"
+tagline: "Or what to do when \"optional\" dependencies don't show up"
 type: scenario
 tool: sbt
 ---
 
 #### ! Scenario
 
-*Or what to Do When You Need a Library Only Sometimes*
-This scenario demonstrates how SBT handles optional dependencies.
+*Or what to do when "optional" dependencies don't show up*
+This scenario demonstrates how sbt handles a dependency that the library you consume marked `optional` in its POM, and how to mark one that way yourself.
 
 ::: {.callout-note title="Tool Versions"}
-This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). Under the older Ivy engine (sbt < 1.3, or `useCoursier := false`) resolution edge cases differ and settings like `conflictManager` behave differently. `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin.
+This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). On sbt 1.x the older Ivy engine can still be selected with `useCoursier := false`; under Ivy, resolution edge cases differ and Ivy-only settings such as `conflictManager` apply (Coursier ignores them). `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin. sbt 2.0 (June 2026) keeps these resolution rules, removes the Ivy opt-out, adds native BOM import, and turns Test-configuration eviction warnings into errors; the demos here target sbt 1.x.
 :::
 
 #### ! Example
@@ -19,43 +19,52 @@ This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
-    Root[Project Root] --> LibA["lib-a:1.0.0"]
-    LibA -.-> LibB["lib-b:1.0.0 (Optional)"]
+    Root[Project Root] --> LibD["lib-d:1.0.0"]
+    LibD -.->|optional| LibC["lib-c:1.0.0"]
 ```
-
-#### ! Example
 
 ```{.scala include="build.sbt" snippet="s8-deps"}
 ```
 
-*Note: this demo is illustrative. The `lib-a` fixture in the demo repository declares `lib-b` as a normal (non-optional) dependency, so running this build will show `lib-b` on the classpath. The behaviour described below is what you see when consuming a library whose POM genuinely marks a dependency `<optional>true</optional>`.*
-
 #### ! Expect
-Optional dependencies are omitted from the consumer's classpath by default.
+Depending on `lib-d` brings everything `lib-d` declares, including `lib-c`.
+
+#### ! Actual
+`lib-c` is absent. `lib-d`'s POM marks it `<optional>true</optional>`, and Coursier does not resolve optional dependencies for consumers. If your code uses the part of `lib-d` that needs `lib-c`, you get `NoClassDefFoundError` until you declare `lib-c` yourself.
 
 #### ! Why
-SBT respects the Maven `<optional>true</optional>` flag, excluding those transitives to prevent consumer classpath pollution. For your own libraries, sbt's `% Optional` configuration (e.g. `"com.demo" % "lib-b" % "1.0.0" % Optional`) marks a dependency optional in the published POM — though the POM mapping has historical quirks (see [sbt#162](https://github.com/sbt/sbt/issues/162)), so check the generated POM.
+`optional` is a producer-side signal in the POM: "I can use this, but I do not require it." Maven, Gradle and sbt all honour it the same way, by leaving the optional artifact out of consumers' graphs. It exists so that a library can support several integrations (a JSON codec, a metrics backend, a database driver) without forcing all of them on every user. The cost is that the tooling cannot tell you which optional dependency a feature needs; only the library's documentation can.
+
+#### ! Fix
+*   **Consuming:** declare the optional dependency directly when you use the feature: `libraryDependencies += "com.demo" % "lib-c" % "1.0.0"`.
+*   **Publishing:** mark a dependency optional with the `Optional` configuration, `"com.demo" % "lib-c" % "1.0.0" % Optional`, and sbt writes `<optional>true</optional>` into the published POM. The POM mapping has had quirks historically (see [sbt#162](https://github.com/sbt/sbt/issues/162)), so inspect the generated POM with `sbt makePom`.
+
+#### ! Risk
+* LOW Declaring the optional dependency you need, at a version the library documents as supported.
+* MEDIUM Guessing which optional dependency a feature needs from the error message; the version you pick may be one the library never tested.
+* HIGH Shipping without the optional dependency because tests never exercised that feature; the `NoClassDefFoundError` appears on the first production call.
+
+#### ! Control
+When you publish a library, document every optional dependency next to the feature that needs it, and consider publishing small "extras" modules that bundle the common combinations so consumers declare one coordinate instead of guessing.
 
 #### ! Check
+**Fast check:** `sbt dependencyTree`
 
-**Fast check (SBT):**
+**What to look for:** `lib-d` with no `lib-c` beneath it, and `lib-c` absent from `externalDependencyClasspath`. Add `lib-c` to `libraryDependencies` and it appears.
 
-When your project depends on a library with an optional dependency, run:
-```bash
-sbt dependencyTree
-```
-
-**What to look for:**
-The optional dependency will be absent from the tree.
-
-**Conclusion:**
-Optional dependencies are not transitive. Consumers must explicitly declare them if needed.
+**Conclusion:** Optional dependencies are not transitive. Consumers must declare them.
 
 #### ! Scales
-Large frameworks like Akka and Play use optional dependencies extensively to support many integrations without forcing all of them on every consumer. As a library author in the SBT ecosystem, documenting your optional dependencies clearly is critical, since the tooling won't surface them automatically. Consider providing separate "starter" or "extras" modules that bundle optional dependencies for common use cases.
+Large frameworks such as Akka, Play and the Typelevel stack use optional and separately published modules extensively to support many integrations without forcing all of them on every consumer. As a library author, documenting optional dependencies clearly is critical, because the tooling will not surface them.
 
 #### ! Takeaway
-SBT respects optional dependencies from Maven POMs when consuming, and offers `% Optional` for declaring them when publishing.
+sbt honours `optional` from Maven POMs when consuming, and offers `% Optional` for declaring it when publishing. Either way, the consumer has to opt in.
 
-#### Related Scenarios
-*   [Scenario 7: Scopes](../scenario-7-scopes/guide.qmd)
+#### ! Related
+*   [SB7](../scenario-7-scopes/guide.qmd) - Configurations, the other way a dependency stays off a classpath.
+*   [MS8](../../maven-demo/scenario-8-optional/guide.qmd) / [GS8](../../gradle-demo/scenario-8-optional/guide.qmd) - Optional in Maven; feature variants in Gradle.
+*   [P7](../../python-demo/scenario-7-extras-groups/guide.qmd) / [N7](../../node-demo/scenario-7-dep-types/guide.qmd) - Extras in Python; optional dependencies in Node.
+
+#### ! Wild
+
+Play Framework ships its JSON, WebSocket, cache and database integrations as separately published modules (`play-json`, `play-ws`, `play-cache`, `play-jdbc`) precisely so that `play` itself does not drag every integration onto every classpath. The same decision made inside one artifact is what `optional` expresses, and the symptom is the same in both designs: a feature that compiles against the core library fails at runtime until you add the module it actually needs.

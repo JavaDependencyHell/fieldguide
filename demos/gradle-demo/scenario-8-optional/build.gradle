@@ -1,6 +1,5 @@
 plugins {
-    id 'java'
-    id 'java-library' // Needed for 'api' vs 'implementation' distinction, but optionality is tricky in Gradle
+    id 'java-library'
 }
 
 repositories {
@@ -11,14 +10,35 @@ repositories {
 
 // tag::s8-deps[]
 dependencies {
-
-    // Gradle doesn't have a direct "optional" flag like
-    // Maven.The common pattern is to use 'compileOnly'
-    // (if it's needed for compilation but not runtime)
-    // or to use a feature variant. For this demo,
-    // we'll use compileOnly to simulate "optional"
-    // behavior (not transitive to consumers).
-
-    compileOnly 'com.demo:lib-a:1.0.0'
+    // lib-d:1.0.0 declares lib-c:1.0.0 in its POM with
+    // <optional>true</optional>. Gradle honours the flag:
+    // lib-c is NOT added to our classpaths.
+    implementation 'com.demo:lib-d:1.0.0'
 }
 // end::s8-deps[]
+
+// tag::s8-feature[]
+// How a Gradle *producer* expresses "optional": a feature
+// variant with its own source set and dependencies. When
+// published (with Gradle Module Metadata) consumers opt in
+// via requireCapability(...); everyone else never sees lib-c.
+sourceSets {
+    create('reporting')
+}
+
+java {
+    registerFeature('reporting') {
+        usingSourceSet(sourceSets.reporting)
+    }
+}
+
+dependencies {
+    reportingImplementation 'com.demo:lib-c:1.0.0'
+}
+// end::s8-feature[]
+
+// Prints the jars on the main runtime classpath (used by verify.sh)
+tasks.register('printRuntimeJars') {
+    def files = configurations.runtimeClasspath
+    doLast { files.each { println "JAR " + it.name } }
+}

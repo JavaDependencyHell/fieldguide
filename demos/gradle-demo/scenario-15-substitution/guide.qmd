@@ -1,18 +1,19 @@
 ---
 title: "Dependency Substitution"
-tagline: "Or what to Do When One Component Quietly Replaces Another"
+tagline: "Or what to do when you need to swap one library for another"
 type: scenario
 tool: gradle
 ---
 
 #### ! Scenario
 
-*Or what to Do When One Component Quietly Replaces Another*
-This scenario demonstrates how to completely replace one dependency with another (or a different version of the same dependency) using Gradle's dependency substitution rules.
+*Or what to do when you need to swap one library for another*
+This scenario demonstrates replacing one module with another (or one version with another) everywhere in the graph, using Gradle's dependency substitution rules.
 
 ::: {.callout-note title="Tool Versions"}
 This scenario was tested with **Gradle 8.14**.
 The `substitute ... using ...` syntax shown requires **Gradle 6.6+** (older builds used `with`).
+Re-verified on Gradle 9.3 (October 2026): Gradle 9 raised the runtime floor to JDK 17 and changed defaults such as the configuration cache, not the resolution rules shown here.
 :::
 
 #### ! Example
@@ -20,49 +21,57 @@ The `substitute ... using ...` syntax shown requires **Gradle 6.6+** (older buil
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
-    Root[Project Root] --> LibA[lib-a:1.0.0]
-    Root -- substitute --> LibA_New[lib-a:2.0.0]
+    Root[Project Root] --> LibA1[lib-a:1.0.0]
+    LibA1 -. substituted by .-> LibA2[lib-a:2.0.0]
+    LibA2 --> LibB[lib-b:2.0.0]
 ```
-
-
 
 ```{.groovy include="build.gradle" snippet="s15-deps"}
 ```
 
 #### ! Expect
-Substituting a module globally replaces it in all transitive paths.
+The build declares `lib-a:1.0.0`, so `lib-a:1.0.0` resolves, along with the `lib-b:1.0.0` it depends on.
+
+#### ! Actual
+The tree shows `com.demo:lib-a:1.0.0 -> 2.0.0` and, beneath it, `lib-b:2.0.0`: the substitute's own dependencies came with it. `dependencyInsight` gives the reason as `selected by rule`. The declaration was never changed; the rule rewrote the request on the way into resolution.
 
 #### ! Why
-Dependency substitution rewrites the graph on the fly, enabling global replacements—like swapping a binary for a local project—that exclusions cannot match.
+Substitution rules run as each dependency request enters resolution and replace the requested module with another: a different version, a different module entirely (`com.old:lib` with `com.new:lib`), or a local project (`project(':lib-a')`). Because the substitute is resolved as if it had been requested, its transitives are followed normally. That is what distinguishes substitution from both exclusion (which leaves a hole) and forcing (which can change a version but not a module). It is also the mechanism behind composite builds, where `includeBuild` substitutes a published binary with a source checkout.
 
 #### ! Fix
-*   **Exclusions:** Developers often try to exclude the old dependency and add the new one manually. This is tedious and error-prone.
-*   **Forcing Versions:** Forcing a version works if the group and artifact IDs are the same, but it cannot replace `com.old:lib` with `com.new:lib`.
+*   **Swap a version** (shown above) when a transitive must move and the module is declared in many places.
+*   **Swap a module:** `substitute module('com.old:lib') using module('com.new:lib:1.2')` to migrate to a fork or a renamed artifact across the whole build.
+*   **Swap in a local build:** `includeBuild '../lib-a'` in `settings.gradle` substitutes every request for `lib-a`'s coordinates with the local source.
 
 #### ! Risk
-
-* LOW Replacing a logging framework with a compatible one (e.g., `log4j` with `log4j-over-slf4j`). This is a well-understood and common practice.
-* MEDIUM Replacing a library with a forked or patched version. This is often necessary but introduces the risk that the fork will not be maintained.
-* HIGH Replacing a library with a completely different one that is not a drop-in replacement. This is very likely to cause `NoClassDefFoundError` or `NoSuchMethodError` at runtime.
+* LOW Swapping a version, or a logging implementation for a bridge with the same API.
+* MEDIUM Swapping a library for a fork; the fork's maintenance becomes your problem.
+* HIGH Swapping in something that is not a drop-in replacement. The build is green and the failure is `NoSuchMethodError` at runtime, far from the rule that caused it.
 
 #### ! Control
-*   **Use Substitution:** This is the cleanest way to handle replacements. It applies globally and handles transitive dependencies correctly.
+*   **Keep substitution rules in one place** (a convention plugin or the root build) with a comment per rule.
+*   **Check `dependencyInsight`** when a version looks wrong: `selected by rule` points at a substitution, and a build scan lists them all.
 
-#### ! Look
-*   **Unexpected Swaps:** If you use substitution rules, be careful not to accidentally swap a library that is not fully compatible.
-*   **Build Scans:** Build scans show substitutions clearly, making it easy to debug why a dependency was replaced.
+#### ! Check
+**Fast check:** `gradle dependencyInsight --dependency lib-a --configuration compileClasspath`
+
+**What to look for:** `com.demo:lib-a:2.0.0 (selected by rule)` at the top and `com.demo:lib-a:1.0.0 -> 2.0.0` under `compileClasspath`; the full tree shows `lib-b:2.0.0` under the substituted module.
+
+**Conclusion:** The rule replaced the request, and the replacement brought its own dependencies.
 
 #### ! Scales
-This is essential for multi-repo development (composite builds) where you want to substitute a binary dependency with a local source build. It is also critical for migrating away from deprecated libraries across a large codebase.
+Substitution is the tool for migrations across a large codebase: retiring a deprecated library, moving to a fork after an upstream project goes quiet, or testing a change to a shared library in every consumer before publishing it. Composite builds make the last of these routine, letting a developer check out two repositories and build them as one.
 
 #### ! Takeaway
-Dependency substitution allows you to swap modules or versions cleanly, handling complex replacements that exclusions cannot.
+Substitution rewrites requests on the way into resolution: a different version, module or local project, with its own transitives. Use it when exclusions leave a hole and forcing cannot change the name.
 
-#### Related Scenarios
-*   [GS5: Exclusions](../scenario-5-exclusions/guide.qmd) - Removing dependencies without replacement.
+#### ! Related
+*   [GS5](../scenario-5-exclusions/guide.qmd) - Removing a module without replacing it.
+*   [GS12](../scenario-12-metadata/guide.qmd) - Editing a module's metadata instead of replacing the module.
+*   [GS6](../scenario-6-forcing/guide.qmd) - Forcing a version, when the module stays the same.
+*   [MS15](../../maven-demo/scenario-15-substitution/guide.qmd) / [SB15](../../sbt-demo/scenario-15-substitution/guide.qmd) - What Maven and sbt offer instead.
+*   [N6](../../node-demo/scenario-6-overrides/guide.qmd) - Node's overrides, which can also swap a package for another.
 
 #### ! Wild
 
-When developing a new feature in a library used by several other projects, teams can use composite builds to substitute the binary dependency with a local project.
-
-This allows testing in context without publishing new library versions.
+The most common substitution in practice is the one developers do not write: `includeBuild`. A team working on a shared library and an application that uses it adds `includeBuild '../shared-lib'` to the application's `settings.gradle`, and every request for the library's published coordinates is substituted with the local source. Changes show up in the application without a publish step. Gradle's own documentation on composite builds is built around this workflow, and it has largely replaced the `mavenLocal()` snapshot dance that preceded it.

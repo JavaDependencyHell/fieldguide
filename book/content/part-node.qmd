@@ -1,0 +1,25 @@
+# Node Scenarios
+
+Node completes the triangle. Three ecosystems met the same problem, two paths in the graph asking for different versions of the same library, and gave three different answers.
+
+```{mermaid}
+%%| fig-width: 5.5
+graph TD
+    D["The diamond: two paths need<br/>different versions of one library"]
+    D --> J["<b>JVM picks a winner</b><br/>one version on the classpath,<br/>the other evicted"]
+    D --> P["<b>Python demands agreement</b><br/>one environment, one version,<br/>or the install fails"]
+    D --> N["<b>Node duplicates</b><br/>each consumer gets its own copy,<br/>nested in its own node_modules"]
+    J --> JH["Hell: the winner lacks<br/>what the loser's users needed"]
+    P --> PH["Hell: ResolutionImpossible,<br/>nothing installs"]
+    N --> NH["Hell: tree size, phantom imports,<br/>and singletons that must not be two"]
+```
+
+Node's answer makes the classic conflict dissolve: `demo-lib-a` wants `demo-lib-c 2.0.0` and you want `1.0.0`, so both install and each `require` finds the copy nearest to the file that asked (N2). The price arrives later and in three forms, and the Node sequence is organised around them:
+
+- **Tree shape.** Hoisting shares copies to save space and creates imports that work only by accident (N3, N9). The same lockfile can describe two different trees depending on install history.
+- **Singletons.** Some packages must not be duplicated: plugin hosts, React, anything with module-level state. Peer dependencies are Node reintroducing the JVM's single-winner rule on purpose, and npm 7 made breaking it a hard error (N8).
+- **Everything the JVM and Python also have**, in Node's dialect: semver and the caret culture (N4), lock files that everyone writes by default (N5), overrides (N6), dependency types (N7), workspaces (N10), private registries and the attack that was first demonstrated against npm (N11), and auditing (N12).
+
+The twelve scenarios cover npm, pnpm and Yarn 4. Where they behave identically the chapter shows one tool; where they diverge, particularly pnpm's strict layout and Yarn's Plug'n'Play, the divergence is the content. Every chapter links back to its JVM and Python siblings.
+
+Verified against npm, pnpm 11 and Yarn 4.17 on Node 22 and 26 (see `demos/node-demo/TOOL-VERSIONS.md`).

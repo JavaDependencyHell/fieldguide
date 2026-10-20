@@ -30,15 +30,21 @@ export npm_config_fund=false npm_config_audit=false
 # ---------- prerequisites: fail loudly, never vacuously ----------
 # The book documents npm, pnpm AND Yarn 4; verifying the book requires all
 # three. Corepack provides pnpm/yarn from each project's packageManager pin.
+# Corepack is bundled with Node 14.19–24 only; Node 25+ needs it installed
+# separately — so we check for a WORKING corepack, not a Node version.
 MISSING=""
 command -v node     > /dev/null 2>&1 || MISSING="$MISSING node"
 command -v npm      > /dev/null 2>&1 || MISSING="$MISSING npm"
-command -v corepack > /dev/null 2>&1 || MISSING="$MISSING corepack"
+if ! command -v corepack > /dev/null 2>&1 || ! corepack --version > /dev/null 2>&1; then
+    MISSING="$MISSING corepack"
+fi
 command -v pnpm     > /dev/null 2>&1 || MISSING="$MISSING pnpm(corepack-shim)"
 command -v yarn     > /dev/null 2>&1 || MISSING="$MISSING yarn(corepack-shim)"
 if [ -n "$MISSING" ]; then
     echo -e "${RED}[FAIL]${NC} missing toolchain:$MISSING — 0 Node scenarios verified."
-    echo "Install Node >= 22 (npm included) and run: corepack enable"
+    echo "Need Node >= 22 (npm included) plus Corepack:"
+    echo "  Node 22/24:  corepack enable"
+    echo "  Node 25+ :   npm install -g corepack && corepack enable   (Corepack no longer ships with Node)"
     exit 1
 fi
 if [ ! -x "$HARNESS" ] || [ ! -d "$PROJECT_ROOT/target/node-repo" ]; then
@@ -167,19 +173,28 @@ fi
 
 # ---------- Scenario 5: Lock files ----------
 if run_scenario 5 "Locks"; then
+    # Each tool: lock records the transitive; the frozen verb reproduces the
+    # tree; and after package.json drifts from the lock, the frozen verb FAILS.
+    drift() { sed -i.bak 's/"\^1.0.0"/"^2.0.0"/' "$1/package.json"; }
+
     W=$(work_copy scenario-5-locks/npm)
     (cd "$W" && npm install --silent \
         && grep -q '"demo-lib-c"' package-lock.json \
-        && rm -rf node_modules && npm ci --silent) && chain_is "$W" 1.0.0
-    check_result "Scenario 5 (lock records transitives; npm ci reproduces)" "npm" $?
+        && rm -rf node_modules && npm ci --silent) && chain_is "$W" 1.0.0 \
+        && drift "$W" && ! (cd "$W" && npm ci --silent > /dev/null 2>&1)
+    check_result "Scenario 5 (lock records transitives; npm ci reproduces, refuses drift)" "npm" $?
 
     W=$(work_copy scenario-5-locks/pnpm)
-    (cd "$W" && pnpm install --silent && grep -q 'demo-lib-c@' pnpm-lock.yaml)
-    check_result "Scenario 5 (pnpm-lock.yaml records transitives)" "pnpm" $?
+    (cd "$W" && pnpm install --silent && grep -q 'demo-lib-c@' pnpm-lock.yaml \
+        && rm -rf node_modules && pnpm install --silent --frozen-lockfile) && chain_is "$W" 1.0.0 \
+        && drift "$W" && ! (cd "$W" && pnpm install --frozen-lockfile > /dev/null 2>&1)
+    check_result "Scenario 5 (pnpm-lock.yaml records transitives; --frozen-lockfile reproduces, refuses drift)" "pnpm" $?
 
     W=$(work_copy scenario-5-locks/yarn)
-    (cd "$W" && yarn install --no-immutable > /dev/null 2>&1 && grep -q '"demo-lib-c@' yarn.lock)
-    check_result "Scenario 5 (yarn.lock records transitives)" "yarn" $?
+    (cd "$W" && yarn install --no-immutable > /dev/null 2>&1 && grep -q '"demo-lib-c@' yarn.lock \
+        && rm -rf node_modules && yarn install --immutable > /dev/null 2>&1) && chain_is "$W" 1.0.0 \
+        && drift "$W" && ! (cd "$W" && yarn install --immutable > /dev/null 2>&1)
+    check_result "Scenario 5 (yarn.lock records transitives; --immutable reproduces, refuses drift)" "yarn" $?
 fi
 
 # ---------- Scenario 6: Overrides & resolutions ----------
@@ -190,7 +205,7 @@ if run_scenario 6 "Overrides"; then
 
     W=$(work_copy scenario-6-overrides/pnpm)
     (cd "$W" && pnpm install --silent) && chain_is "$W" 2.0.0
-    check_result "Scenario 6 (pnpm.overrides force c@2.0.0)" "pnpm" $?
+    check_result "Scenario 6 (pnpm-workspace.yaml overrides force c@2.0.0)" "pnpm" $?
 
     W=$(work_copy scenario-6-overrides/yarn)
     (cd "$W" && yarn install --no-immutable > /dev/null 2>&1) && chain_is "$W" 2.0.0
@@ -247,11 +262,18 @@ if run_scenario 9 "Tree shape"; then
         && npm uninstall --silent demo-lib-c) \
         && [ -d "$W/node_modules/demo-lib-b/node_modules/demo-lib-c" ] \
         && [ ! -d "$W/node_modules/demo-lib-c" ]; R1=$?
+    # The lockfile records placement by path, so `npm ci` reproduces the
+    # NESTED shape — deleting node_modules alone does not reset history.
+    (cd "$W" && rm -rf node_modules && npm ci --silent) \
+        && grep -q '"node_modules/demo-lib-b/node_modules/demo-lib-c"' "$W/package-lock.json" \
+        && [ -d "$W/node_modules/demo-lib-b/node_modules/demo-lib-c" ] \
+        && [ ! -d "$W/node_modules/demo-lib-c" ]; R1b=$?
+    # Only a fresh install WITHOUT the lockfile re-hoists.
     (cd "$W" && rm -rf node_modules package-lock.json && npm install --silent) \
         && [ -d "$W/node_modules/demo-lib-c" ] \
         && [ ! -d "$W/node_modules/demo-lib-b/node_modules/demo-lib-c" ]; R2=$?
-    [ $R1 -eq 0 ] && [ $R2 -eq 0 ]
-    check_result "Scenario 9 (install history changes npm's tree; fresh install re-hoists)" "npm" $?
+    [ $R1 -eq 0 ] && [ $R1b -eq 0 ] && [ $R2 -eq 0 ]
+    check_result "Scenario 9 (history nests c@1; npm ci reproduces the nested lock; only a lock-less fresh install re-hoists)" "npm" $?
 
     W=$(work_copy scenario-9-tree-shape/pnpm)
     # pnpm: layout is store-driven — same ops, no hoisting, no history effect,
@@ -262,6 +284,16 @@ if run_scenario 9 "Tree shape"; then
         && [ ! -d "$W/node_modules/demo-lib-c" ] \
         && ls "$W/node_modules/.pnpm" | grep -q "^demo-lib-c@1.0.0"
     check_result "Scenario 9 (pnpm layout invariant under history)" "pnpm" $?
+
+    W=$(work_copy scenario-9-tree-shape/yarn)
+    # Yarn (node-modules linker) recomputes the layout from the graph on every
+    # install: after the same detour, c@1 is hoisted again — no history effect.
+    (cd "$W" && yarn install --no-immutable > /dev/null 2>&1 \
+        && yarn add demo-lib-c@2.0.0 > /dev/null 2>&1 \
+        && yarn remove demo-lib-c > /dev/null 2>&1) \
+        && [ -d "$W/node_modules/demo-lib-c" ] \
+        && [ ! -d "$W/node_modules/demo-lib-b/node_modules/demo-lib-c" ]
+    check_result "Scenario 9 (yarn node-modules linker re-hoists after the detour)" "yarn" $?
 fi
 
 # ---------- Scenario 10: Workspaces ----------
@@ -317,6 +349,18 @@ if run_scenario 12 "Audit"; then
         && ! npm audit > audit.log 2>&1 \
         && grep -qi "lodash" audit.log)
     check_result "Scenario 12 (npm audit flags lodash 4.17.20)" "npm" $?
+
+    W=$(work_copy scenario-12-audit/pnpm)
+    (cd "$W" && pnpm install --silent > /dev/null 2>&1 \
+        && ! pnpm audit > audit.log 2>&1 \
+        && grep -qi "lodash" audit.log)
+    check_result "Scenario 12 (pnpm audit flags lodash 4.17.20)" "pnpm" $?
+
+    W=$(work_copy scenario-12-audit/yarn)
+    (cd "$W" && yarn install --no-immutable > /dev/null 2>&1 \
+        && ! yarn npm audit > audit.log 2>&1 \
+        && grep -qi "lodash" audit.log)
+    check_result "Scenario 12 (yarn npm audit flags lodash 4.17.20)" "yarn" $?
 fi
 
 echo "-----------------------------------"

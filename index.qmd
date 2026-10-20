@@ -254,7 +254,7 @@ number-sections: false
       </div>
       <div class="dh-card" data-eco="sbt" onclick="dhSelectEco(this)">
         <div class="dh-card-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#990187" stroke-width="1.5"><path d="M4 4l8-2 8 2v7c0 5-3.5 8-8 9-4.5-1-8-4-8-9V4z"/><path d="M9 12l2 2 4-4"/></svg></div>
-        <div class="dh-card-name">SBT</div>
+        <div class="dh-card-name">sbt</div>
         <div class="dh-card-desc">build.sbt, latest-wins, Coursier</div>
       </div>
       <div class="dh-card" data-eco="python" onclick="dhSelectEco(this)">
@@ -315,28 +315,28 @@ number-sections: false
         groups: [
           { title: "Version changed unexpectedly",
             links: [
-              { id: "S2", name: "Version Conflict Resolution", href: "demos/maven-demo/scenario-2-conflict/guide.html" },
-              { id: "S6", name: "Forcing Transitive Versions", href: "demos/maven-demo/scenario-6-forcing/guide.html" }
+              { id: "MS2", name: "Version Conflict Resolution", href: "demos/maven-demo/scenario-2-conflict/guide.html" },
+              { id: "MS6", name: "Forcing Transitive Versions", href: "demos/maven-demo/scenario-6-forcing/guide.html" }
             ]},
           { title: "Compiles but fails at runtime",
             links: [
-              { id: "S7", name: "Dependency Scopes", href: "demos/maven-demo/scenario-7-scopes/guide.html" },
-              { id: "S5", name: "Exclusions", href: "demos/maven-demo/scenario-5-exclusions/guide.html" }
+              { id: "MS7", name: "Dependency Scopes", href: "demos/maven-demo/scenario-7-scopes/guide.html" },
+              { id: "MS5", name: "Exclusions", href: "demos/maven-demo/scenario-5-exclusions/guide.html" }
             ]},
           { title: "Build worked yesterday, broken today",
             links: [
-              { id: "S9", name: "Version Ranges", href: "demos/maven-demo/scenario-9-ranges/guide.html" },
-              { id: "S11", name: "Dependency Locking", href: "demos/maven-demo/scenario-11-locking/guide.html" }
+              { id: "MS9", name: "Version Ranges", href: "demos/maven-demo/scenario-9-ranges/guide.html" },
+              { id: "MS11", name: "Dependency Locking", href: "demos/maven-demo/scenario-11-locking/guide.html" }
             ]},
           { title: "Unwanted library keeps appearing",
             links: [
-              { id: "S5", name: "Exclusions", href: "demos/maven-demo/scenario-5-exclusions/guide.html" },
-              { id: "S15", name: "Substitution", href: "demos/maven-demo/scenario-15-substitution/guide.html" }
+              { id: "MS5", name: "Exclusions", href: "demos/maven-demo/scenario-5-exclusions/guide.html" },
+              { id: "MS15", name: "Substitution", href: "demos/maven-demo/scenario-15-substitution/guide.html" }
             ]},
           { title: "Dependency tree looks wrong",
             links: [
-              { id: "S1", name: "Basic Transitive Resolution", href: "demos/maven-demo/scenario-1-basic/guide.html" },
-              { id: "S3", name: "Dependency Management (BOM)", href: "demos/maven-demo/scenario-3-mgmt/guide.html" }
+              { id: "MS1", name: "Basic Transitive Resolution", href: "demos/maven-demo/scenario-1-basic/guide.html" },
+              { id: "MS3", name: "Dependency Management (BOM)", href: "demos/maven-demo/scenario-3-mgmt/guide.html" }
             ]}
         ]
       },
@@ -344,22 +344,22 @@ number-sections: false
         header: "Pick the outcome you need",
         groups: [
           { title: "Align versions across projects",
-            links: [{ id: "S3", name: "Dependency Management (BOM)", href: "demos/maven-demo/scenario-3-mgmt/guide.html" }] },
+            links: [{ id: "MS3", name: "Dependency Management (BOM)", href: "demos/maven-demo/scenario-3-mgmt/guide.html" }] },
           { title: "Override a transitive version",
-            links: [{ id: "S6", name: "Forcing Transitive Versions", href: "demos/maven-demo/scenario-6-forcing/guide.html" }] },
+            links: [{ id: "MS6", name: "Forcing Transitive Versions", href: "demos/maven-demo/scenario-6-forcing/guide.html" }] },
           { title: "Remove a transitive dependency",
             links: [
-              { id: "S5", name: "Exclusions", href: "demos/maven-demo/scenario-5-exclusions/guide.html" },
-              { id: "S18", name: "Banning a Dependency", href: "demos/maven-demo/scenario-18-banning/guide.html" }
+              { id: "MS5", name: "Exclusions", href: "demos/maven-demo/scenario-5-exclusions/guide.html" },
+              { id: "MS18", name: "Banning a Dependency", href: "demos/maven-demo/scenario-18-banning/guide.html" }
             ]},
           { title: "Ensure reproducible builds",
-            links: [{ id: "S11", name: "Dependency Locking", href: "demos/maven-demo/scenario-11-locking/guide.html" }] },
+            links: [{ id: "MS11", name: "Dependency Locking", href: "demos/maven-demo/scenario-11-locking/guide.html" }] },
           { title: "Block a known-bad version",
-            links: [{ id: "S14", name: "Version Rejection", href: "demos/maven-demo/scenario-14-reject/guide.html" }] },
+            links: [{ id: "MS14", name: "Version Rejection", href: "demos/maven-demo/scenario-14-reject/guide.html" }] },
           { title: "Use private/patched artifacts",
             links: [
-              { id: "S16", name: "Private BOM", href: "demos/maven-demo/scenario-16-private-bom/guide.html" },
-              { id: "S17", name: "Private Patch", href: "demos/maven-demo/scenario-17-private-patch/guide.html" }
+              { id: "MS16", name: "Private BOM", href: "demos/maven-demo/scenario-16-private-bom/guide.html" },
+              { id: "MS17", name: "Private Patch", href: "demos/maven-demo/scenario-17-private-patch/guide.html" }
             ]}
         ]
       },
@@ -368,21 +368,21 @@ number-sections: false
         groups: [
           { title: "Start with the fundamentals",
             links: [
-              { id: "S1", name: "Basic Transitive Resolution", href: "demos/maven-demo/scenario-1-basic/guide.html" },
-              { id: "S2", name: "Version Conflict Resolution", href: "demos/maven-demo/scenario-2-conflict/guide.html" },
-              { id: "S3", name: "Dependency Management (BOM)", href: "demos/maven-demo/scenario-3-mgmt/guide.html" }
+              { id: "MS1", name: "Basic Transitive Resolution", href: "demos/maven-demo/scenario-1-basic/guide.html" },
+              { id: "MS2", name: "Version Conflict Resolution", href: "demos/maven-demo/scenario-2-conflict/guide.html" },
+              { id: "MS3", name: "Dependency Management (BOM)", href: "demos/maven-demo/scenario-3-mgmt/guide.html" }
             ]},
           { title: "Then explore controls",
             links: [
-              { id: "S5", name: "Exclusions", href: "demos/maven-demo/scenario-5-exclusions/guide.html" },
-              { id: "S6", name: "Forcing Transitive Versions", href: "demos/maven-demo/scenario-6-forcing/guide.html" },
-              { id: "S7", name: "Dependency Scopes", href: "demos/maven-demo/scenario-7-scopes/guide.html" }
+              { id: "MS5", name: "Exclusions", href: "demos/maven-demo/scenario-5-exclusions/guide.html" },
+              { id: "MS6", name: "Forcing Transitive Versions", href: "demos/maven-demo/scenario-6-forcing/guide.html" },
+              { id: "MS7", name: "Dependency Scopes", href: "demos/maven-demo/scenario-7-scopes/guide.html" }
             ]},
           { title: "Advanced patterns",
             links: [
-              { id: "S9", name: "Version Ranges", href: "demos/maven-demo/scenario-9-ranges/guide.html" },
-              { id: "S11", name: "Dependency Locking", href: "demos/maven-demo/scenario-11-locking/guide.html" },
-              { id: "S13", name: "Variants", href: "demos/maven-demo/scenario-13-variants/guide.html" }
+              { id: "MS9", name: "Version Ranges", href: "demos/maven-demo/scenario-9-ranges/guide.html" },
+              { id: "MS11", name: "Dependency Locking", href: "demos/maven-demo/scenario-11-locking/guide.html" },
+              { id: "MS13", name: "Variants", href: "demos/maven-demo/scenario-13-variants/guide.html" }
             ]}
         ]
       }
@@ -394,28 +394,28 @@ number-sections: false
         groups: [
           { title: "Version changed unexpectedly",
             links: [
-              { id: "S2", name: "Version Conflict Resolution", href: "demos/gradle-demo/scenario-2-conflict/guide.html" },
-              { id: "S6", name: "Forcing Transitive Versions", href: "demos/gradle-demo/scenario-6-forcing/guide.html" }
+              { id: "GS2", name: "Version Conflict Resolution", href: "demos/gradle-demo/scenario-2-conflict/guide.html" },
+              { id: "GS6", name: "Forcing Transitive Versions", href: "demos/gradle-demo/scenario-6-forcing/guide.html" }
             ]},
           { title: "Compiles but fails at runtime",
             links: [
-              { id: "S7", name: "Dependency Scopes", href: "demos/gradle-demo/scenario-7-scopes/guide.html" },
-              { id: "S5", name: "Exclusions", href: "demos/gradle-demo/scenario-5-exclusions/guide.html" }
+              { id: "GS7", name: "Dependency Scopes", href: "demos/gradle-demo/scenario-7-scopes/guide.html" },
+              { id: "GS5", name: "Exclusions", href: "demos/gradle-demo/scenario-5-exclusions/guide.html" }
             ]},
           { title: "Build worked yesterday, broken today",
             links: [
-              { id: "S9", name: "Version Ranges", href: "demos/gradle-demo/scenario-9-ranges/guide.html" },
-              { id: "S11", name: "Dependency Locking", href: "demos/gradle-demo/scenario-11-locking/guide.html" }
+              { id: "GS9", name: "Version Ranges", href: "demos/gradle-demo/scenario-9-ranges/guide.html" },
+              { id: "GS11", name: "Dependency Locking", href: "demos/gradle-demo/scenario-11-locking/guide.html" }
             ]},
           { title: "Unwanted library keeps appearing",
             links: [
-              { id: "S5", name: "Exclusions", href: "demos/gradle-demo/scenario-5-exclusions/guide.html" },
-              { id: "S15", name: "Substitution", href: "demos/gradle-demo/scenario-15-substitution/guide.html" }
+              { id: "GS5", name: "Exclusions", href: "demos/gradle-demo/scenario-5-exclusions/guide.html" },
+              { id: "GS15", name: "Substitution", href: "demos/gradle-demo/scenario-15-substitution/guide.html" }
             ]},
           { title: "Dependency tree looks wrong",
             links: [
-              { id: "S1", name: "Basic Transitive Resolution", href: "demos/gradle-demo/scenario-1-basic/guide.html" },
-              { id: "S3", name: "Dependency Management (Platform)", href: "demos/gradle-demo/scenario-3-mgmt/guide.html" }
+              { id: "GS1", name: "Basic Transitive Resolution", href: "demos/gradle-demo/scenario-1-basic/guide.html" },
+              { id: "GS3", name: "Dependency Management (Platform)", href: "demos/gradle-demo/scenario-3-mgmt/guide.html" }
             ]}
         ]
       },
@@ -423,22 +423,22 @@ number-sections: false
         header: "Pick the outcome you need",
         groups: [
           { title: "Align versions across projects",
-            links: [{ id: "S3", name: "Dependency Management (Platform)", href: "demos/gradle-demo/scenario-3-mgmt/guide.html" }] },
+            links: [{ id: "GS3", name: "Dependency Management (Platform)", href: "demos/gradle-demo/scenario-3-mgmt/guide.html" }] },
           { title: "Override a transitive version",
-            links: [{ id: "S6", name: "Forcing Transitive Versions", href: "demos/gradle-demo/scenario-6-forcing/guide.html" }] },
+            links: [{ id: "GS6", name: "Forcing Transitive Versions", href: "demos/gradle-demo/scenario-6-forcing/guide.html" }] },
           { title: "Remove a transitive dependency",
             links: [
-              { id: "S5", name: "Exclusions", href: "demos/gradle-demo/scenario-5-exclusions/guide.html" },
-              { id: "S18", name: "Banning a Dependency", href: "demos/gradle-demo/scenario-18-banning/guide.html" }
+              { id: "GS5", name: "Exclusions", href: "demos/gradle-demo/scenario-5-exclusions/guide.html" },
+              { id: "GS18", name: "Banning a Dependency", href: "demos/gradle-demo/scenario-18-banning/guide.html" }
             ]},
           { title: "Ensure reproducible builds",
-            links: [{ id: "S11", name: "Dependency Locking", href: "demos/gradle-demo/scenario-11-locking/guide.html" }] },
+            links: [{ id: "GS11", name: "Dependency Locking", href: "demos/gradle-demo/scenario-11-locking/guide.html" }] },
           { title: "Block a known-bad version",
-            links: [{ id: "S14", name: "Version Rejection", href: "demos/gradle-demo/scenario-14-reject/guide.html" }] },
+            links: [{ id: "GS14", name: "Version Rejection", href: "demos/gradle-demo/scenario-14-reject/guide.html" }] },
           { title: "Use private/patched artifacts",
             links: [
-              { id: "S16", name: "Private BOM", href: "demos/gradle-demo/scenario-16-private-bom/guide.html" },
-              { id: "S17", name: "Private Patch", href: "demos/gradle-demo/scenario-17-private-patch/guide.html" }
+              { id: "GS16", name: "Private BOM", href: "demos/gradle-demo/scenario-16-private-bom/guide.html" },
+              { id: "GS17", name: "Private Patch", href: "demos/gradle-demo/scenario-17-private-patch/guide.html" }
             ]}
         ]
       },
@@ -447,54 +447,54 @@ number-sections: false
         groups: [
           { title: "Start with the fundamentals",
             links: [
-              { id: "S1", name: "Basic Transitive Resolution", href: "demos/gradle-demo/scenario-1-basic/guide.html" },
-              { id: "S2", name: "Version Conflict Resolution", href: "demos/gradle-demo/scenario-2-conflict/guide.html" },
-              { id: "S3", name: "Dependency Management (Platform)", href: "demos/gradle-demo/scenario-3-mgmt/guide.html" }
+              { id: "GS1", name: "Basic Transitive Resolution", href: "demos/gradle-demo/scenario-1-basic/guide.html" },
+              { id: "GS2", name: "Version Conflict Resolution", href: "demos/gradle-demo/scenario-2-conflict/guide.html" },
+              { id: "GS3", name: "Dependency Management (Platform)", href: "demos/gradle-demo/scenario-3-mgmt/guide.html" }
             ]},
           { title: "Then explore controls",
             links: [
-              { id: "S5", name: "Exclusions", href: "demos/gradle-demo/scenario-5-exclusions/guide.html" },
-              { id: "S6", name: "Forcing Transitive Versions", href: "demos/gradle-demo/scenario-6-forcing/guide.html" },
-              { id: "S7", name: "Dependency Scopes (Configurations)", href: "demos/gradle-demo/scenario-7-scopes/guide.html" }
+              { id: "GS5", name: "Exclusions", href: "demos/gradle-demo/scenario-5-exclusions/guide.html" },
+              { id: "GS6", name: "Forcing Transitive Versions", href: "demos/gradle-demo/scenario-6-forcing/guide.html" },
+              { id: "GS7", name: "Dependency Scopes (Configurations)", href: "demos/gradle-demo/scenario-7-scopes/guide.html" }
             ]},
           { title: "Advanced patterns",
             links: [
-              { id: "S9", name: "Version Ranges", href: "demos/gradle-demo/scenario-9-ranges/guide.html" },
-              { id: "S11", name: "Dependency Locking", href: "demos/gradle-demo/scenario-11-locking/guide.html" },
-              { id: "S13", name: "Variants & Capabilities", href: "demos/gradle-demo/scenario-13-variants/guide.html" }
+              { id: "GS9", name: "Version Ranges", href: "demos/gradle-demo/scenario-9-ranges/guide.html" },
+              { id: "GS11", name: "Dependency Locking", href: "demos/gradle-demo/scenario-11-locking/guide.html" },
+              { id: "GS13", name: "Variants & Capabilities", href: "demos/gradle-demo/scenario-13-variants/guide.html" }
             ]}
         ]
       }
     },
     sbt: {
-      label: "SBT",
+      label: "sbt",
       trouble: {
         header: "Match your symptom to a scenario",
         groups: [
           { title: "Version changed unexpectedly",
             links: [
-              { id: "S2", name: "Version Conflict Resolution (Latest Wins)", href: "demos/sbt-demo/scenario-2-conflict/guide.html" },
-              { id: "S6", name: "Forcing a Version", href: "demos/sbt-demo/scenario-6-forcing/guide.html" }
+              { id: "SB2", name: "Version Conflict Resolution (Latest Wins)", href: "demos/sbt-demo/scenario-2-conflict/guide.html" },
+              { id: "SB6", name: "Forcing a Version", href: "demos/sbt-demo/scenario-6-forcing/guide.html" }
             ]},
           { title: "Compiles but fails at runtime",
             links: [
-              { id: "S7", name: "Dependency Configurations", href: "demos/sbt-demo/scenario-7-scopes/guide.html" },
-              { id: "S5", name: "Exclusions", href: "demos/sbt-demo/scenario-5-exclusions/guide.html" }
+              { id: "SB7", name: "Dependency Configurations", href: "demos/sbt-demo/scenario-7-scopes/guide.html" },
+              { id: "SB5", name: "Exclusions", href: "demos/sbt-demo/scenario-5-exclusions/guide.html" }
             ]},
           { title: "Build worked yesterday, broken today",
             links: [
-              { id: "S9", name: "Version Ranges", href: "demos/sbt-demo/scenario-9-ranges/guide.html" },
-              { id: "S11", name: "Dependency Locking", href: "demos/sbt-demo/scenario-11-locking/guide.html" }
+              { id: "SB9", name: "Version Ranges", href: "demos/sbt-demo/scenario-9-ranges/guide.html" },
+              { id: "SB11", name: "Dependency Locking", href: "demos/sbt-demo/scenario-11-locking/guide.html" }
             ]},
           { title: "Unwanted library keeps appearing",
             links: [
-              { id: "S5", name: "Exclusions", href: "demos/sbt-demo/scenario-5-exclusions/guide.html" },
-              { id: "S15", name: "Substitution", href: "demos/sbt-demo/scenario-15-substitution/guide.html" }
+              { id: "SB5", name: "Exclusions", href: "demos/sbt-demo/scenario-5-exclusions/guide.html" },
+              { id: "SB15", name: "Substitution", href: "demos/sbt-demo/scenario-15-substitution/guide.html" }
             ]},
           { title: "Dependency tree looks wrong",
             links: [
-              { id: "S1", name: "Basic Transitive Resolution", href: "demos/sbt-demo/scenario-1-basic/guide.html" },
-              { id: "S3", name: "Dependency Management", href: "demos/sbt-demo/scenario-3-mgmt/guide.html" }
+              { id: "SB1", name: "Basic Transitive Resolution", href: "demos/sbt-demo/scenario-1-basic/guide.html" },
+              { id: "SB3", name: "Dependency Management", href: "demos/sbt-demo/scenario-3-mgmt/guide.html" }
             ]}
         ]
       },
@@ -502,22 +502,22 @@ number-sections: false
         header: "Pick the outcome you need",
         groups: [
           { title: "Align versions across projects",
-            links: [{ id: "S3", name: "Dependency Management", href: "demos/sbt-demo/scenario-3-mgmt/guide.html" }] },
+            links: [{ id: "SB3", name: "Dependency Management", href: "demos/sbt-demo/scenario-3-mgmt/guide.html" }] },
           { title: "Override a transitive version",
-            links: [{ id: "S6", name: "Forcing a Version", href: "demos/sbt-demo/scenario-6-forcing/guide.html" }] },
+            links: [{ id: "SB6", name: "Forcing a Version", href: "demos/sbt-demo/scenario-6-forcing/guide.html" }] },
           { title: "Remove a transitive dependency",
             links: [
-              { id: "S5", name: "Exclusions", href: "demos/sbt-demo/scenario-5-exclusions/guide.html" },
-              { id: "S18", name: "Banning a Dependency", href: "demos/sbt-demo/scenario-18-banning/guide.html" }
+              { id: "SB5", name: "Exclusions", href: "demos/sbt-demo/scenario-5-exclusions/guide.html" },
+              { id: "SB18", name: "Banning a Dependency", href: "demos/sbt-demo/scenario-18-banning/guide.html" }
             ]},
           { title: "Ensure reproducible builds",
-            links: [{ id: "S11", name: "Dependency Locking", href: "demos/sbt-demo/scenario-11-locking/guide.html" }] },
+            links: [{ id: "SB11", name: "Dependency Locking", href: "demos/sbt-demo/scenario-11-locking/guide.html" }] },
           { title: "Block a known-bad version",
-            links: [{ id: "S14", name: "Version Rejection", href: "demos/sbt-demo/scenario-14-reject/guide.html" }] },
+            links: [{ id: "SB14", name: "Version Rejection", href: "demos/sbt-demo/scenario-14-reject/guide.html" }] },
           { title: "Use private/patched artifacts",
             links: [
-              { id: "S16", name: "Private BOM", href: "demos/sbt-demo/scenario-16-private-bom/guide.html" },
-              { id: "S17", name: "Private Patch", href: "demos/sbt-demo/scenario-17-private-patch/guide.html" }
+              { id: "SB16", name: "Private BOM", href: "demos/sbt-demo/scenario-16-private-bom/guide.html" },
+              { id: "SB17", name: "Private Patch", href: "demos/sbt-demo/scenario-17-private-patch/guide.html" }
             ]}
         ]
       },
@@ -526,21 +526,21 @@ number-sections: false
         groups: [
           { title: "Start with the fundamentals",
             links: [
-              { id: "S1", name: "Basic Transitive Resolution", href: "demos/sbt-demo/scenario-1-basic/guide.html" },
-              { id: "S2", name: "Version Conflict Resolution (Latest Wins)", href: "demos/sbt-demo/scenario-2-conflict/guide.html" },
-              { id: "S3", name: "Dependency Management", href: "demos/sbt-demo/scenario-3-mgmt/guide.html" }
+              { id: "SB1", name: "Basic Transitive Resolution", href: "demos/sbt-demo/scenario-1-basic/guide.html" },
+              { id: "SB2", name: "Version Conflict Resolution (Latest Wins)", href: "demos/sbt-demo/scenario-2-conflict/guide.html" },
+              { id: "SB3", name: "Dependency Management", href: "demos/sbt-demo/scenario-3-mgmt/guide.html" }
             ]},
           { title: "Then explore controls",
             links: [
-              { id: "S5", name: "Exclusions", href: "demos/sbt-demo/scenario-5-exclusions/guide.html" },
-              { id: "S6", name: "Forcing a Version", href: "demos/sbt-demo/scenario-6-forcing/guide.html" },
-              { id: "S7", name: "Dependency Configurations", href: "demos/sbt-demo/scenario-7-scopes/guide.html" }
+              { id: "SB5", name: "Exclusions", href: "demos/sbt-demo/scenario-5-exclusions/guide.html" },
+              { id: "SB6", name: "Forcing a Version", href: "demos/sbt-demo/scenario-6-forcing/guide.html" },
+              { id: "SB7", name: "Dependency Configurations", href: "demos/sbt-demo/scenario-7-scopes/guide.html" }
             ]},
           { title: "Advanced patterns",
             links: [
-              { id: "S9", name: "Version Ranges", href: "demos/sbt-demo/scenario-9-ranges/guide.html" },
-              { id: "S11", name: "Dependency Locking", href: "demos/sbt-demo/scenario-11-locking/guide.html" },
-              { id: "S13", name: "Variants", href: "demos/sbt-demo/scenario-13-variants/guide.html" }
+              { id: "SB9", name: "Version Ranges", href: "demos/sbt-demo/scenario-9-ranges/guide.html" },
+              { id: "SB11", name: "Dependency Locking", href: "demos/sbt-demo/scenario-11-locking/guide.html" },
+              { id: "SB13", name: "Variants", href: "demos/sbt-demo/scenario-13-variants/guide.html" }
             ]}
         ]
       }
@@ -569,7 +569,7 @@ number-sections: false
           { title: "Unwanted transitive dependency",
             links: [
               { id: "P9", name: "Exclusions: The Gap", href: "demos/python-demo/scenario-9-exclusions-gap/guide.html" },
-              { id: "P1", name: "Basic Transitive Resolution", href: "demos/python-demo/scenario-1-basic/guide.html" }
+              { id: "P6", name: "Constraints Files", href: "demos/python-demo/scenario-6-constraints/guide.html" }
             ]}
         ]
       },
@@ -646,6 +646,11 @@ number-sections: false
             links: [
               { id: "N6", name: "Overrides & Resolutions", href: "demos/node-demo/scenario-6-overrides/guide.html" },
               { id: "N9", name: "Tree Shape & Deduplication", href: "demos/node-demo/scenario-9-tree-shape/guide.html" }
+            ]},
+          { title: "npm audit is red (or always ignored)",
+            links: [
+              { id: "N12", name: "Auditing the Tree", href: "demos/node-demo/scenario-12-audit/guide.html" },
+              { id: "N6", name: "Overrides & Resolutions", href: "demos/node-demo/scenario-6-overrides/guide.html" }
             ]}
         ]
       },
@@ -661,7 +666,9 @@ number-sections: false
           { title: "Keep dev tooling out of production",
             links: [{ id: "N7", name: "Dependency Types", href: "demos/node-demo/scenario-7-dep-types/guide.html" }] },
           { title: "Use a private registry safely",
-            links: [{ id: "N11", name: "Private Registry & Dependency Confusion", href: "demos/node-demo/scenario-11-private-registry/guide.html" }] }
+            links: [{ id: "N11", name: "Private Registry & Dependency Confusion", href: "demos/node-demo/scenario-11-private-registry/guide.html" }] },
+          { title: "Find vulnerable or abandoned packages",
+            links: [{ id: "N12", name: "Auditing the Tree", href: "demos/node-demo/scenario-12-audit/guide.html" }] }
         ]
       },
       learn: {
@@ -712,8 +719,6 @@ number-sections: false
     var jCards = document.querySelectorAll('#dh-journey-cards .dh-journey-card');
     jCards.forEach(function(c) { c.classList.remove('selected'); });
     document.getElementById('dh-results').classList.remove('visible');
-    // update Node "coming soon" state
-    updateNodeState();
     // smooth scroll
     document.getElementById('dh-step-2').scrollIntoView({ behavior: 'smooth', block: 'center' });
   };
@@ -728,38 +733,22 @@ number-sections: false
     renderResults();
   };
 
-  function updateNodeState() {
-    // Node scenarios are placeholders — add a "coming soon" badge if Node selected
-    // (No-op for other ecosystems)
-  }
-
   function renderResults() {
     if (!selectedEco || !selectedJourney) return;
     var ecoData = data[selectedEco];
     var journeyData = ecoData[selectedJourney];
     var panel = document.getElementById('dh-results');
 
-    var isNode = (selectedEco === 'node');
-    var comingSoon = isNode ? ' <span style="font-size:0.72rem; color:#888; font-weight:400;">(coming soon)</span>' : '';
-
-    var html = '<div class="dh-results-header">' + journeyData.header + ' — ' + ecoData.label + comingSoon + '</div>';
+    var html = '<div class="dh-results-header">' + journeyData.header + ' — ' + ecoData.label + '</div>';
 
     journeyData.groups.forEach(function(g) {
       html += '<div class="dh-result-group">';
       html += '<div class="dh-result-group-title">' + g.title + '</div>';
       g.links.forEach(function(link) {
-        var isPlaceholder = (link.href === '#');
-        if (isPlaceholder) {
-          html += '<div class="dh-result-link" style="cursor: default; opacity: 0.5;">';
-          html += '<span class="dh-link-scenario">' + link.id + '</span> ';
-          html += link.name + ' <span class="dh-link-desc">(coming soon)</span>';
-          html += '</div>';
-        } else {
-          html += '<a class="dh-result-link" href="' + link.href + '">';
-          html += '<span class="dh-link-scenario">' + link.id + '</span> ';
-          html += link.name;
-          html += '</a>';
-        }
+        html += '<a class="dh-result-link" href="' + link.href + '">';
+        html += '<span class="dh-link-scenario">' + link.id + '</span> ';
+        html += link.name;
+        html += '</a>';
       });
       html += '</div>';
     });
@@ -784,11 +773,28 @@ number-sections: false
 </script>
 ```
 
+::: {.content-visible unless-format="html"}
+
+## Who this book is for
+
+Dependency management earns your trust by behaving as you'd expect — until it doesn't. Most trouble comes not from misunderstanding syntax, but from assumptions that conflict with how build tools actually operate. This book is about the mechanical rules that govern those operations, in five ecosystems: Maven, Gradle and sbt on the JVM, pip, Poetry and uv in Python, and npm, pnpm and Yarn in Node.
+
+If you've stared at a dependency tree and thought *"that doesn't make sense,"* this book is for you. It's written for experienced developers, tech leads responsible for build stability, platform and security engineers, and junior developers who want to avoid persistent misconceptions early.
+
+## How to use this guide
+
+Don't read it front to back. Treat it like a field guide. If something in your build has just changed under you, start at *Start Here for Troubleshooting*. If your build is stable and you want to take deliberate control of it, start at *Start Here for Implementing Dependency Controls*. Both pages route you by symptom or goal to a scenario in your ecosystem. Each scenario gives you the expected intuition, the actual result, the underlying mechanism, and a safe resolution.
+
+The *Scenarios* chapter lists every scenario in every ecosystem and explains the fixed structure each one follows.
+
+:::
+
+::: {.content-visible when-format="html"}
 ::: {.dh-about}
 
 ## Who this book is for
 
-Dependency management earns your trust by behaving as you'd expect — until it doesn't. Most trouble comes not from misunderstanding syntax, but from assumptions that conflict with how build tools actually operate. This book is about the mechanical rules that govern those operations.
+Dependency management earns your trust by behaving as you'd expect — until it doesn't. Most trouble comes not from misunderstanding syntax, but from assumptions that conflict with how build tools actually operate. This book is about the mechanical rules that govern those operations, in five ecosystems: Maven, Gradle and sbt on the JVM, pip, Poetry and uv in Python, and npm, pnpm and Yarn in Node.
 
 If you've stared at a dependency tree and thought *"that doesn't make sense,"* this book is for you. It's written for experienced developers, tech leads responsible for build stability, platform and security engineers, and junior developers who want to avoid persistent misconceptions early.
 
@@ -798,4 +804,5 @@ Don't read it front to back. Treat it like a field guide: use the pathway choose
 
 Alternatively, pick "Understanding the system" above to get a curated reading order that builds your mental model from the ground up.
 
+:::
 :::

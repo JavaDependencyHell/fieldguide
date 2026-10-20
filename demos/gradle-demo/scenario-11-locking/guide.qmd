@@ -1,18 +1,19 @@
 ---
 title: "Dependency Locking"
-tagline: "Or what to Do When Today’s Build Doesn’t Match Yesterday’s"
+tagline: "Or what to do when today's build doesn't match yesterday's"
 type: scenario
 tool: gradle
 ---
 
 #### ! Scenario
 
-*Or what to Do When Today’s Build Doesn’t Match Yesterday’s*
-This scenario demonstrates Gradle's Dependency Locking feature.
+*Or what to do when today's build doesn't match yesterday's*
+This scenario demonstrates Gradle's built-in dependency locking: freezing the answer to a dynamic version so every build resolves the same graph.
 
 ::: {.callout-note title="Tool Versions"}
 This scenario was tested with **Gradle 8.14**.
 Dependency locking has been built in since **Gradle 4.8**; the single per-project `gradle.lockfile` is the default format from **Gradle 7.0**.
+Re-verified on Gradle 9.3 (October 2026): Gradle 9 raised the runtime floor to JDK 17 and changed defaults such as the configuration cache, not the resolution rules shown here.
 :::
 
 #### ! Example
@@ -20,32 +21,61 @@ Dependency locking has been built in since **Gradle 4.8**; the single per-projec
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
-    Root[Project Root] --> LibA[lib-a:1.+]
+    Root[Project Root] --> LibA["lib-a:+"]
+    Lock[gradle.lockfile] -. strictly 1.0.0 .-> LibA
 ```
-
-
 
 ```{.groovy include="build.gradle" snippet="s11-deps"}
 ```
 
+The committed `gradle.lockfile` pins `lib-a` to `1.0.0`, the version it resolved to when the lock was written:
+
+```{.text include="gradle.lockfile"}
+```
+
 #### ! Expect
-Build today must match build tomorrow exactly.
+`lib-a:+` means "newest available". The repository has `2.0.0`, so that is what you get.
+
+#### ! Actual
+The tree shows `com.demo:lib-a:+ -> 1.0.0`. The lock file wins: Gradle resolves the dynamic version to the locked `1.0.0` even though `2.0.0` is sitting in the repository. Delete the lock file (or run `--write-locks`) and the same build resolves `2.0.0`.
 
 #### ! Why
-With locking activated (`dependencyLocking { lockAllConfigurations() }`), Gradle records the resolved graph in a `gradle.lockfile`. On subsequent runs, it uses these versions instead of performing dynamic resolution. Gradle is the only one of the three tools with locking built in — Maven and sbt need plugins.
+With `dependencyLocking { lockAllConfigurations() }` active, Gradle reads `gradle.lockfile` before resolving each configuration and adds every entry as a `strictly` constraint. Resolution still happens, but `+` now has to satisfy `strictly 1.0.0`, and `dependencyInsight` reports the reason: `Dependency version enforced by Dependency Locking`. If resolution produces a module or version the lock does not list, the build fails instead of silently drifting. Updating is an explicit act: `gradle dependencies --write-locks` (or `--update-locks com.demo:lib-a`) rewrites the file for review.
 
-#### ! Scales
-Dependency locking is essential for any team that values reproducible builds, which is to say, every professional team. It is particularly critical in CI/CD pipelines, where builds must be deterministic to enable reliable testing, deployment, and rollback. Lock files should be committed to version control. Updating dependencies becomes an explicit action (./gradlew dependencies --write-locks) rather than an accidental side effect of a repository change. Many organisations combine locking with automated dependency update tools (like Dependabot or Renovate) that submit pull requests when new versions are available.
+#### ! Fix
+*   **Adopt locking:** add the `dependencyLocking` block, run `gradle dependencies --write-locks`, commit `gradle.lockfile`.
+*   **Update deliberately:** run `--write-locks` again (or `--update-locks group:module` for one module), review the diff, commit.
+*   **Lock state out of date error:** a dependency changed without the lock being updated. Decide whether the change is intended, then `--write-locks`.
+
+#### ! Risk
+* LOW A lock file committed and updated through reviewed pull requests.
+* MEDIUM A lock file that is regenerated on every CI run, which locks nothing.
+* HIGH Dynamic versions in production code with no lock at all: different builds, different graphs, no record of which was deployed.
+
+#### ! Control
+*   **Commit the lock file** and treat its diff as the dependency review.
+*   **Combine with update automation** (Renovate, Dependabot) so lock updates arrive as pull requests rather than surprises.
+*   **Consider `failOnDynamicVersions()`** if you would rather have no ranges than locked ones.
 
 #### ! Check
-**Fast check:** `./gradlew dependencies --write-locks`, then inspect `gradle.lockfile`
+**Fast check:** `gradle dependencies --configuration compileClasspath`, then `gradle dependencyInsight --dependency lib-a --configuration compileClasspath`
 
-**What to look for:** The `gradle.lockfile` contains the exact resolved versions; subsequent `./gradlew dependencies` runs resolve to those locked versions even though the build declares `1.+`.
+**What to look for:** `com.demo:lib-a:+ -> 1.0.0` in the tree; in the insight report, the selection reason `By constraint: Dependency version enforced by Dependency Locking` and the request shown as `com.demo:lib-a:{strictly 1.0.0}`.
 
-**Conclusion:** Locking ensures reproducibility by snapshotting dynamic versions.
+**Conclusion:** The lock file turned a dynamic request into a strict one.
+
+#### ! Scales
+Locking is essential for any team that values reproducible builds, which is every professional team, and critical in CI/CD pipelines where deterministic builds enable reliable testing, deployment and rollback. The lock file belongs in version control, and updating it becomes an explicit, reviewable action rather than a side effect of a repository change. Gradle is the only one of the three JVM tools with locking built in; Maven and sbt need plugins ([MS11](../../maven-demo/scenario-11-locking/guide.qmd), [SB11](../../sbt-demo/scenario-11-locking/guide.qmd)).
 
 #### ! Takeaway
-Locking ensures reproducibility.
+A lock file makes the graph a committed artifact: dynamic versions resolve to what you reviewed, and anything else fails the build.
 
 #### ! Related
-*   [GS9: Ranges](../scenario-9-ranges/guide.qmd)
+*   [GS9](../scenario-9-ranges/guide.qmd) - The dynamic versions that locking tames.
+*   [MS11](../../maven-demo/scenario-11-locking/guide.qmd) / [SB11](../../sbt-demo/scenario-11-locking/guide.qmd) - Locking via plugins in Maven and sbt.
+*   [P5](../../python-demo/scenario-5-locks/guide.qmd) - Python's lock files, where the tools disagree on the format.
+*   [N5](../../node-demo/scenario-5-locks/guide.qmd) - Node, where every tool locks by default.
+
+#### ! Wild
+
+The lock file is the Gradle artifact most often *present* but *ineffective*. A common CI configuration runs `gradle dependencies --write-locks` as a setup step "to make sure the lock is fresh", which regenerates it from whatever the repository offers that morning and discards the one in source control. The build is then exactly as reproducible as it was before locking was adopted, and the team finds out when a transitive upgrade reaches production without appearing in any pull request. The lock file only works when CI reads it and humans write it.

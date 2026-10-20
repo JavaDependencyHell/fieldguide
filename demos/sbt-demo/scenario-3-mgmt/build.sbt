@@ -6,9 +6,9 @@ scalaVersion := "2.13.12"
 
 resolvers += "Local Demo Repo" at "file://" + baseDirectory.value / "../../../target/local-repo"
 
-// SBT doesn't have a direct equivalent to Maven's <dependencyManagement> BOM import in the core.
-// However, you can define versions in variables or use plugins.
-// For this demo, we simulate "management" by defining a common version variable.
+// sbt 1.x has no equivalent of Maven's <dependencyManagement> BOM import in
+// the core (sbt 2.0 adds one). Because build.sbt is Scala, the idiomatic way
+// to centralise versions is a val (or a project/Dependencies.scala object).
 
 // tag::s3-deps[]
 val libVersion = "1.0.0"

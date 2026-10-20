@@ -1,19 +1,21 @@
 ---
 title: "Basic Transitive Resolution"
-tagline: "Or what to Do When Gradle Resolves More Than You Declared"
+tagline: "Or what to do when Gradle resolves more than you declared"
 type: scenario
 tool: gradle
 ---
 
-#### ! Scenario What to Do When Gradle Resolves More Than You Declared
+#### ! Scenario
 
-This scenario demonstrates fundamental concept of transitive dependency resolution. It shows how it automatically discovers and includes dependencies of your direct dependencies.
+*Or what to do when Gradle resolves more than you declared*
+This scenario demonstrates the fundamental concept of transitive dependency resolution: Gradle automatically discovers and includes the dependencies of your direct dependencies.
 
 ::: {.callout-note title="Tool Versions"}
 This scenario was tested with **Gradle 8.14**.
+Re-verified on Gradle 9.3 (October 2026): Gradle 9 raised the runtime floor to JDK 17 and changed defaults such as the configuration cache, not the resolution rules shown here.
 :::
 
-#### ! Diagram
+#### ! Example
 
 ```{mermaid}
 %%| fig-width: 4.4
@@ -23,36 +25,57 @@ graph LR
     LibB --> LibC[lib-c:1.0.0]
 ```
 
-
-
 ```{.groovy include="build.gradle" snippet="s1-deps"}
 ```
 
-#### ! Dot Reader Expectation
-Declaring `lib-a` automatically includes its transitive dependencies `lib-b` and `lib-c`.
+#### ! Expect
+Declaring `lib-a` gives you `lib-a` and nothing else.
+
+#### ! Actual
+Three jars arrive: `lib-a`, its dependency `lib-b`, and `lib-b`'s dependency `lib-c`. One line in the build file became three artifacts on the classpath.
 
 #### ! Why
-Gradle performs a depth-first traversal of the graph, following every edge in POM or Gradle module metadata files. In the absence of version conflicts, it collects every unique artifact to build the complete classpath.
+Gradle reads each resolved component's metadata (its POM, or Gradle Module Metadata when published) and follows every dependency edge it finds, building the complete graph before it builds any classpath. In the absence of version conflicts, every unique module it reaches ends up on the classpath. You never declared `lib-b` or `lib-c`; `lib-a`'s author did, and Gradle trusts that declaration.
 
-#### ! Scales How This Scales
-In production projects, this simple chain (A → B → C) is replicated thousands of times. A typical Spring Boot application resolves 200--400 transitive dependencies from a handful of direct declarations. The "happy path" of zero conflicts becomes increasingly rare as the graph grows; diamond dependencies emerge naturally.
+#### ! Fix
+Nothing is broken here, but the transitives are now yours to manage:
+
+*   **See them:** `gradle dependencies --configuration runtimeClasspath` prints the full tree; `gradle dependencyInsight --dependency lib-c` explains why one module is there.
+*   **Tame them:** if a transitive is wrong or unwanted, use an exclusion ([GS5](../scenario-5-exclusions/guide.qmd)), a forced version ([GS6](../scenario-6-forcing/guide.qmd)), or a platform ([GS3](../scenario-3-mgmt/guide.qmd)).
+
+#### ! Risk
+* LOW A short, well-known chain like this one, where every transitive is maintained by the same team.
+* MEDIUM Dozens of transitives from a large framework, each with its own release cadence and CVE history.
+* HIGH Transitives nobody on the team has heard of. Every one of them runs in production with the same privileges as your code.
+
+#### ! Control
+*   **Make the graph visible in review.** A build scan or a committed `dependencies` report lets reviewers see what a one-line change actually adds.
+*   **Prefer `implementation` to `api`.** It keeps your own transitives from leaking into your consumers' compile classpaths ([GS7](../scenario-7-scopes/guide.qmd)).
 
 #### ! Check
 
-**Fast check (Gradle):**
+**Fast check:**
 
 ```bash
-./gradlew dependencies
+gradle dependencies --configuration compileClasspath
 ```
 
-**What to look for:**
-A clean tree with no unexpected versions or `omitted` nodes.
+**What to look for:** `lib-a:1.0.0` with `lib-b:1.0.0` nested beneath it and `lib-c:1.0.0` beneath that. No `->` arrows (nothing was upgraded) and no `(*)` markers (nothing was repeated).
 
-**Conclusion:**
-The dependency graph is healthy and resolving as expected.
+**Conclusion:** The graph is healthy and Gradle resolved it exactly as the metadata describes.
+
+#### ! Scales
+In production projects this simple chain is replicated hundreds of times over. A handful of direct declarations routinely expands into a graph of a few hundred artifacts, and the "happy path" with zero conflicts becomes rare as the graph grows: diamonds emerge naturally the moment two of your dependencies share a third ([GS2](../scenario-2-conflict/guide.qmd)).
 
 #### ! Takeaway
-It resolves the full graph by default.
+You declare the roots; Gradle resolves the whole tree. Everything it adds is as much your responsibility as the line you wrote.
 
 #### ! Related
-*   [GS2: Version Conflict](../scenario-2-conflict/guide.qmd)
+*   [GS2](../scenario-2-conflict/guide.qmd) - What happens when two paths reach the same library at different versions.
+*   [MS1](../../maven-demo/scenario-1-basic/guide.qmd) / [SB1](../../sbt-demo/scenario-1-basic/guide.qmd) - The same chain resolved by Maven and sbt.
+*   [P1](../../python-demo/scenario-1-basic/guide.qmd) - The same chain in Python, where one environment holds one version of each package.
+*   [N1](../../node-demo/scenario-1-basic/guide.qmd) - The same chain in Node, where the tree is nested on disk.
+
+#### ! Wild
+
+A single `implementation 'org.springframework.boot:spring-boot-starter-web'` line is the canonical example: it brings in Spring MVC, an embedded Tomcat, Jackson, SLF4J with Logback, and their dependencies in turn, dozens of artifacts from one declaration. That is the point of a starter, and it is also why `gradle dependencies` on a fresh Spring Boot project is several screens long. Most of what runs in a Boot application was never declared by the team that owns it.

@@ -1,18 +1,19 @@
 ---
 title: "Optional Dependencies"
-tagline: "Or what to Do When Optional Dependencies Don’t Arrive"
+tagline: "Or what to do when optional dependencies don't arrive"
 type: scenario
 tool: gradle
 ---
 
 #### ! Scenario
 
-*Or what to Do When Optional Dependencies Don’t Arrive*
-This scenario demonstrates how Gradle handles optional dependencies (usually via `compileOnly` or feature variants).
+*Or what to do when optional dependencies don't arrive*
+This scenario demonstrates how Gradle handles a library's optional dependency as a consumer, and how a Gradle library expresses the same idea as a producer (feature variants).
 
 ::: {.callout-note title="Tool Versions"}
 This scenario was tested with **Gradle 8.14**.
-Feature variants shipped in **Gradle 5.3**.
+Feature variants (`registerFeature`) shipped in **Gradle 5.3**.
+Re-verified on Gradle 9.3 (October 2026): Gradle 9 raised the runtime floor to JDK 17 and changed defaults such as the configuration cache, not the resolution rules shown here.
 :::
 
 #### ! Example
@@ -20,46 +21,75 @@ Feature variants shipped in **Gradle 5.3**.
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
-    Root[Project Root] --> LibA["lib-a:1.0.0 (compileOnly)"]
+    Root[Project Root] --> LibD[lib-d:1.0.0]
+    LibD -.->|optional| LibC[lib-c:1.0.0]
 ```
 
-
+`lib-d:1.0.0` declares `lib-c:1.0.0` in its POM with `<optional>true</optional>`. We consume `lib-d`:
 
 ```{.groovy include="build.gradle" snippet="s8-deps"}
 ```
 
-#### ! Expect
-"I don't want to force this on consumers."
+And this is how a Gradle library would express the same "optional" relationship when it is the producer:
 
-#### ! Actual
-`compileOnly` dependencies are not transitive.
-
-#### ! Reality
-Not transitive.
-
-#### ! Why
-Gradle doesn't have a direct equivalent of Maven's `<optional>true</optional>` flag in its native dependency model. When consuming Maven dependencies that have optional transitives, Gradle honours the flag and does not include those transitives. For Gradle-native projects, `compileOnly` achieves a similar effect (the dependency is available during compilation but not at runtime and not transitive to consumers). However, the modern and more expressive approach is Feature Variants, introduced in Gradle 6.
-
-#### ! Scales
-Feature Variants let a library declare separate "features" (e.g., a database driver integration, a metrics integration) that consumers can opt into explicitly. This is significantly more powerful than Maven's binary optional flag because consumers can see what optional features are available and declare which ones they need. Large frameworks like Spring use this pattern --- the `spring-boot-starter-data-jpa` starter is essentially a feature variant that pulls in JPA-related dependencies. For library authors, Feature Variants with capabilities are the recommended modern approach.
-
-#### ! Check
-
-**Fast check (Gradle):**
-
-When project `B` depends on project `A` (which has a `compileOnly` dependency on `lib-a`), run this in project `B`:
-```bash
-./gradlew dependencies
+```{.groovy include="build.gradle" snippet="s8-feature"}
 ```
 
-**What to look for:**
-`lib-a` will be absent from the dependency tree of project `B`.
+#### ! Expect
+`lib-d` depends on `lib-c`, so `lib-c` arrives on the classpath like any other transitive.
 
-**Conclusion:**
-`compileOnly` dependencies are not transitive and are one way to model optional dependencies in Gradle.
+#### ! Actual
+It does not. `runtimeClasspath` contains `lib-d` alone. The optional flag in `lib-d`'s POM is honoured: Gradle records that `lib-d` *can* use `lib-c` but does not add it. If your code (or `lib-d`, at runtime) needs `lib-c`, you declare it yourself.
+
+#### ! Why
+Maven's `<optional>true</optional>` means "I need this to build, but my consumers should decide whether they want it". Gradle maps that to a dependency that is not followed when resolving the consumer's graph; in Gradle Module Metadata terms it is simply not part of the published variant's dependencies. Gradle's own, richer model is the **feature variant**: a library registers a named feature with its own source set, dependencies and capability. The main variant never carries `lib-c`; a consumer that wants the feature asks for its capability and receives the extra dependencies with it.
+
+#### ! Fix
+*   **You need the optional feature:** declare the dependency yourself (`implementation 'com.demo:lib-c:1.0.0'`). That is the contract.
+*   **You are the library author:** register a feature variant rather than reaching for `compileOnly`. `compileOnly` hides the dependency from consumers but also from your *own* runtime; a feature variant publishes it as an opt-in.
+*   **Consuming a feature variant** (when the producer publishes Gradle Module Metadata):
+    ```groovy
+    implementation('com.demo:lib-d:1.0.0') {
+        capabilities {
+            requireCapability('com.demo:lib-d-reporting')
+        }
+    }
+    ```
+
+#### ! Risk
+* LOW Optional integrations you never use. This is the flag working as intended.
+* MEDIUM An optional dependency your code *does* use, found the first time a `ClassNotFoundException` appears at runtime.
+* HIGH Simulating "optional" with `compileOnly` in a published library: consumers cannot discover the feature, and your own tests may pass only because the test classpath happens to include it.
+
+#### ! Control
+*   **Read the producer's POM or module metadata** when a class you expected is missing; optional dependencies are listed there, flagged.
+*   **Prefer feature variants** for Gradle-published libraries: they are discoverable (`gradle outgoingVariants`) and resolvable by capability.
+
+#### ! Check
+**Fast check:**
+
+```bash
+gradle dependencies --configuration runtimeClasspath
+gradle dependencies --configuration reportingRuntimeClasspath
+```
+
+**What to look for:** the first report shows `lib-d:1.0.0` and nothing beneath it (no `lib-c`); the second, the feature's own classpath, shows `lib-c:1.0.0`. `gradle outgoingVariants --variant reportingRuntimeElements` lists the feature's capability, `:gradle-scenario-8-optional-reporting`.
+
+**Conclusion:** Gradle honours POM optionality as a consumer and models it as feature variants as a producer.
+
+#### ! Scales
+Feature variants let a library split integrations (a database driver, a metrics exporter) into opt-in pieces that consumers select by name, instead of a single binary `optional` flag whose meaning is lost once the POM is published. For library authors on Gradle this is the recommended way to publish optional functionality; for consumers it means `requireCapability` replaces the guesswork of "which transitive do I need to add?".
 
 #### ! Takeaway
-`compileOnly` simulates optionality.
+Optional means "ask for it yourself". As a consumer, declare the pieces you use; as a Gradle producer, publish them as feature variants so consumers can.
 
 #### ! Related
-*   [GS7: Scopes](../scenario-7-scopes/guide.qmd)
+*   [GS7](../scenario-7-scopes/guide.qmd) - Configurations, and why `compileOnly` is not "optional".
+*   [GS13](../scenario-13-variants/guide.qmd) - Selecting between published variants.
+*   [MS8](../../maven-demo/scenario-8-optional/guide.qmd) / [SB8](../../sbt-demo/scenario-8-optional/guide.qmd) - The same optional flag consumed by Maven and sbt.
+*   [P7](../../python-demo/scenario-7-extras-groups/guide.qmd) - Python extras, the opt-in model done as package metadata.
+*   [N7](../../node-demo/scenario-7-dep-types/guide.qmd) - Node's `optionalDependencies` and peer dependencies.
+
+#### ! Wild
+
+Spring Framework is the large-scale example of the optional flag: its core modules mark their many integrations (caching providers, template engines, validation, scripting) as optional so that depending on `spring-context` does not drag in every library it can talk to. The consequence every Spring developer has met is the `ClassNotFoundException` that appears the first time a feature is switched on, followed by one more line in the build file. Gradle's feature variants exist to turn that discovery into a declared, named opt-in.

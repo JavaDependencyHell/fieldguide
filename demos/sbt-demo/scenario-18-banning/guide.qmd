@@ -1,17 +1,17 @@
 ---
 title: "Banning a Dependency (Global Exclusion)"
-tagline: "Or what to Do When a Library Must Never Appear Anywhere"
+tagline: "Or what to do when a library must never appear anywhere"
 type: scenario
 tool: sbt
 ---
 
 #### ! Scenario
 
-*Or what to Do When a Library Must Never Appear Anywhere*
+*Or what to do when a library must never appear anywhere*
 This scenario demonstrates how to keep an artifact out of the *entire* build — not just out of one dependency's subtree ([SB5](../scenario-5-exclusions/guide.qmd)), and not just certain versions of it ([SB14](../scenario-14-reject/guide.qmd)). The classic drivers are security (an EOL library with known CVEs) and licensing (a GPL artifact arriving transitively).
 
 ::: {.callout-note title="Tool Versions"}
-This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). Under the older Ivy engine (sbt < 1.3, or `useCoursier := false`) resolution edge cases differ and settings like `conflictManager` behave differently. `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin.
+This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). On sbt 1.x the older Ivy engine can still be selected with `useCoursier := false`; under Ivy, resolution edge cases differ and Ivy-only settings such as `conflictManager` apply (Coursier ignores them). `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin. sbt 2.0 (June 2026) keeps these resolution rules, removes the Ivy opt-out, adds native BOM import, and turns Test-configuration eviction warnings into errors; the demos here target sbt 1.x.
 :::
 
 #### ! Example
@@ -64,6 +64,8 @@ At organisation scale, build-wide exclusions belong in a shared plugin or common
 *   [SB5](../scenario-5-exclusions/guide.qmd) - Excluding a transitive from a single declaration.
 *   [SB14](../scenario-14-reject/guide.qmd) - Keeping specific *versions* out while allowing the artifact.
 *   [SB15](../scenario-15-substitution/guide.qmd) - Replacing a banned library instead of just removing it.
+*   [MS18](../../maven-demo/scenario-18-banning/guide.qmd) / [GS18](../../gradle-demo/scenario-18-banning/guide.qmd) - Maven's enforcer ban (fails loudly) and Gradle's global exclude (silent, like sbt).
+*   [P9](../../python-demo/scenario-9-exclusions-gap/guide.qmd) - Python, where removal is not possible at all in pip and Poetry.
 
 #### ! Wild
 

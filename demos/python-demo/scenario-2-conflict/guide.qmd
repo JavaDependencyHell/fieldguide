@@ -1,13 +1,13 @@
 ---
 title: "The Diamond: Conflicting Requirements"
-tagline: "Or what to Do When There Is No Winning Version"
+tagline: "Or what to do when There Is No Winning Version"
 type: scenario
 tool: python
 ---
 
 #### ! Scenario
 
-*Or what to Do When There Is No Winning Version*
+*Or what to do when There Is No Winning Version*
 This is the Python inversion of the classic diamond ([MS2](../../maven-demo/scenario-2-conflict/guide.qmd)). `demo-lib-a 2.0.0` needs `demo-lib-c 2.0.0`; we also demand `demo-lib-c 1.0.0`. On the JVM this resolves — one version is evicted and the build proceeds. In Python there is no eviction and no classpath, so both requirements must be satisfied in one environment. They can't be. The install *fails*.
 
 ::: {.callout-note title="Tool Versions"}
@@ -68,7 +68,7 @@ On the JVM a version conflict is resolved; in Python it can be *fatal*. One envi
 #### ! Related
 *   [P3](../scenario-3-resolver/guide.qmd) - How the resolver searches for a version set that *does* satisfy everyone.
 *   [P6](../scenario-6-constraints/guide.qmd) - Steering resolution with a constraints file.
-*   [MS2](../../maven-demo/scenario-2-conflict/guide.qmd) - The same diamond on the JVM, where it resolves instead of failing.
+*   [MS2](../../maven-demo/scenario-2-conflict/guide.qmd) / [GS2](../../gradle-demo/scenario-2-conflict/guide.qmd) / [SB2](../../sbt-demo/scenario-2-conflict/guide.qmd) - The same diamond on the JVM, where it resolves instead of failing — by nearest-wins in Maven, highest-wins in Gradle and sbt.
 *   [N2](../../node-demo/scenario-2-diamond/guide.qmd) - The same diamond in Node, where both versions install — and [N8](../../node-demo/scenario-8-peers/guide.qmd), where Node reinvents this exact conflict on purpose.
 
 #### ! Wild

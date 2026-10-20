@@ -1,18 +1,18 @@
 ---
 title: "Private Repository & Direct Patch Override"
-tagline: "Or what to Do When You Need a One-Off Patch"
+tagline: "Or what to do when you need a one-off patch"
 type: scenario
 tool: gradle
 ---
 
 #### ! Scenario
 
-*Or what to Do When You Need a One-Off Patch*
-This scenario shows a more direct way to use a private, third-party repository. Instead of using a vendor-supplied BOM, we explicitly request the patched version of a dependency in our project's `dependencies` block.
-This approach is simpler than the BOM method but can be more verbose if many dependencies need to be overridden. It is suitable for one-off patches or when a full BOM is not available.
+*Or what to do when you need a one-off patch*
+This scenario shows the direct form of the private-repository pattern: instead of importing a vendor BOM, the build requests the patched version of one dependency explicitly. It is simpler than the BOM route and suits a single patched artifact; it becomes verbose when many need overriding.
 
 ::: {.callout-note title="Tool Versions"}
 This scenario was tested with **Gradle 8.14**.
+Re-verified on Gradle 9.3 (October 2026): Gradle 9 raised the runtime floor to JDK 17 and changed defaults such as the configuration cache, not the resolution rules shown here.
 :::
 
 #### ! Example
@@ -21,29 +21,66 @@ This scenario was tested with **Gradle 8.14**.
 %%| fig-width: 4.4
 graph LR
     subgraph Public Repos
-        SpringBoot["org.springframework.boot:spring-boot-starter:2.5.14 (EOL)"]
+        SpringBoot["spring-boot-starter:2.5.14 (EOL)"]
     end
     subgraph Private Repo
-        PatchedStarter["org.springframework.boot:spring-boot-starter:2.5.14.ACME"]
+        PatchedStarter["spring-boot-starter:2.5.14.ACME"]
     end
     Root[Project Root] -- declares --> PatchedStarter
-
 ```
 
-#### ! Example
-The `build.gradle` adds the private repository and then directly declares a dependency on the specific patched version.
+The build adds the private repository and declares the patched version directly:
 
 ```{.groovy include="build.gradle" snippet="repo-and-deps"}
 ```
 
 #### ! Expect
-Directly declaring a patched version from a private repository requests that exact artifact. It wins here because nothing else asks for a newer version — a transitive requesting a higher public release would still out-vote it under highest-version resolution (use `strictly` to make the patch unconditional).
+Declaring `2.5.14.ACME` pins it: a direct declaration is the strongest signal there is.
+
+#### ! Actual
+`2.5.14.ACME` resolves, because nothing else in this graph asks for `spring-boot-starter` at all. A direct declaration is an ordinary `require`; had a transitive requested `2.6.0`, highest-wins would have selected that instead ([GS4](../scenario-4-override/guide.qmd)). The patch won by being unopposed, not by rank.
 
 #### ! Why
-A direct declaration in the `dependencies` block acts as a powerful resolution signal. When combined with a private repository that makes the specific patched version available, Gradle selects it to fulfill the project's requirement.
+Gradle looks for the requested version in the declared repositories in order; the private repository is the only one that has `2.5.14.ACME`, so it is found there. Selection, though, is still conflict resolution: every request for the module is pooled and the highest wins. To make a patched version unconditional, declare it with `version { strictly '2.5.14.ACME' }`, or put the pin in an enforced platform ([GS16](../scenario-16-private-bom/guide.qmd)).
+
+#### ! Fix
+*   **Direct declaration** (shown above) for a single patched artifact in a graph where nothing else requests it.
+*   **Add `strictly`** when a transitive might ask for a newer public release:
+    ```groovy
+    implementation('org.springframework.boot:spring-boot-starter') {
+        version { strictly '2.5.14.ACME' }
+    }
+    ```
+*   **Move to a vendor BOM** once more than a handful of artifacts need patching ([GS16](../scenario-16-private-bom/guide.qmd)).
+
+#### ! Risk
+* LOW One patched artifact, declared directly, with a comment naming the CVE or ticket it addresses.
+* MEDIUM A patched version that a transitive later out-votes; the build stays green and the patch silently stops being applied.
+* HIGH Patched versions sprinkled across many modules with no inventory, so nobody knows which ones are still in force when the vendor ships the next build.
+
+#### ! Control
+*   **Filter the private repository** with `content { includeGroup ... }` so only the patched groups are fetched from it.
+*   **Verify the patch is applied**, not just declared: `dependencyInsight` shows the selected version and why.
+
+#### ! Check
+**Fast check:** `gradle dependencies --configuration compileClasspath` (run `bash ../../../install_private_repo.sh` once first, or `install_deps.sh`, which calls it)
+
+**What to look for:** `org.springframework.boot:spring-boot-starter:2.5.14.ACME` with no arrow: the version requested is the version selected.
+
+**Conclusion:** The direct request was satisfied from the private repository, and nothing out-voted it.
+
+#### ! Scales
+Direct patches are fine for one or two artifacts and unmanageable beyond that, which is why vendors ship BOMs. The pattern also does not travel: a patched version declared in an application does nothing for the libraries it depends on, whereas a platform applied in a convention plugin reaches every project. Use the direct form for the exception and the BOM for the rule.
 
 #### ! Takeaway
-A direct version declaration is the most straightforward way to request a specific version, provided it is available in a configured repository — but it is still subject to conflict resolution. For a guarantee, pair it with `strictly`.
+A direct declaration requests a version; it does not guarantee one. For a one-off patch that nothing else contests it is enough, and `strictly` is the word to add when that stops being true.
 
 #### ! Related
-*   [GS16](../scenario-16-private-bom/guide.qmd) - A more scalable approach using a vendor BOM.
+*   [GS16](../scenario-16-private-bom/guide.qmd) - The scalable version of this pattern, via a vendor BOM.
+*   [GS6](../scenario-6-forcing/guide.qmd) - `strictly`, the signal that makes a patch unconditional.
+*   [MS17](../../maven-demo/scenario-17-private-patch/guide.qmd) / [SB17](../../sbt-demo/scenario-17-private-patch/guide.qmd) - The same direct patch in Maven and sbt.
+*   [P11](../../python-demo/scenario-11-private-index/guide.qmd) / [N11](../../node-demo/scenario-11-private-registry/guide.qmd) - Private indexes and registries in Python and Node.
+
+#### ! Wild
+
+The one-off patch is how most teams first meet a private repository: a CVE lands in a library whose maintainers have moved on, someone builds a fixed jar, publishes it to the company's artifact server with a suffixed version, and declares it in the affected application. It works, and six months later a framework upgrade brings a transitive request for the newer public release, which wins conflict resolution and quietly drops the patch. The teams that notice are the ones that pinned with `strictly` or checked `dependencyInsight` after the upgrade.

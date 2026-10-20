@@ -1,13 +1,13 @@
 ---
 title: "Banning a Dependency (Global Exclusion)"
-tagline: "Or what to Do When a Library Must Never Appear Anywhere"
+tagline: "Or what to do when a library must never appear anywhere"
 type: scenario
 tool: maven
 ---
 
 #### ! Scenario
 
-*Or what to Do When a Library Must Never Appear Anywhere*
+*Or what to do when a library must never appear anywhere*
 This scenario demonstrates how to keep an artifact out of the *entire* build — not just out of one dependency's subtree ([MS5](../scenario-5-exclusions/guide.qmd)), and not just certain versions of it ([MS14](../scenario-14-reject/guide.qmd)). The classic drivers are security (an EOL library with known CVEs) and licensing (a GPL artifact arriving transitively).
 
 ::: {.callout-note title="Tool Versions"}
@@ -68,8 +68,10 @@ Maven cannot silently remove an artifact build-wide — it can only refuse to bu
 *   [MS5](../scenario-5-exclusions/guide.qmd) - Excluding a transitive from a single declaration.
 *   [MS14](../scenario-14-reject/guide.qmd) - The same enforcer rule pointed at specific *versions* rather than the whole artifact.
 *   [MS15](../scenario-15-substitution/guide.qmd) - Replacing a banned library instead of just removing it.
-*   [P9](../../python-demo/scenario-9-exclusions-gap/guide.qmd) - Python, which can override a transitive's version but can neither ban nor remove the package.
+*   [GS18](../../gradle-demo/scenario-18-banning/guide.qmd) - Gradle's `configurations.all { exclude }`, the silent global exclude Maven lacks.
+*   [SB18](../../sbt-demo/scenario-18-banning/guide.qmd) - sbt's `excludeDependencies`, equally silent.
+*   [P9](../../python-demo/scenario-9-exclusions-gap/guide.qmd) - Python, where pip and Poetry can neither ban nor remove a package; only uv can exclude one.
 
 #### ! Wild
 
-The archetypal global ban is `log4j:log4j` 1.x. Log4j 1 reached end of life in 2015 with unfixed deserialization CVEs (CVE-2019-17571 among others), yet it kept arriving transitively through older frameworks for years. Post-Log4Shell, many organisations codified "no log4j 1.x anywhere" as an enforcer rule in their corporate parent POM — the rule still fires regularly, because dependencies several hops away keep declaring it.
+The archetypal global ban is `log4j:log4j` 1.x. Log4j 1 reached end of life in 2015 with unfixed deserialization CVEs (CVE-2019-17571 among others), yet it kept arriving transitively through older frameworks for years. After Log4Shell, many organisations codified "no log4j 1.x anywhere" as an enforcer rule in their corporate parent POM — the rule still fires regularly, because dependencies several hops away keep declaring it.

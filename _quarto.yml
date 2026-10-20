@@ -64,8 +64,7 @@ book:
     - book/content/scenarios.md
     - book/content/start_here_trouble.qmd
     - book/content/start_here_control.qmd
-    - book/content/authors.md
-    - book/content/acknowledgements.md
+    - book/content/part-jvm.qmd
     - part: "Maven Scenarios"
       chapters:
         - demos/maven-demo/scenario-1-basic/guide.qmd
@@ -106,7 +105,7 @@ book:
         - demos/gradle-demo/scenario-16-private-bom/guide.qmd
         - demos/gradle-demo/scenario-17-private-patch/guide.qmd
         - demos/gradle-demo/scenario-18-banning/guide.qmd
-    - part: "SBT Scenarios"
+    - part: "sbt Scenarios"
       chapters:
         - demos/sbt-demo/scenario-1-basic/guide.qmd
         - demos/sbt-demo/scenario-2-conflict/guide.qmd
@@ -126,7 +125,7 @@ book:
         - demos/sbt-demo/scenario-16-private-bom/guide.qmd
         - demos/sbt-demo/scenario-17-private-patch/guide.qmd
         - demos/sbt-demo/scenario-18-banning/guide.qmd
-    - part: "Python Scenarios"
+    - part: book/content/part-python.qmd
       chapters:
         - demos/python-demo/scenario-1-basic/guide.qmd
         - demos/python-demo/scenario-2-conflict/guide.qmd
@@ -140,7 +139,7 @@ book:
         - demos/python-demo/scenario-10-venv/guide.qmd
         - demos/python-demo/scenario-11-private-index/guide.qmd
         - demos/python-demo/scenario-12-audit/guide.qmd
-    - part: "Node Scenarios"
+    - part: book/content/part-node.qmd
       chapters:
         - demos/node-demo/scenario-1-basic/guide.qmd
         - demos/node-demo/scenario-2-diamond/guide.qmd
@@ -155,6 +154,8 @@ book:
         - demos/node-demo/scenario-11-private-registry/guide.qmd
         - demos/node-demo/scenario-12-audit/guide.qmd
     - book/content/conclusion.md
+    - book/content/authors.md
+    - book/content/acknowledgements.md
     - part: "Appendices"
       chapters:
         - book/content/comparison-table.md

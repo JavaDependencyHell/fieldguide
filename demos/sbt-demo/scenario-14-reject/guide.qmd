@@ -1,47 +1,77 @@
 ---
 title: "Rejecting Versions"
-tagline: "Or what to Do When You Can't Say No"
+tagline: "Or what to do when a specific version must never appear"
 type: scenario
 tool: sbt
 ---
 
 #### ! Scenario
 
-*Or what to Do When You Can't Say No*
-This scenario demonstrates how to reject specific versions in SBT, which lacks a native "reject" keyword.
-
-N/A
+*Or what to do when a specific version must never appear*
+This scenario demonstrates how to stop a version from entering the build in sbt, which has no `reject` keyword but does have a mechanism that fails the build when resolution would upgrade across an incompatible boundary.
 
 ::: {.callout-note title="Tool Versions"}
-This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). Under the older Ivy engine (sbt < 1.3, or `useCoursier := false`) resolution edge cases differ and settings like `conflictManager` behave differently. `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin.
+This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). On sbt 1.x the older Ivy engine can still be selected with `useCoursier := false`; under Ivy, resolution edge cases differ and Ivy-only settings such as `conflictManager` apply (Coursier ignores them). `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin. sbt 2.0 (June 2026) keeps these resolution rules, removes the Ivy opt-out, adds native BOM import, and turns Test-configuration eviction warnings into errors; the demos here target sbt 1.x.
+The eviction error (`libraryDependencySchemes`, `evictionErrorLevel`) arrived in **sbt 1.5**. Before that, sbt only warned.
 :::
 
 #### ! Example
+
+```{mermaid}
+%%| fig-width: 4.4
+graph LR
+    Root[Project Root] --> LibB1[lib-b:1.0.0]
+    Root --> LibA[lib-a:2.0.0]
+    LibA --> LibB2[lib-b:2.0.0]
+    LibB1 -. "evicted by 2.0.0: incompatible under early-semver" .-> X((build fails))
+```
 
 ```{.scala include="build.sbt" snippet="s14-deps"}
 ```
 
 #### ! Expect
-Prevent specific versions (e.g., those with security vulnerabilities) from appearing in the build.
+I can list a bad version and the build tool refuses to resolve it, the way Gradle's `reject` does.
+
+#### ! Actual
+sbt has no version blacklist. What it has, since 1.5, is a compatibility check on evictions: declare the version scheme a library follows, and when conflict resolution would replace one version with an incompatible one, `update` fails. Here `lib-b:1.0.0` would be evicted by `2.0.0`; under early-semver a major bump is incompatible, so sbt stops with "found version conflict(s) in library dependencies; some are suspected to be binary incompatible". With `evictionErrorLevel := Level.Warn` the same build resolves `lib-b:2.0.0` and merely warns.
 
 #### ! Why
-SBT lacks a first-class "reject" mechanism. To blacklist a version, you must use indirect workarounds like `dependencyOverrides` to force a safe version or exclusions to prune the bad one. This gap is why the same graph behaves differently across tools like Gradle.
+Gradle rejects a *version*; sbt rejects an *incompatible upgrade*. The check runs after resolution: for every evicted artifact, sbt compares the loser and the winner under the declared scheme (`early-semver`, `semver-spec`, `pvp`, `strict`, or `always`) and raises an error if the pair is incompatible. Scala libraries can publish their scheme in the POM (`versionScheme`), and `libraryDependencySchemes` lets you declare it for libraries that do not. Plain Java artifacts are assumed `always` compatible unless you say otherwise, which is why the build file declares one for `lib-b`.
 
 #### ! Fix
-*   **`dependencyOverrides`:** The most common pattern is to force a known-good version.
-    ```scala
-    dependencyOverrides += "com.demo" % "lib-a" % "1.0.0"
-    ```
-*   **Plugins:** Use plugins like `sbt-dependency-check` to fail the build if a vulnerable version is found.
+*   **Fix the graph:** upgrade the direct `lib-b` to `2.0.0`, or hold `lib-a` at `1.0.0`, so nothing incompatible is evicted. This is the right answer when the error is telling the truth.
+*   **Pin with `dependencyOverrides`:** force `lib-b` to the version you need (SB6). The check still runs on the eviction, so pair it with the next option if you have verified compatibility.
+*   **Override the check consciously:** `ThisBuild / evictionErrorLevel := Level.Warn`, or declare `libraryDependencySchemes += "com.demo" % "lib-b" % VersionScheme.Always` for a library you know is compatible across the jump. Comment it.
+*   **Blacklist specific versions:** sbt has no native way. A small custom task that inspects `update.value.allModules` and fails on a banned coordinate, or a CI grep over `sbt dependencyTree`, provides it.
 
-#### ! Look
-*   **Security Scans:** Rely on external tools to catch bad versions since the build tool won't automatically reject them based on a blacklist.
+#### ! Risk
+* LOW Declaring version schemes for the libraries you depend on and letting the check guard upgrades.
+* MEDIUM Setting `evictionErrorLevel` to `Warn` globally to silence one false positive, and losing the guard for every library.
+* HIGH Using `VersionScheme.Always` on a library that is not in fact always compatible; the check passes, the runtime does not.
+
+#### ! Control
+Keep `libraryDependencySchemes` and any `evictionErrorLevel` change in one commented block. Make a CI job fail on the eviction error rather than warn, and treat each override of the check as a reviewed decision.
+
+#### ! Check
+**Fast check:** `sbt update`, then `sbt -Dsb14.allow=true "show externalDependencyClasspath"`
+
+**What to look for:** The first command fails with the binary-incompatibility error naming `lib-b`. The second succeeds, warns, and shows `lib-b-2.0.0.jar` on the classpath.
+
+**Conclusion:** sbt cannot reject a version by name, but it can refuse an incompatible eviction, and you choose whether that refusal is an error or a warning.
 
 #### ! Scales
-Version rejection is critical for security compliance. When a CVE is discovered in a specific library version, teams need to ensure that version cannot appear anywhere in the dependency graph. Without a first-class reject mechanism, SBT teams typically combine `dependencyOverrides` with CI pipeline checks (e.g., running `sbt dependencyTree` and grepping for banned versions) to enforce policies.
+Version rejection is critical for security compliance: when a CVE lands on a specific release, teams need assurance that it cannot appear anywhere in the graph. In sbt that assurance comes from `dependencyOverrides` pins plus a CI assertion, with the eviction check guarding against the opposite failure, an upgrade that silently breaks binary compatibility.
 
 #### ! Takeaway
-SBT lacks native rejection; use overrides or external plugins to enforce version policies.
+sbt rejects incompatible evictions, not named versions. Declare schemes, keep the error level at `Error`, and pin plus verify when you need a real blacklist.
 
-#### Related Scenarios
-*   [Scenario 6: Forcing Versions](../scenario-6-forcing/guide.qmd)
+#### ! Related
+*   [SB2](../scenario-2-conflict/guide.qmd) - The highest-wins eviction this check guards.
+*   [SB6](../scenario-6-forcing/guide.qmd) - Pinning a version with `dependencyOverrides`.
+*   [SB18](../scenario-18-banning/guide.qmd) - Keeping an artifact out entirely, every version.
+*   [MS14](../../maven-demo/scenario-14-reject/guide.qmd) / [GS14](../../gradle-demo/scenario-14-reject/guide.qmd) - Enforcer bans in Maven and native `reject` in Gradle.
+*   [P4](../../python-demo/scenario-4-specifiers/guide.qmd) - Python's native `!=` operator.
+
+#### ! Wild
+
+When sbt 1.5 shipped the eviction error in 2021, thousands of builds broke on the same library: `scala-xml`. Scala 2.13 tooling pulled `scala-xml` 2.x while older plugins and libraries still asked for 1.x, the library declared early-semver, and sbt correctly refused the major-version eviction. The workaround that spread through the community, `ThisBuild / libraryDependencySchemes += "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always`, is exactly the "override the check consciously" option above, and it is still in a great many build files today.

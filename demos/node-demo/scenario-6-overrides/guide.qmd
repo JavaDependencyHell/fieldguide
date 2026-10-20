@@ -1,17 +1,17 @@
 ---
 title: "Overrides & Resolutions"
-tagline: "Or what to Do When a Transitive Needs a Version It Didn't Ask For"
+tagline: "Or what to do when a transitive needs a version it didn't ask for"
 type: scenario
 tool: node
 ---
 
 #### ! Scenario
 
-*Or what to Do When a Transitive Needs a Version It Didn't Ask For*
+*Or what to do when a transitive needs a version it didn't ask for*
 `demo-lib-a` → `demo-lib-b` → `demo-lib-c 1.0.0`, and we need `demo-lib-c` to be `2.0.0` everywhere — a vulnerable transitive, say, with the fix one major up. The JVM does this centrally with a BOM ([MS3](../../maven-demo/scenario-3-mgmt/guide.qmd)) or a direct force ([MS6](../../maven-demo/scenario-6-forcing/guide.qmd)); pip does it with constraints ([P6](../../python-demo/scenario-6-constraints/guide.qmd)). Node's lever is the **override**: one entry, whole-tree effect — same idea, three spellings.
 
 ::: {.callout-note title="Tool Versions"}
-Tested with **npm 10.9.8** (`overrides` in package.json), **pnpm 11.10.0** (`overrides` in **pnpm-workspace.yaml** — pnpm 11 no longer reads the old `pnpm.overrides` block in package.json, verified the hard way), **Yarn 4.17.0** (`resolutions` in package.json).
+Tested with **npm 12.0.1** (`overrides` in package.json), **pnpm 11.10.0** (`overrides` in **pnpm-workspace.yaml** — pnpm 11 no longer reads the old `pnpm.overrides` block in package.json, verified the hard way), **Yarn 4.17.0** (`resolutions` in package.json).
 :::
 
 #### ! Example
@@ -44,11 +44,11 @@ node -e "console.log(require('demo-lib-a').b.c.version)"   # 2.0.0
 `demo-lib-b` now runs against a major version it never declared support for.
 
 #### ! Why
-An override is a resolver directive, not a dependency: "whenever anything asks for `demo-lib-c`, answer with this". It is the JVM BOM's forcefulness without its ceremony, and the lever Python's pip/Poetry simply don't have ([P9](../../python-demo/scenario-9-exclusions-gap/guide.qmd) — only uv does). It is also *blunt by design*: the resolver won't check that `demo-lib-b` actually works with 2.0.0. You have re-created the diamond ([N2](../scenario-2-diamond/guide.qmd)) and picked the winner yourself — the JVM's eviction model, opted into by hand, with the same risks the JVM part documents.
+An override is a resolver directive, not a dependency: "whenever anything asks for `demo-lib-c`, answer with this". It is the JVM BOM's forcefulness without its ceremony; Python has the same *forcing* lever (pip constraints, uv `override-dependencies`), what it mostly lacks is *removal* ([P9](../../python-demo/scenario-9-exclusions-gap/guide.qmd)). It is also *blunt by design*: the resolver won't check that `demo-lib-b` actually works with 2.0.0. You have re-created the diamond ([N2](../scenario-2-diamond/guide.qmd)) and picked the winner yourself — the JVM's eviction model, opted into by hand, with the same risks the JVM part documents.
 
 #### ! Fix
 *   **Prefer upstream:** an override is a patch, not a policy. File/upgrade so `demo-lib-b` accepts `demo-lib-c 2.x`, then delete the override.
-*   **Scope it when possible:** npm and Yarn support nested forms (`"demo-lib-b": {"demo-lib-c": "2.0.0"}`) to override only one parent's view rather than the whole tree.
+*   **Scope it when possible:** all three can override only one parent's view rather than the whole tree — npm with a nested object (`"demo-lib-b": {"demo-lib-c": "2.0.0"}`), Yarn with a path pattern (`"demo-lib-b/demo-lib-c": "2.0.0"`), pnpm with a selector (`"demo-lib-b>demo-lib-c": "2.0.0"`).
 *   **Test what you forced:** the override is a claim that the graph works with the new version; only your test suite makes it true.
 
 #### ! Risk
@@ -76,7 +76,8 @@ Overrides/resolutions are Node's central version control: BOM-strength forcing w
 #### ! Related
 *   [N2](../scenario-2-diamond/guide.qmd) - The duplication this lever collapses — and can wrongly collapse.
 *   [N12](../scenario-12-audit/guide.qmd) - The audit findings overrides most often exist to fix.
-*   [MS3](../../maven-demo/scenario-3-mgmt/guide.qmd) / [MS6](../../maven-demo/scenario-6-forcing/guide.qmd) / [P6](../../python-demo/scenario-6-constraints/guide.qmd) - The JVM and Python levers this one mirrors.
+*   [MS3](../../maven-demo/scenario-3-mgmt/guide.qmd) / [GS3](../../gradle-demo/scenario-3-mgmt/guide.qmd) / [SB3](../../sbt-demo/scenario-3-mgmt/guide.qmd) and [MS6](../../maven-demo/scenario-6-forcing/guide.qmd) / [GS6](../../gradle-demo/scenario-6-forcing/guide.qmd) / [SB6](../../sbt-demo/scenario-6-forcing/guide.qmd) - The JVM levers (central management, forcing) this one mirrors.
+*   [P6](../../python-demo/scenario-6-constraints/guide.qmd) / [P9](../../python-demo/scenario-9-exclusions-gap/guide.qmd) - Python's constraints (forcing) and its exclusion gap (removal).
 
 #### ! Wild
 `resolutions` shipped with Yarn 1 in 2017; npm's `overrides` arrived in npm 8.3 (December 2021). Projects that needed forcing in the gap used workarounds like `npm-force-resolutions` or postinstall scripts that rewrite the lockfile — if you inherit a repo containing either, that is an override in disguise and should be migrated to the native mechanism.

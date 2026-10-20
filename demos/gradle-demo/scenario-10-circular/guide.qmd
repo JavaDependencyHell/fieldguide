@@ -1,17 +1,18 @@
 ---
 title: "Circular Dependencies"
-tagline: "Or what to Do When Gradle Can’t Untangle the Graph"
+tagline: "Or what to do when the dependency graph turns into a cycle"
 type: scenario
 tool: gradle
 ---
 
 #### ! Scenario
 
-*Or what to Do When Gradle Can’t Untangle the Graph*
-This scenario demonstrates Gradle's handling of circular dependencies.
+*Or what to do when the dependency graph turns into a cycle*
+This scenario demonstrates what Gradle does when two external artifacts depend on each other.
 
 ::: {.callout-note title="Tool Versions"}
 This scenario was tested with **Gradle 8.14**.
+Re-verified on Gradle 9.3 (October 2026): Gradle 9 raised the runtime floor to JDK 17 and changed defaults such as the configuration cache, not the resolution rules shown here.
 :::
 
 #### ! Example
@@ -19,47 +20,58 @@ This scenario was tested with **Gradle 8.14**.
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
-    Root[Project Root] --> LibA[lib-a:1.0.0]
-    LibA --> LibB[lib-b:1.0.0]
-    LibB --> LibA
+    Root[Project Root] --> CircleA[lib-circle-a:1.0.0]
+    CircleA --> CircleB[lib-circle-b:1.0.0]
+    CircleB --> CircleA
 ```
-
-
 
 ```{.groovy include="build.gradle" snippet="s10-deps"}
 ```
 
 #### ! Expect
-"It should work."
+A cycle in the graph is an error: "circular dependency" sounds like something a build tool should refuse.
 
 #### ! Actual
-Resolves successfully.
-
-#### ! Reality
-Both jars present.
+Resolution succeeds, silently. Both jars are on the classpath and the tree prints `lib-circle-a` beneath `lib-circle-b` with a `(*)` marker, Gradle's way of saying "already seen, not expanded again". There is no warning.
 
 #### ! Why
-Gradle maintains a set of already-visited nodes during graph traversal. When it encounters a dependency it has already resolved, it stops following that branch, preventing infinite recursion. Unlike Maven, which fails at reactor build time if modules in a multi-project build form a cycle, Gradle handles circular external dependencies gracefully during resolution. Both libraries end up on the classpath.
+Gradle resolves external modules by walking the graph with a set of already-visited nodes. On reaching `lib-circle-a` a second time it stops following that branch, so the walk terminates and the classpath contains each module once. For *external* artifacts a cycle is therefore harmless to resolution; the JVM does not care about the order two jars appear in. The case that fails is different: **project** dependencies in a multi-project build (`:a` depends on `:b` depends on `:a`) create a cycle in the *task* graph, and Gradle refuses with `Circular dependency between the following tasks`. Maven draws the same line, failing only on reactor cycles ([MS10](../../maven-demo/scenario-10-circular/guide.qmd)); neither tool warns about cycles among published artifacts.
 
-#### ! Scales
-While Gradle tolerates circular dependencies at resolution time, they are still a serious architectural problem. Cycles make it impossible to reason about the build order of modules, force tightly coupled releases, and often indicate that shared abstractions should be extracted into a separate module. In Gradle multi-project builds, circular project dependencies will cause build failures since Gradle needs a linear task execution order.
+#### ! Fix
+*   **External cycle:** nothing to fix in the build; the cycle is in the libraries' design. If it bothers you, it should bother their maintainers more.
+*   **Project cycle:** extract the shared code into a third module both can depend on. There is no flag to make Gradle tolerate it.
+
+#### ! Risk
+* LOW Two published libraries that reference each other; resolution handles it and the JVM does not care.
+* MEDIUM A cycle you did not know about, which makes the two libraries impossible to upgrade independently.
+* HIGH A project cycle in a multi-module build, discovered late when a module split finally closes the loop and the build stops.
+
+#### ! Control
+*   **Look for `(*)` markers** in the tree to spot repeats; a repeat that points back up the tree is a cycle.
+*   **Keep module boundaries acyclic by design** so project cycles never reach the task graph.
 
 #### ! Check
 
-**Fast check (Gradle):**
+**Fast check:**
 
 ```bash
-./gradlew dependencies
+gradle dependencies --configuration compileClasspath
 ```
 
-**What to look for:**
-Gradle will show the circular dependency in the tree, often with an annotation.
+**What to look for:** `lib-circle-a:1.0.0` with `lib-circle-b:1.0.0` beneath it and `lib-circle-a:1.0.0 (*)` beneath that; the legend explains `(*)` as a repeated subtree. No warning, no failure.
 
-**Conclusion:**
-While Gradle can resolve circular dependencies, they are a sign of architectural problems and should be fixed.
+**Conclusion:** Gradle breaks artifact cycles silently; only project cycles fail.
+
+#### ! Scales
+Cycles among published artifacts are rare because publishing one requires both libraries to exist first. Cycles among a company's internal modules are common, usually the result of two teams each adding "one small dependency" on the other. Because Gradle tolerates the external form and fails the project form, the problem often surfaces at exactly the wrong moment: when someone tries to move the two modules into the same build.
 
 #### ! Takeaway
-Gradle tolerates cycles.
+Gradle resolves cycles among artifacts without comment and refuses cycles among projects. The silence is not approval; a cycle is still a design smell.
 
 #### ! Related
-N/A
+*   [GS1](../scenario-1-basic/guide.qmd) - How the graph is walked.
+*   [MS10](../../maven-demo/scenario-10-circular/guide.qmd) / [SB10](../../sbt-demo/scenario-10-circular/guide.qmd) - The same cycle in Maven and sbt, resolved the same way.
+
+#### ! Wild
+
+Gradle users meet the project form of this problem far more often than the artifact form. A multi-project build grows for years, somebody adds `implementation project(':core')` to a module that `:core` already depends on, and the next build stops with `Circular dependency between the following tasks` listing the two `compileJava` tasks. Nothing about the libraries changed; the task graph simply has no valid order any more. The fix is always the same, and always a bigger refactor than the one-line change that caused it.

@@ -1,0 +1,29 @@
+# The JVM: Maven, Gradle and sbt
+
+The next three parts walk the same 18 scenarios through Maven, Gradle and sbt. The scenarios share one fixture graph, so when the tools disagree you can be sure it is the tool and not the input.
+
+```{mermaid}
+%%| fig-width: 5
+graph LR
+    A1[lib-a:1.0.0] --> B1[lib-b:1.0.0] --> C1[lib-c:1.0.0]
+    A2[lib-a:2.0.0] --> B2[lib-b:2.0.0] --> C2[lib-c:2.0.0]
+    D[lib-d:1.0.0] -. optional .-> C1
+    BOM[demo-bom:1.0.0] -. manages 1.0.0 .-> A1
+    BOM -. manages 1.0.0 .-> B1
+    BOM -. manages 1.0.0 .-> C1
+    CA[lib-circle-a] --> CB[lib-circle-b] --> CA
+```
+
+The three tools agree on most of the mechanics and disagree on the one that matters most. When two paths ask for different versions of the same artifact:
+
+| | Maven | Gradle | sbt |
+|:--|:--|:--|:--|
+| Winner | The version **nearest the root**; at equal depth, the first declared | The **highest** version requested anywhere | The **highest** version requested anywhere (Coursier, since 1.3) |
+| Loser | Omitted silently (`-Dverbose` shows it) | Shown as `1.0.0 -> 2.0.0` in the tree | Listed by `sbt evicted`; can be an error with `versionScheme` |
+| To override the rule | `<dependencyManagement>` (transitives) or a direct declaration | `strictly`, `enforcedPlatform`, `force` | `dependencyOverrides` |
+
+Everything else in these parts, from BOMs to locking to banning, is a way of taking that decision away from the rule.
+
+The demos were verified against Maven 3.9, Gradle 8.14 and 9.3, and sbt 1.12. Each chapter's *Tool Versions* note says where behaviour changed, and `demos/TOOL-VERSIONS.md` in the repository has the full history, including what sbt 2 and Gradle 9 changed and did not change.
+
+Every chapter ends with links to the same scenario in the other two JVM tools and, where one exists, in Python and Node.

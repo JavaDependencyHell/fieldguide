@@ -11,6 +11,10 @@ For every tool track (maven, gradle, sbt) and scenario 1..N, checks:
   7. every snippet="..." the guide references exists as tag::/end:: in the
      referenced file
   8. every relative Related link points at a file that exists
+  8a. section headings are '#### ! <Name>' with template names only (a
+      '### !' heading makes the box filter swallow every later section),
+      no '#### Related Scenarios', no duplicated Example, no pasted
+      boilerplate; JVM guides link both sibling JVM tracks
 
 It then checks the RUNTIME FIXTURES the demos resolve against (these are
 generated, and `make clean` deletes most of them):
@@ -48,6 +52,44 @@ def note(level, msg):
 
 quarto = open(os.path.join(ROOT, "_quarto.yml")).read()
 
+
+# ---- Guide structure checks shared by every track ----
+SECTION_RE = re.compile(r"^(#{1,6})\s*(!.*)$", re.M)
+TEMPLATE_SECTIONS = {"Scenario", "Example", "Expect", "Actual", "Why", "Fix", "Risk",
+                     "Control", "Check", "Scales", "Takeaway", "Related", "Wild"}
+BOILERPLATE = "behaves differently across tools"
+
+
+def check_guide_structure(tag, guide):
+    """Section headings must be exactly '#### ! <TemplateName>'.
+
+    filters/scenario-boxes.lua captures blocks until the next heading of the
+    same or higher level, so a '### !' heading swallows every later section
+    into one box. Off-template names (Look, Reality, Diagram, ...) render as
+    boxes the template does not define.
+    """
+    for hashes, rest in SECTION_RE.findall(guide):
+        words = rest.lstrip("!").strip().split(" ")
+        name = words[0] if words and words[0] else ""
+        if len(hashes) != 4:
+            note("FAIL", f"{tag}: section heading '{hashes} {rest.strip()}' must be level 4 (#### !)")
+        if name and name not in TEMPLATE_SECTIONS:
+            note("WARN", f"{tag}: off-template section '{name}' (use one of {sorted(TEMPLATE_SECTIONS)})")
+    if re.findall(r"^####\s+Related Scenarios\s*$", guide, re.M):
+        note("FAIL", f"{tag}: '#### Related Scenarios' is not boxed; use '#### ! Related'")
+    if guide.count("#### ! Example") > 1:
+        note("WARN", f"{tag}: duplicated '#### ! Example' heading")
+    if BOILERPLATE in guide:
+        note("WARN", f"{tag}: pasted boilerplate sentence ('...{BOILERPLATE}')")
+
+
+def check_sibling_links(tag, guide, siblings):
+    """Every JVM guide links the same scenario in the other two JVM tracks."""
+    for other in siblings:
+        if f"../../{other}-demo/" not in guide:
+            note("WARN", f"{tag}: no Related link to its {other} sibling")
+
+
 for tool, build_files in TOOLS.items():
     demo_dir = os.path.join(ROOT, "demos", f"{tool}-demo")
     verify = ""
@@ -82,6 +124,8 @@ for tool, build_files in TOOLS.items():
             note("WARN", f"{tag}: guide has no YAML frontmatter")
         if 'title="Tool Versions"' not in guide:
             note("WARN", f"{tag}: guide has no Tool Versions callout")
+        check_guide_structure(tag, guide)
+        check_sibling_links(tag, guide, [t for t in TOOLS if t != tool])
 
         # build file
         if not any(os.path.exists(os.path.join(sdir, b)) for b in build_files):
@@ -145,6 +189,7 @@ else:
                 note("WARN", f"{tag}: guide has no YAML frontmatter")
             if 'title="Tool Versions"' not in guide:
                 note("WARN", f"{tag}: guide has no Tool Versions callout")
+            check_guide_structure(tag, guide)
             for inc, snip in re.findall(r'include="([^"]+)"\s+snippet="([^"]+)"', guide):
                 target = os.path.join(sdir, inc)
                 if not os.path.exists(target):
@@ -195,6 +240,7 @@ else:
                 note("WARN", f"{tag}: guide has no YAML frontmatter")
             if 'title="Tool Versions"' not in guide:
                 note("WARN", f"{tag}: guide has no Tool Versions callout")
+            check_guide_structure(tag, guide)
             # tagged snippets
             for inc, snip in re.findall(r'include="([^"]+)"\s+snippet="([^"]+)"', guide):
                 target = os.path.join(sdir, inc)
@@ -229,6 +275,7 @@ FIXTURES = [
     "com/demo/lib-c/2.0.0/lib-c-2.0.0.jar",
     "com/demo/lib-circle-a/1.0.0/lib-circle-a-1.0.0.jar",
     "com/demo/lib-circle-b/1.0.0/lib-circle-b-1.0.0.jar",
+    "com/demo/lib-d/1.0.0/lib-d-1.0.0.jar",
     "com/demo/demo-bom/1.0.0/demo-bom-1.0.0.pom",
 ]
 PRIVATE_REPO = os.path.join(ROOT, "demo-dependencies", "private-repo")

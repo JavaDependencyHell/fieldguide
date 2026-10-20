@@ -1,15 +1,16 @@
 ---
 title: "Private Repository & Direct Patch Override"
-tagline: "What to Do When You Need a One-Off Patch"
+tagline: "Or what to do when you need a one-off patch"
 type: scenario
 tool: maven
 ---
 
-#### ! Scenario What to Do When You Need a One-Off Patch
+#### ! Scenario
 
-This scenario shows a more direct way to use a private, third-party repository. Instead of using a vendor-supplied BOM, we explicitly request the patched version of a dependency in our project's `<dependencies>` block.
+*Or what to do when you need a one-off patch*
+This scenario shows the more direct way to use a private, third-party repository. Instead of importing a vendor BOM, we explicitly request the patched version of a dependency in our project's `<dependencies>` block.
 
-This approach is simpler than the BOM method but can be more verbose if many dependencies need to be overridden. It is suitable for one-off patches or when a full BOM is not available.
+This is simpler than the BOM method but grows verbose if many dependencies need overriding. It suits one-off patches, or vendors that publish no BOM.
 
 ::: {.callout-note title="Tool Versions"}
 This scenario was tested with **Maven 3.9**; the behaviour shown applies to Maven 3.x.
@@ -35,17 +36,50 @@ The `pom.xml` adds the private repository and then directly declares a dependenc
 ```{.xml include="fake-pom.xml"  snippet="s17-deps"}
 ```
 
-
 #### ! Expect
 Explicitly declaring a patched version from a private repository ensures that specific artifact is chosen over any public release.
 
+#### ! Actual
+`spring-boot-starter:2.5.14.ACME` resolves. For *this* declaration nothing can beat it: a direct version in `<dependencies>` overrides any managed or transitive version ([MS4](../scenario-4-override/guide.qmd)). What it does not do is reach anything that depends on `spring-boot-starter` transitively through another artifact; those requests are still subject to nearest-wins unless a managed version catches them.
+
 #### ! Why
-A direct version declaration in `<dependencies>` is Maven's strongest versioning directive. When combined with a private repository that makes the artifact available, it overrides all other mechanisms like BOMs or transitive versioning.
+A direct version declaration is the strongest signal Maven has for a single dependency, and a repository declaration is what makes a non-public version findable. Together they override the public release for the declared artifact. The BOM approach ([MS16](../scenario-16-private-bom/guide.qmd)) differs in reach, not strength: it manages every request for the artifact across the graph, while a direct declaration decides one.
+
+#### ! Fix
+*   **Declare the private repository** and **pin the patched version directly**, as above.
+*   **Add a `<dependencyManagement>` entry too** if the artifact is also requested transitively elsewhere, so every path gets the patch.
+*   **Switch to the BOM pattern** once more than a handful of artifacts need the same treatment.
+
+#### ! Risk
+* LOW One patched artifact with no other consumers in the graph.
+* MEDIUM The same artifact reached transitively through another dependency; the direct pin does not cover that path unless it is also managed.
+* HIGH A vendor suffix that sorts *lower* than the public version in some other range or comparison. `2.5.14.ACME` sorts above `2.5.14` under Maven's rules, but check before relying on it.
+
+#### ! Control
+*   Record why the pinned version exists and when it can be dropped, next to the declaration.
+*   Use a repository manager with a group filter so the private repository serves only the vendor's coordinates.
+*   Re-check `mvn dependency:tree` after any change to the dependencies that might introduce a second path to the same artifact.
+
+#### ! Check
+**Fast check:** `mvn dependency:tree`
+
+**What to look for:** `org.springframework.boot:spring-boot-starter:jar:2.5.14.ACME`. If the public version appears anywhere else in the tree, another path is pulling it in and needs a managed version.
+
+**Conclusion:** A direct declaration wins for the artifact it names; the repository makes the patched build available to win with.
+
+#### ! Scales
+Direct pins scale linearly with the number of patched artifacts and the number of projects that need them. Beyond a few, the BOM approach is less work and less drift.
 
 #### ! Takeaway
-A direct version declaration for a dependency is the most straightforward way to ensure a specific version is used, provided that version is available in one of the configured repositories. This method overrides all other mechanisms like BOMs or transitive versions.
+A direct version declaration is the most straightforward way to ensure a specific version is used, provided that version is available in one of the configured repositories. It decides one declaration; a BOM decides the graph.
 
 #### ! Related
-* [MS16: Private Repo (BOM)](../scenario-16-private-bom/guide.qmd) - A more scalable approach using a vendor BOM.
-* [P11](../../python-demo/scenario-11-private-index/guide.qmd) - Python's version: private patched packages, and why index configuration is a security decision.
-* [N11](../../node-demo/scenario-11-private-registry/guide.qmd) - Node's version: registry routing by scope, born from the original attack.
+*   [MS16](../scenario-16-private-bom/guide.qmd) - The scalable approach, using a vendor BOM.
+*   [MS4](../scenario-4-override/guide.qmd) - Why the direct declaration wins.
+*   [GS17](../../gradle-demo/scenario-17-private-patch/guide.qmd) - The same direct pin in Gradle, which competes on version number rather than rank.
+*   [SB17](../../sbt-demo/scenario-17-private-patch/guide.qmd) - The same direct pin in sbt.
+*   [P11](../../python-demo/scenario-11-private-index/guide.qmd) - Python's version: private patched packages, and why index configuration is a security decision.
+*   [N11](../../node-demo/scenario-11-private-registry/guide.qmd) - Node's version: registry routing by scope, born from the original attack.
+
+#### ! Wild
+The vendor-suffix convention (`2.5.14.ACME`, `-redhat-00001`, `.jboss-1`) exists because Maven compares versions as a sequence of parts, and a qualifier appended to the public version sorts after it. Red Hat's rebuilt artifacts have used `-redhat-N` suffixes for years for exactly this reason: a project can pin the rebuilt version directly and be confident that nothing requesting the plain upstream version will out-rank it in a range. The suffix is a versioning decision as much as a branding one.

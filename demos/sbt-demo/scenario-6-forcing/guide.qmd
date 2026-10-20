@@ -1,17 +1,18 @@
 ---
 title: "Forcing a Version"
-tagline: "Or what to Do When You Must Override the Graph"
+tagline: "Or what to do when you must override the graph"
 type: scenario
 tool: sbt
 ---
 
 #### ! Scenario
 
-
-This scenario demonstrates forcing a version via overrides.
+*Or what to do when you must override the graph*
+This scenario demonstrates sbt's strongest version lever, `dependencyOverrides`, which sets a version for an artifact everywhere in the graph whether or not anything asked for it.
 
 ::: {.callout-note title="Tool Versions"}
-This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). Under the older Ivy engine (sbt < 1.3, or `useCoursier := false`) resolution edge cases differ and settings like `conflictManager` behave differently. `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin.
+This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). On sbt 1.x the older Ivy engine can still be selected with `useCoursier := false`; under Ivy, resolution edge cases differ and Ivy-only settings such as `conflictManager` apply (Coursier ignores them). `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin. sbt 2.0 (June 2026) keeps these resolution rules, removes the Ivy opt-out, adds native BOM import, and turns Test-configuration eviction warnings into errors; the demos here target sbt 1.x.
+Under Coursier, `dependencyOverrides` forces direct declarations as well as transitives (verified against sbt 1.12.2).
 :::
 
 #### ! Example
@@ -25,8 +26,6 @@ graph LR
     Root -- override --> LibC_Forced[lib-c:2.0.0]
 ```
 
-#### ! Example
-
 ```{.scala include="build.sbt" snippet="s6-deps"}
 ```
 
@@ -37,33 +36,40 @@ The graph asks for `lib-c:1.0.0` (via `lib-a` → `lib-b`), so `1.0.0` resolves.
 `lib-c:2.0.0`. The override forces the version even though nothing in the graph requests it.
 
 #### ! Why
-dependencyOverrides is SBT's strongest version enforcement mechanism. It overrides the version of any matching artifact anywhere in the dependency graph, regardless of what the transitive graph would otherwise resolve. Unlike Gradle's strictly, SBT's overrides don't have a built-in mechanism to fail the build if the override causes incompatibilities --- they silently force the version.
+`dependencyOverrides` is applied by Coursier as a forced version for the named artifact: every request for `lib-c`, at any depth and including direct declarations, is rewritten to `2.0.0` before conflict resolution. It is the equivalent of Gradle's `force` and the graph-wide half of Maven's `<dependencyManagement>`. Unlike Gradle's `strictly`, it has no built-in way to fail the build if the forced version is incompatible with its consumers; it silently forces and leaves the consequences to runtime (SB14 shows the eviction checks that can catch some of them).
+
+#### ! Fix
+This is the fix for SB2-style conflicts when you need a specific version to hold. The question is what to do about the consumer: `lib-b` now runs against a `lib-c` it never declared. Run the tests that exercise `lib-b`, and record the reason for the override in a comment so it can be removed when the graph catches up.
 
 #### ! Risk
+* LOW Forcing a version to align with a BOM or to pick up a security patch; the primary use case.
+* MEDIUM Forcing a newer version that the libraries depending on it have not been tested with; `NoSuchMethodError` if the new version removed something.
+* HIGH Forcing an older version. Consumers may use APIs that only exist in the newer release, and nothing at build time will tell you.
 
-* LOW Forcing a version to align with a BOM or to patch a known vulnerability. This is a primary use case for this feature.
-* MEDIUM Forcing a version to a newer version that has not been tested with the libraries that depend on it. This can lead to `NoSuchMethodError` if the new version has breaking changes.
-* HIGH Forcing a version to an older version. This is very likely to cause problems, as the libraries that depend on it may be using features only available in the newer version.
+#### ! Control
+Collect overrides in one place (a `Seq` in `project/Dependencies.scala` or a shared plugin), one comment per entry explaining why it exists and when it can go.
 
 #### ! Check
+**Fast check:** `sbt dependencyTree`
 
-**Fast check (SBT):**
+**What to look for:** `lib-c:1.0.0 (evicted by: 2.0.0)` under `lib-b`, and `lib-c-2.0.0.jar` on `externalDependencyClasspath`.
 
-```bash
-sbt dependencyTree
-```
-
-**What to look for:**
-The version of `lib-c` in the tree. It will be `2.0.0`, with no request for it anywhere in the graph — the tree simply shows the forced version.
-
-**Conclusion:**
-`dependencyOverrides` is the strongest way to enforce a version in SBT.
+**Conclusion:** `dependencyOverrides` is the strongest way to set a version in sbt.
 
 #### ! Scales
-In large Scala codebases, dependencyOverrides sections can grow to dozens of lines as teams force compatible versions across an ecosystem that doesn't always agree. This is especially acute with Scala libraries that are published for specific Scala binary versions (2.12 vs 2.13 vs 3.x). The override section becomes a critical piece of infrastructure that requires careful management. Consider documenting why each override exists.
+In large Scala codebases, `dependencyOverrides` sections grow to dozens of lines as teams force compatible versions across an ecosystem that does not always agree, especially where libraries are published per Scala binary version (2.12, 2.13, 3.x). The override list becomes critical infrastructure; document every entry.
 
 #### ! Takeaway
-Overrides force versions.
+`dependencyOverrides` sets a version everywhere in the graph, silently and unconditionally. Use it for alignment and patches, and test the consumers you just changed.
 
 #### ! Related
-N/A
+*   [SB2](../scenario-2-conflict/guide.qmd) - The conflict this lever resolves.
+*   [SB4](../scenario-4-override/guide.qmd) - Why a direct declaration is not enough.
+*   [SB16](../scenario-16-private-bom/guide.qmd) - Overrides as a BOM emulation.
+*   [MS6](../../maven-demo/scenario-6-forcing/guide.qmd) / [GS6](../../gradle-demo/scenario-6-forcing/guide.qmd) - Forcing in Maven and Gradle.
+*   [P6](../../python-demo/scenario-6-constraints/guide.qmd) - Constraints files, Python's nearest equivalent.
+*   [N6](../../node-demo/scenario-6-overrides/guide.qmd) - Overrides and resolutions in Node.
+
+#### ! Wild
+
+Every Jackson `jackson-databind` CVE since 2017 has produced the same ritual in Spark, Play and Akka HTTP projects: the framework pins one Jackson version, a newer library pulls another, and the security scanner demands a third. Teams end up with `dependencyOverrides` entries for `jackson-core`, `jackson-databind`, `jackson-annotations` and the Scala module, all held to one patched version, because Jackson's modules must match each other exactly and highest-wins will not keep them aligned on its own.

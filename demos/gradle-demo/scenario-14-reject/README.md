@@ -1,18 +1,19 @@
 ### Gradle Scenario 14: Rejecting Versions
 
-This scenario demonstrates how to explicitly reject a specific version of a dependency.
+This scenario demonstrates removing a known-bad version from the candidate pool without pinning.
 
 #### What's happening:
-1.  We depend on `lib-a`.
-2.  We explicitly tell Gradle to **reject** version `2.0.0` of `lib-a`.
-3.  This is useful if a specific version is known to be broken (e.g., "bad release").
-4.  If the dependency graph tries to resolve to `2.0.0`, Gradle will fail or look for another candidate.
+1.  We require `lib-a` in the range `[1.0.0, 3.0.0)`. The repository has `1.0.0` and `2.0.0`, so the range alone resolves to `2.0.0`.
+2.  `reject '2.0.0'` removes that version from the candidates. Highest-wins then selects `1.0.0`.
+3.  Unlike `force '1.0.0'`, the rejection still allows a future `2.0.1` or `2.1.0`.
 
 #### How to verify:
-Run the following command in this directory:
 ```bash
-./gradlew dependencies --configuration compileClasspath
+gradle dependencies --configuration compileClasspath
+gradle dependencyInsight --dependency lib-a --configuration compileClasspath
 ```
 
 #### Expected Output:
-Since we requested `1.0.0` and rejected `2.0.0`, it will resolve to `1.0.0`. If we had requested `2.0.0`, the build would fail with a rejection error.
+- Tree: `com.demo:lib-a:{require [1.0.0, 3.0.0); reject 2.0.0} -> 1.0.0`.
+- Insight: selection reason `Was requested: rejected version 2.0.0`.
+- Comment out the `reject` line and the same build resolves `2.0.0`.

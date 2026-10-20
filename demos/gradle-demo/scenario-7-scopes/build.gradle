@@ -10,13 +10,15 @@ repositories {
 
 // tag::s7-deps[]
 dependencies {
-    // Compile scope (default implementation)
-    implementation 'com.demo:lib-a:1.0.0'
-    
-    // Provided scope (compileOnly)
-    compileOnly 'com.demo:lib-b:1.0.0'
-    
-    // Test scope (testImplementation)
-    testImplementation 'com.demo:lib-c:1.0.0'
+    // Needed to compile AND run (Maven: compile scope)
+    implementation 'com.demo:lib-c:1.0.0'
+
+    // Needed to compile, supplied by the runtime
+    // environment (Maven: provided scope)
+    compileOnly 'com.demo:lib-d:1.0.0'
+
+    // Needed only by the tests (Maven: test scope).
+    // lib-a transitively brings lib-b and lib-c.
+    testImplementation 'com.demo:lib-a:1.0.0'
 }
 // end::s7-deps[]

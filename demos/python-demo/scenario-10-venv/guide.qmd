@@ -1,13 +1,13 @@
 ---
 title: "Virtual Environment Isolation"
-tagline: "Or what to Do When It Works in Dev and Breaks in Prod"
+tagline: "Or what to do when It Works in Dev and Breaks in Prod"
 type: scenario
 tool: python
 ---
 
 #### ! Scenario
 
-*Or what to Do When It Works in Dev and Breaks in Prod*
+*Or what to do when It Works in Dev and Breaks in Prod*
 No JVM sibling — the JVM carries its dependencies on a per-build classpath, so two projects never fight over one shared install. Python's default is the opposite: packages go into *an* environment, and if you don't create an isolated one, that's the global interpreter. This scenario installs `demo-lib-a 1.0.0` in one venv and `2.0.0` in another and shows they don't see each other — while the global Python sees neither.
 
 ::: {.callout-note title="Tool Versions"}

@@ -10,7 +10,7 @@ This scenario demonstrates how to exclude a transitive dependency in Gradle.
 #### How to verify:
 Run the following command in this directory:
 ```bash
-./gradlew dependencies --configuration compileClasspath
+gradle dependencies --configuration compileClasspath
 ```
 
 #### Expected Output:

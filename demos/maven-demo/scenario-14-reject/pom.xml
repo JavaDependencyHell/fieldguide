@@ -11,6 +11,18 @@
 
     <artifactId>maven-reject</artifactId>
 
+    <!-- tag::s14-deps[] -->
+    <dependencies>
+        <!-- lib-a:2.0.0 transitively requires lib-b:2.0.0 -
+             the version we have decided must never appear. -->
+        <dependency>
+            <groupId>com.demo</groupId>
+            <artifactId>lib-a</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+    </dependencies>
+    <!-- end::s14-deps[] -->
+
     <!-- tag::s14-enforcer[] -->
     <build>
         <plugins>
@@ -26,7 +38,9 @@
                             <rules>
                                 <bannedDependencies>
                                     <excludes>
-                                        <exclude>com.demo:lib-a:2.0.0</exclude>
+                                        <!-- group:artifact:version - exactly
+                                             this version, from any path -->
+                                        <exclude>com.demo:lib-b:2.0.0</exclude>
                                     </excludes>
                                 </bannedDependencies>
                             </rules>
@@ -37,5 +51,24 @@
         </plugins>
     </build>
     <!-- end::s14-enforcer[] -->
+
+    <!-- tag::s14-fix[] -->
+    <profiles>
+        <profile>
+            <!-- mvn validate -Pfixed : steer resolution to an
+                 allowed version so the ban never trips. -->
+            <id>fixed</id>
+            <dependencyManagement>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.demo</groupId>
+                        <artifactId>lib-b</artifactId>
+                        <version>1.0.0</version>
+                    </dependency>
+                </dependencies>
+            </dependencyManagement>
+        </profile>
+    </profiles>
+    <!-- end::s14-fix[] -->
 
 </project>

@@ -1,18 +1,15 @@
 # About the Authors {.unnumbered}
 
+### Hervé Boutemy {.unnumbered}
 
-### Hervé Boutemy: {.unnumbered}
+Hervé started with Java when it was in beta, and built his first Java projects with Make (yes) and then Ant. Life changed with Maven 1, and changed again when he grew from an open-source user by day into an active contributor to Maven 2 by night and at weekends.
 
-Hervé started with Java when it was in beta, built his first Java projects with Make (yes) then Ant: but life changed with Maven 1... Life changed even more when growing from OSS user during working day to becoming an active OSS contributor to Maven 2 during nights and week-ends.
+Today Hervé works as a Solutions Architect for Sonatype on the next steps of the build journey, promoting best practices around software supply chains.
 
-Today, Hervé works as Solutions Architect for Sonatype on next steps of the build journey, promoting best-practices around Software Supply Chains.
+In open source, Hervé is an Apache Software Foundation member and chair of the Apache Maven PMC. He is also involved in CycloneDX, SPDX, sigstore, and Reproducible Builds.
 
-On the OSS front, Hervé is an Apache Software Foundation member and Apache Maven PMC Chair. He's also involved in many advanced projects like CycloneDX, SPDX, sigstore, and Reproducible Builds.
+### Steve Poole {.unnumbered}
 
+Developer Advocate at HeroDevs. Java Champion, Oracle ACE, Security Champion, DevOps lead.
 
-### Steve Poole: {.unnumbered}
-
-Developer Advocate @ HeroDevs. Java Champion, Oracle ACE, Security Champion, DevOps lead.
-
-Long-time engineer and pragmatic strategist working across the stack. From operating systems and JVMs to modern AI.
-Open source contributor (Apache, Eclipse, OpenJDK, user group keader , and frequent international conference speaker. Occasional Mad scientist.
+Long-time engineer and pragmatic strategist working across the stack, from operating systems and JVMs to modern AI. Open-source contributor (Apache, Eclipse, OpenJDK), user-group leader, and frequent international conference speaker. Occasional mad scientist.

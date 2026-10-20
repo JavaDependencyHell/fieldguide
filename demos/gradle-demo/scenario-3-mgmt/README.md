@@ -11,7 +11,7 @@ This scenario demonstrates how Gradle uses `platform()` to import Maven BOMs for
 #### How to verify:
 Run the following command in this directory:
 ```bash
-./gradlew dependencies --configuration compileClasspath
+gradle dependencies --configuration compileClasspath
 ```
 
 #### Expected Output:

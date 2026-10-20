@@ -1,16 +1,16 @@
 ---
 title: "Version Conflict Resolution"
-tagline: "What to Do When the Version You Get Isn’t the One You Chose"
+tagline: "Or what to do when the version you get isn't the one you chose"
 type: scenario
 tool: maven
 ---
 
-#### ! Scenario What to Do When the Version You Get Isn’t the One You Chose
+#### ! Scenario
 
+*Or what to do when the version you get isn't the one you chose*
+This scenario demonstrates the "diamond dependency" problem, where two paths through the graph request different versions of the same library.
 
-This scenario demonstrates the "Diamond Dependency" problem where two different versions of the same library are requested.
-
-It highlights the fundamental difference in resolution strategies between Maven ("Nearest Wins") and Gradle/SBT ("Newest Wins").
+It highlights the fundamental difference in resolution strategy between Maven ("nearest wins") and Gradle/sbt ("highest wins").
 
 ::: {.callout-note title="Tool Versions"}
 This scenario was tested with **Maven 3.9**; the behaviour shown applies to Maven 3.x.
@@ -27,63 +27,58 @@ graph LR
     LibA --> LibB_Transitive[lib-b:2.0.0]
 ```
 
-
-
 ```{.xml include="pom.xml" snippet="s2-deps"}
 ```
 
 #### ! Expect
-The newer version (`2.0.0`) wins to provide features for `lib-a`, or the direct dependency (`1.0.0`) wins because it was explicitly requested.
+The newer version (`2.0.0`) wins so that `lib-a` gets the API it was built against, or the direct dependency (`1.0.0`) wins because it was explicitly requested.
 
 #### ! Actual
+Resolves `lib-b:1.0.0`. The direct declaration is at depth 1; `lib-a`'s request is at depth 2. Nearest wins.
 
-Resolves `lib-b:1.0.0` due to "Nearest Wins": depth 1 (direct) beats depth 2 (transitive).
-
-#### ! Reality
-*   **Maven**: Contains `lib-b-1.0.0.jar`. `lib-a` may crash if it requires API only in `2.0.0`.
-*   **Gradle/SBT**: Contains `lib-b-2.0.0.jar`. Project code may crash if it requires API removed in `2.0.0`.
+*   **Maven**: `lib-b-1.0.0.jar` is on the classpath. `lib-a` may crash if it uses API that only exists in `2.0.0`.
+*   **Gradle/sbt**: `lib-b-2.0.0.jar` is on the classpath. Your own code may crash if it uses API removed in `2.0.0`.
 
 #### ! Why
-Maven prioritizes predictability; the closest declaration is assumed to be the intentional one. This "nearest wins" strategy is why the same graph behaves differently across tools.
-
-#### ! Why
-When depth is equal, Maven uses **declaration order**. The version from the dependency declared first in the `pom.xml` wins. This makes ordering significant and potentially fragile.
+Maven assumes the declaration closest to the root is the intentional one: you wrote it, so you meant it. When two candidates sit at the same depth, the one declared **first** in the POM wins, which makes the order of `<dependency>` blocks significant and easy to break by accident. Gradle and sbt instead assume the highest version is the safest, on the semver bet that newer versions are backward compatible.
 
 #### ! Fix
-Reordering dependencies (fragile), adding explicit exclusions (verbose), or managing versions in a parent POM.
-*   **Gradle**: Forcing versions or using strict constraints.
+*   **Manage the version:** put `lib-b` in `<dependencyManagement>` at the version you have tested. This decides the conflict regardless of depth ([MS6](../scenario-6-forcing/guide.qmd)).
+*   **Align the direct declaration:** if `lib-a` genuinely needs `2.0.0`, change your direct `lib-b` to `2.0.0` and test your own code against it.
+*   **Reorder declarations:** only relevant for equal-depth ties, and fragile. Do not rely on it.
 
 #### ! Risk
-*   LOW Use `<dependencyManagement>` to pin versions explicitly.
-*   MEDIUM Add an explicit direct dependency to shorten distance.
-*   HIGH Reorder `<dependency>` blocks to trigger tie-breaking; this is fragile and often misunderstood.
+* LOW Pinning via `<dependencyManagement>` to a version both consumers were tested with.
+* MEDIUM Adding a direct declaration just to shorten the distance; it works, but the reason is invisible to the next reader.
+* HIGH Reordering `<dependency>` blocks to flip a tie-break. It is fragile, undocumented in the POM, and widely misunderstood.
 
 #### ! Control
-Use `<dependencyManagement>` to fix the version regardless of depth. Gradle uses `constraints` or `platform` (BOM) for similar control.
+Use `<dependencyManagement>` to fix the version regardless of depth. Gradle uses `constraints` or `platform` (BOM) for similar control; sbt uses `dependencyOverrides`.
 
 #### ! Check
 **Fast check:** `mvn dependency:tree -Dverbose`
 
-**What to look for:** Lines containing `omitted for conflict` (Maven), `(by conflict resolution)` (Gradle), or evicted nodes (SBT).
+**What to look for:** Lines containing `omitted for conflict with 1.0.0` under `lib-a`. (Gradle prints `2.0.0 -> 1.0.0 (by conflict resolution)`; sbt reports an eviction.)
 
-**Conclusion:** The winning version is "nearest" to the root, not necessarily the newest or most compatible.
+**Conclusion:** The winning version is the one nearest the root, not necessarily the newest or the most compatible.
 
 #### ! Scales
-This is the primary cause of "Dependency Hell." As graphs grow, "nearest" becomes arbitrary and "newest" can trigger unintended upgrades.
+This is the primary cause of "dependency hell". As graphs grow, "nearest" becomes arbitrary and "newest" can trigger unintended upgrades.
 
 #### ! Takeaway
-Maven optimizes for "distance", while Gradle and SBT optimize for "freshness" — knowing which strategy your tool uses is critical for stability.
+Maven optimises for distance; Gradle and sbt optimise for freshness. Knowing which strategy your tool uses is the first thing to check when a version is not the one you expected.
 
 #### ! Related
-* [MS3: Central Management (BOM)](../scenario-3-mgmt/guide.qmd) - How to fix this centrally.
-* [P2](../../python-demo/scenario-2-conflict/guide.qmd) - The same diamond in Python, where there is no eviction and the install fails outright.
-* [N2](../../node-demo/scenario-2-diamond/guide.qmd) - The same diamond in Node, where both versions simply install.
-
-
+*   [MS3](../scenario-3-mgmt/guide.qmd) - How to decide the version centrally instead of by depth.
+*   [MS6](../scenario-6-forcing/guide.qmd) - Forcing the transitive version you actually want.
+*   [GS2](../../gradle-demo/scenario-2-conflict/guide.qmd) - The same diamond under Gradle: highest wins, `2.0.0`.
+*   [SB2](../../sbt-demo/scenario-2-conflict/guide.qmd) - The same diamond under sbt: highest wins, and the eviction is reported.
+*   [P2](../../python-demo/scenario-2-conflict/guide.qmd) - The same diamond in Python, where there is no winner and the install fails outright.
+*   [N2](../../node-demo/scenario-2-diamond/guide.qmd) - The same diamond in Node, where both versions simply install.
+*   [N8](../../node-demo/scenario-8-peers/guide.qmd) - Where Node's "everyone wins" stops and a real conflict returns.
 
 #### ! Wild
 
-In 2015, a [remote code execution vulnerability in Apache Commons Collections](https://github.com/advisories/GHSA-fjq5-5j5f-mvxh) (CVE-2015-7501) affected a large part of the Java ecosystem. The vulnerable library was embedded deep in the transitive dependency graphs of [IBM WebSphere, Oracle WebLogic, and Red Hat JBoss](https://access.redhat.com/security/vulnerabilities/986a8488-052e-46d1-8ede-c55cbfceb822) -- application servers widely deployed in financial services and government.
+In 2015, a [remote code execution vulnerability in Apache Commons Collections](https://github.com/advisories/GHSA-fjq5-5j5f-mvxh) (CVE-2015-7501) affected a large part of the Java ecosystem. The vulnerable library was embedded deep in the transitive dependency graphs of [IBM WebSphere, Oracle WebLogic, and Red Hat JBoss](https://access.redhat.com/security/vulnerabilities/986a8488-052e-46d1-8ede-c55cbfceb822), application servers widely deployed in financial services and government.
 
 Many organisations couldn't upgrade the affected application server or vendor SDK directly. Maven's "nearest wins" logic often favoured the older, vulnerable version (being slightly "closer" to the root). The practical fix was `<dependencyManagement>` to pin the patched Commons Collections version globally, satisfying security audits without requiring full regression testing of the vendor stack.
-

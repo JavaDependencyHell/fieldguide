@@ -1,19 +1,17 @@
 ---
 title: "Dependency Exclusions"
-tagline: "Or what to Do When Excluding a Dependency Fixes the Build but Breaks Runtime"
+tagline: "Or what to do when excluding a dependency fixes the build but breaks runtime"
 type: scenario
 tool: sbt
 ---
 
 #### ! Scenario
 
-
-
-This scenario demonstrates exclusions.
+*Or what to do when excluding a dependency fixes the build but breaks runtime*
+This scenario demonstrates excluding a transitive dependency from one declaration, and the silence that follows.
 
 ::: {.callout-note title="Tool Versions"}
-This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). Under the older Ivy engine (sbt < 1.3, or `useCoursier := false`) resolution edge cases differ and settings like `conflictManager` behave differently. `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin.
-Eviction reporting changed in **sbt 1.5**: the blanket eviction warning was replaced by the `evicted` task and versionScheme-aware checks.
+This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). On sbt 1.x the older Ivy engine can still be selected with `useCoursier := false`; under Ivy, resolution edge cases differ and Ivy-only settings such as `conflictManager` apply (Coursier ignores them). `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin. sbt 2.0 (June 2026) keeps these resolution rules, removes the Ivy opt-out, adds native BOM import, and turns Test-configuration eviction warnings into errors; the demos here target sbt 1.x.
 :::
 
 #### ! Example
@@ -22,45 +20,55 @@ Eviction reporting changed in **sbt 1.5**: the blanket eviction warning was repl
 %%| fig-width: 4.4
 graph LR
     Root[Project Root] --> LibA[lib-a:1.0.0]
-    LibA -.-> LibC[lib-c:1.0.0]
-    Root -- exclude --> LibC
+    LibA --> LibB[lib-b:1.0.0]
+    LibB -.->|excluded| LibC[lib-c:1.0.0]
 ```
-
-#### ! Example
 
 ```{.scala include="build.sbt" snippet="s5-deps"}
 ```
 
 #### ! Expect
-`lib-c` is pruned from the transitive graph under the declaring dependency.
+`lib-c` is pruned from the graph under `lib-a`, and the build carries on as if `lib-b` never needed it.
+
+#### ! Actual
+Exactly that. `lib-c` disappears from the classpath with no warning. If `lib-b` loads a `lib-c` class at runtime, the first sign is `NoClassDefFoundError`.
 
 #### ! Why
-SBT (via Ivy/Coursier) uses the `.exclude(group, artifact)` method to prune the specified artifact from the transitive graph. This mechanism is why the same graph behaves differently across tools.
+`.exclude(group, artifact)` tells Coursier to drop the named artifact wherever it appears beneath that declaration, at any depth. The resolver does not know whether `lib-b` can function without `lib-c`; it only knows you asked. Exclusions are path-scoped: if a second direct dependency also brings `lib-c`, that path is untouched and `lib-c` comes back (see SB18 for the build-wide form).
 
 #### ! Fix
-The most common pattern is swapping logging frameworks: excluding log4j and adding Logback. Some teams also exclude outdated or vulnerable transitives and replace them with newer versions declared directly.
+*   **Swap an implementation:** the most common legitimate use is replacing a logging backend, excluding `log4j` and adding Logback, or excluding a vulnerable transitive and declaring a patched version directly.
+*   **Prefer an override to an exclusion** when the problem is the *version* of `lib-c`, not its presence: `dependencyOverrides` (SB6) keeps the dependency and changes the version.
+*   **Build-wide ban:** when `lib-c` must never appear through any path, use `excludeDependencies += ExclusionRule("com.demo", "lib-c")` (SB18) rather than repeating `.exclude` on every declaration.
 
 #### ! Risk
-* LOW Replacing an implementation (e.g., `log4j` with `logback`).
-* MEDIUM Excluding a transitive thought to be unused.
-* HIGH Excluding to "fix" conflicts without technical verification; this risks `NoClassDefFoundError` at runtime.
+* LOW Replacing an implementation (`log4j` with `logback`) and adding the replacement explicitly.
+* MEDIUM Excluding a transitive you believe is unused, without a test that exercises the code path that might need it.
+* HIGH Excluding to "fix" a conflict without verifying compatibility; the build goes green and the runtime throws `NoClassDefFoundError`.
+
+#### ! Control
+Comment every exclusion with the reason and, where one exists, the upstream issue. Re-check exclusions whenever the excluded library's consumer is upgraded; the new version may need what you removed.
 
 #### ! Check
 **Fast check:** `sbt dependencyTree`
 
-**What to look for:** Absence of the dependency under the declaring artifact.
+**What to look for:** `lib-b` with no `lib-c` child beneath it, and no marker that anything was removed.
 
-**Conclusion:** The exclusion successfully prunes the dependency from this path.
+**Conclusion:** The exclusion silently prunes `lib-c` from this path.
 
 #### ! Scales
-In large Scala projects, exclusions accumulate as different library ecosystems bring in conflicting versions of common dependencies (particularly around Scala version suffixes and cross-builds). Exclusion management is one of the primary maintenance burdens in SBT builds.
+In large Scala projects, exclusions accumulate as different library ecosystems bring in conflicting versions of common dependencies, particularly around Scala binary-version suffixes and cross-builds. Exclusion management becomes one of the primary maintenance burdens of an sbt build, and each exclusion is a silent assumption that nothing on that path needs the artifact.
 
 #### ! Takeaway
-Exclusions work.
+`.exclude` removes an artifact from one path, silently. Use it to swap implementations, not to make conflicts disappear.
 
 #### ! Related
-N/A
+*   [SB18](../scenario-18-banning/guide.qmd) - Excluding an artifact from every path with `excludeDependencies`.
+*   [SB15](../scenario-15-substitution/guide.qmd) - Excluding and adding a replacement.
+*   [SB6](../scenario-6-forcing/guide.qmd) - Changing a version instead of removing the artifact.
+*   [MS5](../../maven-demo/scenario-5-exclusions/guide.qmd) / [GS5](../../gradle-demo/scenario-5-exclusions/guide.qmd) - Exclusions in Maven and Gradle.
+*   [P9](../../python-demo/scenario-9-exclusions-gap/guide.qmd) - Python, where pip and Poetry cannot exclude at all.
 
 #### ! Wild
 
-A recurring issue in Scala ecosystems occurs when libraries depend on different [Scala binary versions](https://docs.scala-lang.org/overviews/core/binary-compatibility-of-scala-releases.html) (for example, 2.12 vs 2.13). Because Scala encodes the binary version into artifact names (e.g., `library_2.12` vs `library_2.13`), mixing versions causes `NoSuchMethodError` or `ClassNotFoundException` at runtime. Teams often resolve this by excluding the unwanted variant and adding a direct dependency on the aligned version. The [sbt cross-building documentation](https://www.scala-sbt.org/1.x/docs/Cross-Build.html) covers the underlying mechanism.
+A recurring issue in Scala ecosystems occurs when libraries depend on different [Scala binary versions](https://docs.scala-lang.org/overviews/core/binary-compatibility-of-scala-releases.html) (for example 2.12 vs 2.13). Because Scala encodes the binary version into artifact names (`library_2.12` vs `library_2.13`), mixing versions causes `NoSuchMethodError` or `ClassNotFoundException` at runtime. Teams resolve this by excluding the unwanted variant and adding a direct dependency on the aligned version. The [sbt cross-building documentation](https://www.scala-sbt.org/1.x/docs/Cross-Build.html) covers the underlying mechanism.

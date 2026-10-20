@@ -1,13 +1,14 @@
 ---
 title: "Version Ranges"
-tagline: "Or what to Do When a Version Range Picks Something You Never Tested"
+tagline: "Or what to do when a version range picks something you never tested"
 type: scenario
 tool: maven
 ---
 
-#### ! Scenario What to Do When a Version Range Picks Something You Never Tested
+#### ! Scenario
 
-This scenario demonstrates dynamic version resolution using ranges (e.g., `[1.0, 2.0)`).
+*Or what to do when a version range picks something you never tested*
+This scenario demonstrates dynamic version resolution using ranges such as `[1.0.0,2.0.0)`.
 
 ::: {.callout-note title="Tool Versions"}
 This scenario was tested with **Maven 3.9**; the behaviour shown applies to Maven 3.x.
@@ -19,23 +20,27 @@ This scenario was tested with **Maven 3.9**; the behaviour shown applies to Mave
 %%| fig-width: 4.4
 graph LR
     Root["Project Root"] --> LibA["lib-a:[1.0.0,2.0.0)"]
+    Repo[("repository: 1.0.0, 2.0.0")] -. metadata .-> LibA
 ```
-
 
 ```{.xml include="pom.xml" snippet="s9-deps"}
 ```
 
 #### ! Expect
-Resolve the latest version matching the range (e.g., at least 1.0.0 but less than 2.0.0).
+Resolve the latest version matching the range: at least 1.0.0 but less than 2.0.0.
+
+#### ! Actual
+`lib-a:1.0.0`. The repository also holds `2.0.0`, but the range excludes it. Publish a `1.1.0` tomorrow and tomorrow's build picks it up, with no change to your POM.
 
 #### ! Why
-The build tool selects from repository metadata. This mechanism is why the same graph behaves differently across tools.
+Maven reads the repository's `maven-metadata.xml` to learn which versions exist, then picks the highest one inside the range. The answer therefore depends on the state of the repository at build time, not only on your source. Maven caches that metadata and re-checks it only when the repository's update policy says so (daily, by default), so two machines can legitimately see two different answers on the same day.
 
-##### Hard Version Ranges
-A bracketed version like `[1.0.0]` is a hard requirement. Unlike a soft preference, it causes build failure if any other version is selected in the graph. This is Maven’s strictest version enforcement.
+A bracketed single version such as `[1.0.0]` is a *hard* requirement. It overrides any plain (soft) version requested elsewhere in the graph, and the build fails only when two hard requirements have no version in common.
 
 #### ! Fix
-Ranges are controversial because they make builds non-deterministic (a new release of `lib-a` can change your build without you touching it). Many teams ban them.
+*   **Pin it:** replace the range with the version you tested. `mvn versions:resolve-ranges` rewrites every range in the POM to its currently resolved version.
+*   **Lock it:** if you must keep ranges, record the resolved graph with a lock plugin and fail the build when it drifts ([MS11](../scenario-11-locking/guide.qmd)).
+*   **Bound it:** if a range is a deliberate policy (a test library, an internal artifact under strict semver), keep the upper bound exclusive so a major release cannot walk in.
 
 #### ! Risk
 * LOW Use ranges for `test` dependencies; allows testing against the latest test libraries without affecting production.
@@ -43,23 +48,26 @@ Ranges are controversial because they make builds non-deterministic (a new relea
 * HIGH Use ranges for external libraries; this causes non-reproducible builds and "it worked yesterday" failures.
 
 #### ! Check
-**Fast check:** `mvn dependency:resolve`
+**Fast check:** `mvn dependency:tree`
 
-**What to look for:** Output showing which version resolved from the range.
+**What to look for:** Which concrete version the range resolved to (`lib-a:jar:1.0.0` here). Compare the output on another machine or a day later.
 
 **Conclusion:** Ranges trade reproducibility for freshness; use with caution and locking.
 
 #### ! Scales
-Ranges are common in NPM/pip but less so in Java/Maven ecosystems due to the desire for reproducibility.
+Ranges are the cultural default in npm and pip but rare in Maven, where the ecosystem convention is exact versions. That convention is most of the reason Maven gets away with having no lock file.
 
 #### ! Takeaway
-Ranges trade reproducibility for freshness; use with caution (and locking).
+A range makes the repository part of your build input. Pin it, or lock it, before it picks a version you never tested.
 
 #### ! Related
-* [MS11: Dependency Locking](../scenario-11-locking/guide.qmd) - How to tame ranges.
-* [P4](../../python-demo/scenario-4-specifiers/guide.qmd) - Python specifiers, where open ranges are the cultural default rather than discouraged.
-* [N4](../../node-demo/scenario-4-semver/guide.qmd) - Node, where the tools write the open range (`^`) for you.
+*   [MS11](../scenario-11-locking/guide.qmd) - How to tame ranges.
+*   [MS12](../scenario-12-metadata/guide.qmd) - What the POM cannot say about versions.
+*   [GS9](../../gradle-demo/scenario-9-ranges/guide.qmd) - The same range in Gradle, which also offers `1.+` and `latest.release`.
+*   [SB9](../../sbt-demo/scenario-9-ranges/guide.qmd) - The same range in sbt.
+*   [P4](../../python-demo/scenario-4-specifiers/guide.qmd) - Python specifiers, where open ranges are the cultural default rather than discouraged.
+*   [N4](../../node-demo/scenario-4-semver/guide.qmd) - Node, where the tools write the open range (`^`) for you.
 
 #### ! Wild
 
-A well-known failure mode with version ranges occurs when CI resolves a newly published dependency that developer machines have not yet seen. Maven's local repository caches resolution results and [will not re-attempt resolution until the update interval elapses](https://cwiki.apache.org/confluence/display/MAVEN/Maven+3.x+Compatibility+Notes) (daily by default). A developer's `~/.m2/repository` may hold yesterday's resolution while CI, starting with an empty cache, picks up today's newly published version. The build suddenly fails without any source changes. Maven 3.x further tightened this by [deprecating the `RELEASE` and `LATEST` meta-versions](https://cwiki.apache.org/confluence/display/MAVEN/Maven+3.x+Compatibility+Notes) in POMs, pushing teams toward explicit version declarations or dependency locking.
+A well-known failure mode with version ranges occurs when CI resolves a newly published dependency that developer machines have not yet seen. Maven caches repository metadata locally and only re-checks it when the repository's [`updatePolicy`](https://maven.apache.org/settings.html#repositories) elapses (`daily` by default). A developer's `~/.m2/repository` may hold yesterday's resolution while CI, starting with an empty cache, picks up today's newly published version. The build suddenly fails without any source changes. Maven 3.x also [deprecated the `RELEASE` and `LATEST` meta-versions](https://cwiki.apache.org/confluence/display/MAVEN/Maven+3.x+Compatibility+Notes), pushing teams toward explicit version declarations or dependency locking.

@@ -10,7 +10,7 @@ This scenario demonstrates how to fix incorrect metadata in third-party librarie
 #### How to verify:
 Run the following command in this directory:
 ```bash
-./gradlew dependencies --configuration compileClasspath
+gradle dependencies --configuration compileClasspath
 ```
 
 #### Expected Output:

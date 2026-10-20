@@ -15,4 +15,4 @@ Thanks to the developers, build engineers, and maintainers who shared war storie
 
 ### Tools and Infrastructure {.unnumbered}
 
-The scenarios in this book were built and tested against real Maven, Gradle, and SBT projects. Thanks to the teams behind those tools, and to the broader open-source ecosystem that makes this kind of hands-on exploration possible.
+Every scenario in this book is backed by a demo project that was built and verified by execution against real tools: Maven, Gradle and sbt on the JVM; pip, Poetry and uv in Python; npm, pnpm and Yarn in Node, with Verdaccio standing in for the registry. Thanks to the teams behind those tools, and to the broader open-source ecosystem that makes this kind of hands-on exploration possible.

@@ -16,17 +16,30 @@
 
     <!-- tag::s8-deps[] -->
     <dependencies>
-<!--
-We are simulating a library that has an optional dependency.
-In a real-world scenario, you would look at the POM of the
-dependency itself. Here, we are just showing the syntax.
--->
+        <!-- lib-d's own POM declares lib-c:1.0.0 with
+             <optional>true</optional>. We are lib-d's CONSUMER,
+             so lib-c does not reach our classpath. -->
         <dependency>
             <groupId>com.demo</groupId>
-            <artifactId>lib-a</artifactId>
+            <artifactId>lib-d</artifactId>
             <version>1.0.0</version>
-            <optional>true</optional>
         </dependency>
     </dependencies>
     <!-- end::s8-deps[] -->
+
+    <!-- tag::s8-optin[] -->
+    <!-- To USE lib-d's optional feature, declare lib-c yourself: -->
+    <profiles>
+        <profile>
+            <id>with-feature</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.demo</groupId>
+                    <artifactId>lib-c</artifactId>
+                    <version>1.0.0</version>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+    <!-- end::s8-optin[] -->
 </project>

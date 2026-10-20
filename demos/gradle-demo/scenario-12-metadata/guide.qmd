@@ -1,17 +1,18 @@
 ---
 title: "Component Metadata Rules"
-tagline: "Or what to Do When Metadata Changes the Outcome of Resolution"
+tagline: "Or what to do when metadata changes the outcome of resolution"
 type: scenario
 tool: gradle
 ---
 
 #### ! Scenario
 
-*Or what to Do When Metadata Changes the Outcome of Resolution*
-This scenario demonstrates how to fix incorrect or missing metadata in third-party libraries using Gradle's Component Metadata Rules.
+*Or what to do when metadata changes the outcome of resolution*
+This scenario demonstrates how to correct wrong or missing metadata in a third-party library, in memory, using Gradle's component metadata rules.
 
 ::: {.callout-note title="Tool Versions"}
 This scenario was tested with **Gradle 8.14**.
+Re-verified on Gradle 9.3 (October 2026): Gradle 9 raised the runtime floor to JDK 17 and changed defaults such as the configuration cache, not the resolution rules shown here.
 :::
 
 #### ! Example
@@ -20,50 +21,60 @@ This scenario was tested with **Gradle 8.14**.
 %%| fig-width: 4.4
 graph LR
     Root[Project Root] --> LibA[lib-a:1.0.0]
-    LibA --> LibB[lib-b:1.0.0]
-    LibB -.-> LibB_Fixed[lib-b:2.0.0]
+    LibA -.->|POM says| LibB1[lib-b:1.0.0]
+    LibA -->|rule says| LibB2[lib-b:2.0.0]
 ```
-
-
 
 ```{.groovy include="build.gradle" snippet="s12-deps"}
 ```
 
 #### ! Expect
-"I know that `lib-a:1.0.0` has a bug in its POM file—it declares a dependency on `lib-b:1.0.0`, but it actually needs `lib-b:2.0.0` to work. I want to fix this without waiting for the library author to release a patch."
+`lib-a:1.0.0`'s POM declares `lib-b:1.0.0`, so that is what resolves. If the POM is wrong, you wait for the author to fix it, or exclude and re-add by hand in every project that uses `lib-a`.
 
 #### ! Actual
-Resolves `lib-b:2.0.0`.
-    *   *Reason*: The component metadata rule intercepts the metadata for `lib-a` as it is being resolved. It removes the dependency on `lib-b` (which would have been `1.0.0`) and adds a new dependency on `lib-b:2.0.0`.
-
-#### ! Reality
-The classpath contains `lib-b-2.0.0.jar`.
+`lib-b:2.0.0` resolves, nested under `lib-a` as if `lib-a` had always declared it. The rule rewrote `lib-a`'s dependency list before resolution read it, and it applies to every path through `lib-a` in this build.
 
 #### ! Why
-Gradle allows you to modify the metadata of a component (like a POM file) *in memory* before it is used for dependency resolution. This is incredibly powerful because it lets you fix upstream bugs locally. The rule applies globally to the build, so any module that depends on `lib-a` will see the corrected metadata.
+Gradle lets you modify a component's metadata *in memory* after it is downloaded and before it is used for resolution. A `withModule` rule runs for every version of the named module and can add, remove or change dependencies, attributes and capabilities. Because the rule operates on the metadata rather than on your declaration, it covers transitive uses of `lib-a` too, which an exclusion on one declaration never does. Neither Maven nor sbt has an equivalent; both can only react at the declaration ([MS12](../../maven-demo/scenario-12-metadata/guide.qmd), [SB12](../../sbt-demo/scenario-12-metadata/guide.qmd)).
 
 #### ! Fix
-*   **Exclusions:** A common (but brittle) fix is to exclude the bad transitive dependency and manually add the correct one.
+*   **The brittle way (exclude and re-add):**
     ```groovy
     implementation('com.demo:lib-a:1.0.0') {
         exclude group: 'com.demo', module: 'lib-b'
     }
     implementation 'com.demo:lib-b:2.0.0'
     ```
-    This is brittle because you have to repeat it every time you use `lib-a`.
+    This must be repeated wherever `lib-a` is declared and does nothing for transitive uses.
+*   **The durable way:** the metadata rule shown above, written once. For reuse across projects, implement it as a class and ship it in a convention plugin.
+
+#### ! Risk
+* LOW Correcting a POM that declares a runtime dependency as compile scope, or is missing one entirely.
+* MEDIUM Rules that encode an assumption about a library's internals; the next release may change them and the rule silently keeps "fixing" something that is no longer broken.
+* HIGH Rules that nobody can find. A dependency that resolves differently from its own POM, for reasons that live in a plugin three repositories away.
 
 #### ! Control
-*   **Component Metadata Rules:** As shown in the example, these rules are defined once and apply everywhere. They are the correct way to fix metadata issues permanently for your build.
+*   **Keep rules discoverable:** a single file or plugin, each rule commented with the upstream issue it works around.
+*   **Review rules on every upgrade** of the module they target; they do not expire by themselves.
 
-#### ! Look
-*   **Runtime Errors:** `NoSuchMethodError` or `ClassNotFoundException` often indicate that a library was compiled against a different version of a dependency than the one on your classpath.
-*   **Bad POMs:** Sometimes POMs are just wrong (e.g., declaring a compile-time dependency as `runtime` scope). Metadata rules can fix this too.
+#### ! Check
+**Fast check:** `gradle dependencyInsight --dependency lib-b --configuration compileClasspath`
+
+**What to look for:** `com.demo:lib-b:2.0.0` with `com.demo:lib-a:1.0.0` as its parent, and no `1.0.0` anywhere: the original POM dependency is gone, not overridden.
+
+**Conclusion:** The rule changed what `lib-a` declares, so resolution never saw `lib-b:1.0.0`.
 
 #### ! Scales
-In large organizations, you can package these rules into a custom Gradle plugin and apply it to all projects. This allows you to centrally fix bad metadata for all your teams.
+In large organisations metadata rules are packaged into a shared convention plugin so that bad POMs are fixed once for every team. The same mechanism also *adds* metadata that Maven POMs cannot express, such as capabilities that let Gradle detect two artifacts providing the same classes. It is the tool that makes a messy public repository behave consistently across hundreds of internal builds.
 
 #### ! Takeaway
-You can patch incorrect metadata on the fly using Component Metadata Rules, avoiding brittle exclusions.
+Component metadata rules patch what a library *says* about itself, in memory, build-wide. They are the durable alternative to exclude-and-re-add.
 
 #### ! Related
-*   [GS15](../scenario-15-substitution/guide.qmd) - Replacing one module with another entirely.
+*   [GS15](../scenario-15-substitution/guide.qmd) - Replacing a module entirely rather than editing its metadata.
+*   [GS13](../scenario-13-variants/guide.qmd) - Attributes and variants, the metadata rules also operate on.
+*   [MS12](../../maven-demo/scenario-12-metadata/guide.qmd) / [SB12](../../sbt-demo/scenario-12-metadata/guide.qmd) - What Maven and sbt can do instead.
+
+#### ! Wild
+
+Guava's `listenablefuture` artifact is the famous case of metadata used as a weapon. Guava publishes `com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava`, an empty jar with an absurd version number, so that newest-wins resolution in Gradle and Maven picks the empty artifact over the real one that older Guava versions split out, avoiding duplicate classes. It only works because version numbers are compared as strings of digits. Gradle's answer to this class of problem is capabilities declared through metadata rules, which let two artifacts say "we provide the same thing" so the build can detect and resolve the conflict explicitly.

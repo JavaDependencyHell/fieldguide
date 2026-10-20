@@ -14,8 +14,10 @@ dependencies (N3), and singletons that must not be duplicated (N8).
 ## Prerequisites
 
 - Node ≥ 22 (npm included)
-- `corepack enable` — pnpm and Yarn are fetched per-project from each demo's
-  `packageManager` pin; no separate installs
+- Corepack — pnpm and Yarn are fetched per-project from each demo's
+  `packageManager` pin, so you never install them by hand. Node 22 and 24
+  bundle Corepack (`corepack enable`); Node 25+ no longer ships it, so run
+  `npm install -g corepack && corepack enable` first.
 - Network on first run only (Verdaccio install + Corepack downloads)
 
 ## Running
@@ -27,7 +29,7 @@ dependencies (N3), and singletons that must not be duplicated (N8).
 
 `verify.sh` starts two local registries (public :4873, private :4874), runs
 every check in a throwaway copy of each project, and tears everything down.
-Scenario 12 (`npm audit`) talks to the real npm registry and needs network.
+Scenario 12 (`npm audit` / `pnpm audit` / `yarn npm audit`) talks to the real npm registry and needs network.
 
 ## Fixture graph
 

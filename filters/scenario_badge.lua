@@ -2,7 +2,8 @@
 -- Convert tool-prefixed scenario references into badges
 --
 -- Supported patterns:
---   MS1  MS10  GS3  SB7  (tool-specific)
+--   MS1  MS10  GS3  SB7  (JVM, tool-specific)
+--   P2   N8               (Python, Node)
 --   S1   S10              (legacy, still supported)
 --
 -- Trailing punctuation is preserved: MS1, GS3: SB7.
@@ -16,7 +17,9 @@ end
 local PREFIX_MAP = {
   MS = "MS",   -- Maven
   GS = "GS",   -- Gradle
-  SB = "SB",   -- SBT
+  SB = "SB",   -- sbt
+  P  = "P",    -- Python
+  N  = "N",    -- Node
   S  = "S",    -- Legacy / generic
 }
 
@@ -28,6 +31,12 @@ function Str(el)
   end
   if not prefix then
     prefix, num, punct = el.text:match("^(SB)(%d+)([,:;%.%)]?[%]%}%)]?)$")
+  end
+  if not prefix then
+    prefix, num, punct = el.text:match("^(P)(%d+)([,:;%.%)]?[%]%}%)]?)$")
+  end
+  if not prefix then
+    prefix, num, punct = el.text:match("^(N)(%d+)([,:;%.%)]?[%]%}%)]?)$")
   end
   if not prefix then
     prefix, num, punct = el.text:match("^(S)(%d+)([,:;%.%)]?[%]%}%)]?)$")

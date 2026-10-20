@@ -1,31 +1,22 @@
 ### Gradle Scenario 7: Dependency Configurations (Scopes)
 
-This scenario demonstrates Gradle's dependency configurations, which are more flexible than Maven's scopes.
+This scenario demonstrates which classpaths each declarable configuration feeds.
 
 #### What's happening:
-1.  `implementation`: Used for `lib-a`. This is the standard configuration for dependencies required to compile and run the project. It is transitive but encapsulates the API.
-2.  `compileOnly`: Used for `lib-b`. This is equivalent to Maven's `provided` scope. It is available at compile time but not packaged or transitive.
-3.  `testImplementation`: Used for `lib-c`. This is equivalent to Maven's `test` scope. It is only available for tests.
+1.  `implementation 'com.demo:lib-c:1.0.0'`: compile and runtime (Maven `compile`).
+2.  `compileOnly 'com.demo:lib-d:1.0.0'`: compile classpath only (Maven `provided`).
+3.  `testImplementation 'com.demo:lib-a:1.0.0'`: test classpaths only (Maven `test`); it brings `lib-b` and `lib-c` with it.
+4.  A configuration governs the *declaration*, not the module: if an `implementation` dependency transitively needed `lib-d`, `lib-d` would still reach the runtime classpath.
 
 #### How to verify:
-Run the following commands:
-
-For compile classpath:
 ```bash
-./gradlew dependencies --configuration compileClasspath
+gradle dependencies --configuration compileClasspath
+gradle dependencies --configuration runtimeClasspath
+gradle dependencies --configuration testRuntimeClasspath
 ```
-
-For compileOnly dependencies (note: they appear in compileClasspath but not runtimeClasspath):
-```bash
-./gradlew dependencies --configuration compileOnly
-```
-
-For test classpath:
-```bash
-./gradlew dependencies --configuration testCompileClasspath
-```
+(`compileOnly` itself is not resolvable; asking for it only lists what was declared.)
 
 #### Expected Output:
-- `lib-a` will appear in `compileClasspath` and `runtimeClasspath`.
-- `lib-b` will appear in `compileClasspath` but NOT `runtimeClasspath`.
-- `lib-c` will appear only in `testCompileClasspath` and `testRuntimeClasspath`.
+- `compileClasspath`: `lib-c` and `lib-d`.
+- `runtimeClasspath`: `lib-c` only.
+- `testRuntimeClasspath`: `lib-c`, and `lib-a` with `lib-b` and `lib-c` beneath it.

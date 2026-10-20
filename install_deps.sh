@@ -28,6 +28,8 @@ mvn install:install-file -Dfile=demo-dependencies/bom/v1/pom.xml -DgroupId=com.d
 mvn install:install-file -Dfile=${dummy_jar} -DgroupId=com.demo -DartifactId=lib-a -Dversion=1.0.0 -Dpackaging=jar -Dclassifier=jdk11 -DgeneratePom=false -DlocalRepositoryPath=target/local-repo
 mvn install:install-file -Dfile=${dummy_jar} -DpomFile=demo-dependencies/lib-circle-a/v1/pom.xml -DgroupId=com.demo -DartifactId=lib-circle-a -Dversion=1.0.0 -Dpackaging=jar -DlocalRepositoryPath=target/local-repo
 mvn install:install-file -Dfile=${dummy_jar} -DpomFile=demo-dependencies/lib-circle-b/v1/pom.xml -DgroupId=com.demo -DartifactId=lib-circle-b -Dversion=1.0.0 -Dpackaging=jar -DlocalRepositoryPath=target/local-repo
+# lib-d declares lib-c as <optional>true</optional> (scenario 8 fixture, all three JVM tracks)
+mvn install:install-file -Dfile=${dummy_jar} -DpomFile=demo-dependencies/lib-d/v1/pom.xml -DgroupId=com.demo -DartifactId=lib-d -Dversion=1.0.0 -Dpackaging=jar -DlocalRepositoryPath=target/local-repo
 
 
 echo "Creating maven-metadata.xml files..."

@@ -1,17 +1,17 @@
 ---
 title: "Tree Shape & Deduplication"
-tagline: "Or what to Do When the Same package.json Grows Two Different Trees"
+tagline: "Or what to do when the same package.json grows two different trees"
 type: scenario
 tool: node
 ---
 
 #### ! Scenario
 
-*Or what to Do When the Same package.json Grows Two Different Trees*
-No JVM or Python sibling — flat models can't have this problem. In npm, the node_modules layout depends not just on *what* you depend on but on the **order in which installs happened**. This scenario takes one package.json, runs one add-then-remove detour, and ends with a different tree than a fresh install produces — same declaration, same lockfile discipline, different disk. It is [P3](../../python-demo/scenario-3-resolver/guide.qmd)'s lesson again — resolution is mechanical, not semantic — with install history as the mechanism.
+*Or what to do when the same package.json grows two different trees*
+No JVM or Python sibling — flat models can't have this problem. In npm, the node_modules layout depends not just on *what* you depend on but on the **order in which installs happened**. This scenario takes one package.json, runs one add-then-remove detour, and ends with a different tree than a fresh install produces — same declaration, different disk, and a lockfile that faithfully records whichever shape it was given. It is [P3](../../python-demo/scenario-3-resolver/guide.qmd)'s lesson again — resolution is mechanical, not semantic — with install history as the mechanism.
 
 ::: {.callout-note title="Tool Versions"}
-Tested with **npm 10.9.8** and **pnpm 11.10.0** — this scenario is a two-tool comparison by design: npm demonstrates the problem, pnpm demonstrates the structural fix. (Yarn's node-modules linker hoists npm-style; its PnP mode sidesteps trees entirely — see [N3](../scenario-3-phantom/guide.qmd).)
+Tested with **npm 12.0.1**, **pnpm 11.10.0** and **Yarn 4.17.0** (node-modules linker). npm demonstrates the problem; pnpm and Yarn avoid it for different structural reasons — pnpm's store layout has no hoisting to remember, and Yarn's node-modules linker recomputes the whole layout from the resolved graph on every install. (Yarn's PnP mode sidesteps trees entirely — see [N3](../scenario-3-phantom/guide.qmd).)
 :::
 
 #### ! Example
@@ -32,16 +32,16 @@ npm uninstall demo-lib-c           # back to the original package.json, BUT:
 After the uninstall, the tree returns to what a fresh install produces — declarations are back to square one, so the tree should be too.
 
 #### ! Actual
-It doesn't return. `demo-lib-c 1.0.0` **stays nested** under `demo-lib-b`; the root slot it once occupied stays empty. npm removed what you uninstalled and touched nothing else — it does not re-hoist. Delete node_modules and the lockfile, install fresh from the identical package.json, and `demo-lib-c` sits hoisted at the root again. Two trees, one declaration, distinguished only by their history.
+It doesn't return. `demo-lib-c 1.0.0` **stays nested** under `demo-lib-b`; the root slot it once occupied stays empty. npm removed what you uninstalled and touched nothing else — it does not re-hoist. And the lockfile agrees with the tree: `package-lock.json` (v2/v3) records every package by its *path* — `node_modules/demo-lib-b/node_modules/demo-lib-c` — so delete node_modules alone and run `npm ci`, and the nested shape comes straight back. Only deleting node_modules *and* the lockfile, then installing fresh from the identical package.json, puts `demo-lib-c` back at the root. Two trees, one declaration, distinguished only by their history — and the history lives in the lock.
 
-pnpm, given the same detour, ends both runs in the same place: every package lives in the content-addressed `.pnpm` store, the root gains no undeclared entries either way, and history leaves no residue.
+pnpm, given the same detour, ends both runs in the same place: every package lives in the content-addressed `.pnpm` store, the root gains no undeclared entries either way, and history leaves no residue. Yarn's node-modules linker also ends hoisted again after the remove, by a different route: it rebuilds the layout from the resolved graph on every install instead of editing the existing tree in place.
 
 #### ! Why
-Hoisting is a greedy, incremental placement algorithm: each operation finds the highest free slot *given the tree as it stands*, and later operations never revisit earlier placements. The layout is therefore a fold over your install history, not a function of your declaration. Mostly this is invisible — `require` finds a working copy either way. It stops being invisible exactly when combined with [N3](../scenario-3-phantom/guide.qmd): a phantom import that worked against yesterday's hoisted copy dies against today's nested one, in a commit that changed nothing related. pnpm's answer is to make layout a pure function of the lockfile — same inputs, same tree, no history.
+Hoisting is a greedy, incremental placement algorithm: each operation finds the highest free slot *given the tree as it stands*, and later operations never revisit earlier placements. The layout is therefore a fold over your install history, not a function of your declaration. Mostly this is invisible — `require` finds a working copy either way. It stops being invisible exactly when combined with [N3](../scenario-3-phantom/guide.qmd): a phantom import that worked against yesterday's hoisted copy dies against today's nested one, in a commit that changed nothing related. pnpm's answer is a layout with no hoisting to remember; Yarn's node-modules linker gets the same property by recomputing placement from scratch on every install. Either way, same inputs, same tree, no history.
 
 #### ! Fix
-*   **Reinstall clean when the tree matters:** `rm -rf node_modules && npm ci` — CI does this implicitly, which is why "works in CI, broken locally" is often *this* scenario.
-*   **`npm dedupe`** re-runs placement over the whole tree, collapsing history-driven nesting.
+*   **Reset the tree *and* the lock when the shape matters:** `rm -rf node_modules package-lock.json && npm install`. `npm ci` alone does *not* reset shape — it reproduces whatever placement the lockfile recorded, nested copies included — so a green CI run is no guarantee the tree is the hoisted one. The price of the full reset is a fresh resolution: with `^` ranges ([N4](../scenario-4-semver/guide.qmd)) you may get different *versions* back, not just a different shape.
+*   **`npm dedupe`** collapses duplicate *versions* where it can; it is not a reliable re-hoist. In this scenario (one version, merely mis-placed) it left `demo-lib-c` nested on npm 12.
 *   **Remove the sensitivity instead:** no phantoms ([N3](../scenario-3-phantom/guide.qmd)) means no code that can observe the tree's shape — at which point the shape is harmless trivia. pnpm enforces exactly this.
 
 #### ! Risk
@@ -58,21 +58,24 @@ npm install && npm install demo-lib-c@2.0.0 && npm uninstall demo-lib-c
 ls node_modules/demo-lib-c 2>/dev/null || echo "root: gone"
 ls node_modules/demo-lib-b/node_modules/demo-lib-c && echo "nested: still here"
 
+rm -rf node_modules && npm ci
+ls node_modules/demo-lib-b/node_modules/demo-lib-c && echo "npm ci: still nested — the lock remembers"
+
 rm -rf node_modules package-lock.json && npm install
 ls node_modules/demo-lib-c && echo "fresh install: hoisted again"
 ```
 
-**What to look for:** nested-after-detour, hoisted-after-fresh — the same package.json growing two different trees.
+**What to look for:** nested after the detour, still nested after `npm ci`, hoisted only after a fresh install — the same package.json growing two different trees, with the lockfile taking sides.
 
-**Conclusion:** npm's tree is a record of how you got here; pnpm's is a function of what you declared.
+**Conclusion:** npm's tree — and its lockfile — is a record of how you got here; pnpm's and Yarn's are functions of what you declared.
 
 #### ! Takeaway
-node_modules has memory. Treat it as a disposable build artifact — never as state worth preserving — and the memory can't hurt you; let it live for months and you own a tree no one can reproduce.
+node_modules has memory, and on npm the lockfile remembers the shape too. Treat the tree as a disposable build artifact, know that `npm ci` restores the *recorded* shape rather than a canonical one, and reach for a full reset when shape matters; let a tree live for months and you own one no one can reproduce.
 
 #### ! Related
 *   [N3](../scenario-3-phantom/guide.qmd) - The imports that make tree shape observable, and therefore breaking.
-*   [N5](../scenario-5-locks/guide.qmd) - What the lockfile pins (versions) versus what it doesn't fully determine under incremental installs (shape).
+*   [N5](../scenario-5-locks/guide.qmd) - What the npm lockfile pins: versions *and* placement — which is why `npm ci` cannot un-nest what history nested.
 *   [P3](../../python-demo/scenario-3-resolver/guide.qmd) - Python's version of "the mechanism, not the declaration, decides".
 
 #### ! Wild
-This is why "delete node_modules and reinstall" works as a debugging step: it erases install history, replacing an accumulation of incremental placements with a pure function of the lockfile. It is a manual implementation of what pnpm's layout provides structurally on every install.
+This is why "delete node_modules and reinstall" is only half a debugging step on npm. Deleting node_modules and running `npm ci` restores the lockfile's recorded placement, history included; the full reset deletes the lockfile too and lets `npm install` recompute placement from scratch. That full reset is a manual, one-off version of what pnpm's store layout and Yarn's node-modules linker do structurally on every install — and it comes with the fresh-resolution cost noted in the Fix.

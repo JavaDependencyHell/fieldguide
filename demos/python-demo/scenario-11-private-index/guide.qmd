@@ -1,13 +1,13 @@
 ---
 title: "Private Index & Dependency Confusion"
-tagline: "Or what to Do When a Public Package Impersonates Your Private One"
+tagline: "Or what to do when a Public Package Impersonates Your Private One"
 type: scenario
 tool: python
 ---
 
 #### ! Scenario
 
-*Or what to Do When a Public Package Impersonates Your Private One*
+*Or what to do when a Public Package Impersonates Your Private One*
 This is the Python sibling of the private-repo scenarios ([MS16](../../maven-demo/scenario-16-private-bom/guide.qmd)/[MS17](../../maven-demo/scenario-17-private-patch/guide.qmd)) — and the most important security scenario in the book. `acme-internal-tool` exists as `1.0.0` on your private index and — maliciously or by accident — as `9.9.9` on public PyPI. How you point pip at those indexes decides whether you install your own code or an attacker's.
 
 ::: {.callout-note title="Tool Versions"}
@@ -15,6 +15,15 @@ Tested with **pip 25.3**, **Poetry 2.4**, **uv 0.11**. The dangerous behaviour i
 :::
 
 #### ! Example
+
+```{mermaid}
+%%| fig-width: 4.4
+graph LR
+    Root[Your project] -- "acme-internal-tool" --> Pool{{"--extra-index-url pool"}}
+    Priv[(private index)] -- "1.0.0 genuine" --> Pool
+    Pub[(public PyPI)] -- "9.9.9 impostor" --> Pool
+    Pool -- "highest version wins" --> Win[9.9.9 installed]
+```
 
 Dangerous — `--extra-index-url` merges both indexes into one pool:
 
@@ -29,6 +38,11 @@ Safe (pip) — one index, no merge:
 Safe (uv) — first index that has the package wins:
 
 ```{.toml include="uv/pyproject.toml" snippet="p11-uv-indexes"}
+```
+
+Safe (Poetry) — ordered sources with explicit priority:
+
+```{.toml include="poetry/pyproject.toml" snippet="p11-poetry-sources"}
 ```
 
 #### ! Expect
@@ -63,7 +77,8 @@ pip install -r requirements-vulnerable.txt && pip show acme-internal-tool   # 9.
 pip install -r requirements-safe.txt && pip show acme-internal-tool         # 1.0.0  (genuine)
 
 # safe: uv first-index / poetry priority
-uv lock && grep -A1 'acme-internal-tool' uv.lock                            # 1.0.0
+uv lock     && grep -A1 'name = "acme-internal-tool"' uv.lock               # 1.0.0
+poetry lock && grep -A1 'name = "acme-internal-tool"' poetry.lock           # 1.0.0
 ```
 
 **What to look for:** `9.9.9` from the merged config (the attack landing) versus `1.0.0` from every origin-aware config.
@@ -76,7 +91,7 @@ uv lock && grep -A1 'acme-internal-tool' uv.lock                            # 1.
 #### ! Related
 *   [P6](../scenario-6-constraints/guide.qmd) - Pinning, which combined with hashes hardens against a swapped artifact.
 *   [P12](../scenario-12-audit/guide.qmd) - Auditing what actually got installed.
-*   [MS16](../../maven-demo/scenario-16-private-bom/guide.qmd) / [MS17](../../maven-demo/scenario-17-private-patch/guide.qmd) - The JVM private-repo scenarios.
+*   [MS16](../../maven-demo/scenario-16-private-bom/guide.qmd) / [GS16](../../gradle-demo/scenario-16-private-bom/guide.qmd) / [SB16](../../sbt-demo/scenario-16-private-bom/guide.qmd) and [MS17](../../maven-demo/scenario-17-private-patch/guide.qmd) / [GS17](../../gradle-demo/scenario-17-private-patch/guide.qmd) / [SB17](../../sbt-demo/scenario-17-private-patch/guide.qmd) - The JVM private-repo scenarios.
 *   [N11](../../node-demo/scenario-11-private-registry/guide.qmd) - The npm original of this attack — and scopes, the structural fix Python's flat namespace lacks.
 
 #### ! Wild

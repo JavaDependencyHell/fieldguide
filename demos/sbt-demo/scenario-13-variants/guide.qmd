@@ -1,48 +1,72 @@
 ---
-title: "Variants and Configurations"
-tagline: "Or what to Do When You Need a Specific Flavor of a Library"
+title: "Variants and Classifiers"
+tagline: "Or what to do when a library has multiple flavours"
 type: scenario
 tool: sbt
 ---
 
 #### ! Scenario
 
-*Or what to Do When You Need a Specific Flavor of a Library*
-This scenario demonstrates how SBT handles variant selection using configurations and classifiers.
-
-N/A
+*Or what to do when a library has multiple flavours*
+This scenario demonstrates how sbt selects one flavour of a library when the same coordinates publish several artifacts.
 
 ::: {.callout-note title="Tool Versions"}
-This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). Under the older Ivy engine (sbt < 1.3, or `useCoursier := false`) resolution edge cases differ and settings like `conflictManager` behave differently. `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin.
+This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). On sbt 1.x the older Ivy engine can still be selected with `useCoursier := false`; under Ivy, resolution edge cases differ and Ivy-only settings such as `conflictManager` apply (Coursier ignores them). `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin. sbt 2.0 (June 2026) keeps these resolution rules, removes the Ivy opt-out, adds native BOM import, and turns Test-configuration eviction warnings into errors; the demos here target sbt 1.x.
 :::
 
 #### ! Example
+
+```{mermaid}
+%%| fig-width: 4.4
+graph LR
+    Root[Project Root] -- "classifier jdk11" --> LibA["lib-a:1.0.0 (jdk11)"]
+    LibA --> LibB[lib-b:1.0.0]
+    LibB --> LibC[lib-c:1.0.0]
+    Default["lib-a:1.0.0 (default jar)"] -.-> |not fetched| Root
+```
 
 ```{.scala include="build.sbt" snippet="s13-deps"}
 ```
 
 #### ! Expect
-Select specific library flavors (e.g., native Linux builds or source JARs) automatically.
+The build tool picks the right flavour of a library for my platform or JDK automatically.
+
+#### ! Actual
+Nothing is automatic. `classifier "jdk11"` names the artifact explicitly, and Coursier fetches `lib-a-1.0.0-jdk11.jar` in place of the default JAR. Change the classifier to one that does not exist and resolution fails with "not found". The transitive dependencies are unchanged, because the POM is shared across all artifacts of the same coordinates.
 
 #### ! Why
-SBT (via Ivy) uses configurations for classpaths but relies on **classifiers** for variant selection, identical to Maven. This distinguishes it from Gradle's attribute-based system.
+sbt, like Maven, has two variant mechanisms and neither is semantic. A **classifier** is an opaque suffix that selects an artifact file; the resolver attaches no meaning to it and performs no compatibility matching. **Configurations** (`Compile`, `Test`, `Runtime`) select classpaths, not artifact flavours. Gradle's attribute-based variant selection (GS13) has no sbt equivalent. The one dimension sbt handles automatically is the Scala binary version: `%%` appends `_2.13` or `_3` to the artifact name from your `scalaVersion`.
 
 #### ! Fix
-*   **Classifiers:** Use the `classifier` method on a dependency:
-    ```scala
-    "com.demo" % "lib-a" % "1.0.0" classifier "native-linux"
-    ```
-*   **`updateClassifiers`:** For sources and javadoc, SBT provides built-in support via the `updateClassifiers` task.
+*   **Classifiers:** `"org" % "lib" % "1.0" classifier "native-linux"` for platform-specific artifacts; `updateClassifiers` fetches `sources` and `javadoc` for IDEs.
+*   **Scala variants:** use `%%` so the Scala suffix follows your build. For Scala 3 consuming 2.13 artifacts, `.cross(CrossVersion.for3Use2_13)`.
+*   **Platform detection:** if the classifier depends on the host, compute it in `build.sbt` from `sys.props("os.name")` rather than hardcoding one platform.
 
-#### ! Look
-*   **"Artifact not found":** If you request a classifier that doesn't exist, resolution will fail.
-*   **Platform Mismatches:** If you hardcode a classifier like `linux-x86_64` in your build, it will fail on macOS or Windows.
+#### ! Risk
+* LOW Requesting `sources` or `javadoc` classifiers for development tooling.
+* MEDIUM Hardcoding a platform classifier such as `linux-x86_64`; the build fails on every other machine.
+* HIGH Mixing Scala binary versions by naming artifacts with `%` and the wrong suffix; `NoSuchMethodError` at runtime.
+
+#### ! Control
+Prefer `%%` for every Scala library so the suffix is never hand-written. Keep platform classifiers in one computed value, and test the build on each platform you claim to support.
+
+#### ! Check
+**Fast check:** `sbt "show externalDependencyClasspath"`
+
+**What to look for:** `lib-a-1.0.0-jdk11.jar` on the classpath and `lib-a-1.0.0.jar` absent; `lib-b` and `lib-c` present as usual.
+
+**Conclusion:** A classifier selects an artifact; it does not change the graph.
 
 #### ! Scales
-Classifier-based variant selection is more limited than Gradle's attribute matching because classifiers are opaque strings with no formal compatibility rules. In the Scala ecosystem, the most important "variant" is the Scala version suffix (e.g., `_2.13` or `_3`). SBT handles this automatically via the `%%` operator, which appends the correct Scala version suffix. This is a form of variant selection that is unique to the Scala ecosystem and handles one of its biggest dependency management challenges.
+Classifier-based selection is more limited than Gradle's attribute matching because classifiers carry no compatibility rules. In the Scala ecosystem the important variant is the Scala binary version, and `%%` handles it so well that most builds never write a classifier at all.
 
 #### ! Takeaway
-SBT uses classifiers and the `%%` operator to handle variants.
+sbt selects flavours with classifiers and the `%%` operator. Both are explicit; neither is matched for you.
 
 #### ! Related
-N/A
+*   [SB7](../scenario-7-scopes/guide.qmd) - Configurations, which select classpaths rather than artifacts.
+*   [MS13](../../maven-demo/scenario-13-variants/guide.qmd) / [GS13](../../gradle-demo/scenario-13-variants/guide.qmd) - Classifiers in Maven and attribute-based variants in Gradle.
+
+#### ! Wild
+
+JavaFX publishes every module three times, with `win`, `mac` and `linux` classifiers, because the artifacts contain native libraries. A `build.sbt` that hardcodes `classifier "mac"` works for the developer who wrote it and fails for everyone else, so the standard Scala idiom computes the classifier from `os.name` at build time. The Scala-specific version of the same problem is the binary suffix: the migration to Scala 3 in 2021 was survivable only because `%%` and `CrossVersion.for3Use2_13` let builds consume 2.13 artifacts without renaming every dependency by hand.

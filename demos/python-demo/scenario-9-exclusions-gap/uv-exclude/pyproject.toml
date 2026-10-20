@@ -1,0 +1,19 @@
+[project]
+name = "p9-exclusions-gap-exclude"
+version = "0.1.0"
+requires-python = ">=3.9"
+dependencies = ["demo-lib-a==1.0.0"]
+
+# tag::p9-uv-exclude[]
+[tool.uv]
+# Lever 2 — exclusion (uv 0.9.8+): REMOVE demo-lib-c from the graph even
+# though demo-lib-b requires it. This is the Maven <exclusion> equivalent,
+# and the only one in the Python ecosystem. Scope it to one edge with
+#   { package = { name = "demo-lib-b" }, dependencies = ["demo-lib-c"] }
+exclude-dependencies = ["demo-lib-c"]
+# end::p9-uv-exclude[]
+
+[[tool.uv.index]]
+name = "demo-repo"
+url = "http://127.0.0.1:8765/simple/"
+default = true

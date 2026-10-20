@@ -48,12 +48,29 @@ python3 -m http.server 8765 --directory "$PUB_REPO"  > /dev/null 2>&1 &
 SRV_PUB=$!
 python3 -m http.server 8766 --directory "$PRIV_REPO" > /dev/null 2>&1 &
 SRV_PRIV=$!
-cleanup() { kill $SRV_PUB $SRV_PRIV 2>/dev/null; rm -rf "$WORK"; }
+cleanup() { kill $SRV_PUB $SRV_PRIV 2>/dev/null; wait $SRV_PUB $SRV_PRIV 2>/dev/null; rm -rf "$WORK"; }
 trap cleanup EXIT
 sleep 1
 
 export POETRY_VIRTUALENVS_IN_PROJECT=true
 export PIP_DISABLE_PIP_VERSION_CHECK=1
+
+# ---------- record what is actually being exercised ----------
+# The book's callouts name pinned versions; this run names its own, so a
+# green result is attributable to a toolchain, not to "whatever was there".
+PROBE=$(python3 -m venv "$WORK/probe" > /dev/null && "$WORK/probe/bin/pip" --version | awk '{print $2}')
+echo "Toolchain: python $(python3 --version | awk '{print $2}') · venv pip $PROBE · $(poetry --version | sed 's/Poetry (version \(.*\))/poetry \1/') · $(uv --version | awk '{print "uv", $2}')"
+
+# One network probe, shared by the two checks that need PyPI (S7's pip
+# upgrade when the venv pip predates --group, and S12's advisory lookup).
+if python3 - <<'PY' 2>/dev/null
+import socket, sys
+try:
+    socket.create_connection(("pypi.org", 443), timeout=5).close()
+except OSError:
+    sys.exit(1)
+PY
+then ONLINE=1; else ONLINE=0; fi
 
 TOTAL=0
 PASSED=0
@@ -188,7 +205,14 @@ if run_scenario 6 "Constraints"; then
     "$V/bin/pip" install -q -r scenario-6-constraints/pip/requirements.txt \
         -c scenario-6-constraints/pip/constraints.txt \
         && "$V/bin/pip" show demo-lib-c 2>/dev/null | grep -q "Version: 1.0.0"
-    check_result "Scenario 6 (constraint pins 1.0.0)" "pip" $?
+    R1=$?
+    # The negative: the same requirement WITHOUT -c takes 2.0.0.
+    V=$(new_venv s6-pip2)
+    "$V/bin/pip" install -q -r scenario-6-constraints/pip/requirements.txt \
+        && "$V/bin/pip" show demo-lib-c 2>/dev/null | grep -q "Version: 2.0.0"
+    R2=$?
+    [ $R1 -eq 0 ] && [ $R2 -eq 0 ]
+    check_result "Scenario 6 (constraint pins 1.0.0; without it 2.0.0)" "pip" $?
 
     W=$(work_copy scenario-6-constraints/poetry)
     (cd "$W" && poetry lock -q && grep -A1 'name = "demo-lib-c"' poetry.lock | grep -q '1.0.0')
@@ -213,25 +237,40 @@ if run_scenario 7 "Extras/Groups"; then
     check_result "Scenario 7 (extra opt-in)" "pip" $?
 
     # pip 25.1+ reads the standard PEP 735 [dependency-groups] table directly.
-    # The venv's bundled pip may predate --group, so upgrade it first
-    # (needs PyPI, like scenario 12; an offline run fails loudly here).
+    # If the venv's bundled pip predates --group it must be upgraded from PyPI;
+    # that is the only online step outside S12, so it is gated the same way.
     V=$(new_venv s7-pip3)
-    "$V/bin/pip" install -q --upgrade "pip>=25.1" \
-        && (cd scenario-7-extras-groups/pip \
+    if "$V/bin/pip" install --help 2>/dev/null | grep -q -- '--group'; then
+        S7_READY=1
+    elif [ "$ONLINE" -eq 1 ]; then
+        "$V/bin/pip" install -q --upgrade "pip>=25.1" && S7_READY=1 || S7_READY=0
+    else
+        S7_READY=0
+    fi
+    if [ "$S7_READY" -eq 1 ]; then
+        (cd scenario-7-extras-groups/pip \
             && "$V/bin/pip" install -q --group dev -i http://127.0.0.1:8765/simple/) \
-        && "$V/bin/pip" show -q demo-lib-d > /dev/null 2>&1
-    check_result "Scenario 7 (pip install --group, 25.1+)" "pip" $?
+            && "$V/bin/pip" show -q demo-lib-d > /dev/null 2>&1
+        check_result "Scenario 7 (pip install --group, 25.1+)" "pip" $?
+    else
+        echo -e "${RED}[----]${NC} pip - Scenario 7 --group NOT RUN: venv pip < 25.1 and pypi.org unreachable."
+        S7_SKIPPED=1
+    fi
 
+    # Poetry reads the same PEP 735 table (2.2+) and installs every
+    # non-optional group BY DEFAULT: the default sync must include lib-d,
+    # and only --without dev removes it.
     W=$(work_copy scenario-7-extras-groups/poetry)
     (cd "$W" && poetry lock -q \
-        && poetry sync -q --no-root --without dev && ! .venv/bin/pip show -q demo-lib-d > /dev/null 2>&1 \
-        && poetry sync -q --no-root --with dev && .venv/bin/pip show -q demo-lib-d > /dev/null 2>&1)
-    check_result "Scenario 7 (dev group with/without)" "poetry" $?
+        && poetry sync -q --no-root && .venv/bin/pip show -q demo-lib-d > /dev/null 2>&1 \
+        && poetry sync -q --no-root --without dev && ! .venv/bin/pip show -q demo-lib-d > /dev/null 2>&1)
+    check_result "Scenario 7 (dev group default-on, --without dev)" "poetry" $?
 
+    # uv: dev is the default group; --no-dev removes it.
     W=$(work_copy scenario-7-extras-groups/uv)
     (cd "$W" && uv sync -q --no-dev && ! .venv/bin/python -c "import demo_lib_d" 2>/dev/null \
         && uv sync -q && .venv/bin/python -c "import demo_lib_d" 2>/dev/null)
-    check_result "Scenario 7 (dev group with/without)" "uv" $?
+    check_result "Scenario 7 (dev group default-on, --no-dev)" "uv" $?
 fi
 
 # ---------- Scenario 8: Environment markers ----------
@@ -269,7 +308,15 @@ if run_scenario 9 "Exclusions gap"; then
     W=$(work_copy scenario-9-exclusions-gap/uv)
     (cd "$W" && uv sync -q \
         && .venv/bin/python -c "import demo_lib_c, sys; sys.exit(0 if demo_lib_c.__version__ == '2.0.0' else 1)" 2>/dev/null)
-    check_result "Scenario 9 (uv override forces 2.0.0)" "uv" $?
+    check_result "Scenario 9 (uv override forces 2.0.0, package stays)" "uv" $?
+
+    # uv exclude-dependencies (0.9.8+): the one real exclusion in Python.
+    # demo-lib-c must be GONE while its consumer demo-lib-b is still installed.
+    W=$(work_copy scenario-9-exclusions-gap/uv-exclude)
+    (cd "$W" && uv sync -q \
+        && .venv/bin/python -c "import demo_lib_b" 2>/dev/null \
+        && ! .venv/bin/python -c "import demo_lib_c" 2>/dev/null)
+    check_result "Scenario 9 (uv exclusion removes lib-c, keeps lib-b)" "uv" $?
 fi
 
 # ---------- Scenario 10: Virtual environment isolation ----------
@@ -312,14 +359,7 @@ if run_scenario 12 "Audit"; then
     # local index. Because that makes S12 non-deterministic, it is network-gated:
     # run and hard-check it WHEN online; report it as not-run (not pass, not fail)
     # when offline, so an offline box neither lies green nor falsely goes red.
-    if python3 - <<'PY' 2>/dev/null
-import socket, sys
-try:
-    socket.create_connection(("pypi.org", 443), timeout=5).close()
-except OSError:
-    sys.exit(1)
-PY
-    then
+    if [ "$ONLINE" -eq 1 ]; then
         # pip-audit must NOT share a venv with the package it's auditing:
         # installing urllib3==1.26.4 alongside pip-audit makes pip-audit's own
         # `import requests -> import urllib3` pick up that ancient pin, whose
@@ -337,7 +377,8 @@ PY
 fi
 
 echo "-----------------------------------"
-echo "Python Verification Complete: $PASSED / $TOTAL offline checks passed."
+echo "Python Verification Complete: $PASSED / $TOTAL checks passed."
+[ "${S7_SKIPPED:-0}" -eq 1 ] && echo "Scenario 7 pip --group was NOT run — venv pip < 25.1 and no internet to upgrade it."
 [ "${S12_SKIPPED:-0}" -eq 1 ] && echo "Scenario 12 (network-only) was NOT run — no internet. Re-run online to verify it."
 
 # Gate only on the deterministic offline checks. S12's network prerequisite,

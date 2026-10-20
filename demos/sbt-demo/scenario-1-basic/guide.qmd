@@ -1,17 +1,17 @@
 ---
 title: "Basic Transitive Resolution"
-tagline: "Or what to Do When it Pulls in More Than You Declared"
+tagline: "Or what to do when it pulls in more than you declared"
 type: scenario
 tool: sbt
 ---
 
 #### ! Scenario
 
-*Or what to Do When it Pulls in More Than You Declared*
-This scenario demonstrates the fundamental concept of transitive dependency resolution in SBT.
+*Or what to do when it pulls in more than you declared*
+This scenario demonstrates the fundamental mechanism of transitive dependency resolution in sbt: you declare one library and get its whole subtree.
 
 ::: {.callout-note title="Tool Versions"}
-This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). Under the older Ivy engine (sbt < 1.3, or `useCoursier := false`) resolution edge cases differ and settings like `conflictManager` behave differently. `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin.
+This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). On sbt 1.x the older Ivy engine can still be selected with `useCoursier := false`; under Ivy, resolution edge cases differ and Ivy-only settings such as `conflictManager` apply (Coursier ignores them). `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin. sbt 2.0 (June 2026) keeps these resolution rules, removes the Ivy opt-out, adds native BOM import, and turns Test-configuration eviction warnings into errors; the demos here target sbt 1.x.
 :::
 
 #### ! Example
@@ -24,42 +24,45 @@ graph LR
     LibB --> LibC[lib-c:1.0.0]
 ```
 
-#### ! Example
-
 ```{.scala include="build.sbt" snippet="s1-deps"}
 ```
 
 #### ! Expect
-Declaring `lib-a` automatically includes its transitive dependencies `lib-b` and `lib-c` on the classpath.
+Declaring `lib-a` automatically puts its transitive dependencies `lib-b` and `lib-c` on the classpath.
 
 #### ! Why
-SBT (via Ivy or Coursier) uses transitivity to resolve the entire dependency tree from your direct declarations. This mechanism saves you from manually declaring every required library.
+Coursier reads the POM of every artifact it fetches and recursively resolves the dependencies declared there. You declare the roots of the graph; the resolver walks the rest. This is what makes a one-line declaration pull in a chain of libraries you never named.
 
 #### ! Fix
-There is nothing to fix here; this is the desired behavior. However, developers sometimes try to manually add transitive dependencies to `libraryDependencies` to "be sure" they are there. This is generally unnecessary unless you are using APIs from those transitive dependencies directly in your code.
+There is nothing to fix; this is the intended behaviour. Developers sometimes add transitive dependencies to `libraryDependencies` "to be sure" they are present. That is unnecessary unless your code imports classes from those libraries directly, in which case declaring them is correct: a dependency you compile against should be one you declare.
+
+#### ! Risk
+* LOW Declaring only the libraries you import and trusting resolution for the rest.
+* MEDIUM Declaring transitives "to be safe"; the extra declarations later shadow what the real owner of the dependency wanted (see SB2).
+* HIGH Assuming a small declaration means a small classpath. One library can bring hundreds of JARs, each a potential conflict and a potential CVE.
 
 #### ! Control
-Trust the transitive resolution. Only declare direct dependencies (libraries you import in your code) in your `build.sbt`.
+Trust transitive resolution and keep `libraryDependencies` to the libraries your code actually uses. Review the full tree with `sbt dependencyTree` whenever you add a dependency.
 
 #### ! Check
 
-**Fast check (SBT):**
+**Fast check:** `sbt dependencyTree`
 
-```bash
-sbt dependencyTree
-```
+**What to look for:** A clean chain `lib-a` → `lib-b` → `lib-c` with no `(evicted by: …)` markers.
 
-**What to look for:**
-A clean tree with no unexpected versions or `omitted` nodes.
-
-**Conclusion:**
-The dependency graph is healthy and resolving as expected.
+**Conclusion:** The graph resolves exactly as the POMs describe it.
 
 #### ! Scales
-Transitive resolution is the only way modern software development scales. Without it, you would be managing hundreds of jar files manually. However, it also means that adding one small library can pull in a large tree of other libraries, potentially leading to conflicts (see SB2).
+Transitive resolution is the only way modern software development scales; without it you would manage hundreds of JARs by hand. The cost is that adding one small library can pull in a large tree of other libraries, and every node in that tree is a candidate for a version conflict (SB2) or a security finding.
 
 #### ! Takeaway
-SBT resolves dependencies transitively. You declare the roots; SBT finds the rest of the tree.
+sbt resolves dependencies transitively. You declare the roots; Coursier finds the rest of the tree.
 
-#### Related Scenarios
-*   [Scenario 2: Conflict](../scenario-2-conflict/guide.qmd) - What happens when two branches of the tree disagree on a version.
+#### ! Related
+*   [SB2](../scenario-2-conflict/guide.qmd) - What happens when two branches of the tree disagree on a version.
+*   [MS1](../../maven-demo/scenario-1-basic/guide.qmd) / [GS1](../../gradle-demo/scenario-1-basic/guide.qmd) - The same graph in Maven and Gradle.
+*   [P1](../../python-demo/scenario-1-basic/guide.qmd) / [N1](../../node-demo/scenario-1-basic/guide.qmd) - The same graph in Python and Node.
+
+#### ! Wild
+
+Declaring `spark-core` in a Scala project brings in well over a hundred transitive artifacts: Hadoop, Netty, Jackson, Guava, Avro, Parquet and their own subtrees. Nobody declares those, yet every one of them ends up on the classpath, and most Spark "dependency hell" stories (SB2, SB6) begin with a second library that brings a different version of one of them. Run `sbt dependencyTree` once on a fresh Spark project to see how much of your application you did not write.

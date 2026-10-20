@@ -11,7 +11,7 @@
     <repositories>
         <repository>
             <id>local-demo-repo</id>
-            <url>file://${project.basedir}/../../target/local-repo</url>
+            <url>file://${project.basedir}/../../../target/local-repo</url>
         </repository>
     </repositories>
 

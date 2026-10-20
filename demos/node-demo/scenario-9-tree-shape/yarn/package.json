@@ -1,0 +1,9 @@
+{
+  "name": "n9-tree-shape-yarn",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "demo-lib-b": "1.0.0"
+  },
+  "packageManager": "yarn@4.17.0"
+}

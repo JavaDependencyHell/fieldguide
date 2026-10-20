@@ -1,13 +1,14 @@
 ---
 title: "Version Substitution"
-tagline: "Or what to Do When You Need to Swap One Library for Another"
+tagline: "Or what to do when you need to swap one library for another"
 type: scenario
 tool: maven
 ---
 
-#### ! Scenario What to Do When You Need to Swap One Library for Another
+#### ! Scenario
 
-This scenario demonstrates how to replace one dependency with another in Maven. Maven has no native substitution mechanism, but exclusions combined with explicit declarations achieve the same result.
+*Or what to do when you need to swap one library for another*
+This scenario demonstrates how to replace one dependency with another in Maven. Maven has no substitution mechanism; an exclusion plus an explicit declaration of the replacement achieves the same result, one path at a time. Here `lib-a` depends on `lib-b`, which we treat as abandoned, and `lib-d` stands in as its maintained drop-in replacement.
 
 ::: {.callout-note title="Tool Versions"}
 This scenario was tested with **Maven 3.9**; the behaviour shown applies to Maven 3.x.
@@ -15,53 +16,66 @@ This scenario was tested with **Maven 3.9**; the behaviour shown applies to Mave
 
 #### ! Example
 
+```{mermaid}
+%%| fig-width: 4.4
+graph LR
+    Root[Project Root] --> LibA[lib-a:1.0.0]
+    LibA -. excluded .-> LibB["lib-b:1.0.0 (abandoned)"]
+    Root --> LibD["lib-d:1.0.0 (replacement)"]
+```
+
 ```{.xml include="pom.xml" snippet="s15-deps"}
 ```
 
 #### ! Expect
-Substituting one library for another (e.g., swapping `log4j` for `slf4j`) replaces it throughout the entire dependency graph.
+One rule says "wherever `lib-b` appears, use `lib-d` instead", and the whole graph follows it.
+
+#### ! Actual
+There is no such rule. The tree shows `lib-a` with no children and `lib-d` beside it: the exclusion cut `lib-b` (and the `lib-c` beneath it) off *this* path, and the direct declaration supplied the replacement. A second dependency that also pulls in `lib-b` would bring it straight back.
 
 #### ! Why
-Maven lacks a graph-wide substitution mechanism; its exclusions are declaration-scoped. To achieve substitution, you must apply exclusions to every path and declare the replacement explicitly, a manual process that differs from Gradle's global `dependencySubstitution`. This distinction is why the same graph behaves differently across tools.
+Exclusions are declaration-scoped, so a substitution in Maven is a manual composition: exclude the old artifact on every path that carries it, declare the new one once, and keep the two in step by hand. Gradle's `dependencySubstitution` expresses the same intent as one graph-wide rule ([GS15](../../gradle-demo/scenario-15-substitution/guide.qmd)). Note also that nothing checks the replacement actually provides the classes the excluded library did; that is a runtime discovery.
 
-### ! Fix
+#### ! Fix
 
-- **Exclusion on every path:** The brute-force approach. Add `<exclusion>` blocks to every direct dependency that transitively pulls in the unwanted library. This works but is verbose, fragile, and must be maintained as the dependency graph evolves.
-- **Global exclusion via `<dependencyManagement>`:** While `<dependencyManagement>` cannot exclude a dependency outright, you can declare the unwanted artifact with `<scope>provided</scope>` to remove it from the runtime classpath. This is not a true exclusion but achieves a similar practical effect.
-- **Eclipse Transformer:** For substitutions where the replacement has a different package structure (e.g., `javax.*` to `jakarta.*`), the [Eclipse Transformer](https://github.com/eclipse-transformer/transformer) can rewrite bytecode, resources, and nested JARs at build time via its Maven plugin. This is the recommended approach for namespace migrations — the Maven Shade Plugin can relocate packages but [introduces problems with transitive dependencies and IDE debugging](https://tomee.apache.org/javax-to-jakarta.html).
+```{.xml include="pom.xml" snippet="s15-guard"}
+```
+
+*   **Exclude on every path:** add an `<exclusion>` to each direct dependency that transitively carries the old library.
+*   **Declare the replacement once**, at the version that matches the API the excluded library's consumers expect.
+*   **Guard it:** a `bannedDependencies` rule for the old coordinates (shown above) fails the build the day a new dependency smuggles it back ([MS18](../scenario-18-banning/guide.qmd)).
+*   **For package-namespace migrations** (`javax.*` to `jakarta.*`), use the [Eclipse Transformer](https://github.com/eclipse-transformer/transformer) Maven plugin, which rewrites bytecode and resources at build time. The Shade plugin's relocation can do it too, but [breaks transitive dependencies and IDE debugging](https://tomee.apache.org/javax-to-jakarta.html).
 
 #### ! Risk
-
-* LOW Replacing a logging framework with a compatible one (e.g., `log4j` with `log4j-over-slf4j`). This is a well-understood and common practice.
-* MEDIUM Replacing a library with a forked or patched version. This is often necessary but introduces the risk that the fork will not be maintained.
-* HIGH Replacing a library with a completely different one that is not a drop-in replacement. This is very likely to cause `NoClassDefFoundError` or `NoSuchMethodError` at runtime.
+* LOW Replacing a library with a drop-in that keeps the same packages and API (a logging bridge, a maintained fork).
+* MEDIUM Replacing a library with a fork whose API has started to diverge; the compiler will not warn you about the transitives that call it.
+* HIGH Replacing a library with something that is not a drop-in at all. Expect `NoClassDefFoundError` or `NoSuchMethodError` at runtime.
 
 #### ! Control
+*   Pair every substitution with an enforcer ban on the old coordinates.
+*   Comment each exclusion with what replaces it and why.
+*   Run `mvn dependency:tree` after every change and confirm the old library is absent from the *whole* tree, not just one subtree.
 
-- Combine exclusions with the Enforcer Plugin: After adding exclusions, use `bannedDependencies` (MS14) to ensure the old library never creeps back in through a new transitive path.
-- Document every substitution: Add a comment next to each exclusion explaining what it replaces and why. Future developers (including you in six months) will thank you.
-- Run `mvn dependency:tree` after every substitution to verify that the old library is truly gone from the entire graph.
+#### ! Check
+**Fast check:** `mvn validate`, then `mvn dependency:tree`
 
-#### ! Look
+**What to look for:** `validate` succeeds (the ban finds nothing); the tree shows `lib-d:jar:1.0.0` and no `lib-b` anywhere. Remove the `<exclusion>` and `validate` fails naming `lib-b`.
 
-- `NoClassDefFoundError` or `ClassNotFoundException`: The exclusion removed the old library, but the replacement doesn't provide all the same classes.
-- Both old and new libraries on the classpath: A missed transitive path is still pulling in the original. This often manifests as non-deterministic behaviour depending on classloader ordering.
-- Gradual classpath creep: A new dependency added weeks later reintroduces the excluded library via a different transitive path. This is why the Enforcer Plugin safety net matters.
+**Conclusion:** Substitution in Maven is exclusion plus declaration plus a guard; the tree is the only proof it worked.
 
 #### ! Scales
-
-The logging framework swap (log4j → SLF4J + Logback) is the canonical example, but the pattern applies to any library migration: moving from `javax.*` to `jakarta.*`, replacing a community library with an internal fork, or swapping an abandoned library for a maintained alternative. In large multi-module Maven projects, the exclusion-based approach becomes a maintenance burden. Some teams centralise substitutions in a parent POM's `<dependencyManagement>`, combining scope overrides and exclusions to approximate what Gradle achieves with a single substitution rule.
+The logging-framework swap (`log4j` → SLF4J + Logback via `log4j-over-slf4j`) is the canonical example, but the pattern applies to any migration: `javax.*` to `jakarta.*`, a community library to an internal fork, an abandoned library to a maintained alternative. In large multi-module builds the per-path exclusions become a maintenance burden; teams centralise them in the parent POM and lean on the enforcer ban to catch what the exclusions miss.
 
 #### ! Takeaway
-
-Maven has no graph-wide substitution mechanism. Use exclusions on each path plus an explicit replacement declaration. Always verify with `dependency:tree` and guard with the Enforcer Plugin.
+Maven has no graph-wide substitution. Exclude the old library on each path, declare the replacement, and guard with the Enforcer Plugin so it cannot return unnoticed.
 
 #### ! Related
-
-* [MS5: Exclusions](../scenario-5-exclusions/guide.qmd) — The underlying mechanism used for substitution.
-* [MS14: Rejecting a Version](../scenario-14-reject/guide.qmd) — Using the Enforcer Plugin to prevent the old library from returning.
-* [MS6: Forcing a Version](../scenario-6-forcing/guide.qmd) — An alternative when only the version (not the artifact) needs to change.
+*   [MS5](../scenario-5-exclusions/guide.qmd) - The underlying mechanism.
+*   [MS18](../scenario-18-banning/guide.qmd) - The guard that keeps the old library out.
+*   [MS6](../scenario-6-forcing/guide.qmd) - When only the version, not the artifact, needs to change.
+*   [GS15](../../gradle-demo/scenario-15-substitution/guide.qmd) - Gradle's one-rule `dependencySubstitution`.
+*   [SB15](../../sbt-demo/scenario-15-substitution/guide.qmd) - sbt, where the same exclude-and-declare pattern applies.
 
 #### ! Wild
 
-Large enterprise projects migrating from `javax.servlet` to `jakarta.servlet` often face hundreds of modules that cannot be updated simultaneously. The [Eclipse Transformer](https://github.com/eclipse-transformer/transformer) was created specifically for this problem — it rewrites bytecode and resources to map `javax.*` to `jakarta.*` without requiring source changes. Apache TomEE [initially tried the Maven Shade Plugin's relocation feature](https://tomee.apache.org/javax-to-jakarta.html) for this purpose but abandoned it due to broken transitive dependencies and lost source/javadoc mappings. The Transformer's Maven plugin hooks into the standard build lifecycle, allowing teams to migrate one module at a time while the rest of the application continues to use the old namespace.
+Large enterprise projects migrating from `javax.servlet` to `jakarta.servlet` often face hundreds of modules that cannot be updated simultaneously. The [Eclipse Transformer](https://github.com/eclipse-transformer/transformer) was created specifically for this problem: it rewrites bytecode and resources to map `javax.*` to `jakarta.*` without requiring source changes. Apache TomEE [initially tried the Maven Shade Plugin's relocation feature](https://tomee.apache.org/javax-to-jakarta.html) for this purpose but abandoned it due to broken transitive dependencies and lost source and javadoc mappings. The Transformer's Maven plugin hooks into the standard build lifecycle, allowing teams to migrate one module at a time while the rest of the application continues to use the old namespace.

@@ -1,13 +1,13 @@
 ---
 title: "Lock Files"
-tagline: "Or what to Do When You Need the Same Install Twice"
+tagline: "Or what to do when You Need the Same Install Twice"
 type: scenario
 tool: python
 ---
 
 #### ! Scenario
 
-*Or what to Do When You Need the Same Install Twice*
+*Or what to do when You Need the Same Install Twice*
 Reproducibility is the JVM's [MS11](../../maven-demo/scenario-11-locking/guide.qmd), and it is where Python's tools diverge most sharply — there is no single answer, there are five. This scenario takes one loosely-pinned input and shows what each tool produces to freeze it.
 
 ::: {.callout-note title="Tool Versions"}
@@ -41,7 +41,7 @@ A lock file separates *resolution* (slow, non-deterministic, done once) from *in
 
 #### ! Risk
 * LOW Committing a native lock file and installing from it in CI.
-* MEDIUM Treating `pip freeze` output as a lock file — it captures whatever happened to be installed, including local cruft, and encodes no hashes by default.
+* MEDIUM Treating `pip freeze` output as a lock file — it captures whatever happened to be installed, including local cruft, and cannot record hashes at all (use `pip-tools` or a PEP 751 lock for that).
 * HIGH No lock file at all on a deployable with open ranges: every environment is a fresh roll of the dice ([P3](../scenario-3-resolver/guide.qmd)).
 
 #### ! Check
@@ -69,7 +69,7 @@ uv lock && uv export --format pylock.toml -o pylock.toml && grep demo-lib-c pylo
 #### ! Related
 *   [P3](../scenario-3-resolver/guide.qmd) - Why an unlocked graph isn't reproducible.
 *   [P6](../scenario-6-constraints/guide.qmd) - Constraints files, a lighter-weight cousin of locking.
-*   [MS11](../../maven-demo/scenario-11-locking/guide.qmd) - The JVM story, where only Gradle locks natively.
+*   [MS11](../../maven-demo/scenario-11-locking/guide.qmd) / [GS11](../../gradle-demo/scenario-11-locking/guide.qmd) / [SB11](../../sbt-demo/scenario-11-locking/guide.qmd) - The JVM story, where only Gradle locks natively.
 *   [N5](../../node-demo/scenario-5-locks/guide.qmd) - Node, the ecosystem that locked by default before anyone else.
 
 #### ! Wild

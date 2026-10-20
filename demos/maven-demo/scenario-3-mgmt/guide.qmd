@@ -1,15 +1,14 @@
 ---
 title: "Dependency Management (BOM)"
-tagline: "What to Do When Your BOM Isn’t Actually in Control"
+tagline: "Or what to do when you want one place to decide every version"
 type: scenario
 tool: maven
 ---
 
+#### ! Scenario
 
-
-#### ! Scenario What to Do When Your BOM Isn’t Actually in Control
-
-This scenario demonstrates how to use a Bill of Materials (BOM) or `<dependencyManagement>` block to centralize version definitions.
+*Or what to do when you want one place to decide every version*
+This scenario demonstrates how to use a Bill of Materials (BOM), imported into `<dependencyManagement>`, to centralise version decisions.
 
 This decouples "what I need" from "which version I need".
 
@@ -29,23 +28,29 @@ graph LR
     BOM -. defines .-> LibB_Ver[lib-b:1.0.0]
 ```
 
-
 ```{.xml include="pom.xml" snippet="s3-deps"}
 ```
 
 #### ! Expect
-Importing a BOM centralizes version control, ensuring consistency across project and transitive dependencies.
+Importing a BOM centralises version control: direct dependencies declared without a version get the BOM's version, and transitive dependencies are held to it too.
 
 #### ! Why
-`<dependencyManagement>` provides default versions for dependencies declared without an explicit version and enforces those versions throughout the transitive tree. This central orientation is why the same graph behaves differently across tools.
+`<dependencyManagement>` supplies a default version for any dependency declared without one, and it also overrides the version of any *transitive* dependency it names, wherever that dependency appears in the graph. A BOM is just a POM whose `<dependencyManagement>` section you import with `<scope>import</scope>`, so one file can carry a whole set of versions that were tested together.
 
 #### ! Fix
-Without BOMs, developers copy-paste version numbers across multiple modules, leading to drift and inconsistency.
+*   **Import the BOM** in `<dependencyManagement>` with `<type>pom</type>` and `<scope>import</scope>`.
+*   **Delete the `<version>`** from every direct dependency the BOM manages. A version you leave behind overrides the BOM ([MS4](../scenario-4-override/guide.qmd)).
+*   **Confirm with `mvn help:effective-pom`** that the managed versions are present.
+
+#### ! Risk
+* LOW Importing a vendor BOM (Spring Boot, Jakarta EE) that was tested as a set.
+* MEDIUM Importing two BOMs that manage the same artifact. The first import wins, silently.
+* HIGH Writing your own BOM and never updating it. A stale managed version downgrades every transitive that asks for something newer ([MS12](../scenario-12-metadata/guide.qmd)).
 
 #### ! Control
-This *is* the safer way. Always prefer BOMs or centralized version catalogs (Gradle) over scattered version numbers.
+This *is* the safer way. Prefer BOMs or a parent POM's `<dependencyManagement>` over version numbers scattered across modules.
 
-#### !Check
+#### ! Check
 
 ```bash
 mvn help:effective-pom
@@ -61,9 +66,15 @@ If the versions are present, the BOM is correctly imported and influencing the b
 Essential for multi-module projects and microservices to ensure all services use the same library versions.
 
 #### ! Takeaway
-Centralized dependency management is the single most effective tool for preventing dependency drift.
+Centralised dependency management is the single most effective tool for preventing dependency drift.
 
-#### Related Scenarios
-*   [Scenario 4: Overriding Management](../scenario-4-override/guide.qmd) - What if I want a different version?
+#### ! Related
+*   [MS4](../scenario-4-override/guide.qmd) - What happens when a direct version is left in place.
+*   [MS6](../scenario-6-forcing/guide.qmd) - The same mechanism used to force a transitive version.
+*   [GS3](../../gradle-demo/scenario-3-mgmt/guide.qmd) - Gradle's `platform()` import of the same BOM.
+*   [SB3](../../sbt-demo/scenario-3-mgmt/guide.qmd) - sbt, where 1.x has no BOM import and `dependencyOverrides` stands in.
 *   [P6](../../python-demo/scenario-6-constraints/guide.qmd) - Python's nearest BOM equivalent: pip's constraints file.
 *   [N6](../../node-demo/scenario-6-overrides/guide.qmd) - Node's central forcing: `overrides` / `resolutions`.
+
+#### ! Wild
+The [Spring Boot BOM](https://docs.spring.io/spring-boot/appendix/dependency-versions/index.html) manages several hundred artifacts, and most Boot projects never write a version number for any of them. When a project inherits from `spring-boot-starter-parent` or imports `spring-boot-dependencies`, a single `<version>` on the parent decides Jackson, Hibernate, Tomcat and Micrometer at once. That is the pattern this scenario shows in miniature, and it is why a Boot upgrade is one line in the POM and a long afternoon of testing.

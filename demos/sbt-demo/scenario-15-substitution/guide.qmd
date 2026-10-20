@@ -1,56 +1,73 @@
 ---
 title: "Dependency Substitution"
-tagline: "Or what to Do When You Need to Swap a Library"
+tagline: "Or what to do when you need to swap one library for another"
 type: scenario
 tool: sbt
 ---
 
 #### ! Scenario
 
-*Or what to Do When You Need to Swap a Library*
-This scenario demonstrates how to substitute dependencies in SBT.
-
-N/A
+*Or what to do when you need to swap one library for another*
+This scenario demonstrates replacing a library with a different artifact, a fork, a bridge or a successor, in a build tool that has no substitution rules.
 
 ::: {.callout-note title="Tool Versions"}
-This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). Under the older Ivy engine (sbt < 1.3, or `useCoursier := false`) resolution edge cases differ and settings like `conflictManager` behave differently. `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin.
+This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). On sbt 1.x the older Ivy engine can still be selected with `useCoursier := false`; under Ivy, resolution edge cases differ and Ivy-only settings such as `conflictManager` apply (Coursier ignores them). `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin. sbt 2.0 (June 2026) keeps these resolution rules, removes the Ivy opt-out, adds native BOM import, and turns Test-configuration eviction warnings into errors; the demos here target sbt 1.x.
 :::
 
 #### ! Example
+
+```{mermaid}
+%%| fig-width: 4.4
+graph LR
+    Root[Project Root] --> LibA[lib-a:1.0.0]
+    LibA -.->|excluded| LibB[lib-b:1.0.0]
+    Root -- substitute --> LibD[lib-d:1.0.0]
+```
 
 ```{.scala include="build.sbt" snippet="s15-deps"}
 ```
 
 #### ! Expect
-"I want to replace `old-lib` with `new-lib` everywhere in my build."
+"I want `lib-b` replaced by `lib-d` everywhere in my build, in one place, like Gradle's `substitute module(...) using module(...)`."
 
 #### ! Actual
-Requires manual exclusion and addition.
-
-#### ! Reality
-Depends on the implementation.
+sbt has no such rule. The swap is two ordinary declarations: an exclusion that removes `lib-b` from the path that brings it, and a direct dependency on `lib-d`. The classpath ends with `lib-a` and `lib-d`; `lib-b` is gone, and so is `lib-c`, which only arrived through `lib-b`.
 
 #### ! Why
-SBT does not have a built-in dependency substitution mechanism comparable to Gradle's `dependencySubstitution` rules. Swapping one module for another (e.g., replacing a community library with a forked version) requires a manual approach: exclude the original and add the replacement as a direct dependency.
+Gradle's substitution rules rewrite the graph as it is built (GS15). sbt offers no hook at that point, so substitution composes exclusion (SB5) with declaration. The consequence is that the exclusion is path-scoped: if a second direct dependency also brings `lib-b`, it comes back through that path and must be excluded there too, or banned build-wide with `excludeDependencies` (SB18), which is the cleaner form when the substitute is meant to replace the original everywhere.
 
 #### ! Fix
-*   **Exclude + Add:**
+*   **One path:** exclude and add, as shown.
+*   **Every path:** `excludeDependencies += ExclusionRule("com.demo", "lib-b")` plus the direct `lib-d`, so no future dependency can bring the original back.
+*   **Local development:** to test against a locally built version of a library, use a `ProjectRef` or publish to `~/.ivy2/local` with `publishLocal`; that is substitution at the source level and needs no exclusions.
 
-```scala
-libraryDependencies += ("com.demo" % "lib-a" % "1.0.0").exclude("com.original", "old-lib")
-libraryDependencies += "com.forked" % "new-lib" % "1.0.0"
-```
+#### ! Risk
+* LOW Replacing a library with a drop-in fork that keeps the same packages and API.
+* MEDIUM Excluding on one path only; a later dependency restores the original and both end up on the classpath.
+* HIGH Substituting a library whose packages differ from the original; the build is green and consumers fail with `ClassNotFoundException`.
 
-This works but must be applied to *every* dependency that transitively pulls in the original library, which is verbose and error-prone.
+#### ! Control
+Document each substitution as a pair: the exclusion and the replacement, with the reason. Add a CI assertion that the original artifact is absent from `Runtime / fullClasspath`.
 
-#### ! Look
-*   **Duplicate Classes:** If you fail to exclude the old library everywhere, you might end up with both the old and new libraries on the classpath, leading to conflicts.
+#### ! Check
+**Fast check:** `sbt dependencyTree`
+
+**What to look for:** `lib-a` with no children, `lib-d` as a direct dependency, and no `lib-b` anywhere in the tree.
+
+**Conclusion:** Substitution in sbt is exclusion plus declaration; the graph shows both halves.
 
 #### ! Scales
-Module substitution is particularly important in the Scala ecosystem when migrating between forks (e.g., when a popular library changes maintainers or organisations). It's also used for local development when you want to test against a locally-published version of a dependency. For the local development case, SBT's `ProjectRef` and project dependencies provide a cleaner solution than exclusion-based substitution.
+Substitution matters most when a library changes hands: a licence change, an abandoned project, a maintained fork under a new organisation. At that scale, do it once with `excludeDependencies` rather than per path, and put the rule in shared build settings so every module inherits it.
 
 #### ! Takeaway
-SBT lacks native substitution; use exclusions and explicit additions.
+sbt has no substitution rule. Exclude the original, add the replacement, and ban it build-wide if it must never return.
 
-#### Related Scenarios
-*   [Scenario 5: Exclusions](../scenario-5-exclusions/guide.qmd)
+#### ! Related
+*   [SB5](../scenario-5-exclusions/guide.qmd) - The exclusion half.
+*   [SB18](../scenario-18-banning/guide.qmd) - Removing the original from every path.
+*   [SB12](../scenario-12-metadata/guide.qmd) - The same exclude-and-add pattern applied to wrong metadata.
+*   [MS15](../../maven-demo/scenario-15-substitution/guide.qmd) / [GS15](../../gradle-demo/scenario-15-substitution/guide.qmd) - Substitution in Maven and Gradle.
+
+#### ! Wild
+
+When Akka moved to the Business Source License in 2022, the Apache Software Foundation forked it as [Apache Pekko](https://pekko.apache.org/), published under `org.apache.pekko` with the packages renamed. Migrating an sbt build is a substitution at scale: every `com.typesafe.akka` coordinate replaced by its Pekko equivalent, and `excludeDependencies` rules for the Akka artifacts so that a transitive from a not-yet-migrated library cannot put both frameworks on the classpath, where their actor systems would clash at startup.

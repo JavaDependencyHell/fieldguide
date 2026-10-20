@@ -12,13 +12,70 @@
     <artifactId>maven-metadata</artifactId>
 
     <!-- tag::s12-deps[] -->
+    <!-- A pin made months ago, when 1.0.0 was current. -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.demo</groupId>
+                <artifactId>lib-b</artifactId>
+                <version>${lib-b.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
+        <!-- lib-a:2.0.0 needs lib-b:2.0.0 - but the managed
+             version silently downgrades it to 1.0.0. The POM
+             has no way to say "at least what lib-a asks for". -->
         <dependency>
             <groupId>com.demo</groupId>
             <artifactId>lib-a</artifactId>
-            <version>1.0.0</version>
+            <version>2.0.0</version>
         </dependency>
     </dependencies>
     <!-- end::s12-deps[] -->
+
+    <properties>
+        <lib-b.version>1.0.0</lib-b.version>
+    </properties>
+
+    <!-- tag::s12-enforcer[] -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <id>no-silent-downgrades</id>
+                        <goals><goal>enforce</goal></goals>
+                        <configuration>
+                            <rules>
+                                <!-- Fails when the RESOLVED version of an
+                                     artifact is lower than a version some
+                                     path in the graph asked for. -->
+                                <requireUpperBoundDeps/>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <!-- end::s12-enforcer[] -->
+
+    <!-- tag::s12-fix[] -->
+    <profiles>
+        <profile>
+            <!-- mvn validate -Pfixed : raise the managed version
+                 to the highest one requested and the rule passes. -->
+            <id>fixed</id>
+            <properties>
+                <lib-b.version>2.0.0</lib-b.version>
+            </properties>
+        </profile>
+    </profiles>
+    <!-- end::s12-fix[] -->
 
 </project>

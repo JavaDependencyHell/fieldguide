@@ -1,13 +1,13 @@
 ---
 title: "Basic Transitive Resolution"
-tagline: "Or what to Do When One Install Brings Three Packages"
+tagline: "Or what to do when One Install Brings Three Packages"
 type: scenario
 tool: python
 ---
 
 #### ! Scenario
 
-*Or what to Do When One Install Brings Three Packages*
+*Or what to do when One Install Brings Three Packages*
 This scenario shows the ground truth every Python tool shares: installing one package pulls in its dependencies, and theirs, until the graph is satisfied. `demo-lib-a` needs `demo-lib-b`, which needs `demo-lib-c` — one command installs all three. It is the Python sibling of [MS1](../../maven-demo/scenario-1-basic/guide.qmd).
 
 ::: {.callout-note title="Tool Versions"}
@@ -58,7 +58,7 @@ One environment, one version per package. Everything else in this part follows f
 
 #### ! Related
 *   [P2](../scenario-2-conflict/guide.qmd) - What happens when two packages need different versions of the same thing.
-*   [MS1](../../maven-demo/scenario-1-basic/guide.qmd) - The JVM equivalent (where multiple versions *can* coexist on a classpath).
+*   [MS1](../../maven-demo/scenario-1-basic/guide.qmd) / [GS1](../../gradle-demo/scenario-1-basic/guide.qmd) / [SB1](../../sbt-demo/scenario-1-basic/guide.qmd) - The JVM equivalent (where multiple versions *can* coexist on a classpath).
 *   [N1](../../node-demo/scenario-1-basic/guide.qmd) - The Node equivalent, where the tree holds as many versions as it needs.
 
 #### ! Wild

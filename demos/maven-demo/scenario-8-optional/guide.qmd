@@ -1,13 +1,14 @@
 ---
 title: "Optional Dependencies"
-tagline: "Or what to Do When “Optional” Dependencies Don’t Show Up"
+tagline: "Or what to do when “optional” dependencies don't show up"
 type: scenario
 tool: maven
 ---
 
-#### ! Scenario What to Do When “Optional” Dependencies Don’t Show Up
+#### ! Scenario
 
-This scenario demonstrates `<optional>true</optional>` flag.
+*Or what to do when “optional” dependencies don't show up*
+This scenario demonstrates the `<optional>true</optional>` flag from the consumer's side. `lib-d` declares `lib-c` as optional in its own POM; we depend on `lib-d` and watch what reaches our classpath.
 
 ::: {.callout-note title="Tool Versions"}
 This scenario was tested with **Maven 3.9**; the behaviour shown applies to Maven 3.x.
@@ -18,36 +19,47 @@ This scenario was tested with **Maven 3.9**; the behaviour shown applies to Mave
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
-    Root["Project Root"] --> LibA["lib-a:1.0.0 (optional)"]
+    Root["Project Root"] --> LibD["lib-d:1.0.0"]
+    LibD -. optional .-> LibC["lib-c:1.0.0"]
 ```
-
 
 ```{.xml include="pom.xml" snippet="s8-deps"}
 ```
 
+```{.xml include="pom.xml" snippet="s8-optin"}
+```
+
 #### ! Expect
-Optional dependencies are omitted from a consumer's transitive graph by default.
+`lib-d` depends on `lib-c`, so `lib-c` arrives on our classpath like any other transitive.
+
+#### ! Actual
+It does not. The tree shows `lib-d` alone. `lib-c` appears only when we declare it ourselves (the `with-feature` profile above).
 
 #### ! Why
-The optional flag prevents consumer classpaths from being "polluted" with libraries required only for specific, non-universal features.
+`<optional>true</optional>` in `lib-d`'s POM means "I need this for one of my features, but my consumers may not use that feature". Maven honours the flag by simply not following that edge when resolving `lib-d` as a dependency. The flag is written by the *library author* and acts on the *consumer*; nothing in our own POM mentions it.
 
 #### ! Fix
-If a consumer *does* need the optional feature, they must explicitly declare the dependency themselves.
+If you *do* use the optional feature, declare the dependency yourself, at a version compatible with what `lib-d` was built against. Read `lib-d`'s POM (or its documentation) to find out which version that is.
+
+#### ! Risk
+* LOW Consuming a library whose optional dependencies you never touch.
+* MEDIUM Declaring the optional dependency yourself at a different version than the library was tested with.
+* HIGH Calling the optional feature without declaring its dependency. The failure is a `NoClassDefFoundError` at the first call, not at build time.
 
 #### ! Control
-Document optional dependencies clearly so consumers know what to add.
+Library authors: document every optional dependency and which feature needs it. Consumers: when a `NoClassDefFoundError` names a class from a library you never declared, check whether it is optional in one of your dependencies' POMs.
 
 #### ! Check
 
-**Fast check (Maven):**
+**Fast check:**
 
-When project `B` depends on project `A` (which has an optional dependency on `lib-a`), run this in project `B`:
 ```bash
 mvn dependency:tree
+mvn dependency:tree -Pwith-feature
 ```
 
 **What to look for:**
-`lib-a` will be absent from the dependency tree of project `B`.
+`lib-c` absent from the first tree; present as a *direct* dependency in the second.
 
 **Conclusion:**
 Optional dependencies are not transitive. Consumers must explicitly declare them if needed.
@@ -56,9 +68,14 @@ Optional dependencies are not transitive. Consumers must explicitly declare them
 Used heavily by large frameworks (Spring, Hibernate) to support many integrations without forcing all of them on everyone.
 
 #### ! Takeaway
-Optional dependencies shift the burden of declaration to the consumer.
+`<optional>` shifts the burden of declaration to the consumer. The library gets to support a feature without imposing its dependency; you get to opt in by naming it.
 
 #### ! Related
-* [MS7: Scopes](../scenario-7-scopes/guide.qmd) - `provided` scope is similar but semantically different.
-* [P7](../../python-demo/scenario-7-extras-groups/guide.qmd) - Python extras: the optional-dependency analogue, opted into with `pkg[name]`.
-* [N7](../../node-demo/scenario-7-dep-types/guide.qmd) - Node's `optionalDependencies` and friends — the same ground, as package.json fields.
+*   [MS7](../scenario-7-scopes/guide.qmd) - `provided` scope is similar in effect but different in meaning.
+*   [GS8](../../gradle-demo/scenario-8-optional/guide.qmd) - Gradle honours the POM flag, and expresses the producer side as feature variants.
+*   [SB8](../../sbt-demo/scenario-8-optional/guide.qmd) - sbt honours the flag too, and has `% Optional` for producers.
+*   [P7](../../python-demo/scenario-7-extras-groups/guide.qmd) - Python extras: the optional-dependency analogue, opted into with `pkg[name]`.
+*   [N7](../../node-demo/scenario-7-dep-types/guide.qmd) - Node's `optionalDependencies` and friends, the same ground as package.json fields.
+
+#### ! Wild
+Spring Framework's `spring-context` declares dozens of integrations optional: caching providers, validation, scheduling, JSR-330 annotations. A project that uses `@Inject` without adding `jakarta.inject` compiles fine against Spring's own classes and fails at startup when the annotation class cannot be loaded. The Spring reference documentation lists each such dependency as "optional", which is the author's half of the contract; adding it is yours.

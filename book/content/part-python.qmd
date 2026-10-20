@@ -1,0 +1,9 @@
+# Python Scenarios
+
+One rule reshapes everything in this part: **an environment holds one version of each package.** There is no classpath to order, no eviction to report, and no way for two versions to coexist. Either every requirement in the graph can be satisfied by a single version of each package, or the install fails.
+
+That single rule is why the Python sequence does not mirror the JVM one. The diamond (P2) has no winner, so the scenarios about choosing winners become scenarios about resolver history (P3) and specifiers (P4). Exclusion, the JVM's everyday tool, is mostly absent (P9). In exchange, Python has problems with no JVM equivalent: conditional dependencies that resolve differently per machine (P8), an environment that *is* the resolution result and leaks when it is shared (P10), and an install model in which a second index merges with PyPI, which is how dependency confusion was demonstrated (P11).
+
+The twelve scenarios cover pip, Poetry and uv. Where the three behave identically the chapter says so once and shows one tool; where they diverge, the divergence is the content. Every chapter links back to its JVM sibling and forward to its Node one.
+
+Verified against pip 25.3, Poetry 2.4 and uv 0.11 (see `demos/python-demo/TOOL-VERSIONS.md`).

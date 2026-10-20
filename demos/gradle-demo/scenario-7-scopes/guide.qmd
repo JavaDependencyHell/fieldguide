@@ -1,17 +1,18 @@
 ---
 title: "Dependency Configurations"
-tagline: "Or what to Do When a Dependency Exists — But Not Where You Expect It"
+tagline: "Or what to do when a dependency exists, but not where you expect it"
 type: scenario
 tool: gradle
 ---
 
 #### ! Scenario
 
-*Or what to Do When a Dependency Exists — But Not Where You Expect It*
-This scenario demonstrates its configurations (`implementation`, `compileOnly`, `testImplementation`).
+*Or what to do when a dependency exists, but not where you expect it*
+This scenario demonstrates Gradle's dependency configurations (`implementation`, `compileOnly`, `testImplementation`) and which classpath each one feeds.
 
 ::: {.callout-note title="Tool Versions"}
 This scenario was tested with **Gradle 8.14**.
+Re-verified on Gradle 9.3 (October 2026): Gradle 9 raised the runtime floor to JDK 17 and changed defaults such as the configuration cache, not the resolution rules shown here.
 :::
 
 #### ! Example
@@ -19,41 +20,63 @@ This scenario was tested with **Gradle 8.14**.
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
-    Root[Project Root] --> LibA["lib-a:1.0.0 (implementation)"]
-    Root --> LibB["lib-b:1.0.0 (compileOnly)"]
-    Root --> LibC["lib-c:1.0.0 (testImplementation)"]
+    Root[Project Root] --> LibC["lib-c:1.0.0 (implementation)"]
+    Root --> LibD["lib-d:1.0.0 (compileOnly)"]
+    Root --> LibA["lib-a:1.0.0 (testImplementation)"]
+    LibA --> LibB[lib-b:1.0.0]
 ```
-
-
 
 ```{.groovy include="build.gradle" snippet="s7-deps"}
 ```
 
 #### ! Expect
-`compileOnly` dependencies are available during compilation but excluded from runtime.
+`compileOnly` dependencies are available during compilation but excluded from runtime; test dependencies never reach production.
+
+#### ! Actual
+Exactly that, per *classpath*: `lib-d` is on `compileClasspath` and absent from `runtimeClasspath`; `lib-a` (and the `lib-b` it brings) appears only on the test classpaths. The thing to notice is that a configuration governs the *declaration*, not the module. Had `lib-c` depended on `lib-d`, `lib-d` would still have arrived at runtime through `lib-c`, `compileOnly` or not.
 
 #### ! Why
-Gradle configurations are granular. `api` exposes dependencies to consumers; `implementation` hides them; `compileOnly` matches Maven's `provided`. Encapsulating build graphs through these configurations optimizes recompilation speed in large projects.
+Gradle builds one resolved graph per *resolvable configuration* (`compileClasspath`, `runtimeClasspath`, `testCompileClasspath`, ...), and each *declarable* configuration (`implementation`, `compileOnly`, ...) feeds a defined subset of them. `compileOnly` feeds only `compileClasspath`; `implementation` feeds both compile and runtime; `testImplementation` feeds the test classpaths. Transitive edges are followed within whichever classpath is being resolved, so a module's presence at runtime depends on *every* edge reaching it, not on how you declared one of them. This differs from Maven, where a direct `provided` declaration is "nearest" and demotes the same module everywhere ([MS7](../../maven-demo/scenario-7-scopes/guide.qmd)).
+
+#### ! Fix
+*   **"Works in tests, fails at runtime":** the module is on a test classpath only. Move it to `implementation` or `runtimeOnly`.
+*   **"Compiles, then `NoClassDefFoundError`":** a `compileOnly` dependency the runtime environment was supposed to supply and did not. Either the environment is wrong or the declaration should be `implementation`.
+*   **Leaking your dependencies to consumers:** you used `api` where `implementation` would do; switch and let consumers declare what they use.
 
 #### ! Risk
-* LOW Use `testImplementation` for test-only libraries.
-* MEDIUM Use `compileOnly`; verify the runtime environment provides the dependency.
-* HIGH Use `api` when `implementation` suffices; this bloats consumer classpaths and slows builds.
+* LOW `testImplementation` for test-only libraries.
+* MEDIUM `compileOnly` for anything the runtime environment is *supposed* to provide; verify that it does, in every environment.
+* HIGH `api` used by default. It puts your transitives on every consumer's compile classpath, bloats their builds, and couples their compilation to your internals.
+
+#### ! Control
+*   **Resolve the right configuration when checking:** `dependencies --configuration runtimeClasspath` shows what ships; `compileOnly` itself is not resolvable and will only list what you declared.
+*   **Use the `java-library` plugin** and reach for `api` only for types that appear in your public signatures.
 
 #### ! Check
-**Fast check:** `./gradlew dependencies --configuration runtimeClasspath`
+**Fast check:**
 
-**What to look for:** Output showing only dependencies in the selected configuration or scope.
+```bash
+gradle dependencies --configuration compileClasspath
+gradle dependencies --configuration runtimeClasspath
+```
 
-**Conclusion:** Configurations manage what enters each classpath.
+**What to look for:** `lib-d` in the first report and missing from the second; `lib-a`/`lib-b` in neither (run `--configuration testRuntimeClasspath` to see them).
+
+**Conclusion:** Each configuration feeds specific classpaths; a module is present wherever *any* edge in that classpath's graph reaches it.
+
+#### ! Scales
+In large multi-module builds the `api`/`implementation` distinction is a build-performance lever as much as a packaging one: a dependency exposed with `api` is on the compile classpath of every consumer, so changing it recompiles all of them. Encapsulating with `implementation` keeps recompilation local, which is the single biggest reason Gradle introduced the split.
 
 #### ! Takeaway
-Configurations control transitivity and packaging.
+Configurations decide which classpaths a *declaration* feeds. Whether a module ends up on a classpath depends on every path that reaches it there, so read the resolved classpath, not the declaration.
 
-#### Related Scenarios
-*   [GS8: Optional](../scenario-8-optional/guide.qmd)
-
+#### ! Related
+*   [GS8](../scenario-8-optional/guide.qmd) - Dependencies a library makes optional for its consumers.
+*   [GS1](../scenario-1-basic/guide.qmd) - Transitive edges and how they are followed.
+*   [MS7](../../maven-demo/scenario-7-scopes/guide.qmd) / [SB7](../../sbt-demo/scenario-7-scopes/guide.qmd) - Scopes in Maven and configurations in sbt.
+*   [P7](../../python-demo/scenario-7-extras-groups/guide.qmd) - Python's extras and dependency groups.
+*   [N7](../../node-demo/scenario-7-dep-types/guide.qmd) - Node's dependency types and `--omit=dev`.
 
 #### ! Wild
 
-In large multi-module builds, initially using `api` for all internal dependencies can cause dramatic recompile times. Because `api` exposes a dependency to all consumers' compile classpaths, a single change in a low-level utility module [triggers recompilation of every module that transitively depends on it](https://docs.gradle.org/current/userguide/java_library_plugin.html). Switching to `implementation` limits recompilation to the module itself and its direct consumers. In practice, teams report this change alone reducing incremental build times from minutes to seconds on projects with dozens of modules.
+The Gradle documentation for the `java-library` plugin spells out the cost of over-using `api`: a change in a low-level module exposed with `api` [triggers recompilation of every module that transitively depends on it](https://docs.gradle.org/current/userguide/java_library_plugin.html), whereas an `implementation` dependency limits recompilation to the module itself and its direct consumers. In builds with dozens of modules the difference between the two keywords is the difference between an incremental build that finishes while you watch and one you go and make coffee for.

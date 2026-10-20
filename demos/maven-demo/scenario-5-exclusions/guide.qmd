@@ -1,13 +1,13 @@
 ---
 title: "Dependency Exclusions"
-tagline: "What to Do When Excluding a Dependency Fixes the Build but Breaks Runtime"
+tagline: "Or what to do when excluding a dependency fixes the build but breaks runtime"
 type: scenario
 tool: maven
 ---
 
-#### ! Scenario What to Do When Excluding a Dependency Fixes the Build but Breaks Runtime
+#### ! Scenario
 
-
+*Or what to do when excluding a dependency fixes the build but breaks runtime*
 This scenario demonstrates how to surgically remove a transitive dependency from the graph.
 
 This is a common "sledgehammer" fix for conflicts.
@@ -22,10 +22,10 @@ This scenario was tested with **Maven 3.9**; the behaviour shown applies to Mave
 %%| fig-width: 4.4
 graph LR
     Root[Project Root] --> LibA[lib-a:1.0.0]
-    LibA -.-> LibC[lib-c:1.0.0]
-    Root -- excludes --> LibC
+    LibA --> LibB[lib-b:1.0.0]
+    LibB -.-> LibC[lib-c:1.0.0]
+    Root -- excludes from lib-a --> LibC
 ```
-
 
 ```{.xml include="pom.xml" snippet="s5-deps"}
 ```
@@ -33,14 +33,20 @@ graph LR
 #### ! Expect
 Excluding `lib-c` removes it and its transitive subtree from the graph entirely.
 
+#### ! Actual
+`lib-c` is gone from this path. `lib-b`, which is the artifact that actually asked for it, is still present and still expects `lib-c` to be on the classpath at runtime.
+
 #### ! Why
-Maven respects exclusion metadata and prunes the specified branch during graph traversal. This "sledgehammer" fix for conflicts is why the same graph behaves differently across tools.
+An `<exclusion>` is metadata on one dependency edge. While traversing `lib-a`'s subtree, Maven drops any node matching the excluded coordinates, however deep it sits. It applies to that declaration only: if another direct dependency also pulls in `lib-c`, it comes back through that path ([MS18](../scenario-18-banning/guide.qmd)).
 
 #### ! Fix
-This *is* the fix for many problems (e.g., excluding `log4j` to use `slf4j`).
+This *is* the fix for many problems (for example, excluding `commons-logging` to route logging through SLF4J). Pair it with one of:
+
+*   **A replacement:** declare the library that provides the same classes ([MS15](../scenario-15-substitution/guide.qmd)).
+*   **A test run:** exercise the code paths in `lib-b` that used `lib-c`, because the compiler will not tell you they are broken.
 
 #### ! Risk
-* LOW Replacing an implementation (e.g., `log4j` with `logback` + bridge).
+* LOW Replacing an implementation (for example `log4j` with `logback` plus a bridge).
 * MEDIUM Excluding a transitive you believe is unused; future versions may require it.
 * HIGH Excluding to "fix" a conflict without understanding the dependency; this frequently causes `NoClassDefFoundError` at runtime.
 
@@ -48,7 +54,7 @@ This *is* the fix for many problems (e.g., excluding `log4j` to use `slf4j`).
 
 **Fast check:** `mvn dependency:tree`
 
-**What to look for:** Absence of the dependency under the declaring artifact. If it remains elsewhere, it is being pulled in through another path.
+**What to look for:** `lib-c` absent under `lib-a` (and under `lib-b`). If it remains elsewhere in the tree, another path is pulling it in.
 
 **Conclusion:** The exclusion successfully prunes the dependency from this path.
 
@@ -56,14 +62,17 @@ This *is* the fix for many problems (e.g., excluding `log4j` to use `slf4j`).
 Overuse of exclusions leads to "Swiss cheese" dependency graphs that are hard to reason about.
 
 #### ! Takeaway
-Exclusions are powerful but dangerous; use them only when you know the dependent library can function without the excluded artifact (or you are providing a replacement).
+Exclusions remove a library from the graph, not from the code that calls it. Use them only when you know the dependent library can function without the excluded artifact, or you are providing a replacement.
 
 #### ! Related
 *   [MS15](../scenario-15-substitution/guide.qmd) - Replacing a library instead of just removing it.
-*   [P9](../../python-demo/scenario-9-exclusions-gap/guide.qmd) - Python, where no exclusion mechanism exists at all — the gap is the scenario.
+*   [MS18](../scenario-18-banning/guide.qmd) - Keeping an artifact out of the whole build, not just one path.
+*   [GS5](../../gradle-demo/scenario-5-exclusions/guide.qmd) - The same exclusion in Gradle.
+*   [SB5](../../sbt-demo/scenario-5-exclusions/guide.qmd) - The same exclusion in sbt.
+*   [P9](../../python-demo/scenario-9-exclusions-gap/guide.qmd) - Python, where pip and Poetry have no exclusion at all and only uv can remove a transitive.
 
 #### ! Wild
 
-For years, the most common use of exclusions in the Java ecosystem was logging. Prior to Spring Framework 5, any project that wanted to use SLF4J had to explicitly exclude `commons-logging` from Spring's transitive dependencies -- a pattern so widespread that Spring's own [blog documented the problem](https://spring.io/blog/2009/12/04/logging-dependencies-in-spring/) and the [SLF4J FAQ](https://www.slf4j.org/faq.html) devoted a section to it. Spring eventually solved it in 5.0 by replacing `commons-logging` with its own [`spring-jcl` bridge module](https://docs.spring.io/spring-framework/reference/core/spring-jcl.html). The logging exclusion pattern remains common in projects that consolidate multiple logging frameworks (e.g., excluding `log4j` in favour of `logback`, or removing `slf4j-simple` to prevent binding conflicts).
+For years, the most common use of exclusions in the Java ecosystem was logging. Prior to Spring Framework 5, any project that wanted to use SLF4J had to explicitly exclude `commons-logging` from Spring's transitive dependencies, a pattern so widespread that Spring's own [blog documented the problem](https://spring.io/blog/2009/12/04/logging-dependencies-in-spring/) and the [SLF4J FAQ](https://www.slf4j.org/faq.html) devoted a section to it. Spring eventually solved it in 5.0 by replacing `commons-logging` with its own [`spring-jcl` bridge module](https://docs.spring.io/spring-framework/reference/core/spring-jcl.html). The logging exclusion pattern remains common in projects that consolidate multiple logging frameworks (excluding `log4j` in favour of `logback`, or removing `slf4j-simple` to prevent binding conflicts).
 
-License compliance scans do frequently uncover GPL-licensed libraries pulled in transitively. However, the fix is rarely as simple as excluding and substituting -- permissively licensed drop-in replacements with compatible APIs are uncommon. More often, teams must get legal to approve the transitive inclusion, restructure the code to avoid the dependency entirely, or accept the license obligation.
+License compliance scans do frequently uncover GPL-licensed libraries pulled in transitively. However, the fix is rarely as simple as excluding and substituting; permissively licensed drop-in replacements with compatible APIs are uncommon. More often, teams must get legal to approve the transitive inclusion, restructure the code to avoid the dependency entirely, or accept the license obligation.

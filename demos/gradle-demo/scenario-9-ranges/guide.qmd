@@ -1,17 +1,18 @@
 ---
 title: "Version Ranges"
-tagline: "Or what to Do When Gradle Chooses a Version You Didn’t Intend"
+tagline: "Or what to do when Gradle chooses a version you didn't intend"
 type: scenario
 tool: gradle
 ---
 
 #### ! Scenario
 
-*Or what to Do When Gradle Chooses a Version You Didn’t Intend*
-This scenario demonstrates Gradle's support for version ranges.
+*Or what to do when Gradle chooses a version you didn't intend*
+This scenario demonstrates version ranges and dynamic versions, and why they make resolution depend on the state of the repository.
 
 ::: {.callout-note title="Tool Versions"}
 This scenario was tested with **Gradle 8.14**.
+Re-verified on Gradle 9.3 (October 2026): Gradle 9 raised the runtime floor to JDK 17 and changed defaults such as the configuration cache, not the resolution rules shown here.
 :::
 
 #### ! Example
@@ -19,41 +20,56 @@ This scenario was tested with **Gradle 8.14**.
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
-    Root[Project Root] --> LibA[lib-a:1.+]
+    Root[Project Root] --> LibA["lib-a:[1.0.0, 2.0.0)"]
+    LibA -.->|today| V1[lib-a:1.0.0]
 ```
-
-
 
 ```{.groovy include="build.gradle" snippet="s9-deps"}
 ```
 
 #### ! Expect
-Resolve the latest version matching the range (e.g., `1.+`).
+The range `[1.0.0, 2.0.0)` resolves to the newest `1.x` available.
+
+#### ! Actual
+It resolves to `1.0.0`, because that is the only `1.x` the repository has today; `2.0.0` exists but is excluded by the range. Publish a `1.1.0` tomorrow and the same build file resolves differently with no change in source control.
 
 #### ! Why
-Gradle supports Maven-style ranges and its own dynamic version syntax like `1.+`. It queries repository metadata for the highest match, making resolution dependent on current repository state. This is why the same graph behaves differently across tools.
+A range or a dynamic version (`1.+`, `latest.release`) is not a version; it is a query. Gradle lists the versions the repository offers, filters by the range and picks the highest. The answer depends on repository state at resolution time and on Gradle's cache of that state (dynamic results are cached for 24 hours by default, so two machines can disagree for a day). This is the only place in these scenarios where the same build file is *designed* to produce different graphs on different days.
 
-#### ! Scales
-Dynamic versions and ranges are the primary cause of "it worked yesterday" failures. If a new version of a library is published to Maven Central between your local build and your CI build, the two builds may resolve different versions. This is why Gradle provides built-in dependency locking (GS11) --- it's specifically designed to tame dynamic versions. In Java/JVM ecosystems, ranges are less common than in npm/pip, precisely because the JVM community has historically valued build reproducibility. Most teams either ban dynamic versions entirely or pair them with strict locking.
+#### ! Fix
+*   **Pin** to an exact version if you want reproducibility and will update deliberately.
+*   **Lock** if you want the range's convenience with a reproducible result: `gradle dependencies --write-locks` ([GS11](../scenario-11-locking/guide.qmd)).
+*   **Reject** known-bad versions inside the range rather than narrowing it ([GS14](../scenario-14-reject/guide.qmd)).
 
 #### ! Risk
-* LOW Use ranges for `testImplementation`; allows latest test libraries without affecting production.
-* MEDIUM Use ranges for internal libraries under strict semver.
-* HIGH Use ranges for external libraries; this causes non-reproducible "it worked yesterday" failures.
+* LOW Ranges on `testImplementation` libraries, where picking up a newer test tool costs little.
+* MEDIUM Ranges on internal libraries that follow strict semantic versioning.
+* HIGH Ranges on external libraries in production code: the classic "it built yesterday" failure with no commit to blame.
+
+#### ! Control
+*   **Ban dynamic versions** in builds that must be reproducible: `resolutionStrategy { failOnDynamicVersions() }` (and `failOnChangingVersions()` for snapshots).
+*   **Make refreshes explicit** (`--refresh-dependencies`) rather than relying on the cache timeout.
 
 #### ! Check
-**Fast check:** `./gradlew dependencyInsight --dependency <id>`
+**Fast check:** `gradle dependencies --configuration compileClasspath`
 
-**What to look for:** The resolved version and the reason.
+**What to look for:** `com.demo:lib-a:[1.0.0, 2.0.0) -> 1.0.0`: the range you asked for, and what it resolved to today.
 
-**Conclusion:** Ranges are dynamic and require locking for determinism.
+**Conclusion:** A range resolves to a repository-dependent answer; the arrow is the only record of which one.
+
+#### ! Scales
+Dynamic versions and ranges are the primary cause of "it worked yesterday" failures. If a new version is published between a developer's build and the CI build, the two resolve different graphs. Gradle's built-in locking exists to tame exactly this. In the JVM ecosystem ranges are rarer than in npm or pip, partly because the community has valued reproducibility and partly because the tooling made pinning easy; most teams either ban dynamic versions or pair them with locking.
 
 #### ! Takeaway
-Ranges work but are dynamic.
+A range is a question whose answer changes when the repository does. Lock it or pin it before you depend on the answer.
 
-#### Related Scenarios
-*   [GS11: Locking](../scenario-11-locking/guide.qmd)
+#### ! Related
+*   [GS11](../scenario-11-locking/guide.qmd) - Freezing a range's answer in a lock file.
+*   [GS14](../scenario-14-reject/guide.qmd) - Excluding specific versions from a range.
+*   [MS9](../../maven-demo/scenario-9-ranges/guide.qmd) / [SB9](../../sbt-demo/scenario-9-ranges/guide.qmd) - Ranges in Maven and sbt.
+*   [P4](../../python-demo/scenario-4-specifiers/guide.qmd) - Python, where open ranges are the default culture.
+*   [N4](../../node-demo/scenario-4-semver/guide.qmd) - Node, where `^` ranges are written for you.
 
 #### ! Wild
 
-A well-known failure mode with dynamic versions occurs when CI resolves a newly published dependency that developer machines have not yet seen. Gradle caches dynamic version results for [24 hours by default](https://docs.gradle.org/current/userguide/dynamic_versions.html), controlled by `cacheDynamicVersionsFor`. A developer's Gradle cache holds yesterday's resolution; CI, running with `--refresh-dependencies` or a fresh cache, picks up the new version. The build fails without any source changes. Gradle's [dependency locking](https://docs.gradle.org/current/userguide/dependency_locking.html) feature was introduced specifically to make dynamic version resolution reproducible across environments.
+A well-known failure mode with dynamic versions occurs when CI resolves a newly published dependency that developer machines have not yet seen. Gradle caches dynamic version results for [24 hours by default](https://docs.gradle.org/current/userguide/dynamic_versions.html), controlled by `cacheDynamicVersionsFor`. A developer's cache holds yesterday's resolution; CI, running with `--refresh-dependencies` or a fresh cache, picks up the new version. The build fails without any source changes. Gradle's [dependency locking](https://docs.gradle.org/current/userguide/dependency_locking.html) feature was introduced specifically to make dynamic version resolution reproducible across environments.

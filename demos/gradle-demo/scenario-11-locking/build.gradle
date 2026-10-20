@@ -18,9 +18,11 @@ dependencyLocking {
 }
 
 dependencies {
-    // Dynamic version
-    implementation 'com.demo:lib-a:1.+'
+    // Fully dynamic version: "whatever is newest today".
+    // The committed gradle.lockfile pins what it resolved
+    // to when the lock was written.
+    implementation 'com.demo:lib-a:+'
 }
 // end::s11-deps[]
 
-// To generate lock file: ./gradlew dependencies --write-locks
+// Generate or refresh the lock file:  gradle dependencies --write-locks

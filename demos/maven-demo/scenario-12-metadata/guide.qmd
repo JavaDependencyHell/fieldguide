@@ -1,13 +1,14 @@
 ---
 title: "Rich Version Metadata"
-tagline: "Or what to Do When You Can't Express What You Actually Need"
+tagline: "Or what to do when you can't express what you actually need"
 type: scenario
 tool: maven
 ---
 
-#### ! Scenario What to Do When You Can't Express What You Actually Need
+#### ! Scenario
 
-This scenario demonstrates a fundamental limitation of Maven's dependency model: the POM format has no way to express rich version constraints like "prefer 1.5 but accept anything in [1.0, 2.0)" or "strictly require exactly 1.3.0."
+*Or what to do when you can't express what you actually need*
+This scenario demonstrates a limit of Maven's dependency model: the POM cannot say "prefer 1.5 but accept anything in [1.0, 2.0)", "strictly 1.3.0", or "at least whatever my dependencies ask for". A managed version pinned months ago silently downgrades a transitive that now needs something newer, and the only tool that notices is a plugin.
 
 ::: {.callout-note title="Tool Versions"}
 This scenario was tested with **Maven 3.9**; the behaviour shown applies to Maven 3.x.
@@ -16,30 +17,73 @@ maven-enforcer-plugin 3.5.0 requires **Maven 3.6.3+**.
 
 #### ! Example
 
+```{mermaid}
+%%| fig-width: 4.4
+graph LR
+    Root[Project Root] --> LibA[lib-a:2.0.0]
+    LibA --> LibB2["lib-b:2.0.0 (requested)"]
+    Root -- manages --> LibB1["lib-b:1.0.0 (resolved)"]
+```
+
 ```{.xml include="pom.xml" snippet="s12-deps"}
 ```
 
+```{.xml include="pom.xml" snippet="s12-enforcer"}
+```
+
 #### ! Expect
-Build tools support "strictly," "prefer," and "reject" constraints for fine-grained version control.
+The build tool understands "strictly", "prefer" and "reject", or at least refuses to hand `lib-a:2.0.0` an older `lib-b` than it was built against.
+
+#### ! Actual
+Resolution says nothing. `lib-b` is quietly managed down to `1.0.0` (`mvn dependency:tree -Dverbose` shows `version managed from 2.0.0`). With the enforcer rule in place, `mvn validate` fails:
+
+```
+Require upper bound dependencies error for com.demo:lib-b:1.0.0 paths to dependency are:
+  +-com.demo:lib-a:2.0.0
+    +-com.demo:lib-b:1.0.0 (managed) <-- com.demo:lib-b:2.0.0
+```
 
 #### ! Why
-Maven's POM schema predates rich versioning; the `<version>` element only supports fixed strings or simple ranges. This lack of expressiveness is why the same graph behaves differently across tools like Gradle, which uses richer Module Metadata.
+The POM's `<version>` element holds a fixed string or a simple range; there is no vocabulary for preference, strictness or rejection, and `<dependencyManagement>` is an unconditional override. Gradle's rich versions and Module Metadata carry that information in the dependency itself ([GS12](../../gradle-demo/scenario-12-metadata/guide.qmd)). In Maven the nearest substitute is a *post-resolution check*: the Enforcer Plugin's `requireUpperBoundDeps` rule fails the build whenever the resolved version of an artifact is **lower** than the highest version any path in the graph requested.
 
-### ! Fix
+#### ! Fix
 
-- **`<dependencyManagement>`:** The closest Maven equivalent to a "prefer" constraint. It sets a default version that can be overridden by a direct declaration but overrides transitive versions.
-- **Hard ranges (`[1.3.0]`):** Forces an exact version and fails the build if any other version is selected. This is the closest equivalent to Gradle's `strictly`.
-- **Maven Enforcer Plugin:** The `requireUpperBoundDeps` rule can fail the build if a transitive dependency is older than a direct one, providing a partial "minimum version" check.
+```{.xml include="pom.xml" snippet="s12-fix"}
+```
 
-### ! Control
+*   **Raise the managed version** to the highest one requested (`mvn validate -Pfixed` here) so the graph gets what `lib-a` was built against.
+*   **`<dependencyManagement>` as "prefer":** it sets a default a direct declaration can override, and overrides transitives. Use it as the closest thing to a preferred version.
+*   **A hard range `[1.3.0]` as "strictly":** it overrides soft requests elsewhere in the graph and fails the build if it meets another hard range it cannot satisfy ([MS9](../scenario-9-ranges/guide.qmd)).
+*   **`bannedDependencies` as "reject":** see [MS14](../scenario-14-reject/guide.qmd).
 
-Accept that Maven's version model is simpler and work within it. Use `<dependencyManagement>` for version alignment and the Enforcer Plugin for policy enforcement. If your project genuinely needs rich version constraints, this is one of the scenarios where Gradle's model is objectively more capable.
+#### ! Risk
+* LOW A managed version that is reviewed whenever a direct dependency is upgraded.
+* MEDIUM `requireUpperBoundDeps` turned on late in a large project: expect many failures on the first run, most of them real.
+* HIGH A parent POM full of managed versions nobody has touched in a year. Every upgrade of a direct dependency can be silently undone by one of them.
 
-### ! Takeaway
+#### ! Control
+Accept that Maven's version model is simpler and work within it. Use `<dependencyManagement>` for alignment and the Enforcer Plugin for policy. If your project genuinely needs rich version constraints, this is one of the scenarios where Gradle's model is more capable.
 
-Maven's POM format does not support rich version metadata (`prefer`, `strictly`, `reject`). Use `<dependencyManagement>` and the Enforcer Plugin to approximate what Gradle achieves natively.
+#### ! Check
+**Fast check:** `mvn validate`, then `mvn validate -Pfixed`
 
-### ! Related
+**What to look for:** The first fails with `RequireUpperBoundDeps` naming `lib-b:1.0.0` and the path that wanted `2.0.0`; the second succeeds and `mvn dependency:tree -Pfixed` shows `lib-b:jar:2.0.0`.
 
-* [MS6: Forcing a Version](../scenario-6-forcing/guide.qmd) — `<dependencyManagement>` as Maven's version enforcement tool.
-* [MS14: Rejecting a Version](../scenario-14-reject/guide.qmd) — Using the Enforcer Plugin for negative constraints.
+**Conclusion:** Maven will not stop a silent downgrade on its own; the enforcer rule turns it into a build failure.
+
+#### ! Scales
+In a multi-module build the managed versions live in the parent POM, so one stale entry affects every module. `requireUpperBoundDeps` in that same parent is the cheapest way to find out when a direct upgrade in one module is being undone by the parent's pin.
+
+#### ! Takeaway
+The POM cannot express "prefer", "strictly" or "at least what my dependencies need". Use `<dependencyManagement>` to decide, and `requireUpperBoundDeps` to find out when a decision has gone stale.
+
+#### ! Related
+*   [MS6](../scenario-6-forcing/guide.qmd) - `<dependencyManagement>` as Maven's version enforcement tool.
+*   [MS14](../scenario-14-reject/guide.qmd) - Using the Enforcer Plugin for negative constraints.
+*   [MS9](../scenario-9-ranges/guide.qmd) - Hard ranges, Maven's only strict version.
+*   [GS12](../../gradle-demo/scenario-12-metadata/guide.qmd) - Gradle's component metadata rules.
+*   [SB12](../../sbt-demo/scenario-12-metadata/guide.qmd) - sbt, where the POM's limits apply too.
+*   [P4](../../python-demo/scenario-4-specifiers/guide.qmd) - PEP 440 specifiers, which do carry `!=` and `~=` natively.
+
+#### ! Wild
+Jackson is the classic victim of this scenario. `jackson-databind`, `jackson-core` and `jackson-annotations` must match to the minor version, and a parent POM that pinned `jackson-core` for a CVE two years ago will cheerfully downgrade the `jackson-core` that a newer `jackson-databind` asks for. The symptom is a `NoSuchMethodError` deep inside Jackson at runtime; the cause is a managed version that nobody remembered to raise. `requireUpperBoundDeps` was written for exactly this.

@@ -1,17 +1,17 @@
 ---
 title: "Hoisting & Phantom Dependencies"
-tagline: "Or what to Do When You Can Import What You Never Declared"
+tagline: "Or what to do when you can import what you never declared"
 type: scenario
 tool: node
 ---
 
 #### ! Scenario
 
-*Or what to Do When You Can Import What You Never Declared*
+*Or what to do when you can import what you never declared*
 No JVM or Python sibling — this one is pure Node, and it is the direct consequence of npm 3's flattening. We declare only `demo-lib-a`, but our code does `require("demo-lib-b")` — a package that arrives transitively and appears nowhere in our package.json. Whether that line works depends entirely on which package manager laid out the tree. This is the **phantom dependency**: the import that works by accident.
 
 ::: {.callout-note title="Tool Versions"}
-Tested with **npm 10.9.8**, **pnpm 11.10.0**, **Yarn 4.17.0**. Maximum divergence: npm **allows** the phantom, pnpm **rejects** it, and Yarn's default Plug'n'Play mode rejects it with the most descriptive error in the business. (Yarn with `nodeLinker: node-modules` hoists like npm and allows it — the layout, not the brand, decides.)
+Tested with **npm 12.0.1**, **pnpm 11.10.0**, **Yarn 4.17.0**. Maximum divergence: npm **allows** the phantom, pnpm **rejects** it, and Yarn's default Plug'n'Play mode rejects it with the most descriptive error in the business. (Yarn with `nodeLinker: node-modules` hoists like npm and allows it — the layout, not the brand, decides.)
 :::
 
 #### ! Example
@@ -51,13 +51,13 @@ npm's hoisted layout is an *optimisation*, not a contract — packages get lifte
 
 ```bash
 # npm — the phantom import WORKS (that's the bug)
-cd npm && npm install && node app.js       # prints: phantom import worked
+(cd npm && npm install && node app.js)       # prints: phantom import worked
 
 # pnpm — fails fast
-cd pnpm && pnpm install && node app.js     # MODULE_NOT_FOUND
+(cd pnpm && pnpm install && node app.js)     # MODULE_NOT_FOUND
 
 # yarn (PnP) — fails with the full explanation
-cd yarn && yarn install && yarn node app.js
+(cd yarn && yarn install && yarn node app.js)
 ```
 
 **What to look for:** identical code, opposite outcomes — success under npm, refusal under pnpm and PnP.

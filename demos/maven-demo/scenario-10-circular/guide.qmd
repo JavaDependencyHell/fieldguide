@@ -1,13 +1,14 @@
 ---
 title: "Circular Dependencies"
-tagline: "Or what to Do When Your Dependency Graph Turns into a Cycle"
+tagline: "Or what to do when your dependency graph turns into a cycle"
 type: scenario
 tool: maven
 ---
 
-#### ! Scenario What to Do When Your Dependency Graph Turns into a Cycle
+#### ! Scenario
 
-This scenario demonstrates how build tools handle cycles in the dependency graph (A -> B -> A).
+*Or what to do when your dependency graph turns into a cycle*
+This scenario demonstrates how Maven handles a cycle between two published artifacts (A → B → A).
 
 ::: {.callout-note title="Tool Versions"}
 This scenario was tested with **Maven 3.9**; the behaviour shown applies to Maven 3.x.
@@ -18,46 +19,58 @@ This scenario was tested with **Maven 3.9**; the behaviour shown applies to Mave
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
-    Root[Project Root] --> LibA['lib-circle-a:1.0.0']
-    LibA --> LibB['lib-circle-b:1.0.0']
+    Root[Project Root] --> LibA["lib-circle-a:1.0.0"]
+    LibA --> LibB["lib-circle-b:1.0.0"]
     LibB --> LibA
 ```
-
 
 ```{.xml include="pom.xml" snippet="s10-deps"}
 ```
 
 #### ! Expect
-Circular dependencies (e.g., A depends on B, and B depends on A) cause infinite loops or stack overflows.
+A cycle (A depends on B, B depends on A) sends the resolver into an infinite loop or a stack overflow, or at least produces a warning.
+
+#### ! Actual
+The build succeeds, silently. Both artifacts are on the classpath and the tree simply stops where it would repeat itself.
 
 #### ! Why
-Build tools maintain a "visited" set during graph traversal to prevent infinite recursion. While resolution succeeds, cycles often signal architectural issues that should be refactored.
+Maven's resolver keeps a record of the nodes already on the current path and does not descend into one it has seen. That is enough to terminate, so no error is raised and no warning is printed; the cycle is invisible unless you compare the tree with the libraries' POMs. Cycles between *modules of the same reactor build* are a different case: those fail immediately with "The projects in the reactor contain a cyclic reference", because Maven must order the modules to build them.
 
 #### ! Fix
-Refactoring code to break the cycle (e.g., extracting a common interface to `lib-c`).
+Refactor to break the cycle, typically by extracting the shared part into a third library both can depend on. Nothing in the POM can fix a cycle between artifacts you do not publish; you can only avoid consuming them.
+
+#### ! Risk
+* LOW A cycle between two artifacts released in lockstep by the same team.
+* MEDIUM A cycle you consume from a third party: upgrading either half means upgrading both.
+* HIGH A cycle inside your own modules. The build will refuse it, and the fix is architectural.
 
 #### ! Control
 Avoid cycles. They are a design smell.
 
 #### ! Check
 
-**Fast check (Maven):**
+**Fast check:**
 
 ```bash
 mvn dependency:tree
 ```
 
 **What to look for:**
-No warning is printed — Maven's resolver breaks the cycle *silently* by skipping already-visited nodes. The tree simply stops at the repeated artifact (`lib-circle-a` → `lib-circle-b`, with no second `lib-circle-a` beneath it). To spot the cycle you must compare the tree with the libraries' POMs. (Cycles between *reactor modules* are different: those fail the build immediately.)
+`lib-circle-a` → `lib-circle-b`, with no second `lib-circle-a` beneath it and no warning. That absence is the only clue.
 
 **Conclusion:**
-Circular dependencies should be avoided as they indicate a design problem.
+Circular dependencies between published artifacts resolve silently; they still indicate a design problem.
 
 #### ! Scales
 Cycles make it impossible to build modules in a linear order, forcing them to be built together or released in lockstep.
 
 #### ! Takeaway
-Circular dependencies are technically resolvable but architecturally disastrous.
+Maven breaks artifact cycles without telling you and refuses reactor cycles outright. Both are the same architectural problem; only one of them is loud.
 
 #### ! Related
-* [MS1: Basic Dependency](../scenario-1-basic/guide.qmd) - The ideal acyclic graph.
+*   [MS1](../scenario-1-basic/guide.qmd) - The ideal acyclic graph.
+*   [GS10](../../gradle-demo/scenario-10-circular/guide.qmd) - Gradle: the same silence for artifacts, the same refusal for project cycles.
+*   [SB10](../../sbt-demo/scenario-10-circular/guide.qmd) - sbt under Coursier behaves the same way.
+
+#### ! Wild
+The cycle most teams actually meet is the loud one. A multi-module build has `core` and `util`; `core` depends on `util`. Someone writing a test in `util` wants a helper from `core`, adds a `test`-scoped dependency, and the next `mvn install` from the root stops with "The projects in the reactor contain a cyclic reference". Scope does not matter to the reactor: a dependency is an edge, and the modules can no longer be ordered. The fix is always the same, move the shared piece into a third module, and it is always more work than the one-line dependency that caused it.

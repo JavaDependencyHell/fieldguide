@@ -1,17 +1,17 @@
 ---
 title: "Hardcoded Version vs Overrides"
-tagline: "or what to Do When You Need to Break the Rules"
+tagline: "Or what to do when you need to break the rules"
 type: scenario
 tool: sbt
 ---
 
 #### ! Scenario
 
-*or what to Do When You Need to Break the Rules*
-This scenario demonstrates how explicit version declarations in `libraryDependencies` can override managed versions or defaults.
+*Or what to do when you need to break the rules*
+This scenario demonstrates what an explicit version in `libraryDependencies` actually overrides: the managed default it replaces, but not the conflict resolution it then enters.
 
 ::: {.callout-note title="Tool Versions"}
-This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). Under the older Ivy engine (sbt < 1.3, or `useCoursier := false`) resolution edge cases differ and settings like `conflictManager` behave differently. `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin.
+This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). On sbt 1.x the older Ivy engine can still be selected with `useCoursier := false`; under Ivy, resolution edge cases differ and Ivy-only settings such as `conflictManager` apply (Coursier ignores them). `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin. sbt 2.0 (June 2026) keeps these resolution rules, removes the Ivy opt-out, adds native BOM import, and turns Test-configuration eviction warnings into errors; the demos here target sbt 1.x.
 Eviction reporting changed in **sbt 1.5**: the blanket eviction warning was replaced by the `evicted` task and versionScheme-aware checks.
 :::
 
@@ -25,46 +25,49 @@ graph LR
     LibA --> LibB2[lib-b:2.0.0]
 ```
 
-#### ! Example
-
 ```{.scala include="build.sbt" snippet="s4-deps"}
 ```
 
 #### ! Expect
-Explicit versions in `libraryDependencies` win over defaults or transitive suggestions — so `lib-b` resolves to the declared `1.0.0`.
+Explicit versions in `libraryDependencies` win over defaults and transitive suggestions, so `lib-b` resolves to the declared `1.0.0`.
 
 #### ! Actual
-`lib-b:2.0.0`. The direct declaration overrides the *managed default* (the `defaultVersion` variable), but it does not outrank conflict resolution: `lib-a:2.0.0` transitively requires `lib-b:2.0.0`, and the highest version wins. The direct `1.0.0` is evicted.
+`lib-b:2.0.0`. The direct declaration replaced the *managed default* (the `defaultVersion` value), but it does not outrank conflict resolution: `lib-a:2.0.0` transitively requires `lib-b:2.0.0`, and the highest version wins. The direct `1.0.0` is evicted.
 
 #### ! Why
-In SBT, a version in `libraryDependencies` is a *request*, not a command. All requests — direct and transitive — enter Coursier's conflict resolution, where the highest version wins. To actually pin a version against the graph, you need `dependencyOverrides` (see below).
+In sbt a version in `libraryDependencies` is a *request*, not a command. All requests, direct and transitive, enter Coursier's conflict resolution together, where the highest version wins (SB2). Maven users expect the direct declaration to win because Maven's rule is nearest-wins; sbt has no such rule. To pin a version against the graph you need `dependencyOverrides` (SB6).
 
 #### ! Fix
-*   **Explicit Overrides:** If a transitive dependency is pulling in an unwanted version, developers often add the desired version as a direct dependency to force the conflict manager to see it.
-*   **`dependencyOverrides`:** For stricter control, use `dependencyOverrides`. This setting forces a specific version regardless of what the dependency graph says (similar to Maven's `<dependencyManagement>`).
+*   **Accept the upgrade:** change the direct `lib-b` to `2.0.0` so the graph agrees.
+*   **`dependencyOverrides`:** if `1.0.0` really is required, add `dependencyOverrides += "com.demo" % "lib-b" % "1.0.0"`. This forces the version everywhere, including the transitive request from `lib-a`, which then runs against a version it never asked for.
+
+#### ! Risk
+* LOW Breaking away from a managed default to pick up a newer release, and letting resolution upgrade the rest of the graph to match.
+* MEDIUM Hardcoding a version and assuming it took effect without checking `sbt evicted`.
+* HIGH Using `dependencyOverrides` to hold a library below what its consumers require; the build goes green and the first symptom is `NoSuchMethodError`.
 
 #### ! Control
-*   **Use `dependencyOverrides`:** If you want to ensure that `lib-a` is *always* `2.0.0` even if some other library asks for `3.0.0`, add it to `dependencyOverrides`.
-    ```scala
-    dependencyOverrides += "com.demo" % "lib-a" % "2.0.0"
-    ```
+*   **Read `sbt evicted` after every version change.** It names exactly which declaration lost and to what.
+*   **Use `dependencyOverrides` deliberately**, with a comment explaining why, when you need a version to hold against the graph.
 
 #### ! Check
-**Fast check:** `sbt dependencyTree`
+**Fast check:** `sbt evicted`
 
-**What to look for:** `lib-b:1.0.0` marked as evicted by `2.0.0` (run `sbt evicted` to see it called out explicitly).
+**What to look for:** `lib-b:1.0.0` marked as evicted by `2.0.0`, with the direct declaration named as the caller that lost.
 
-**Conclusion:** Versions in `libraryDependencies` are direct requests that override defaults — but they remain subject to conflict resolution.
+**Conclusion:** Versions in `libraryDependencies` override defaults, but they remain subject to conflict resolution.
 
 #### ! Scales
-Hardcoding versions in `libraryDependencies` is fine for direct dependencies. However, for enforcing versions across a large project (especially for transitive dependencies you don't directly use), `dependencyOverrides` or a BOM plugin is a more robust solution.
+Hardcoding versions in `libraryDependencies` is fine for direct dependencies. For enforcing versions across a large build, especially for transitive dependencies you never declare, `dependencyOverrides`, a BOM plugin, or sbt 2's native BOM import is the robust mechanism.
 
 #### ! Takeaway
-Explicit declarations in `libraryDependencies` are your primary way of requesting versions, but they are subject to conflict resolution. `dependencyOverrides` provides a stronger guarantee.
+Explicit declarations are your primary way of requesting versions, but they are only requests. `dependencyOverrides` provides the guarantee.
 
-#### Related Scenarios
-*   [Scenario 6: Forcing Versions](../scenario-6-forcing/guide.qmd) - Using `dependencyOverrides` for stricter control.
+#### ! Related
+*   [SB6](../scenario-6-forcing/guide.qmd) - Using `dependencyOverrides` for real control.
+*   [SB2](../scenario-2-conflict/guide.qmd) - The highest-wins rule this scenario runs into.
+*   [MS4](../../maven-demo/scenario-4-override/guide.qmd) / [GS4](../../gradle-demo/scenario-4-override/guide.qmd) - The same override attempt in Maven (where direct wins) and Gradle (where highest wins).
 
 #### ! Wild
 
-When a critical bug surfaces in a specific library version, teams often can't wait for the upstream maintainer to release a fix. In the Scala ecosystem, `dependencyOverrides` is the standard escape hatch -- pinning a known-good version globally while the team files an issue and waits for a proper release. The risk is that the override is forgotten and becomes stale, so teams typically pair overrides with a comment explaining why and a link to the tracking issue.
+When a critical bug surfaces in a specific library version, teams often cannot wait for the upstream maintainer to release a fix. In the Scala ecosystem `dependencyOverrides` is the standard escape hatch: pin a known-good version globally while the team files an issue and waits for a proper release. The risk is that the override is forgotten and becomes stale, so teams pair every override with a comment explaining why and a link to the tracking issue.

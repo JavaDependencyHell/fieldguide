@@ -1,17 +1,18 @@
 ---
 title: "Dependency Management"
-tagline: "Or what to Do When You Want to Centralize Versions"
+tagline: "Or what to do when you want to centralise versions"
 type: scenario
 tool: sbt
 ---
 
 #### ! Scenario
 
-*Or what to Do When You Want to Centralize Versions*
-This scenario demonstrates how to manage dependency versions centrally in SBT, similar to Maven's `<dependencyManagement>`.
+*Or what to do when you want to centralise versions*
+This scenario demonstrates how to manage dependency versions centrally in sbt, the job Maven's `<dependencyManagement>` and Gradle's `platform()` do.
 
 ::: {.callout-note title="Tool Versions"}
-This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). Under the older Ivy engine (sbt < 1.3, or `useCoursier := false`) resolution edge cases differ and settings like `conflictManager` behave differently. `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin.
+This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). On sbt 1.x the older Ivy engine can still be selected with `useCoursier := false`; under Ivy, resolution edge cases differ and Ivy-only settings such as `conflictManager` apply (Coursier ignores them). `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin. sbt 2.0 (June 2026) keeps these resolution rules, removes the Ivy opt-out, adds native BOM import, and turns Test-configuration eviction warnings into errors; the demos here target sbt 1.x.
+sbt 1.x has no native BOM import. The technique shown here (a shared `val`) is the sbt 1.x idiom; sbt 2.0 can consume a Maven BOM directly.
 :::
 
 #### ! Example
@@ -21,45 +22,52 @@ This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver
 graph LR
     Root[Project Root] --> LibA[lib-a:1.0.0]
     Root --> LibB[lib-b:1.0.0]
+    LibA --> LibB
 ```
-
-#### ! Example
 
 ```{.scala include="build.sbt" snippet="s3-deps"}
 ```
 
 #### ! Expect
-Versions defined in a central location (e.g., a variable or a `Dependencies` object) are applied consistently across all modules.
+Versions defined in one place (a `val`, or a `Dependencies` object under `project/`) are applied consistently across every module that uses them.
 
 #### ! Why
-SBT builds are Scala programs, allowing you to use variables and functions for version management. This programmatic approach provides more flexibility than Maven's declarative XML, though it requires developer discipline to remain maintainable.
+An sbt build is a Scala program, so the ordinary tools of the language, values, objects and functions, serve as version management. A `val` is weaker than Maven's `<dependencyManagement>` in one respect: it only governs declarations that reference it. A transitive dependency that arrives with its own version is unaffected, and ordinary highest-wins resolution applies (SB2). To govern the whole graph you need `dependencyOverrides` (SB6).
 
 #### ! Fix
-*   **Variables:** Define versions in `val`s at the top of `build.sbt` or in a separate `Dependencies.scala` file in `project/`.
-*   **Plugins:** Use plugins like `sbt-bom` to import Maven BOMs for version management.
+*   **Variables:** define versions as `val`s at the top of `build.sbt`, or in `project/Dependencies.scala` for multi-module builds.
+*   **BOM import:** sbt 1.x cannot import a Maven BOM natively. The [`here-sbt-bom`](https://github.com/heremaps/here-sbt-bom) plugin reads a BOM and feeds its versions into `dependencyOverrides`; sbt 2.0 adds native BOM support.
+*   **Overrides:** pin versions graph-wide with `dependencyOverrides` when transitives must agree too (SB6, SB16).
+
+#### ! Risk
+* LOW One `val` per library family, referenced everywhere.
+* MEDIUM Versions duplicated across modules because someone bypassed the shared object; drift follows.
+* HIGH Assuming a central `val` controls transitive versions. It does not; only `dependencyOverrides` does.
 
 #### ! Control
-*   **`project/Dependencies.scala`:** For multi-module builds, define all your dependencies and versions in a single Scala object in the `project` directory. This keeps your `build.sbt` clean and ensures all modules share the same version definitions.
+*   **`project/Dependencies.scala`:** for multi-module builds, define all dependencies and versions in a single Scala object. Modules reference `Dependencies.libA` rather than coordinates, so one edit moves the whole build.
 
 #### ! Check
 
-**Fast check (SBT):**
+**Fast check:** `sbt dependencyTree`
 
-```bash
-sbt dependencyTree
-```
+**What to look for:** Every library versioned from the shared `val` shows that version, and no `(evicted by: …)` markers appear.
 
-**What to look for:**
-The versions of your libraries in the dependency tree.
-
-**Conclusion:**
-If the versions match what you have defined in your central variables, your version management is working.
+**Conclusion:** Central version definitions keep the direct declarations aligned.
 
 #### ! Scales
-As projects grow, `build.sbt` files can become messy. Moving dependency definitions to `project/Dependencies.scala` is a standard best practice in the Scala ecosystem. It allows you to group related dependencies (e.g., "testing libraries", "database drivers") and manage their versions together.
+As projects grow, `build.sbt` becomes crowded. Moving dependency definitions to `project/Dependencies.scala` is the standard Scala practice: group related dependencies ("testing", "database drivers") and manage their versions together. Organisations typically ship that object inside a shared sbt plugin so every repository inherits the same versions.
 
 #### ! Takeaway
-SBT allows you to use Scala code to manage versions. Use variables or a dedicated `Dependencies` object to keep your build maintainable.
+Use Scala values to centralise direct versions; use `dependencyOverrides` (or a BOM plugin, or sbt 2's native BOM import) when the whole graph must agree.
 
-#### Related Scenarios
-*   [Scenario 16: Private BOM](../scenario-16-private-bom/guide.qmd) - Using an external BOM for management.
+#### ! Related
+*   [SB6](../scenario-6-forcing/guide.qmd) - Governing transitive versions with `dependencyOverrides`.
+*   [SB16](../scenario-16-private-bom/guide.qmd) - Emulating a vendor BOM in sbt 1.x.
+*   [MS3](../../maven-demo/scenario-3-mgmt/guide.qmd) / [GS3](../../gradle-demo/scenario-3-mgmt/guide.qmd) - BOM import in Maven and platforms in Gradle.
+*   [P6](../../python-demo/scenario-6-constraints/guide.qmd) - Constraints files, Python's central pin.
+*   [N6](../../node-demo/scenario-6-overrides/guide.qmd) - Overrides and resolutions in Node.
+
+#### ! Wild
+
+When Lightbend moved Akka from the Apache licence to the Business Source License in September 2022, thousands of Scala builds suddenly needed to hold every Akka module at `2.6.20`, the last Apache-licensed release, while teams decided between paying and migrating. Builds that already routed every Akka coordinate through one `val akkaVersion` changed a single line. Builds with versions scattered across modules spent days finding them all, and several discovered a transitive path had quietly pulled in a `2.7.x` artifact anyway, which only `dependencyOverrides` could stop.

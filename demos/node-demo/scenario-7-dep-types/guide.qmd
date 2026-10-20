@@ -1,17 +1,17 @@
 ---
 title: "Dependency Types"
-tagline: "Or what to Do When Some Dependencies Shouldn't Ship"
+tagline: "Or what to do when some dependencies shouldn't ship"
 type: scenario
 tool: node
 ---
 
 #### ! Scenario
 
-*Or what to Do When Some Dependencies Shouldn't Ship*
+*Or what to do when some dependencies shouldn't ship*
 Node's answer to JVM scopes ([MS7](../../maven-demo/scenario-7-scopes/guide.qmd)) and optional dependencies ([MS8](../../maven-demo/scenario-8-optional/guide.qmd)), and the sibling of Python's extras and groups ([P7](../../python-demo/scenario-7-extras-groups/guide.qmd)). `demo-lib-a` is a real dependency; `demo-lib-d` is dev tooling. package.json separates them — `dependencies` versus `devDependencies` — and the install *mode* decides which set materialises.
 
 ::: {.callout-note title="Tool Versions"}
-Tested with **npm 10.9.8** (`--omit=dev`), **pnpm 11.10.0** (`--prod`), **Yarn 4.17.0** (`yarn workspaces focus --production` — Yarn Berry dropped the old `--production` install flag; the focus command is the modern equivalent, verified working in 4.17).
+Tested with **npm 12.0.1** (`--omit=dev`), **pnpm 11.10.0** (`--prod`), **Yarn 4.17.0** (`yarn workspaces focus --production` — Yarn Berry dropped the old `--production` install flag; the focus command is the modern equivalent, verified working in 4.17).
 :::
 
 #### ! Example
@@ -66,7 +66,7 @@ Node splits "needed to run" from "needed to build" in package.json itself. Keep 
 
 #### ! Related
 *   [N8](../scenario-8-peers/guide.qmd) - The fourth type, strange enough to earn its own scenario.
-*   [MS7](../../maven-demo/scenario-7-scopes/guide.qmd) / [MS8](../../maven-demo/scenario-8-optional/guide.qmd) - The JVM's scope and optional machinery.
+*   [MS7](../../maven-demo/scenario-7-scopes/guide.qmd) / [GS7](../../gradle-demo/scenario-7-scopes/guide.qmd) / [SB7](../../sbt-demo/scenario-7-scopes/guide.qmd) and [MS8](../../maven-demo/scenario-8-optional/guide.qmd) / [GS8](../../gradle-demo/scenario-8-optional/guide.qmd) / [SB8](../../sbt-demo/scenario-8-optional/guide.qmd) - The JVM's scope and optional machinery.
 *   [P7](../../python-demo/scenario-7-extras-groups/guide.qmd) - Python's extras and groups covering the same ground.
 
 #### ! Wild

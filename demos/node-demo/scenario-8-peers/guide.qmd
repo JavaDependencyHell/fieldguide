@@ -1,17 +1,17 @@
 ---
 title: "Peer Dependencies: Where Flat Returns"
-tagline: "Or what to Do When a Package Refuses Its Own Copy"
+tagline: "Or what to do when a package refuses its own copy"
 type: scenario
 tool: node
 ---
 
 #### ! Scenario
 
-*Or what to Do When a Package Refuses Its Own Copy*
+*Or what to do when a package refuses its own copy*
 No JVM or Python sibling — because this is Node re-inventing *their* problem on purpose. [N2](../scenario-2-diamond/guide.qmd) showed Node dissolving conflicts by duplication. But some packages must **not** be duplicated: plugins that register into a host, frameworks whose components compare `instanceof` across modules, anything with singleton state. For those, a package declares a **peerDependency**: "I don't bring my own `demo-lib-c` — I use *yours*, and it must satisfy `^1.0.0`." Our project supplies `demo-lib-c 2.0.0`. The contract is violated, and the flat-world conflict Node dodged in N2 comes straight back.
 
 ::: {.callout-note title="Tool Versions"}
-Tested with **npm 10.9.8**, **pnpm 11.10.0**, **Yarn 4.17.0**. Maximum divergence in *enforcement*: npm hard-fails (`ERESOLVE`), pnpm and Yarn install-and-warn. npm has auto-installed missing peers and enforced their ranges since npm 7 (2020) — the single most build-breaking behaviour change in npm's history.
+Tested with **npm 12.0.1**, **pnpm 11.10.0**, **Yarn 4.17.0**. Maximum divergence in *enforcement*: npm hard-fails (`ERESOLVE`), pnpm and Yarn install-and-warn. npm has auto-installed missing peers and enforced their ranges since npm 7 (2020) — one of the most build-breaking behaviour changes in npm's history, alongside npm 3's flattening.
 :::
 
 #### ! Example
@@ -65,7 +65,7 @@ Peer dependencies are where Node stops duplicating and starts negotiating one sh
 #### ! Related
 *   [N2](../scenario-2-diamond/guide.qmd) - The duplication model peers deliberately opt out of.
 *   [N7](../scenario-7-dep-types/guide.qmd) - The other dependency types, which do install for you.
-*   [P2](../../python-demo/scenario-2-conflict/guide.qmd) / [MS2](../../maven-demo/scenario-2-conflict/guide.qmd) - The flat-world conflict this scenario reintroduces by contract.
+*   [P2](../../python-demo/scenario-2-conflict/guide.qmd) / [MS2](../../maven-demo/scenario-2-conflict/guide.qmd) / [GS2](../../gradle-demo/scenario-2-conflict/guide.qmd) / [SB2](../../sbt-demo/scenario-2-conflict/guide.qmd) - The flat-world conflict this scenario reintroduces by contract.
 
 #### ! Wild
 npm 6 treated peer ranges as advisory; npm 7 (2020) made them enforced, and `--legacy-peer-deps` shipped as the transition flag. The practical consequence today: the flag is still present in many CI configs and READMEs, where it silently disables peer checking for *every* install, not just the conflict it was added for. Grep your pipelines for it — each occurrence is a check that no longer runs.

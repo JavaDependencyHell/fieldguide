@@ -1,18 +1,19 @@
 ---
 title: "Rejecting Versions"
-tagline: "Or what to Do When Gradle Refuses a Version on Purpose"
+tagline: "Or what to do when a specific version must never appear"
 type: scenario
 tool: gradle
 ---
 
 #### ! Scenario
 
-*Or what to Do When Gradle Refuses a Version on Purpose*
-This scenario demonstrates how to explicitly reject a specific version of a dependency, preventing it from being selected even if it is the newest version.
+*Or what to do when a specific version must never appear*
+This scenario demonstrates rejecting a known-bad version so that resolution skips it, without forcing a downgrade that would also block future good versions.
 
 ::: {.callout-note title="Tool Versions"}
 This scenario was tested with **Gradle 8.14**.
 Rich version constraints (`require`/`prefer`/`strictly`/`reject`) require **Gradle 5.0+**.
+Re-verified on Gradle 9.3 (October 2026): Gradle 9 raised the runtime floor to JDK 17 and changed defaults such as the configuration cache, not the resolution rules shown here.
 :::
 
 #### ! Example
@@ -20,36 +21,56 @@ Rich version constraints (`require`/`prefer`/`strictly`/`reject`) require **Grad
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
-    Root[Project Root] --> LibA[lib-a:1.0.0]
-    Root -- reject --> LibA_Bad[lib-a:2.0.0]
+    Root[Project Root] --> Req["lib-a: require [1.0.0, 3.0.0)"]
+    Req -.-> V2["lib-a:2.0.0 (rejected)"]
+    Req --> V1[lib-a:1.0.0]
 ```
-
-
 
 ```{.groovy include="build.gradle" snippet="s14-deps"}
 ```
 
 #### ! Expect
-Blacklist broken or vulnerable releases without forcing a specific downgrade that might block future patches.
+The range `[1.0.0, 3.0.0)` resolves to the newest match, `2.0.0`, because that is what ranges do ([GS9](../scenario-9-ranges/guide.qmd)).
+
+#### ! Actual
+It resolves to `1.0.0`. The tree shows the whole request, `com.demo:lib-a:{require [1.0.0, 3.0.0); reject 2.0.0} -> 1.0.0`, and `dependencyInsight` records the reason: `rejected version 2.0.0`. Remove the `reject` line and the same build picks `2.0.0`.
 
 #### ! Why
-Gradle's engine supports negative constraints. Rejecting a version (e.g., `2.0.0`) removes it from the candidate pool during resolution, allowing upgrades to `2.0.1` while still blocking the known "bad" version. This precision is why the same graph behaves differently across tools.
+A rich version has several parts. `require` (or a plain version string) defines the acceptable set; `reject` removes specific versions or ranges from the candidate pool before selection. Gradle then applies its usual highest-wins choice to what remains. Rejection is therefore a *negative* constraint: it says nothing about which version to use, only which ones never to use, so a future `2.0.1` or `2.1.0` is still eligible. A `force` or `strictly` to `1.0.0` would have blocked those too.
 
 #### ! Fix
-*   **Forcing an Older Version:** Developers often use `resolutionStrategy.force '1.0.0'` to avoid `2.0.0`. This works, but it also prevents upgrading to `2.0.1` or `2.1.0` later. Rejection is more precise.
+*   **Reject the bad release** (shown above), leaving the range open for its successor.
+*   **Reject a range** when a whole series is bad: `reject '[2.0, 2.1)'`.
+*   **Publish the rejection in a platform** so every project in the organisation inherits it, rather than copying the line into each build.
+
+#### ! Risk
+* LOW Rejecting a single release with a known bug or CVE while the range stays open.
+* MEDIUM Rejecting versions another dependency *requires*. If `lib-x` says `strictly 2.0.0` and you reject `2.0.0`, resolution fails with a conflict, which is the correct outcome but not always a welcome one.
+* HIGH Using `force` to an old version instead of `reject`, and discovering a year later that the fix everyone else got was blocked by your pin.
 
 #### ! Control
-*   **Reject Specific Versions:** Use `reject` for known bad versions.
-*   **Reject Dynamic Ranges:** You can also reject ranges, e.g., `reject('[2.0, 3.0)')`.
+*   **Reject, don't pin,** when the goal is "not that one" rather than "exactly this one".
+*   **Keep the reason with the rule:** a rejected version with a CVE number in the comment is self-explanatory; a bare `reject '2.0.0'` is not.
 
-#### ! Look
-*   **Build Failures:** If the rejected version is the *only* version that satisfies other constraints (e.g., another library strictly requires `2.0.0`), the build will fail with a conflict error. This is good—it prevents you from shipping a broken application.
+#### ! Check
+**Fast check:** `gradle dependencyInsight --dependency lib-a --configuration compileClasspath`
+
+**What to look for:** `com.demo:lib-a:1.0.0` selected, with the reason `Was requested: rejected version 2.0.0`; the tree line shows `{require [1.0.0, 3.0.0); reject 2.0.0} -> 1.0.0`.
+
+**Conclusion:** `2.0.0` was removed from the candidate pool, and highest-wins chose from what was left.
 
 #### ! Scales
-This is a best practice for managing "bad" releases in a large organization. You can publish a platform/BOM that rejects known bad versions of internal libraries, protecting all teams from using them.
+Rejection is the right tool for "bad release" management at scale. A platform that rejects known-broken versions of internal libraries protects every consuming team without pinning them, and lets the next good release flow through automatically. It is also the Gradle feature closest to Python's `!=` specifier ([P4](../../python-demo/scenario-4-specifiers/guide.qmd)), which Maven can only approximate with an enforcer rule ([MS14](../../maven-demo/scenario-14-reject/guide.qmd)).
 
 #### ! Takeaway
-You can blacklist specific versions or ranges using `reject`, which is safer than forcing a downgrade.
+`reject` removes a version from the pool and lets resolution pick the best of the rest. It blocks the bad release without blocking the fix that follows it.
 
-#### Related Scenarios
-*   [GS6: Strict Constraints](../scenario-6-forcing/guide.qmd) - Forcing a specific version.
+#### ! Related
+*   [GS6](../scenario-6-forcing/guide.qmd) - Forcing a version, the blunter alternative.
+*   [GS9](../scenario-9-ranges/guide.qmd) - The ranges rejection operates on.
+*   [MS14](../../maven-demo/scenario-14-reject/guide.qmd) / [SB14](../../sbt-demo/scenario-14-reject/guide.qmd) - Version rejection in Maven (enforcer) and sbt.
+*   [P4](../../python-demo/scenario-4-specifiers/guide.qmd) - Python's native `!=`.
+
+#### ! Wild
+
+After Log4Shell, the useful rule was not "use 2.15.0" but "never use anything below 2.17.1", because the first two patches (2.15.0, 2.16.0) each turned out to need another. Builds that had pinned to 2.15.0 with `force` had to be edited twice more; builds that expressed the requirement as `require '[2.17.1,)'` (or rejected the vulnerable range) picked up each subsequent fix on the next resolution. The episode is the clearest argument for expressing a security policy as a rejection rather than a pin.

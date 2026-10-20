@@ -11,7 +11,7 @@ This scenario demonstrates Gradle's "Newest Wins" strategy for resolving version
 #### How to verify:
 Run the following command in this directory:
 ```bash
-./gradlew dependencies --configuration compileClasspath
+gradle dependencies --configuration compileClasspath
 ```
 
 #### Expected Output:

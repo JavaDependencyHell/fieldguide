@@ -1,17 +1,18 @@
 ---
 title: "Variant Selection"
-tagline: "Or what to Do When the “Correct” Dependency Is Rejected"
+tagline: "Or what to do when a library has multiple flavours"
 type: scenario
 tool: gradle
 ---
 
 #### ! Scenario
 
-*Or what to Do When the “Correct” Dependency Is Rejected*
-This scenario demonstrates Gradle's attribute-based dependency matching, which allows it to select the correct variant of a library (e.g., Java 8 vs Java 11, debug vs release) based on the consumer's needs.
+*Or what to do when a library has multiple flavours*
+This scenario demonstrates selecting a specific published flavour of a library. With a plain Maven repository that means a classifier; with Gradle Module Metadata it becomes attribute-based variant selection.
 
 ::: {.callout-note title="Tool Versions"}
 This scenario was tested with **Gradle 8.14**.
+Re-verified on Gradle 9.3 (October 2026): Gradle 9 raised the runtime floor to JDK 17 and changed defaults such as the configuration cache, not the resolution rules shown here.
 :::
 
 #### ! Example
@@ -19,37 +20,63 @@ This scenario was tested with **Gradle 8.14**.
 ```{mermaid}
 %%| fig-width: 4.4
 graph LR
-    Root["Project Root"] --> LibA["lib-a:1.0.0"]
-    LibA -- variant --> LibA_Java11["lib-a:1.0.0 (Java 11)"]
+    Root[Project Root] --> LibA[lib-a:1.0.0]
+    LibA --> Jar["lib-a-1.0.0.jar"]
+    LibA --> Jdk11["lib-a-1.0.0-jdk11.jar (classifier)"]
+    Root -. selects .-> Jdk11
 ```
 
-
+`lib-a:1.0.0` is published twice in the demo repository: the default jar and a `jdk11` classifier. We pick the classifier explicitly:
 
 ```{.groovy include="build.gradle" snippet="s13-deps"}
 ```
 
 #### ! Expect
-Build tools automatically select the correct JDK or runtime variant (e.g., Java 11).
+Gradle works out which flavour of `lib-a` suits the project from the JDK it compiles against, so the `jdk11` build arrives automatically.
+
+#### ! Actual
+Nothing is automatic here. The dependency tree prints `com.demo:lib-a:1.0.0` with no sign of the classifier at all; only the resolved *files* reveal that `lib-a-1.0.0-jdk11.jar` was selected, and only because the build named it. Drop the `:jdk11` and the plain jar comes back. A classifier is an artifact name, not a property Gradle can reason about.
 
 #### ! Why
-Gradle matches **Attributes** (e.g., `org.gradle.jvm.version`) from consumers against producer metadata. This variant-aware resolution replaces the opaque "classifiers" used by Maven, which is why the same graph behaves differently across tools.
+Gradle's dependency model has two layers. A *component* (`com.demo:lib-a:1.0.0`) has *variants*, each described by attributes (`org.gradle.usage`, `org.gradle.jvm.version`, ...) and capabilities, and Gradle selects a variant by matching the consumer's requested attributes against them. That selection is automatic, but it needs the producer to publish variants, which means Gradle Module Metadata (`.module` files). A library published with a POM alone has one variant per scope and no attributes beyond the defaults; its classifiers are just extra files hanging off the component, invisible to matching. For such libraries you select the file by name, exactly as Maven does. The `dependencyInsight` report shows the attributes Gradle *requested* (including `org.gradle.jvm.version`), which is what a producer with real variants would match against.
 
 #### ! Fix
-*   **Classifiers:** In Maven, developers manually add `<classifier>jdk11</classifier>`. This is fragile because if the classifier name changes or if the consumer upgrades their JDK, they have to manually update the dependency.
+*   **POM-only library:** request the classifier, `'com.demo:lib-a:1.0.0:jdk11'`, and accept that nothing checks it matches your JDK.
+*   **Library with Gradle Module Metadata:** declare the plain coordinates and let attribute matching choose; override only with `attributes { ... }` on the dependency when the default request is wrong.
+*   **You are the producer:** publish with the `maven-publish` plugin (which emits `.module` metadata) and expose flavours as variants or feature variants ([GS8](../scenario-8-optional/guide.qmd)), so consumers stop hard-coding classifiers.
+
+#### ! Risk
+* LOW A classifier for a well-understood artifact such as `sources` or `javadoc`.
+* MEDIUM A classifier chosen for the JDK or platform that nobody updates when the project moves on, so the build keeps shipping the old flavour.
+* HIGH Two classifiers of the same component on one classpath (one requested directly, one through a transitive), both resolving to `lib-a:1.0.0` in the tree and duplicating every class.
 
 #### ! Control
-*   **Use Attributes:** Let Gradle handle the selection. Ensure your project defines its own attributes correctly (e.g., `sourceCompatibility = JavaVersion.VERSION_11`).
-*   **Artifact Transforms:** You can even transform artifacts on the fly (e.g., instrumenting classes, unzipping resources) by registering an artifact transform that converts one set of attributes to another.
+*   **Check the files, not the tree,** when classifiers are involved: a task that prints `configurations.runtimeClasspath.files` (the demo's `printRuntimeJars`) shows which jar actually resolved.
+*   **Read `outgoingVariants` and `resolvableConfigurations`** to see the attributes in play when matching errors appear ("Cannot choose between", "No matching variant found").
 
-#### ! Look
-*   **"Cannot choose between..." errors:** This happens when multiple variants match the request equally well. You may need to provide more specific attributes or use a `componentMetadata` rule to disambiguate.
-*   **"No matching variant found":** This means the producer doesn't have a variant that satisfies all your requirements.
+#### ! Check
+**Fast check:**
+
+```bash
+gradle printRuntimeJars
+gradle dependencies --configuration compileClasspath
+```
+
+**What to look for:** `JAR lib-a-1.0.0-jdk11.jar` from the first command; `com.demo:lib-a:1.0.0` with no classifier mentioned in the second.
+
+**Conclusion:** The classifier selected a file; the dependency graph is unchanged and unaware.
 
 #### ! Scales
-This is the future of dependency management in the JVM ecosystem. It allows library authors to publish multi-release jars, different optimization levels, or platform-specific binaries without forcing consumers to manually select artifacts.
+Attribute-based variants are how the JVM ecosystem is moving beyond classifiers: a producer can publish JDK-specific, platform-specific or feature-specific variants and let every consumer's build select the right one without naming it. Until a library publishes Gradle Module Metadata, though, its consumers are back to classifiers, and the mismatch between the two models (one automatic, one manual) is a frequent source of confusion in mixed builds.
 
 #### ! Takeaway
-Attributes are more powerful than classifiers. They allow for automatic, context-aware dependency resolution.
+Classifiers pick a file by name and Gradle cannot see what they mean; variants pick by attributes and Gradle matches them for you. Which one you get depends on what the producer published.
 
 #### ! Related
-*   [GS12](../scenario-12-metadata/guide.qmd) - Fixing metadata if attributes are missing.
+*   [GS12](../scenario-12-metadata/guide.qmd) - Adding attributes and capabilities to metadata that lacks them.
+*   [GS8](../scenario-8-optional/guide.qmd) - Feature variants, the opt-in form of variants.
+*   [MS13](../../maven-demo/scenario-13-variants/guide.qmd) / [SB13](../../sbt-demo/scenario-13-variants/guide.qmd) - The same `jdk11` classifier requested from Maven and sbt.
+
+#### ! Wild
+
+Guava is the best-known library to make the jump. For years it shipped two flavours as classifiers and separate version suffixes (`-jre` and `-android`), and consumers had to pick by name. Since Guava 32 it also publishes Gradle Module Metadata declaring both as variants of one component, selected by the `org.gradle.jvm.environment` attribute: a Gradle build targeting the standard JVM gets the `-jre` flavour and an Android build the `-android` one, from the same coordinates. Maven consumers still choose a suffix by hand, which is a neat illustration of the two models living side by side on the same artifact.

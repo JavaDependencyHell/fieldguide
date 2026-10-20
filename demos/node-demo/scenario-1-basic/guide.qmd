@@ -1,17 +1,17 @@
 ---
 title: "Basic Transitive Resolution"
-tagline: "Or what to Do When One Install Brings a Whole Tree"
+tagline: "Or what to do when one install brings a whole tree"
 type: scenario
 tool: node
 ---
 
 #### ! Scenario
 
-*Or what to Do When One Install Brings a Whole Tree*
-The ground truth all three Node tools share: installing one package pulls in its dependencies, and theirs, until the graph is satisfied. `demo-lib-a` needs `demo-lib-b`, which needs `demo-lib-c` — one command installs all three. It is the Node sibling of [MS1](../../maven-demo/scenario-1-basic/guide.qmd) and [P1](../../python-demo/scenario-1-basic/guide.qmd) — with one structural difference that shapes this entire part: the result is not a flat classpath or a flat environment but a **tree**, and a tree can hold *more than one version of the same package*.
+*Or what to do when one install brings a whole tree*
+The ground truth all three Node tools share: installing one package pulls in its dependencies, and theirs, until the graph is satisfied. `demo-lib-a` needs `demo-lib-b`, which needs `demo-lib-c` — one command installs all three. It is the Node sibling of [MS1](../../maven-demo/scenario-1-basic/guide.qmd) and [P1](../../python-demo/scenario-1-basic/guide.qmd) — with one structural difference that shapes this entire part: the result is not a flat classpath or a flat environment but a **tree**, and a tree can hold *more than one version of the same package*. That is the third of the book's three models: the JVM flattens and picks a winner, Python flattens and demands agreement, **Node nests and lets every consumer keep its own copy**. Every scenario in this part is a consequence of that choice.
 
 ::: {.callout-note title="Tool Versions"}
-Tested with **npm 10.9.8** (Node 22.22.3), **pnpm 11.10.0**, **Yarn 4.17.0**. All three behave identically here; the differences begin the moment the graph gets interesting.
+Tested with **npm 12.0.1** (Node 26.4.0), **pnpm 11.10.0**, **Yarn 4.17.0**. All three behave identically here; the differences begin the moment the graph gets interesting.
 :::
 
 #### ! Example
@@ -58,8 +58,8 @@ One project, one tree — and a tree can hold many versions. Everything else in 
 
 #### ! Related
 *   [N2](../scenario-2-diamond/guide.qmd) - What happens when two packages need different versions of the same thing.
-*   [MS1](../../maven-demo/scenario-1-basic/guide.qmd) - The JVM equivalent (flat classpath, one winner).
+*   [MS1](../../maven-demo/scenario-1-basic/guide.qmd) / [GS1](../../gradle-demo/scenario-1-basic/guide.qmd) / [SB1](../../sbt-demo/scenario-1-basic/guide.qmd) - The JVM equivalent (flat classpath, one winner).
 *   [P1](../../python-demo/scenario-1-basic/guide.qmd) - The Python equivalent (flat environment, one version per package).
 
 #### ! Wild
-npm's culture of small, single-purpose packages makes transitive closure the dominant factor in tree size: a typical application's node_modules holds hundreds of packages, of which only a handful are direct dependencies. This is why the tree-inspection commands in the Check matter — most of what you run, you never chose.
+npm's culture of small, single-purpose packages makes transitive closure the dominant factor in tree size: a typical application's node_modules holds hundreds of packages, of which typically only a handful are direct dependencies. This is why the tree-inspection commands in the Check matter — most of what you run, you never chose.

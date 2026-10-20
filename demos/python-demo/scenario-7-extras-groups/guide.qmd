@@ -1,17 +1,17 @@
 ---
 title: "Extras & Dependency Groups"
-tagline: "Or what to Do When Some Dependencies Are Optional"
+tagline: "Or what to do when some dependencies are optional"
 type: scenario
 tool: python
 ---
 
 #### ! Scenario
 
-*Or what to Do When Some Dependencies Are Optional*
+*Or what to do when some dependencies are optional*
 Python merges two JVM ideas into one scenario. **Extras** are optional *runtime* features a package offers (`demo-lib-a[feature]`) — the sibling of Maven optional dependencies ([MS8](../../maven-demo/scenario-8-optional/guide.qmd)). **Dependency groups** are optional *development* sets (test, docs, lint) — the sibling of build scopes ([MS7](../../maven-demo/scenario-7-scopes/guide.qmd)). This scenario shows both.
 
 ::: {.callout-note title="Tool Versions"}
-Tested with **pip 25.3**, **Poetry 2.4**, **uv 0.11**. Extras are standard (PEP 508) everywhere. Dependency groups converged late: Poetry groups arrived in 1.2 (its own syntax); the standard `[dependency-groups]` table (PEP 735) is read by uv (0.4.27+) and — since 25.1 — by `pip install --group`. Before 25.1, pip's only idiom was multiple requirements files, and it remains the common one.
+Tested with **pip 25.3**, **Poetry 2.4**, **uv 0.11**. Extras are standard (PEP 508) everywhere. Dependency groups converged late. Poetry groups arrived in 1.2 with their own `[tool.poetry.group.*]` syntax; the standard `[dependency-groups]` table (PEP 735) is read by uv (0.4.27+), by Poetry (2.2+) and — since 25.1 — by `pip install --group`. All three legs of this demo use that one table. Before 25.1, pip's only idiom was multiple requirements files, and it remains the common one in the wild.
 :::
 
 #### ! Example
@@ -21,7 +21,7 @@ Extras — opting in pulls the optional `demo-lib-d`:
 ```{.text include="pip/requirements-extras.txt" snippet="p7-extras"}
 ```
 
-Groups — a dev-only set, installed or skipped on demand. This is the standard PEP 735 table, and both uv and `pip install --group` (25.1+) read it:
+Groups — a dev-only set, installed or skipped on demand. This is the standard PEP 735 table; uv, Poetry 2.2+ and `pip install --group` (25.1+) all read it:
 
 ```{.toml include="uv/pyproject.toml" snippet="p7-uv-group"}
 ```
@@ -30,11 +30,11 @@ Groups — a dev-only set, installed or skipped on demand. This is the standard 
 Optional dependencies come along by default.
 
 #### ! Actual
-They don't — that's the point of "optional". Plain `demo-lib-a` does **not** install `demo-lib-d`; `demo-lib-a[feature]` does. The `dev` group is similarly absent by default — but each tool's default differs:
+Half right. Plain `demo-lib-a` does **not** install `demo-lib-d`; `demo-lib-a[feature]` does — extras are opt-in everywhere. The `dev` *group* is a different story, because each tool's default differs:
 
-*   **Poetry** — absent by default; needs `--with dev` to include it.
-*   **uv** — present by default; `--no-dev` excludes it.
 *   **pip** — absent unless requested; `pip install --group dev` (25.1+) includes it.
+*   **Poetry** — **present by default**: every non-optional group installs with `poetry install`; `--without dev` leaves it out, and `optional = true` on the group makes it opt-in.
+*   **uv** — present by default (`dev` is uv's default group); `--no-dev` excludes it.
 
 The older pip idiom — `requirements.txt` plus `requirements-dev.txt` as separate files — still dominates in the wild.
 
@@ -43,8 +43,8 @@ Extras and groups both answer "don't make everyone pay for what only some need",
 
 #### ! Fix
 *   **Offering optional features in a library:** declare an extra, so consumers write `your-lib[feature]`.
-*   **Separating dev tooling:** use dependency groups — Poetry `group`, or the standard `[dependency-groups]` table that both uv and modern pip read; on older pip, a second requirements file.
-*   **Installing:** `pip install "pkg[extra]"`; `pip install --group dev` (25.1+); `poetry install --with dev`; `uv sync` (groups) — check what your default install actually pulls.
+*   **Separating dev tooling:** use the standard `[dependency-groups]` table, which pip 25.1+, Poetry 2.2+ and uv all read; on older pip, a second requirements file.
+*   **Installing:** `pip install "pkg[extra]"`; `pip install --group dev` (25.1+); `poetry install` (groups included) or `--without dev`; `uv sync` (groups included) or `--no-dev` — check what your default install actually pulls, because the defaults disagree.
 
 #### ! Risk
 * LOW Declaring a clean extra for a genuinely optional feature.
@@ -59,23 +59,23 @@ Extras and groups both answer "don't make everyone pay for what only some need",
 pip install -r requirements.txt        && ! pip show demo-lib-d   # absent
 pip install -r requirements-extras.txt &&   pip show demo-lib-d   # present
 pip install --group dev       # demo-lib-d present (pip 25.1+, reads pyproject.toml)
+poetry install                # demo-lib-d present — groups install by default
 poetry install --without dev  # no demo-lib-d
-poetry install --with dev     # demo-lib-d present
+uv sync                       # demo-lib-d present — dev is uv's default group
 uv sync --no-dev              # no demo-lib-d
-uv sync                       # demo-lib-d present
 ```
 
-**What to look for:** `demo-lib-d` present only when the extra or group is requested.
+**What to look for:** `demo-lib-d` present only when the extra is requested; for the group, present by default under Poetry and uv, absent by default under pip.
 
-**Conclusion:** Optional means opt-in — extras for runtime features, groups for dev tooling.
+**Conclusion:** Extras are opt-in everywhere; groups are opt-in on pip and opt-out on Poetry and uv.
 
 #### ! Takeaway
-Python folds the JVM's optional dependencies and build scopes into extras (runtime, published by the library) and dependency groups (dev, defined by your project). Groups only became a cross-tool standard recently — PEP 735, read by uv and by pip 25.1+ — so mind the gap on older toolchains.
+Python folds the JVM's optional dependencies and build scopes into extras (runtime, published by the library) and dependency groups (dev, defined by your project). Groups only became a cross-tool standard recently — PEP 735, read by uv, Poetry 2.2+ and pip 25.1+ — and the tools still disagree on whether a group installs by default. Mind both gaps.
 
 #### ! Related
 *   [P4](../scenario-4-specifiers/guide.qmd) - Version specifiers, which apply inside extras and groups too.
-*   [MS7](../../maven-demo/scenario-7-scopes/guide.qmd) - JVM build scopes (the group analogue).
-*   [MS8](../../maven-demo/scenario-8-optional/guide.qmd) - JVM optional dependencies (the extra analogue).
+*   [MS7](../../maven-demo/scenario-7-scopes/guide.qmd) / [GS7](../../gradle-demo/scenario-7-scopes/guide.qmd) / [SB7](../../sbt-demo/scenario-7-scopes/guide.qmd) - JVM build scopes (the group analogue).
+*   [MS8](../../maven-demo/scenario-8-optional/guide.qmd) / [GS8](../../gradle-demo/scenario-8-optional/guide.qmd) / [SB8](../../sbt-demo/scenario-8-optional/guide.qmd) - JVM optional dependencies (the extra analogue).
 *   [N7](../../node-demo/scenario-7-dep-types/guide.qmd) - Node's dependency types, covering the same ground as fields in one file.
 
 #### ! Wild

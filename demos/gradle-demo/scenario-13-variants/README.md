@@ -1,14 +1,18 @@
-### Gradle Scenario 13: Variant Selection (Attributes)
+### Gradle Scenario 13: Variant Selection (Classifiers vs Attributes)
 
-This scenario discusses Gradle's Attribute-based variant selection.
+This scenario demonstrates selecting a published flavour of a library, and the difference between a Maven classifier and a Gradle variant.
 
 #### What's happening:
-1.  Gradle dependencies are not just "jars". They are "components" with "variants" (e.g., API vs Runtime, Java 8 vs Java 11, Debug vs Release).
-2.  Dependencies are matched based on requested attributes vs provided attributes.
-3.  This allows for much richer dependency management than Maven's simple scopes/classifiers.
+1.  `lib-a:1.0.0` is published twice by `install_deps.sh`: `lib-a-1.0.0.jar` and `lib-a-1.0.0-jdk11.jar` (classifier `jdk11`). There is no Gradle Module Metadata, so there are no attribute-matched variants.
+2.  We request `com.demo:lib-a:1.0.0:jdk11`. Gradle selects that *file*; the dependency graph is unchanged and the tree does not mention the classifier.
+3.  With Gradle Module Metadata, the producer would publish variants with attributes (e.g. `org.gradle.jvm.version`) and Gradle would match them automatically. `dependencyInsight` shows the attributes the consumer requests.
 
 #### How to verify:
-This is a conceptual demo as our dummy repo doesn't have Gradle Module Metadata published. However, you can see the syntax in `build.gradle`.
+```bash
+gradle printRuntimeJars
+gradle dependencies --configuration compileClasspath
+```
 
 #### Expected Output:
-The build resolves successfully using standard matching (since we didn't publish special variants).
+- `printRuntimeJars`: `JAR lib-a-1.0.0-jdk11.jar` (plus `lib-b-1.0.0.jar`, `lib-c-1.0.0.jar`).
+- Tree: `com.demo:lib-a:1.0.0` with no classifier shown. Remove `:jdk11` from the build and `printRuntimeJars` shows `lib-a-1.0.0.jar` instead.

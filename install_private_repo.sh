@@ -3,7 +3,7 @@
 # install_private_repo.sh
 # Creates and populates demo-dependencies/private-repo — the "third-party
 # private repository" used by scenario 16 (private BOM) and scenario 17
-# (private patch) in the Maven, Gradle, and SBT demos.
+# (private patch) in the Maven, Gradle, and sbt demos.
 #
 # Publishes (in standard Maven repository layout):
 #   com.thirdparty.springboot:patched-bom:1.0.0            (pom)

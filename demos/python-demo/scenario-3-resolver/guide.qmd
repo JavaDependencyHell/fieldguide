@@ -1,13 +1,13 @@
 ---
 title: "Resolver Strategies & History"
-tagline: "Or what to Do When the Same requirements.txt Builds Two Different Environments"
+tagline: "Or what to do when the Same requirements.txt Builds Two Different Environments"
 type: scenario
 tool: python
 ---
 
 #### ! Scenario
 
-*Or what to Do When the Same requirements.txt Builds Two Different Environments*
+*Or what to do when the Same requirements.txt Builds Two Different Environments*
 There is no JVM sibling for this one — it is pure Python. The same input can produce a *different* installed environment depending on which resolver, and which resolver *version*, processes it. Here `demo-lib-a` is unpinned but `demo-lib-c` is pinned to `1.0.0`; the newest `demo-lib-a` (2.0.0) needs `demo-lib-c 2.0.0`, so a correct resolver must **backtrack** to `demo-lib-a 1.0.0`.
 
 ::: {.callout-note title="Tool Versions"}

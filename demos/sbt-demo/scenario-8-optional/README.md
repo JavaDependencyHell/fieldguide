@@ -1,11 +1,12 @@
-### SBT Scenario 8: Optional Dependencies
+### sbt Scenario 8: Optional Dependencies
 
-This scenario discusses optional dependencies in SBT.
+This scenario demonstrates how sbt treats a dependency that a library marked optional in its POM.
 
 #### What's happening:
-1.  SBT (via Ivy) respects the `<optional>true</optional>` flag in Maven POMs.
-2.  If we depend on a library that has an optional dependency, SBT will NOT include that optional dependency transitively.
-3.  In this demo, we depend on `lib-a`. If `lib-a` were published with an optional dependency, it would be excluded. Since we are just declaring `lib-a` here, this scenario mainly serves to show that `lib-a` itself is included normally.
+1.  We depend on `lib-d:1.0.0`.
+2.  `lib-d`'s POM declares `lib-c:1.0.0` with `<optional>true</optional>`.
+3.  Coursier honours the flag: `lib-c` is not resolved for consumers of `lib-d`. If we need `lib-d`'s optional feature, we declare `lib-c` ourselves.
+4.  To mark a dependency optional in a library you publish, declare it `% Optional`; sbt writes `<optional>true</optional>` into the generated POM.
 
 #### How to verify:
 Run the following command in this directory:
@@ -14,4 +15,4 @@ sbt "show externalDependencyClasspath"
 ```
 
 #### Expected Output:
-`lib-a` is present.
+The classpath contains `lib-d/1.0.0` and does not contain `lib-c`.

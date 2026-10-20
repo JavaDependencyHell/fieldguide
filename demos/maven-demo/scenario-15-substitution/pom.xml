@@ -13,26 +13,57 @@
 
     <!-- tag::s15-deps[] -->
     <dependencies>
+        <!-- lib-a normally drags in lib-b. Pretend lib-b is
+             abandoned and lib-d is its maintained drop-in
+             replacement. Step 1: cut lib-b off this path. -->
         <dependency>
             <groupId>com.demo</groupId>
             <artifactId>lib-a</artifactId>
             <version>1.0.0</version>
             <exclusions>
                 <exclusion>
-                    <!-- Remove the old logging library -->
-                    <groupId>log4j</groupId>
-                    <artifactId>log4j</artifactId>
+                    <groupId>com.demo</groupId>
+                    <artifactId>lib-b</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
 
-        <!-- Replace with the SLF4J bridge -->
+        <!-- Step 2: declare the replacement yourself. -->
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>log4j-over-slf4j</artifactId>
-            <version>1.7.36</version>
+            <groupId>com.demo</groupId>
+            <artifactId>lib-d</artifactId>
+            <version>1.0.0</version>
         </dependency>
     </dependencies>
     <!-- end::s15-deps[] -->
+
+    <!-- tag::s15-guard[] -->
+    <!-- Step 3 (optional): make sure lib-b never creeps back
+         through some other path - see MS18. -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <id>keep-lib-b-out</id>
+                        <goals><goal>enforce</goal></goals>
+                        <configuration>
+                            <rules>
+                                <bannedDependencies>
+                                    <excludes>
+                                        <exclude>com.demo:lib-b</exclude>
+                                    </excludes>
+                                </bannedDependencies>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <!-- end::s15-guard[] -->
 
 </project>

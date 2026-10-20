@@ -1,14 +1,14 @@
 ---
 title: "Specifiers & Ranges"
-tagline: "Or what to Do When >= Is the Cultural Default"
+tagline: "Or what to do when >= Is the Cultural Default"
 type: scenario
 tool: python
 ---
 
 #### ! Scenario
 
-*Or what to Do When >= Is the Cultural Default*
-Python version specifiers (PEP 440) look like the JVM's ranges ([MS9](../../maven-demo/scenario-9-ranges/guide.qmd)) but the culture is inverted: open ranges are *normal here*, not discouraged. This scenario walks the operators that matter — `>=`, `~=`, and the native `!=` rejection operator that the JVM needs a whole plugin ([MS14](../../maven-demo/scenario-14-reject/guide.qmd)) to emulate.
+*Or what to do when >= Is the Cultural Default*
+Python version specifiers (PEP 440) look like the JVM's ranges ([MS9](../../maven-demo/scenario-9-ranges/guide.qmd)) but the culture is inverted: open ranges are *normal here*, not discouraged. This scenario walks the operators that matter — `>=`, `~=`, and the native `!=` rejection operator that Maven needs a whole plugin ([MS14](../../maven-demo/scenario-14-reject/guide.qmd)) to emulate — only Gradle's rich versions ([GS14](../../gradle-demo/scenario-14-reject/guide.qmd)) have a native `reject`.
 
 ::: {.callout-note title="Tool Versions"}
 Tested with **pip 25.3**, **Poetry 2.4**, **uv 0.11**. PEP 440 specifiers are a standard, not a tool feature, so they behave the same across all three and across versions.
@@ -36,7 +36,7 @@ They diverge, and that is the lesson. With `demo-lib-c` available at 1.0.0 and 2
 - `demo-lib-c!=2.0.0` → **1.0.0** (newest that isn't the rejected version).
 
 #### ! Why
-Each operator expresses a different intent. `>=` says "at least this, newer is fine" — the open-ended default that keeps Python projects current but exposes them to surprise majors. `~=` is the compatible-release operator: `~=1.0` means "1.x but not 2.0", the pin most libraries *should* use and often don't. `!=` is a first-class exclusion of a known-bad version — no plugin, no enforcer, just an operator. The JVM has no native equivalent; Maven reaches for the enforcer plugin to ban a version.
+Each operator expresses a different intent. `>=` says "at least this, newer is fine" — the open-ended default that keeps Python projects current but exposes them to surprise majors. `~=` is the compatible-release operator: `~=1.0` means "1.x but not 2.0", the pin most libraries *should* use and often don't. `!=` is a first-class exclusion of a known-bad version — no plugin, no enforcer, just an operator. Maven has no native equivalent and reaches for the enforcer plugin; Gradle's `reject` ([GS14](../../gradle-demo/scenario-14-reject/guide.qmd)) is the one JVM tool with the same operator built in.
 
 #### ! Fix
 *   **Libraries:** prefer `~=` (or `>=x,<next-major`) to bound the blast radius of a dependency's next major release.
@@ -53,9 +53,14 @@ Each operator expresses a different intent. `>=` says "at least this, newer is f
 **Fast check:**
 
 ```bash
+# pip — three specifiers, three results
 pip install -r requirements.txt            && pip show demo-lib-c  # 2.0.0
 pip install -r requirements-compatible.txt && pip show demo-lib-c  # 1.0.0
 pip install -r requirements-reject.txt     && pip show demo-lib-c  # 1.0.0
+
+# poetry (~=1.0) and uv (!=2.0.0) — same operators, same answers
+poetry lock && grep -A1 'name = "demo-lib-c"' poetry.lock   # 1.0.0
+uv lock     && grep -A1 'name = "demo-lib-c"' uv.lock       # 1.0.0
 ```
 
 (Run each in a fresh venv — see [P10](../scenario-10-venv/guide.qmd) for why.)
@@ -69,8 +74,8 @@ pip install -r requirements-reject.txt     && pip show demo-lib-c  # 1.0.0
 
 #### ! Related
 *   [P6](../scenario-6-constraints/guide.qmd) - Applying pins from outside the requirement, without editing it.
-*   [MS9](../../maven-demo/scenario-9-ranges/guide.qmd) - JVM ranges, where open ranges are discouraged rather than default.
-*   [MS14](../../maven-demo/scenario-14-reject/guide.qmd) - The JVM's plugin-based equivalent of Python's native `!=`.
+*   [MS9](../../maven-demo/scenario-9-ranges/guide.qmd) / [GS9](../../gradle-demo/scenario-9-ranges/guide.qmd) / [SB9](../../sbt-demo/scenario-9-ranges/guide.qmd) - JVM ranges, where open ranges are discouraged rather than default.
+*   [MS14](../../maven-demo/scenario-14-reject/guide.qmd) / [GS14](../../gradle-demo/scenario-14-reject/guide.qmd) / [SB14](../../sbt-demo/scenario-14-reject/guide.qmd) - Rejecting a version on the JVM: a plugin in Maven, native in Gradle, an override in sbt.
 *   [N4](../../node-demo/scenario-4-semver/guide.qmd) - Node's `^` culture: the same openness, written by the tools themselves.
 
 #### ! Wild

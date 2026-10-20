@@ -1,17 +1,18 @@
 ---
 title: "Dependency Configurations"
-tagline: "Or what to Do When You Need a Library Only for Testing"
+tagline: "Or what to do when a dependency exists at compile time but not at runtime"
 type: scenario
 tool: sbt
 ---
 
 #### ! Scenario
 
-*Or what to Do When You Need a Library Only for Testing*
-This scenario demonstrates SBT's dependency configurations (similar to Maven scopes), such as `Compile`, `Test`, and `Provided`.
+*Or what to do when a dependency exists at compile time but not at runtime*
+This scenario demonstrates sbt's dependency configurations (`Compile`, `Test`, `Provided`), the equivalent of Maven scopes, and the classpaths each one reaches.
 
 ::: {.callout-note title="Tool Versions"}
-This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). Under the older Ivy engine (sbt < 1.3, or `useCoursier := false`) resolution edge cases differ and settings like `conflictManager` behave differently. `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin.
+This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver (the default since sbt 1.3). On sbt 1.x the older Ivy engine can still be selected with `useCoursier := false`; under Ivy, resolution edge cases differ and Ivy-only settings such as `conflictManager` apply (Coursier ignores them). `dependencyTree` is built in since **sbt 1.4**; earlier versions need the sbt-dependency-graph plugin. sbt 2.0 (June 2026) keeps these resolution rules, removes the Ivy opt-out, adds native BOM import, and turns Test-configuration eviction warnings into errors; the demos here target sbt 1.x.
+The `config:key` syntax (`runtime:dependencyClasspath`) was deprecated in sbt 1.5 and removed in sbt 2; use the slash form `Runtime / dependencyClasspath`.
 :::
 
 #### ! Example
@@ -20,47 +21,63 @@ This scenario was tested with **sbt 1.12**, which uses the **Coursier** resolver
 %%| fig-width: 4.4
 graph LR
     Root[Project Root] --> LibA["lib-a:1.0.0 (Compile)"]
-    Root --> LibB["lib-b:1.0.0 (Provided)"]
-    Root --> LibC["lib-c:1.0.0 (Test)"]
+    Root --> LibD["lib-d:1.0.0 (Provided)"]
+    Root --> LibCA["lib-circle-a:1.0.0 (Test)"]
+    Root -. "% Provided" .-> LibB["lib-b:1.0.0"]
+    LibA --> LibB
+    LibB --> LibC[lib-c:1.0.0]
 ```
-
-#### ! Example
 
 ```{.scala include="build.sbt" snippet="s7-deps"}
 ```
 
+```{.scala include="build.sbt" snippet="s7-transitive"}
+```
+
 #### ! Expect
-`Test` dependencies are restricted to tests, while `Provided` is for compilation only (container-supplied).
+`Test` dependencies are restricted to tests and `Provided` to compilation; the container supplies `Provided` at runtime. And declaring `lib-b % Provided` keeps `lib-b` off the runtime classpath, the way a Maven `provided` scope would.
 
 #### ! Actual
-*   `lib-a`: `Compile` and `Runtime`.
-*   `lib-b`: `Compile` only.
-*   `lib-c`: `Test` only.
+*   `lib-d` (`Provided`): `Compile` and `Test` classpaths, not `Runtime`.
+*   `lib-circle-a` (`Test`): `Test` classpath only.
+*   `lib-a` (`Compile`): everywhere, with `lib-b` and `lib-c` behind it.
+*   `lib-b`, declared `% Provided`: **still on the `Runtime` classpath**, because `lib-a` needs it at `Compile` and Coursier keeps that transitive edge. The direct `Provided` declaration changes nothing.
 
 #### ! Why
-SBT maps dependencies to Ivy configurations. Defaulting to `Compile` makes them transitive and runtime-available; `% Test` limits them to tests; `% Provided` assumes the environment (e.g., Spark) supplies them.
+Each configuration defines a classpath. `Compile` is the default and is transitive to consumers; `Test` extends `Compile` for tests only; `Provided` is visible to the compiler and to tests but omitted from `Runtime` and from `package`, on the assumption that the deployment environment (a Spark cluster, a servlet container) supplies it. Coursier resolves each configuration as the union of everything reachable in it: a direct `Provided` declaration keeps *that request* out of `Runtime`, but if a `Compile` dependency also requires the artifact, the transitive request still brings it in. Maven does the opposite: its nearest-wins mediation applies the direct scope to the transitive too, so a Maven `provided` on `lib-b` would demote it everywhere (MS7). Same graph, same words, different runtime classpath.
+
+#### ! Fix
+*   **Runtime-only libraries** (JDBC drivers, logging backends) belong in `Runtime`: `"org.postgresql" % "postgresql" % "42.7.3" % Runtime`.
+*   **Container-supplied libraries** (Spark, Hadoop, servlet APIs) belong in `Provided`, and the tests that exercise them should run against the same version the cluster ships.
+*   **To keep a transitively required artifact out of `Runtime`** in sbt, `Provided` on the direct declaration is not enough: exclude it from the dependency that brings it (SB5) or ban it build-wide (SB18), and supply it from the environment.
 
 #### ! Risk
-* LOW Use `Test` for test-only libraries.
-* MEDIUM Use `Provided`; ensure the cluster or server actually provides the library.
-* HIGH Use `Compile` for runtime-only libraries; this bloats artifacts and CI/CD pipelines.
+* LOW Using `Test` for test-only libraries.
+* MEDIUM Using `Provided` without confirming the environment actually provides that library and version.
+* HIGH Assuming `% Provided` on a direct declaration removed an artifact that a `Compile` dependency still brings; the fat JAR ships it, or the cluster's version silently loses to the one on the classpath.
+
+#### ! Control
+Keep `Provided` declarations in one clearly labelled block, with the environment that supplies each one named in a comment. Run at least one integration test against a packaged artifact (`sbt assembly` or `sbt package`) rather than only `sbt test`, because the test classpath hides exactly the gap this scenario creates.
 
 #### ! Check
-**Fast check:** `sbt 'show runtime:dependencyClasspath'`
+**Fast check:** `sbt "show Runtime / externalDependencyClasspath"`
 
-**What to look for:** Output showing the classpath for the selected configuration or scope.
+**What to look for:** `lib-d` absent, `lib-circle-a` absent, and `lib-b` present despite its `Provided` declaration. Compare with `Compile /` (adds `lib-d`) and `Test /` (adds `lib-circle-a` and `lib-circle-b`).
 
-**Conclusion:** Configurations determine which dependencies enter specific classpaths.
+**Conclusion:** A configuration governs the declaration it is attached to; it does not demote the same artifact arriving through a `Compile` path.
 
 #### ! Scales
-Correct configuration usage is essential for Scala/SBT projects that publish libraries. The `% Provided` configuration is commonly used for Spark and Hadoop dependencies in data engineering projects, where the cluster provides these libraries. Getting this wrong means either a bloated uber-JAR (wasting deployment bandwidth) or a runtime crash (missing classes).
+Correct configuration usage matters most for projects that publish libraries or ship fat JARs. `% Provided` is standard for Spark and Hadoop dependencies in data engineering projects, where the cluster provides them. Getting it wrong means either a bloated uber-JAR or a runtime crash with missing classes.
 
 #### ! Takeaway
-Configurations control visibility and transitivity. Use `% Test` and `% Provided` to keep your production artifacts clean.
+Configurations control visibility and transitivity for the declaration they are on. In sbt they do not override what a `Compile` dependency pulls in; Maven's scopes do.
 
-#### Related Scenarios
-*   [Scenario 8: Optional](../scenario-8-optional/guide.qmd)
+#### ! Related
+*   [SB8](../scenario-8-optional/guide.qmd) - The producer-side way to keep a dependency off consumers' classpaths.
+*   [SB5](../scenario-5-exclusions/guide.qmd) / [SB18](../scenario-18-banning/guide.qmd) - Removing an artifact that a configuration cannot.
+*   [MS7](../../maven-demo/scenario-7-scopes/guide.qmd) / [GS7](../../gradle-demo/scenario-7-scopes/guide.qmd) - Scopes in Maven, where the direct scope *does* demote the transitive, and configurations in Gradle.
+*   [P7](../../python-demo/scenario-7-extras-groups/guide.qmd) / [N7](../../node-demo/scenario-7-dep-types/guide.qmd) - Extras and groups in Python; dependency types in Node.
 
 #### ! Wild
 
-Data engineering teams running [Apache Spark](https://spark.apache.org/) often ship uber-jars hundreds of megabytes in size, despite the cluster already containing the core Spark and Hadoop libraries. The fix is straightforward: marking `spark-core`, `spark-sql`, and `hadoop-client` as `% Provided` tells SBT to exclude them from the packaged artifact. In practice, this can shrink a fat JAR from 200+ MB to under 30 MB, dramatically reducing deployment times and CI/CD storage costs. The trap is that `% Provided` dependencies are still available during `sbt test`, so tests pass even if the cluster doesn't actually provide the expected version.
+Data engineering teams running [Apache Spark](https://spark.apache.org/) often ship uber-jars hundreds of megabytes in size, even though the cluster already contains the core Spark and Hadoop libraries. Marking `spark-core`, `spark-sql` and `hadoop-client` as `% Provided` keeps them out of the packaged artifact and can shrink a fat JAR from over 200 MB to under 30 MB. The trap is that `% Provided` dependencies are still on the test classpath, so `sbt test` passes even when the cluster provides a different version than the one you compiled against.

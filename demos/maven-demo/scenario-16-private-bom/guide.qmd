@@ -1,15 +1,16 @@
 ---
 title: "Private Repository & BOM Override"
-tagline: "What to Do When You Need Enterprise Support"
+tagline: "Or what to do when you need enterprise support"
 type: scenario
 tool: maven
 ---
 
-#### ! Scenario What to Do When You Need Enterprise Support
+#### ! Scenario
 
-This scenario shows how to incorporate a private, third-paty repository that provides patched or extended-support versions of dependencies.
+*Or what to do when you need enterprise support*
+This scenario shows how to incorporate a private, third-party repository that provides patched or extended-support versions of dependencies.
 
-It specifically demonstrates how a third-party Bill of Materials (BOM) can be used to override a publicly available, EOL (End-of-Life) dependency with a patched version from the private repository.
+It demonstrates how a vendor's Bill of Materials (BOM) can override a publicly available, end-of-life dependency with a patched version from the private repository.
 
 This is a common enterprise pattern when a vendor provides long-term support for a library (like Spring Boot) after its official EOL date.
 
@@ -35,20 +36,56 @@ graph LR
 
 ```
 
-The `pom.xml` first adds the private repository. Then, it imports the vendor's BOM in the `<dependencyManagement>` section. The actual dependency is declared without a version, letting the imported BOM control which version is used.
+The `pom.xml` first adds the private repository. Then it imports the vendor's BOM in `<dependencyManagement>`. The dependency itself is declared without a version, so the imported BOM decides which one is used.
 
 ```{.xml include="fake-pom.xml" snippet="s16-deps"}
 ```
 
 #### ! Expect
-Adding a private repository and importing its BOM ensures that patched or extended-support versions are prioritized over public, EOL versions.
+Adding a private repository and importing its BOM ensures that patched or extended-support versions are chosen over public, EOL versions.
+
+#### ! Actual
+`spring-boot-starter:2.5.14.ACME` resolves, from the private repository. Two separate things made that happen: the repository made the artifact *available*, and the BOM's managed version made it *selected*. Either one alone does nothing.
 
 #### ! Why
-Private repositories make custom artifacts available, while `<dependencyManagement>` (via a vendor BOM) enforces their selection. This combination allows for surgical overrides of public dependencies with enterprise-supported versions.
+Repositories only answer "where can I find version X?"; they never influence which X is wanted. The vendor BOM, imported into `<dependencyManagement>`, supplies `2.5.14.ACME` for every `spring-boot-starter` request in the graph, direct or transitive ([MS3](../scenario-3-mgmt/guide.qmd), [MS6](../scenario-6-forcing/guide.qmd)). Maven then searches its repositories in declaration order for that exact version, which only the private one has.
+
+#### ! Fix
+*   **Declare the private repository** (ideally once, in `settings.xml` or a parent POM, rather than in every project).
+*   **Import the vendor BOM** in `<dependencyManagement>` with `<type>pom</type>` and `<scope>import</scope>`.
+*   **Remove explicit versions** for the artifacts the BOM manages, or they override it ([MS4](../scenario-4-override/guide.qmd)).
+*   **If the vendor publishes no BOM**, declare the patched version directly ([MS17](../scenario-17-private-patch/guide.qmd)).
+
+#### ! Risk
+* LOW A vendor BOM that manages the same artifact set as the public BOM it replaces.
+* MEDIUM Two BOMs managing the same artifact. The first import wins, and if that is the public one you are back on the EOL version with no warning.
+* HIGH A private repository declared with a group-agnostic URL and no mirror or `repositoryManager` policy. Every artifact lookup now asks the vendor first, which is a dependency-confusion exposure ([P11](../../python-demo/scenario-11-private-index/guide.qmd), [N11](../../node-demo/scenario-11-private-registry/guide.qmd)).
+
+#### ! Control
+*   Route the private repository through a repository manager (Nexus, Artifactory) with a group filter, so only the vendor's coordinates come from it.
+*   Keep the BOM import and the repository declaration together in one parent POM so they are versioned and reviewed as a pair.
+*   Verify after every BOM upgrade with `mvn dependency:tree`.
+
+#### ! Check
+**Fast check:** `mvn dependency:tree`
+
+**What to look for:** `org.springframework.boot:spring-boot-starter:jar:2.5.14.ACME`. If the public `2.5.14` appears instead, either the BOM import is missing or an explicit version is overriding it.
+
+**Conclusion:** The private repository makes the patched artifact available; the imported BOM makes it the one that resolves.
+
+#### ! Scales
+Vendor-supported EOL lines are typically consumed by many services at once, which is exactly the case for a BOM: one import in the corporate parent POM moves every service onto the supported artifacts, and one line changes it back.
 
 #### ! Takeaway
-Adding a repository makes its artifacts *available*, but it is the combination of the repository and a version control mechanism (like a BOM in `<dependencyManagement>`) that allows you to safely override public dependencies with private, patched versions. The order of repository declaration can also matter if the same artifact exists in multiple repositories.
+Adding a repository makes artifacts *available*; a managed version makes them *selected*. Both are needed to override a public dependency with a private, patched version.
 
 #### ! Related
-* [P11](../../python-demo/scenario-11-private-index/guide.qmd) - The Python private-index story — where mixing indexes carelessly enables the dependency-confusion attack.
-* [N11](../../node-demo/scenario-11-private-registry/guide.qmd) - The Node original: dependency confusion, and scopes as the structural fix.
+*   [MS17](../scenario-17-private-patch/guide.qmd) - The same override without a BOM.
+*   [MS3](../scenario-3-mgmt/guide.qmd) - How BOM import works.
+*   [GS16](../../gradle-demo/scenario-16-private-bom/guide.qmd) - The same vendor BOM consumed through Gradle's `platform()`.
+*   [SB16](../../sbt-demo/scenario-16-private-bom/guide.qmd) - sbt 1.x, which emulates the BOM with `dependencyOverrides`.
+*   [P11](../../python-demo/scenario-11-private-index/guide.qmd) - The Python private-index story, where mixing indexes carelessly enables the dependency-confusion attack.
+*   [N11](../../node-demo/scenario-11-private-registry/guide.qmd) - The Node original: dependency confusion, and scopes as the structural fix.
+
+#### ! Wild
+Spring Boot 2.5 reached the end of open-source support in 2022. Teams that could not migrate in time had two choices: run an unpatched line, or buy extended support from a vendor who publishes patched builds under their own version suffix. The `2.5.14.ACME` coordinates in this scenario are a stand-in for that second choice. The technical pattern is always the same, a private repository plus a BOM, and the organisational pattern is too: the BOM import goes in the corporate parent POM, and the vendor's release notes become part of the team's patch cycle.

@@ -1,16 +1,18 @@
 ---
 title: "Version Conflict Resolution (Newest Wins)"
-tagline: "Or what to Do When Gradle Picks a Newer Version Than Maven Would"
+tagline: "Or what to do when Gradle picks a newer version than Maven would"
 type: scenario
 tool: gradle
 ---
 
-#### ! Scenario What to Do When Gradle Picks a Newer Version Than Maven Would
+#### ! Scenario
 
-This scenario demonstrates its default "Newest Wins" conflict resolution strategy.
+*Or what to do when Gradle picks a newer version than Maven would*
+This scenario demonstrates Gradle's default "newest wins" conflict resolution: when two paths reach the same module at different versions, the highest version is selected.
 
 ::: {.callout-note title="Tool Versions"}
 This scenario was tested with **Gradle 8.14**.
+Re-verified on Gradle 9.3 (October 2026): Gradle 9 raised the runtime floor to JDK 17 and changed defaults such as the configuration cache, not the resolution rules shown here.
 :::
 
 #### ! Example
@@ -23,45 +25,52 @@ graph LR
     LibA --> LibB_Transitive[lib-b:2.0.0]
 ```
 
-
-
 ```{.groovy include="build.gradle" snippet="s2-deps"}
 ```
 
 #### ! Expect
-Maven users expect `1.0.0` (nearest), while Gradle users expect `2.0.0` (newest).
+Maven users expect `lib-b:1.0.0`: it is declared directly, so it is "nearest". Gradle users expect `2.0.0`: it is the newest.
 
 #### ! Actual
-Resolves `lib-b:2.0.0`.
+Gradle resolves `lib-b:2.0.0`. The tree shows your own direct request being upgraded: `com.demo:lib-b:1.0.0 -> 2.0.0`.
 
 #### ! Why
-Gradle assumes semantic versioning: the newest version is likely backward-compatible and contains necessary fixes or features. This "newest wins" approach contrasts with Maven's "nearest wins" logic.
+Gradle's default conflict resolution compares version numbers, not graph positions. It assumes semantic versioning: the newest version is the most likely to be backward-compatible and to contain the fixes everyone needs. A direct declaration carries no extra weight; it is one more version request in the pool. This is the opposite of Maven's nearest-wins rule ([MS2](../../maven-demo/scenario-2-conflict/guide.qmd)), which is why the same build file ported between the two tools can produce different classpaths.
 
-#### ! Scales
-"Newest Wins" generally produces fewer duplicate classes on the classpath and fewer "missing method" errors caused by accidental downgrades. However, it carries a different risk: if a library releases a breaking change (violating semver), Gradle may silently upgrade you to the broken version. This is particularly dangerous with libraries like Guava or Jackson that have historically made breaking changes between major versions.
+#### ! Fix
+*   **Accept the upgrade** if `lib-b:2.0.0` is compatible with your code. Usually it is, and this is the outcome Gradle optimises for.
+*   **Pin it** when it is not: a `strictly` constraint keeps `1.0.0` even though a newer version is in the graph ([GS6](../scenario-6-forcing/guide.qmd)). Expect `lib-a` to complain if it genuinely needs `2.0.0`.
+*   **Align the graph** by upgrading your own declaration to `2.0.0`, so nothing is being silently upgraded any more.
 
 #### ! Risk
-* LOW Use `strictly` constraints to pin versions.
-* MEDIUM Use `resolutionStrategy.force`.
-* HIGH Rely on default "newest wins" without testing; breaking changes in libraries like Guava or Jackson can cause silent failures.
+* LOW A minor or patch upgrade of a library that follows semantic versioning.
+* MEDIUM A major upgrade pulled in by a transitive; your code compiled against the old API and nobody tested the new one.
+* HIGH A library that removes APIs between versions (Guava and Jackson are the classic examples). Gradle upgrades you silently and the failure is a `NoSuchMethodError` at runtime.
+
+#### ! Control
+*   **Watch for `->` in the tree.** Every arrow is a version somebody asked for and did not get.
+*   **Fail on unexpected upgrades** where it matters: `configurations.all { resolutionStrategy.failOnVersionConflict() }` turns every conflict into a build error you must resolve explicitly.
 
 #### ! Check
-**Fast check:** `./gradlew dependencyInsight --dependency <id>`
+**Fast check:** `gradle dependencyInsight --dependency lib-b --configuration compileClasspath`
 
-**What to look for:** `(by conflict resolution)` (Gradle), `omitted for conflict` (Maven), or evicted nodes (SBT).
+**What to look for:** `com.demo:lib-b:2.0.0` with the selection reason `by conflict resolution: between versions 2.0.0 and 1.0.0`, and the tree underneath showing both the direct `1.0.0 -> 2.0.0` request and the transitive path through `lib-a`.
 
-**Conclusion:** Gradle selects the newest version found in the graph.
+**Conclusion:** Gradle selected the newest version found anywhere in the graph, overriding your direct declaration.
+
+#### ! Scales
+Newest-wins generally produces fewer duplicate classes and fewer missing-method errors caused by accidental downgrades, because the highest version usually has the largest API surface. The trade-off is that a breaking release anywhere in your graph is adopted automatically. Large builds therefore pair newest-wins with a platform ([GS3](../scenario-3-mgmt/guide.qmd)) or strict constraints on the libraries that have burned them before.
 
 #### ! Takeaway
-It upgrades you to the newest version found in the graph.
+Gradle upgrades you to the newest version found in the graph, even when the older version is the one you declared. Read the arrows.
 
 #### ! Related
-*   [GS6: Forcing a Version](../scenario-6-forcing/guide.qmd)
+*   [GS6](../scenario-6-forcing/guide.qmd) - Pinning a version when newest-wins picks the wrong one.
+*   [GS3](../scenario-3-mgmt/guide.qmd) - Aligning versions centrally so conflicts stop happening.
+*   [MS2](../../maven-demo/scenario-2-conflict/guide.qmd) / [SB2](../../sbt-demo/scenario-2-conflict/guide.qmd) - The same diamond under nearest-wins (Maven) and Coursier's highest-wins (sbt).
+*   [P2](../../python-demo/scenario-2-conflict/guide.qmd) - The same diamond in Python, where there is no winner and the install fails.
+*   [N2](../../node-demo/scenario-2-diamond/guide.qmd) / [N8](../../node-demo/scenario-8-peers/guide.qmd) - The same diamond in Node, where both versions install, and the one place Node demands a single copy.
 
 #### ! Wild
 
-In large e-commerce architectures using "newest wins" strategies, minor updates in utility libraries can automatically propagate across dozens of microservices.
-
-This risks silent regressions if the library violates semantic versioning.
-
-To mitigate this, many organizations use `strictly` constraints on business-critical libraries, opting out of automatic "newest is better" upgrades.
+The Hadoop and Guava saga is the textbook case. Hadoop 2.x was built against Guava 11 and used a `Stopwatch` constructor that Guava later removed. Any application that depended on Hadoop and on a newer Guava (directly or through Spark, HBase or a client library) had Gradle's newest-wins resolution upgrade Guava for the whole classpath, and Hadoop failed at runtime with `NoSuchMethodError: com.google.common.base.Stopwatch.<init>()`. The fix in most projects was a pin or a shaded Guava, and the episode is a large part of why Hadoop eventually shaded its own copy.

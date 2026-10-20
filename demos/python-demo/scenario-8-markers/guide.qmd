@@ -1,13 +1,13 @@
 ---
 title: "Environment Markers"
-tagline: "Or what to Do When the Dependency Depends on the Machine"
+tagline: "Or what to do when the Dependency Depends on the Machine"
 type: scenario
 tool: python
 ---
 
 #### ! Scenario
 
-*Or what to Do When the Dependency Depends on the Machine*
+*Or what to do when the Dependency Depends on the Machine*
 No JVM sibling. A Python requirement can carry a **marker** (PEP 508) — a condition on the *installing environment* that decides whether the dependency applies at all. `demo-lib-c; python_version >= "3.8"` installs `demo-lib-c` only on new-enough Python. The resolved graph becomes a function of the machine.
 
 ::: {.callout-note title="Tool Versions"}
@@ -35,7 +35,7 @@ A marker is evaluated against the target interpreter's own facts: `python_versio
 
 #### ! Risk
 * LOW A well-scoped platform or version marker.
-* MEDIUM Assuming your lock file is universal — a lock resolved on macOS may omit a Windows-only, marker-gated dependency (uv's cross-platform lock handles this; `pip freeze` does not).
+* MEDIUM Assuming your lock file is universal — a lock resolved on macOS may omit a Windows-only, marker-gated dependency (`uv.lock` and `poetry.lock` are platform-independent and keep the markers; `pip freeze` is a snapshot of one machine and does not).
 * HIGH Testing only on the platform where a marker excludes a fragile dependency, then shipping to the platform where it's included and untested.
 
 #### ! Check
@@ -46,6 +46,10 @@ A marker is evaluated against the target interpreter's own facts: `python_versio
 pip install -r requirements.txt
 pip show demo-lib-c   # present  (marker python_version >= "3.8" is true)
 pip show demo-lib-d   # absent   (marker python_version < "3.8" is false)
+
+# poetry / uv: the lock keeps BOTH entries with their markers; the install applies them
+poetry lock && poetry install && poetry run pip show demo-lib-d   # absent
+uv sync && uv pip show demo-lib-d                                 # absent
 ```
 
 **What to look for:** exactly one of the two packages present, selected by the interpreter's version.

@@ -1,15 +1,16 @@
 ---
 title: "Basic Transitive Resolution"
-tagline: "What to do when a Dependency Brings in Versions You Didn’t Expect"
+tagline: "Or what to do when a dependency brings in versions you didn't expect"
 type: scenario
 tool: maven
 ---
 
-#### ! Scenario What to do when a Dependency Brings in Versions You Didn’t Expect
+#### ! Scenario
 
+*Or what to do when a dependency brings in versions you didn't expect*
 This scenario demonstrates the fundamental concept of transitive dependency resolution.
 
-It shows how a build tool automatically discovers and includes dependencies of your direct dependencies, forming a dependency graph.
+It shows how Maven automatically discovers and includes the dependencies of your direct dependencies, forming a dependency graph.
 
 This is the "happy path" where no conflicts exist.
 
@@ -27,8 +28,6 @@ graph LR
     LibB --> LibC(lib-c:1.0.0)
 ```
 
-
-
 ```{.xml include="pom.xml" snippet="s1-deps"}
 ```
 
@@ -36,13 +35,18 @@ graph LR
 Declaring `lib-a` automatically includes its transitive dependencies `lib-b` and `lib-c` on the classpath.
 
 #### ! Why
-Build tools traverse the dependency graph and collect all unique nodes. In the absence of version conflicts, resolution is straightforward and follows the project's dependency structure.
+Maven reads `lib-a`'s POM, finds `lib-b`, reads `lib-b`'s POM, finds `lib-c`, and collects every unique node it visits. With no version conflicts anywhere in the graph, resolution is a straightforward walk and the result mirrors the declared structure.
 
 #### ! Fix
-No fix is needed here. This is the desired behavior.
+No fix is needed here. This is the desired behaviour.
 
 #### ! Risk
-Even in simple scenarios, using a BOM (Bill of Materials) or dependency constraints can prevent future surprises if new dependencies are added.
+* LOW A short chain of libraries you control.
+* MEDIUM A chain that reaches into third-party frameworks: every one of their transitives is now yours too.
+* HIGH Assuming the chain is short. Run the tree before you reason about it.
+
+#### ! Control
+Run `mvn dependency:tree` on a new project before adding anything else, and keep the output in mind as the baseline you compare against later.
 
 #### ! Check
 
@@ -51,7 +55,7 @@ mvn dependency:tree
 ```
 
 **What to look for:**
-A clean tree with no unexpected versions or `omitted` nodes.
+A clean tree with no unexpected versions; with `-Dverbose`, no `omitted for conflict` lines.
 
 **Conclusion:**
 The dependency graph is healthy and resolving as expected.
@@ -59,12 +63,15 @@ The dependency graph is healthy and resolving as expected.
 #### ! Scales
 In large systems, this simple chain `A -> B -> C` is repeated thousands of times, creating a complex web. The "happy path" becomes rare as diamond dependencies emerge.
 
-
-
 #### ! Takeaway
-
-Transitive dependency resolution is the mechanism that allows us to build on top of giants without manually managing every single library.
+One declaration can pull in a whole chain. Transitive resolution is what lets you build on top of giants without naming every library yourself.
 
 #### ! Related
-* [P1](../../python-demo/scenario-1-basic/guide.qmd) - The Python sibling: the same transitive pull, but into an environment that can hold only one version of each package.
-* [N1](../../node-demo/scenario-1-basic/guide.qmd) - The Node sibling: the same pull, into a tree that can hold *many* versions of each package.
+*   [MS2](../scenario-2-conflict/guide.qmd) - What happens when two paths ask for different versions.
+*   [GS1](../../gradle-demo/scenario-1-basic/guide.qmd) - The same chain resolved by Gradle.
+*   [SB1](../../sbt-demo/scenario-1-basic/guide.qmd) - The same chain resolved by sbt.
+*   [P1](../../python-demo/scenario-1-basic/guide.qmd) - The Python sibling: the same transitive pull, but into an environment that can hold only one version of each package.
+*   [N1](../../node-demo/scenario-1-basic/guide.qmd) - The Node sibling: the same pull, into a tree that can hold *many* versions of each package.
+
+#### ! Wild
+A fresh Spring Boot web project declares one starter, `spring-boot-starter-web`, and resolves dozens of jars. Nobody on the team chose Jackson, Tomcat or Micrometer; the starter's POM did. That is transitive resolution working exactly as designed, and it is also why "we don't use library X" is a claim you should check with `dependency:tree` rather than with the POM.
