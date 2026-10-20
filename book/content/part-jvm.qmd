@@ -5,13 +5,16 @@ The next three parts walk the same 18 scenarios through Maven, Gradle and sbt. T
 ```{mermaid}
 %%| fig-width: 5
 graph LR
-    A1[lib-a:1.0.0] --> B1[lib-b:1.0.0] --> C1[lib-c:1.0.0]
-    A2[lib-a:2.0.0] --> B2[lib-b:2.0.0] --> C2[lib-c:2.0.0]
-    D[lib-d:1.0.0] -. optional .-> C1
-    BOM[demo-bom:1.0.0] -. manages 1.0.0 .-> A1
-    BOM -. manages 1.0.0 .-> B1
-    BOM -. manages 1.0.0 .-> C1
-    CA[lib-circle-a] --> CB[lib-circle-b] --> CA
+    A1["lib-a:1.0.0"] --> B1["lib-b:1.0.0"]
+    B1 --> C1["lib-c:1.0.0"]
+    A2["lib-a:2.0.0"] --> B2["lib-b:2.0.0"]
+    B2 --> C2["lib-c:2.0.0"]
+    D["lib-d:1.0.0"] -.->|optional| C1
+    BOM["demo-bom:1.0.0"] -.->|"manages at 1.0.0"| A1
+    BOM -.->|"manages at 1.0.0"| B1
+    BOM -.->|"manages at 1.0.0"| C1
+    CA["lib-circle-a"] --> CB["lib-circle-b"]
+    CB --> CA
 ```
 
 The three tools agree on most of the mechanics and disagree on the one that matters most. When two paths ask for different versions of the same artifact:
